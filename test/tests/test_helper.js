@@ -1,30 +1,17 @@
-function verifyLocalStorageContainsRecord(namespace, type, record, ignoreFields) {
-  var expected = {};
-  expected[record.__id] = record;
+import Store from 'ember_orbit/store';
 
-  var actual = JSON.parse(window.localStorage.getItem(namespace));
-  if (type) actual = actual[type];
+var createStore = function(options) {
+  options = options || {};
 
-  if (ignoreFields) {
-    for (var i = 0, l = ignoreFields.length, field; i < l; i++) {
-      field = ignoreFields[i];
-      actual[record.__id][field] = record[field];
-    }
+  var container = new Ember.Container();
+
+  for (var prop in options) {
+    container.register('model:' + prop, options[prop]);
   }
 
-  deepEqual(actual,
-            expected,
-            'data in local storage matches expectations');
-}
+  container.register('store:main', Store.extend());
 
-function verifyLocalStorageIsEmpty(namespace) {
-  var contents = JSON.parse(window.localStorage.getItem(namespace));
-  if (contents === null) {
-    equal(contents, null, 'local storage should still be empty');
-  } else {
-    deepEqual(contents, {}, 'local storage should still be empty');
-  }
-}
+  return container.lookup('store:main');
+};
 
-window.verifyLocalStorageContainsRecord = verifyLocalStorageContainsRecord;
-window.verifyLocalStorageIsEmpty = verifyLocalStorageIsEmpty;
+export { createStore };

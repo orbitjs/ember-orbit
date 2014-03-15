@@ -4,27 +4,13 @@ import hasOne from 'ember_orbit/has_one';
 import hasMany from 'ember_orbit/has_many';
 import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
+import { createStore } from 'test_helper';
 
 var get = Ember.get;
 var Planet,
     Moon,
     Star,
     store;
-
-var createStore = function(options) {
-  options = options || {};
-
-  var container = new Ember.Container();
-
-  for (var prop in options) {
-    container.register('model:' + prop, options[prop]);
-  }
-
-  container.register('store:main', Store.extend({
-  }));
-
-  return container.lookup('store:main');
-};
 
 module("Integration - Model", {
   setup: function() {
@@ -61,4 +47,12 @@ module("Integration - Model", {
 
 test("store exists", function() {
   ok(store);
+});
+
+test("#modelFor returns the appropriate model when passed a model's name", function() {
+  equal(store.modelFor('star'), Star);
+});
+
+test("#modelFor returns the appropriate model when passed the model itself", function() {
+  equal(store.modelFor(Star), Star);
 });

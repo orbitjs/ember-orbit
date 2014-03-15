@@ -15,11 +15,9 @@ module.exports = function(config) {
       'vendor/orbit-common.amd.js',
       'vendor/orbit-common-jsonapi.amd.js',
       'vendor/orbit-common-local-storage.amd.js',
-      'vendor/orbit.js',
       'lib/*.js',
-      'tests/test_helper.js',
       'tests/tests.amd.js',
-      'tests/test_loader.js'
+      'test_loader.js'
     ],
 
     frameworks: ['qunit'],

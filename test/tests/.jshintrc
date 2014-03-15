@@ -32,8 +32,6 @@
     "click",
     "find",
     "requireModule",
-    "verifyLocalStorageContainsRecord",
-    "verifyLocalStorageIsEmpty",
     "Ember"
   ],
   "node" : false,
