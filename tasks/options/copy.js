@@ -20,7 +20,9 @@ module.exports = {
     }, {
       expand: true,
       cwd: 'test/',
-      src: ['index.html', 'test_loader.js'],
+      src: ['index.html',
+            'qunit_configuration.js',
+            'test_loader.js'],
       dest: 'tmp/public/test/'
     }, {
       expand: true,
