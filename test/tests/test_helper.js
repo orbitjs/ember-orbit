@@ -9,7 +9,7 @@ var createStore = function(options) {
     container.register('model:' + prop, options[prop]);
   }
 
-  container.register('store:main', Store.extend());
+  container.register('store:main', Store);
 
   return container.lookup('store:main');
 };
