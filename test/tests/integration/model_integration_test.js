@@ -49,10 +49,8 @@ test("store exists", function() {
   ok(store);
 });
 
-test("#modelFor returns the appropriate model when passed a model's name", function() {
+test("store is properly linked to models", function() {
   equal(store.modelFor('star'), Star);
-});
-
-test("#modelFor returns the appropriate model when passed the model itself", function() {
-  equal(store.modelFor(Star), Star);
+  equal(store.modelFor('planet'), Planet);
+  equal(store.modelFor('moon'), Moon);
 });

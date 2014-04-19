@@ -4,14 +4,17 @@ var createStore = function(options) {
   options = options || {};
 
   var container = new Ember.Container();
+  container.register('store:main', Store);
+
+  var store = container.lookup('store:main'),
+      schema = store.get('schema');
 
   for (var prop in options) {
     container.register('model:' + prop, options[prop]);
+    schema.defineModel(prop, options[prop]);
   }
 
-  container.register('store:main', Store);
-
-  return container.lookup('store:main');
+  return store;
 };
 
 export { createStore };
