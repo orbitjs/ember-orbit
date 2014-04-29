@@ -51,3 +51,20 @@ test("#createRecord can create a new instance of a model", function() {
     });
   });
 });
+
+test("#createRecord can create a new instance of a model", function() {
+  Ember.run(function() {
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      equal(planet.get('name'), 'Earth');
+    });
+  });
+});
+
+test("#recordForId can synchronously retrieve a record by id", function() {
+  Ember.run(function() {
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      var planet2 = context.recordForId('planet', planet.get('__id__'));
+      strictEqual(planet2, planet);
+    });
+  });
+});
