@@ -53,6 +53,110 @@ test("#createRecord can create a new instance of a model", function() {
   });
 });
 
+test("#find will asynchronously return a record when called with a `type` and a single `id`", function() {
+  Ember.run(function() {
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      context.find('planet', planet.get('__id__')).then(function(foundPlanet) {
+        strictEqual(foundPlanet, planet);
+      });
+    });
+  });
+});
+
+test("#find will asynchronously fail if a record can't be found", function() {
+  Ember.run(function() {
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      context.find('planet', 'bogus').then(function(foundPlanet) {
+        ok(false);
+      }, function(e) {
+        ok(e instanceof RecordNotFoundException);
+      });
+    });
+  });
+});
+
+test("#find will asynchronously return an array of records when called with a `type` and an array of `ids`", function() {
+  expect(3);
+
+  Ember.run(function() {
+    var planets = [],
+        ids = [];
+
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+      return context.createRecord('planet', {name: 'Jupiter'});
+
+    }).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+
+    }).then(function() {
+      context.find('planet', ids).then(function(foundPlanets) {
+        equal(foundPlanets.length, planets.length, 'same number of planets created and found');
+
+        for (var i = 0; i < planets.length; i++) {
+          strictEqual(foundPlanets[i], planets[i], 'found planet matches created planet');
+        }
+      });
+    });
+  });
+});
+
+test("#find will asynchronously return an array of all records when called with just a `type`", function() {
+  expect(3);
+
+  Ember.run(function() {
+    var planets = [],
+        ids = [];
+
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+      return context.createRecord('planet', {name: 'Jupiter'});
+
+    }).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+
+    }).then(function() {
+      context.find('planet').then(function(foundPlanets) {
+        equal(foundPlanets.length, planets.length, 'same number of planets created and found');
+
+        for (var i = 0; i < planets.length; i++) {
+          strictEqual(foundPlanets[i], planets[i], 'found planet matches created planet');
+        }
+      });
+    });
+  });
+});
+
+test("#find will asynchronously return an array of records when called with a `type` and a query object", function() {
+  expect(2);
+
+  Ember.run(function() {
+    var planets = [],
+        ids = [];
+
+    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+      return context.createRecord('planet', {name: 'Jupiter'});
+
+    }).then(function(planet) {
+      planets.push(planet);
+      ids.push(planet.get('__id__'));
+
+    }).then(function() {
+      context.find('planet', {name: 'Jupiter'}).then(function(foundPlanets) {
+        equal(foundPlanets.length, 1, 'only one planet is named "Jupiter"');
+
+        strictEqual(foundPlanets[0], planets[1], 'found planet matches created planet');
+      });
+    });
+  });
+});
+
 test("#recordForId can synchronously retrieve a record by id", function() {
   Ember.run(function() {
     context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
@@ -71,52 +175,3 @@ test("#recordForId will return undefined if the record has never been retrieved"
   });
 });
 
-test("#findById will return a record asynchronously by id", function() {
-  Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
-      context.findById('planet', planet.get('__id__')).then(function(foundPlanet) {
-        strictEqual(foundPlanet, planet);
-      });
-    });
-  });
-});
-
-test("#findById will fail if a record can't be found", function() {
-  Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
-      context.findById('planet', 'bogus').then(function(foundPlanet) {
-        ok(false);
-      }, function(e) {
-        ok(e instanceof RecordNotFoundException);
-      });
-    });
-  });
-});
-
-test("#findByIds will return an array of records asynchronously by id", function() {
-  expect(3);
-
-  Ember.run(function() {
-    var planets = [],
-        ids = [];
-
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
-      planets.push(planet);
-      ids.push(planet.get('__id__'));
-      return context.createRecord('planet', {name: 'Jupiter'});
-
-    }).then(function(planet) {
-      planets.push(planet);
-      ids.push(planet.get('__id__'));
-
-    }).then(function() {
-      context.findByIds('planet', ids).then(function(foundPlanets) {
-        equal(planets.length, foundPlanets.length, 'same number of planets created and found');
-
-        for (var i = 0; i < planets.length; i++) {
-          strictEqual(foundPlanets[i], planets[i], 'found planet matches created planet');
-        }
-      });
-    });
-  });
-});
