@@ -45,9 +45,9 @@ test("it has a properly defined schema", function() {
   ok(schema._schema.models.planet, 'models are defined');
 });
 
-test("#createRecord can create a new instance of a model", function() {
+test("#add will add a new instance of a model", function() {
   Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       equal(planet.get('name'), 'Earth');
     });
   });
@@ -55,7 +55,7 @@ test("#createRecord can create a new instance of a model", function() {
 
 test("#find will asynchronously return a record when called with a `type` and a single `id`", function() {
   Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       context.find('planet', planet.get('__id__')).then(function(foundPlanet) {
         strictEqual(foundPlanet, planet);
       });
@@ -65,7 +65,7 @@ test("#find will asynchronously return a record when called with a `type` and a 
 
 test("#find will asynchronously fail if a record can't be found", function() {
   Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       context.find('planet', 'bogus').then(function(foundPlanet) {
         ok(false);
       }, function(e) {
@@ -82,10 +82,10 @@ test("#find will asynchronously return an array of records when called with a `t
     var planets = [],
         ids = [];
 
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
       ids.push(planet.get('__id__'));
-      return context.createRecord('planet', {name: 'Jupiter'});
+      return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
@@ -110,10 +110,10 @@ test("#find will asynchronously return an array of all records when called with 
     var planets = [],
         ids = [];
 
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
       ids.push(planet.get('__id__'));
-      return context.createRecord('planet', {name: 'Jupiter'});
+      return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
@@ -138,10 +138,10 @@ test("#find will asynchronously return an array of records when called with a `t
     var planets = [],
         ids = [];
 
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
       ids.push(planet.get('__id__'));
-      return context.createRecord('planet', {name: 'Jupiter'});
+      return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
@@ -157,9 +157,25 @@ test("#find will asynchronously return an array of records when called with a `t
   });
 });
 
+test("#remove will asynchronously remove a record when called with a `type` and a single `id`", function() {
+  expect(2);
+
+  Ember.run(function() {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
+      var id = planet.get('__id__');
+
+      strictEqual(context.recordForId('planet', id), planet);
+
+      context.remove('planet', id).then(function() {
+        strictEqual(context.recordForId('planet', id), undefined);
+      });
+    });
+  });
+});
+
 test("#recordForId can synchronously retrieve a record by id", function() {
   Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       var planet2 = context.recordForId('planet', planet.get('__id__'));
       strictEqual(planet2, planet);
     });
@@ -168,7 +184,7 @@ test("#recordForId can synchronously retrieve a record by id", function() {
 
 test("#recordForId will return undefined if the record has never been retrieved", function() {
   Ember.run(function() {
-    context.createRecord('planet', {name: 'Earth'}).then(function(planet) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
       var foundPlanet = context.recordForId('planet', 'bogusId');
       strictEqual(foundPlanet, undefined);
     });
