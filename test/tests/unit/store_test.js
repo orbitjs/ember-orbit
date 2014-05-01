@@ -17,7 +17,9 @@ module("Unit - Store", {
     Planet = Ember.Object.extend();
 
     store = createStore({
-      planet: Planet
+      models: {
+        planet: Planet
+      }
     });
   },
 

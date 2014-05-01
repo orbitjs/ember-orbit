@@ -34,9 +34,11 @@ module("Integration - Model", {
     });
 
     store = createStore({
-      star: Star,
-      moon: Moon,
-      planet: Planet
+      models: {
+        star: Star,
+        moon: Moon,
+        planet: Planet
+      }
     });
   },
 

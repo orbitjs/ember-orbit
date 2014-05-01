@@ -22,7 +22,9 @@ module("Unit - Context", {
     });
 
     store = createStore({
-      planet: Planet
+      models: {
+        planet: Planet
+      }
     });
 
     context = Context.create({

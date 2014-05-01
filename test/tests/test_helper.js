@@ -9,9 +9,12 @@ var createStore = function(options) {
   var store = container.lookup('store:main'),
       schema = store.get('schema');
 
-  for (var prop in options) {
-    container.register('model:' + prop, options[prop]);
-    schema.defineModel(prop, options[prop]);
+  var models = options.models;
+  if (models) {
+    for (var prop in models) {
+      container.register('model:' + prop, models[prop]);
+      schema.defineModel(prop, models[prop]);
+    }
   }
 
   return store;
