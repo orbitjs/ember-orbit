@@ -24,6 +24,15 @@ test("it exists", function() {
   ok(schema);
 });
 
+test("it has an `idField` of `clientid` by default", function() {
+  equal(get(schema, 'idField'), 'clientid');
+});
+
+test("its `idField` can be customized", function() {
+  schema = Schema.create({idField: 'cid'});
+  equal(get(schema, 'idField'), 'cid');
+});
+
 test("#defineModel defines models on the underlying Orbit schema", function() {
   var Star,
       Moon,

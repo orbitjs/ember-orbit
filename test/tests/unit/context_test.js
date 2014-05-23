@@ -33,7 +33,10 @@ module("Unit - Context", {
   },
 
   teardown: function() {
+    Orbit.Promise = null;
+    Planet = null;
     store = null;
+    context = null;
   }
 });
 
@@ -58,7 +61,7 @@ test("#add will add a new instance of a model", function() {
 test("#find will asynchronously return a record when called with a `type` and a single `id`", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      context.find('planet', planet.get('__id__')).then(function(foundPlanet) {
+      context.find('planet', planet.get('clientid')).then(function(foundPlanet) {
         strictEqual(foundPlanet, planet);
       });
     });
@@ -86,12 +89,12 @@ test("#find will asynchronously return an array of records when called with a `t
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
 
     }).then(function() {
       context.find('planet', ids).then(function(foundPlanets) {
@@ -114,12 +117,12 @@ test("#find will asynchronously return an array of all records when called with 
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
 
     }).then(function() {
       context.find('planet').then(function(foundPlanets) {
@@ -142,12 +145,12 @@ test("#find will asynchronously return an array of records when called with a `t
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('__id__'));
+      ids.push(planet.get('clientid'));
 
     }).then(function() {
       context.find('planet', {name: 'Jupiter'}).then(function(foundPlanets) {
@@ -164,7 +167,7 @@ test("#remove will asynchronously remove a record when called with a `type` and 
 
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var id = planet.get('__id__');
+      var id = planet.get('clientid');
 
       strictEqual(context.recordForId('planet', id), planet);
 
@@ -178,7 +181,7 @@ test("#remove will asynchronously remove a record when called with a `type` and 
 test("#recordForId can synchronously retrieve a record by id", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var planet2 = context.recordForId('planet', planet.get('__id__'));
+      var planet2 = context.recordForId('planet', planet.get('clientid'));
       strictEqual(planet2, planet);
     });
   });
