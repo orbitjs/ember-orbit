@@ -68,7 +68,7 @@ test("store is properly linked to models", function() {
   equal(store.modelFor('moon'), Moon);
 });
 
-test("new models can be created", function() {
+test("new models can be created and updated", function() {
   expect(4);
 
   Ember.run(function() {
@@ -89,6 +89,30 @@ test("new models can be created", function() {
         equal(context._source.retrieve(['planet', planet.get('clientid'), 'name']),
               'Jupiter',
               'memory source patch is now complete');
+      });
+    });
+  });
+});
+
+test("model properties can be reset through transforms", function() {
+  expect(3);
+
+  Ember.run(function() {
+    stop();
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
+      equal(planet.get('name'), 'Earth');
+
+      context.transform({
+        op: 'replace',
+        path: ['planet', planet.get('clientid'), 'name'],
+        value: 'Jupiter'
+      });
+
+      equal(planet.get('name'), 'Earth', 'CP has not been invalidated yet');
+
+      context.then(function() {
+        start();
+        equal(planet.get('name'), 'Jupiter', 'CP reflects transformed value');
       });
     });
   });
