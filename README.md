@@ -34,6 +34,14 @@
 * belongs to a Context
 
 
+## Notes
+
+Package orbit and move to ember-orbit:
+
+```
+grunt package && mv dist/*.js ../../cerebris/ember-orbit/bower_components/orbit.js/
+```
+
 ## License
 
 Copyright 2014 Cerebris Corporation. MIT License (see LICENSE for details).
