@@ -197,3 +197,15 @@ test("#recordForId will return undefined if the record has never been retrieved"
   });
 });
 
+test("#then resolves when all transforms have completed", function() {
+  stop();
+  Ember.run(function() {
+    context.add('planet', {name: 'Earth'});
+    context.add('planet', {name: 'Jupiter'});
+
+    context.then(function() {
+      start();
+      ok(true, 'finished processing transforms');
+    });
+  });
+});
