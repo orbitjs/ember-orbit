@@ -53,6 +53,7 @@ test("it has a properly defined schema", function() {
 test("#add will add a new instance of a model", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
+      ok(get(planet, 'clientid'), 'assigned clientid');
       equal(planet.get('name'), 'Earth');
     });
   });
