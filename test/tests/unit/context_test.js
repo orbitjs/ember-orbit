@@ -179,6 +179,22 @@ test("#remove will asynchronously remove a record when called with a `type` and 
   });
 });
 
+test("#remove will asynchronously remove a record when called with a single model instance", function() {
+  expect(2);
+
+  Ember.run(function() {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
+      var id = planet.get('clientid');
+
+      strictEqual(context.recordForId('planet', id), planet);
+
+      context.remove(planet).then(function() {
+        strictEqual(context.recordForId('planet', id), undefined);
+      });
+    });
+  });
+});
+
 test("#recordForId can synchronously retrieve a record by id", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
