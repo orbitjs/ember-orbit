@@ -170,10 +170,10 @@ test("#remove will asynchronously remove a record when called with a `type` and 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       var id = planet.get('clientid');
 
-      strictEqual(context.recordForId('planet', id), planet);
+      strictEqual(context.retrieve('planet', id), planet);
 
       context.remove('planet', id).then(function() {
-        strictEqual(context.recordForId('planet', id), undefined);
+        strictEqual(context.retrieve('planet', id), undefined);
       });
     });
   });
@@ -186,29 +186,41 @@ test("#remove will asynchronously remove a record when called with a single mode
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       var id = planet.get('clientid');
 
-      strictEqual(context.recordForId('planet', id), planet);
+      strictEqual(context.retrieve('planet', id), planet);
 
       context.remove(planet).then(function() {
-        strictEqual(context.recordForId('planet', id), undefined);
+        strictEqual(context.retrieve('planet', id), undefined);
       });
     });
   });
 });
 
-test("#recordForId can synchronously retrieve a record by id", function() {
+test("#retrieve can synchronously retrieve a record by id", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var planet2 = context.recordForId('planet', planet.get('clientid'));
+      var planet2 = context.retrieve('planet', planet.get('clientid'));
       strictEqual(planet2, planet);
     });
   });
 });
 
-test("#recordForId will return undefined if the record has never been retrieved", function() {
+test("#retrieve will return undefined if the record does not exist", function() {
   Ember.run(function() {
-    context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var foundPlanet = context.recordForId('planet', 'bogusId');
-      strictEqual(foundPlanet, undefined);
+    var foundPlanet = context.retrieve('planet', 'bogusId');
+    strictEqual(foundPlanet, undefined);
+  });
+});
+
+test("#retrieve can synchronously retrieve all records of a particular type", function() {
+  Ember.run(function() {
+    Ember.RSVP.all([
+      context.add('planet', {name: 'Earth'}),
+      context.add('planet', {name: 'Jupiter'})
+    ]).then(function() {
+      var planets = context.retrieve('planet');
+      equal(planets.length, 2);
+      equal(get(planets.objectAt(0), 'name'), 'Earth');
+      equal(get(planets.objectAt(1), 'name'), 'Jupiter');
     });
   });
 });
