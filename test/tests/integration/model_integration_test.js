@@ -125,11 +125,11 @@ test("models can be deleted", function() {
     stop();
     context.add('planet', {name: 'Earth'}).then(function(planet) {
 
-      equal(get(context.all('planet'), 'length'), 1);
+      equal(get(context.all('planet'), 'length'), 1, 'record has been added');
 
       context.remove(planet).then(function() {
         start();
-        equal(get(context.all('planet'), 'length'), 0);
+        equal(get(context.all('planet'), 'length'), 0, 'record has been removed');
       });
     });
   });
