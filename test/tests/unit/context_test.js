@@ -185,7 +185,6 @@ test("#remove will asynchronously remove a record when called with a single mode
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       var id = planet.get('clientid');
-
       strictEqual(context.retrieve('planet', id), planet);
 
       context.remove(planet).then(function() {
@@ -212,10 +211,13 @@ test("#retrieve will return undefined if the record does not exist", function() 
 });
 
 test("#retrieve can synchronously retrieve all records of a particular type", function() {
+  expect(3);
+
   Ember.run(function() {
     Ember.RSVP.all([
       context.add('planet', {name: 'Earth'}),
       context.add('planet', {name: 'Jupiter'})
+
     ]).then(function() {
       var planets = context.retrieve('planet');
       equal(planets.length, 2);
@@ -229,33 +231,38 @@ test("#all returns a live RecordArray that stays in sync with records of one typ
   expect(4);
 
   Ember.run(function() {
-    var planets = context.all('planet');
-
+    var planets = context.all('planet'), earth;
     equal(get(planets, 'length'), 0, 'no records have been added yet');
 
-    context.add('planet', {name: 'Earth'}).then(function(earth) {
+    context.add('planet', {name: 'Earth'}).then(function(planet) {
+      earth = planet;
       equal(get(planets, 'length'), 1, 'one record has been added');
 
-      context.add('planet', {name: 'Jupiter'}).then(function(jupiter) {
-        equal(get(planets, 'length'), 2, 'two records have been added');
+    }).then(function() {
+      return context.add('planet', {name: 'Jupiter'});
 
-        context.remove(earth).then(function() {
-          equal(get(planets, 'length'), 1, 'one record is left');
-        });
-      });
+    }).then(function() {
+      equal(get(planets, 'length'), 2, 'two records have been added');
+
+    }).then(function() {
+      return context.remove(earth);
+
+    }).then(function() {
+      equal(get(planets, 'length'), 1, 'one record is left');
     });
   });
 });
 
 test("#then resolves when all transforms have completed", function() {
-  stop();
+  expect(2);
+
   Ember.run(function() {
     context.add('planet', {name: 'Earth'});
     context.add('planet', {name: 'Jupiter'});
 
     context.then(function() {
-      start();
       ok(true, 'finished processing transforms');
+      equal(get(context.all('planet'), 'length'), 2, 'two records have been added');
     });
   });
 });
