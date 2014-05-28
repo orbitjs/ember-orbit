@@ -119,17 +119,22 @@ test("model properties can be reset through transforms", function() {
 });
 
 test("models can be deleted", function() {
-  expect(2);
+  expect(3);
 
   Ember.run(function() {
     stop();
+
+    var planets = context.all('planet');
+
+    equal(get(planets, 'length'), 0, 'no records have been added yet');
+
     context.add('planet', {name: 'Earth'}).then(function(planet) {
 
-      equal(get(context.all('planet'), 'length'), 1, 'record has been added');
+      equal(get(planets, 'length'), 1, 'record has been added');
 
       context.remove(planet).then(function() {
         start();
-        equal(get(context.all('planet'), 'length'), 0, 'record has been removed');
+        equal(get(planets, 'length'), 0, 'record has been removed');
       });
     });
   });

@@ -225,6 +225,28 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
   });
 });
 
+test("#all returns a live RecordArray that stays in sync with records of one type", function() {
+  expect(4);
+
+  Ember.run(function() {
+    var planets = context.all('planet');
+
+    equal(get(planets, 'length'), 0, 'no records have been added yet');
+
+    context.add('planet', {name: 'Earth'}).then(function(earth) {
+      equal(get(planets, 'length'), 1, 'one record has been added');
+
+      context.add('planet', {name: 'Jupiter'}).then(function(jupiter) {
+        equal(get(planets, 'length'), 2, 'two records have been added');
+
+        context.remove(earth).then(function() {
+          equal(get(planets, 'length'), 1, 'one record is left');
+        });
+      });
+    });
+  });
+});
+
 test("#then resolves when all transforms have completed", function() {
   stop();
   Ember.run(function() {
