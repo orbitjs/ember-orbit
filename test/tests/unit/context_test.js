@@ -261,7 +261,7 @@ test("#filter returns a live RecordArray that stays in sync with filtered record
   expect(15);
 
   Ember.run(function() {
-    var allPlanets = context.filter('planet'), earth;
+    var allPlanets = context.filter('planet');
 
     var terrestrialPlanets = context.filter('planet', function(planet) {
       return get(planet, 'classification') === 'terrestrial';
