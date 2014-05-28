@@ -19,6 +19,8 @@ module("Unit - Context", {
 
     Planet = Model.extend({
       name: attr('string'),
+      atmosphere: attr('boolean'),
+      classification: attr('string')
     });
 
     store = createStore({
@@ -231,7 +233,9 @@ test("#all returns a live RecordArray that stays in sync with records of one typ
   expect(4);
 
   Ember.run(function() {
-    var planets = context.all('planet'), earth;
+    var planets = context.all('planet'),
+        earth;
+
     equal(get(planets, 'length'), 0, 'no records have been added yet');
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
@@ -249,6 +253,64 @@ test("#all returns a live RecordArray that stays in sync with records of one typ
 
     }).then(function() {
       equal(get(planets, 'length'), 1, 'one record is left');
+    });
+  });
+});
+
+test("#filter returns a live RecordArray that stays in sync with filtered records of one type", function() {
+  expect(15);
+
+  Ember.run(function() {
+    var allPlanets = context.filter('planet'), earth;
+
+    var terrestrialPlanets = context.filter('planet', function(planet) {
+      return get(planet, 'classification') === 'terrestrial';
+    });
+
+    var atmosphericPlanets = context.filter('planet', function(planet) {
+      return get(planet, 'atmosphere');
+    });
+
+    equal(get(allPlanets, 'length'), 0, 'no records have been added yet');
+    equal(get(terrestrialPlanets, 'length'), 0, 'no records have been added yet');
+    equal(get(atmosphericPlanets, 'length'), 0, 'no records have been added yet');
+
+    Ember.RSVP.all([
+      context.add('planet', {name: 'Jupiter', classification: 'gas giant', atmosphere: true}),
+      context.add('planet', {name: 'Venus', classification: 'terrestrial', atmosphere: true}),
+      context.add('planet', {name: 'Mercury', classification: 'terrestrial', atmosphere: false})
+
+    ]).then(function() {
+      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+      equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
+      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
+
+      return context.add('planet', {name: 'Earth', classification: 'terrestrial', atmosphere: true});
+
+    }).then(function(earth) {
+
+      equal(get(allPlanets, 'length'), 4, '4 total planets have been added');
+      equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
+      equal(get(atmosphericPlanets, 'length'), 3, '3 atmospheric planets have been added');
+
+      return context.remove('planet', earth);
+
+    }).then(function() {
+      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+      equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
+      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
+
+      return context.find('planet', {name: 'Jupiter'});
+
+    }).then(function(planetsNamedJupiter) {
+      Ember.run(function() {
+        set(planetsNamedJupiter[0], 'classification', 'terrestrial'); // let's just pretend :)
+      });
+
+    }).then(function() {
+      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+      equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
+      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
     });
   });
 });
