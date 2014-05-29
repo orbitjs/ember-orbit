@@ -7,7 +7,9 @@ import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
 import { createStore } from 'test_helper';
 
-var get = Ember.get;
+var get = Ember.get,
+    set = Ember.set;
+
 var Planet,
     Moon,
     Star,
@@ -72,22 +74,61 @@ test("new models can be created and updated", function() {
   expect(4);
 
   Ember.run(function() {
-    stop();
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      equal(planet.get('name'), 'Earth');
+      equal(get(planet, 'name'), 'Earth');
 
-      planet.set('name', 'Jupiter');
+      set(planet, 'name', 'Jupiter');
 
-      equal(planet.get('name'), 'Jupiter', 'CP reflects transformed value');
+      equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
 
-      equal(context._source.retrieve(['planet', planet.get('clientid'), 'name']),
+      equal(context._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
             'Earth',
             'memory source patch is not yet complete');
 
       context.then(function() {
-        start();
-        equal(context._source.retrieve(['planet', planet.get('clientid'), 'name']),
+        equal(context._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
               'Jupiter',
+              'memory source patch is now complete');
+      });
+    });
+  });
+});
+
+test("hasOne relationships can be created and updated", function() {
+  expect(4);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa;
+
+    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return context.add('moon', {name: 'Io'}).then(function(moon) {
+        io = moon;
+      });
+
+    }).then(function() {
+      return context.add('moon', {name: 'Europa'}).then(function (moon) {
+        europa = moon;
+      });
+
+    }).then(function() {
+      equal(get(io, 'planet'), undefined, 'Io has not been assigned a planet');
+
+      set(io, 'planet', jupiter);
+
+      equal(get(io, 'planet'), jupiter, 'Io has been assigned a planet');
+
+      equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+            undefined,
+            'memory source patch is not yet complete');
+
+      context.then(function() {
+        equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+              get(jupiter, 'clientid'),
               'memory source patch is now complete');
       });
     });
@@ -98,21 +139,19 @@ test("model properties can be reset through transforms", function() {
   expect(3);
 
   Ember.run(function() {
-    stop();
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       equal(planet.get('name'), 'Earth');
 
       context.transform({
         op: 'replace',
-        path: ['planet', planet.get('clientid'), 'name'],
+        path: ['planet', get(planet, 'clientid'), 'name'],
         value: 'Jupiter'
       });
 
-      equal(planet.get('name'), 'Earth', 'CP has not been invalidated yet');
+      equal(get(planet, 'name'), 'Earth', 'CP has not been invalidated yet');
 
       context.then(function() {
-        start();
-        equal(planet.get('name'), 'Jupiter', 'CP reflects transformed value');
+        equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
       });
     });
   });
@@ -122,8 +161,6 @@ test("models can be deleted", function() {
   expect(3);
 
   Ember.run(function() {
-    stop();
-
     var planets = context.all('planet');
 
     equal(get(planets, 'length'), 0, 'no records have been added yet');
@@ -133,7 +170,6 @@ test("models can be deleted", function() {
       equal(get(planets, 'length'), 1, 'record has been added');
 
       context.remove(planet).then(function() {
-        start();
         equal(get(planets, 'length'), 0, 'record has been removed');
       });
     });
