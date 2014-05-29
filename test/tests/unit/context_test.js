@@ -4,12 +4,16 @@ import attr from 'ember_orbit/attr';
 import Context from 'ember_orbit/context';
 import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
+import hasOne from 'ember_orbit/relationships/has_one';
+import hasMany from 'ember_orbit/relationships/has_many';
 import { createStore } from 'test_helper';
 
 var get = Ember.get,
     set = Ember.set;
 
 var Planet,
+    Moon,
+    Star,
     store,
     context;
 
@@ -20,12 +24,26 @@ module("Unit - Context", {
     Planet = Model.extend({
       name: attr('string'),
       atmosphere: attr('boolean'),
-      classification: attr('string')
+      classification: attr('string'),
+      sun: hasOne('star'),
+      moons: hasMany('moon')
+    });
+
+    Moon = Model.extend({
+      name: attr('string'),
+      planet: hasOne('planet')
+    });
+
+    Star = Model.extend({
+      name: attr('string'),
+      planets: hasMany('planet')
     });
 
     store = createStore({
       models: {
-        planet: Planet
+        planet: Planet,
+        moon: Moon,
+        star: Star
       }
     });
 
@@ -37,6 +55,8 @@ module("Unit - Context", {
   teardown: function() {
     Orbit.Promise = null;
     Planet = null;
+    Moon = null;
+    Star = null;
     store = null;
     context = null;
   }
@@ -49,7 +69,9 @@ test("it exists", function() {
 test("it has a properly defined schema", function() {
   var schema = context.get('schema');
   ok(schema, 'it has a schema');
-  ok(schema._schema.models.planet, 'models are defined');
+  ok(schema._schema.models.planet, 'planet model is defined');
+  ok(schema._schema.models.moon, 'moon model is defined');
+  ok(schema._schema.models.star, 'star model is defined');
 });
 
 test("#add will add a new instance of a model", function() {

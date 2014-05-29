@@ -5,15 +5,18 @@ import hasMany from 'ember_orbit/relationships/has_many';
 import Model from 'ember_orbit/model';
 
 var get = Ember.get;
+
 var Planet,
     Moon,
     Star;
 
 module("Unit - Model", {
   setup: function() {
-    Star = Model.extend({
+    Planet = Model.extend({
       name: attr('string'),
-      planets: hasMany('planet')
+      classification: attr('string'),
+      sun: hasOne('star'),
+      moons: hasMany('moon')
     });
 
     Moon = Model.extend({
@@ -21,16 +24,16 @@ module("Unit - Model", {
       planet: hasOne('planet')
     });
 
-    Planet = Model.extend({
+    Star = Model.extend({
       name: attr('string'),
-      classification: attr('string'),
-      sun: hasOne('star'),
-      moons: hasMany('moon')
+      planets: hasMany('planet')
     });
   },
 
   teardown: function() {
     Planet = null;
+    Moon = null;
+    Star = null;
   }
 });
 
