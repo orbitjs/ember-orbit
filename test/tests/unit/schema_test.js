@@ -59,82 +59,70 @@ test("#defineModel defines models on the underlying Orbit schema", function() {
   schema.defineModel('moon', Moon);
   schema.defineModel('planet', Planet);
 
-  deepEqual(schema._schema.models, 
-    {
-      "moon": {
-        "attributes": {
-          "name": {
-            "isAttribute": true,
-            "name": "name",
-            "options": {},
-            "type": "string"
-          }
-        },
-        "links": {
-          "planet": {
-            "isLink": true,
-            "name": "planet",
-            "options": {
-              "hasOne": true
-            },
-            "type": "planet"
-          }
-        }
-      },
-      "planet": {
-        "attributes": {
-          "classification": {
-            "isAttribute": true,
-            "name": "classification",
-            "options": {},
-            "type": "string"
-          },
-          "name": {
-            "isAttribute": true,
-            "name": "name",
-            "options": {},
-            "type": "string"
-          }
-        },
-        "links": {
-          "moons": {
-            "isLink": true,
-            "name": "moons",
-            "options": {
-              "hasOne": true
-            },
-            "type": "moon"
-          },
-          "sun": {
-            "isLink": true,
-            "name": "sun",
-            "options": {
-              "hasOne": true
-            },
-            "type": "star"
-          }
-        }
-      },
-      "star": {
-        "attributes": {
-          "name": {
-            "isAttribute": true,
-            "name": "name",
-            "options": {},
-            "type": "string"
-          }
-        },
-        "links": {
-          "planets": {
-            "isLink": true,
-            "name": "planets",
-            "options": {
-              "hasOne": true
-            },
-            "type": "planet"
-          }
-        }
-      }
-    }
-  );
+  deepEqual(schema.models(), ['star', 'moon', 'planet']);
+
+  deepEqual(schema.attributes('star'), ['name']);
+  deepEqual(schema.links('star'), ['planets']);
+  deepEqual(schema.attributeProperties('star', 'name'), {
+    isAttribute: true,
+    name: "name",
+    options: {},
+    type: "string"
+  });
+  deepEqual(schema.linkProperties('star', 'planets'), {
+    isLink: true,
+    name: "planets",
+    options: {
+      hasOne: false
+    },
+    type: "planet"
+  });
+
+  deepEqual(schema.attributes('moon'), ['name']);
+  deepEqual(schema.links('moon'), ['planet']);
+  deepEqual(schema.attributeProperties('moon', 'name'), {
+    isAttribute: true,
+    name: "name",
+    options: {},
+    type: "string"
+  });
+  deepEqual(schema.linkProperties('moon', 'planet'), {
+    isLink: true,
+    name: "planet",
+    options: {
+      hasOne: true
+    },
+    type: "planet"
+  });
+
+  deepEqual(schema.attributes('planet'), ['name', 'classification']);
+  deepEqual(schema.links('planet'), ['sun', 'moons']);
+  deepEqual(schema.attributeProperties('planet', 'name'), {
+    isAttribute: true,
+    name: "name",
+    options: {},
+    type: "string"
+  });
+  deepEqual(schema.attributeProperties('planet', 'classification'), {
+    isAttribute: true,
+    name: "classification",
+    options: {},
+    type: "string"
+  });
+  deepEqual(schema.linkProperties('planet', 'sun'), {
+    isLink: true,
+    name: "sun",
+    options: {
+      hasOne: true
+    },
+    type: "star"
+  });
+  deepEqual(schema.linkProperties('planet', 'moons'), {
+    isLink: true,
+    name: "moons",
+    options: {
+      hasOne: false
+    },
+    type: "moon"
+  });
 });
