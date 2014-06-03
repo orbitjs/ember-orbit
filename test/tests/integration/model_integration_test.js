@@ -6,6 +6,7 @@ import Context from 'ember_orbit/context';
 import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
 import { createStore } from 'test_helper';
+import { RecordNotFoundException } from 'orbit_common/lib/exceptions';
 
 var get = Ember.get,
     set = Ember.set;
@@ -131,6 +132,57 @@ test("hasOne relationships can be created and updated", function() {
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
       });
+    });
+  });
+});
+
+test("hasOne relationships can trigger a `find` based on the relatedId", function() {
+  expect(1);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa;
+
+    context.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return context.add('moon', {name: 'Io', links: {planet: {id: '123'}}});
+
+    }).then(function(moon) {
+      io = moon;
+      return io.get('planet');
+
+    }).then(function(planet) {
+      strictEqual(planet, jupiter, 'planet is looked up correctly');
+    });
+  });
+});
+
+test("hasOne relationships can fail to find a record based on the relatedId", function() {
+  expect(1);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa;
+
+    context.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return context.add('moon', {name: 'Io', links: {planet: {id: 'bogus'}}});
+
+    }).then(function(moon) {
+      io = moon;
+      return io.get('planet');
+
+    }).then(function(planet) {
+      ok(false, 'should not be able to find record based on a fake id');
+
+    }, function(e) {
+      ok(e instanceof RecordNotFoundException, 'RecordNotFoundException thrown');
     });
   });
 });
