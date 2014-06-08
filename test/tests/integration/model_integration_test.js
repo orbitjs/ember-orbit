@@ -316,10 +316,8 @@ test("hasMany arrays are updated when related records are removed", function() {
 //
 //      equal(get(moons, 'length'), 0, 'No moons have been assigned yet');
 //
-//      debugger;
-//
-//      moons.addRecord(io);
-//      moons.addRecord(europa);
+//      moons.addObject(io);
+//      moons.addObject(europa);
 //
 //      return moons;
 //
