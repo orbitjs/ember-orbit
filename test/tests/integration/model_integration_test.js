@@ -139,7 +139,7 @@ test("hasOne relationships can be created and updated", function() {
 });
 
 test("hasOne relationships can trigger a `find` based on the relatedId", function() {
-  expect(1);
+  expect(2);
 
   Ember.run(function() {
     var jupiter,
@@ -158,6 +158,7 @@ test("hasOne relationships can trigger a `find` based on the relatedId", functio
 
     }).then(function(planet) {
       strictEqual(planet, jupiter, 'planet is looked up correctly');
+      strictEqual(get(io, 'planet.content'), jupiter, 'planet has been set correctly in object proxy');
     });
   });
 });
