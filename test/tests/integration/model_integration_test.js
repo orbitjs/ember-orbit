@@ -288,53 +288,47 @@ test("hasMany arrays are updated when related records are removed", function() {
   });
 });
 
-//test("hasMany relationships are updated when ManyArrays are updated", function() {
-//  expect(4);
-//
-//  Ember.run(function() {
-//    var jupiter,
-//        io,
-//        europa,
-//        moons;
-//
-//    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
-//      jupiter = planet;
-//
-//    }).then(function() {
-//      return context.add('moon', {name: 'Io'}).then(function(moon) {
-//        io = moon;
-//      });
-//
-//    }).then(function() {
-//      return context.add('moon', {name: 'Europa'}).then(function(moon) {
-//        europa = moon;
-//      });
-//
-//    }).then(function() {
-//
-//      moons = get(jupiter, 'moons');
-//
-//      equal(get(moons, 'length'), 0, 'No moons have been assigned yet');
-//
-//      moons.addObject(io);
-//      moons.addObject(europa);
-//
-//      return moons;
-//
-//    }).then(function() {
-//      equal(get(moons, 'length'), 2, 'Jupiter has two moons');
-//
-//      strictEqual(get(io, 'planet.content'), jupiter, 'Jupiter has been assigned to IO');
-//      strictEqual(get(europa, 'planet.content'), jupiter, 'Jupiter has been assigned to Europa');
-//
-////      return context.remove(io);
-////
-////    }).then(function() {
-////      equal(get(moons, 'length'), 1, 'Jupiter has one moon');
-////      equal(get(moons, 'firstObject'), europa, 'That moon is Europa');
-//    });
-//  });
-//});
+test("hasMany relationships are updated when a HasManyArray is updated", function() {
+  expect(4);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa,
+        moons;
+
+    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return context.add('moon', {name: 'Io'}).then(function(moon) {
+        io = moon;
+      });
+
+    }).then(function() {
+      return context.add('moon', {name: 'Europa'}).then(function(moon) {
+        europa = moon;
+      });
+
+    }).then(function() {
+
+      moons = get(jupiter, 'moons');
+
+      equal(get(moons, 'length'), 0, 'No moons have been assigned yet');
+
+      moons.addObject(io);
+      moons.addObject(europa);
+
+      return moons;
+
+    }).then(function() {
+      equal(get(moons, 'length'), 2, 'Jupiter has two moons');
+
+      strictEqual(get(io, 'planet.content'), jupiter, 'Jupiter has been assigned to IO');
+      strictEqual(get(europa, 'planet.content'), jupiter, 'Jupiter has been assigned to Europa');
+    });
+  });
+});
 
 test("model properties can be reset through transforms", function() {
   expect(3);
