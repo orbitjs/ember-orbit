@@ -1,5 +1,8 @@
 import Store from 'ember_orbit/store';
 
+var get = Ember.get,
+    set = Ember.set;
+
 var createStore = function(options) {
   options = options || {};
 
@@ -7,7 +10,7 @@ var createStore = function(options) {
   container.register('store:main', Store);
 
   var store = container.lookup('store:main'),
-      schema = store.get('schema');
+      schema = get(store, 'schema');
 
   var models = options.models;
   if (models) {

@@ -67,7 +67,7 @@ test("it exists", function() {
 });
 
 test("it has a properly defined schema", function() {
-  var schema = context.get('schema');
+  var schema = get(context, 'schema');
   ok(schema, 'it has a schema');
   ok(schema._schema.models.planet, 'planet model is defined');
   ok(schema._schema.models.moon, 'moon model is defined');
@@ -78,7 +78,7 @@ test("#add will add a new instance of a model", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       ok(get(planet, 'clientid'), 'assigned clientid');
-      equal(planet.get('name'), 'Earth');
+      equal(get(planet, 'name'), 'Earth');
     });
   });
 });
@@ -86,7 +86,7 @@ test("#add will add a new instance of a model", function() {
 test("#find will asynchronously return a record when called with a `type` and a single `id`", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      context.find('planet', planet.get('clientid')).then(function(foundPlanet) {
+      context.find('planet', get(planet, 'clientid')).then(function(foundPlanet) {
         strictEqual(foundPlanet, planet);
       });
     });
@@ -114,12 +114,12 @@ test("#find will asynchronously return an array of records when called with a `t
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
 
     }).then(function() {
       context.find('planet', ids).then(function(foundPlanets) {
@@ -142,12 +142,12 @@ test("#find will asynchronously return an array of all records when called with 
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
 
     }).then(function() {
       context.find('planet').then(function(foundPlanets) {
@@ -170,12 +170,12 @@ test("#find will asynchronously return an array of records when called with a `t
 
     context.add('planet', {name: 'Earth'}).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
       return context.add('planet', {name: 'Jupiter'});
 
     }).then(function(planet) {
       planets.push(planet);
-      ids.push(planet.get('clientid'));
+      ids.push(get(planet, 'clientid'));
 
     }).then(function() {
       context.find('planet', {name: 'Jupiter'}).then(function(foundPlanets) {
@@ -192,7 +192,7 @@ test("#remove will asynchronously remove a record when called with a `type` and 
 
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var id = planet.get('clientid');
+      var id = get(planet, 'clientid');
 
       strictEqual(context.retrieve('planet', id), planet);
 
@@ -208,7 +208,7 @@ test("#remove will asynchronously remove a record when called with a single mode
 
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var id = planet.get('clientid');
+      var id = get(planet, 'clientid');
       strictEqual(context.retrieve('planet', id), planet);
 
       context.remove(planet).then(function() {
@@ -221,7 +221,7 @@ test("#remove will asynchronously remove a record when called with a single mode
 test("#retrieve can synchronously retrieve a record by id", function() {
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      var planet2 = context.retrieve('planet', planet.get('clientid'));
+      var planet2 = context.retrieve('planet', get(planet, 'clientid'));
       strictEqual(planet2, planet);
     });
   });

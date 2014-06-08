@@ -154,7 +154,7 @@ test("hasOne relationships can trigger a `find` based on the relatedId", functio
 
     }).then(function(moon) {
       io = moon;
-      return io.get('planet');
+      return get(io, 'planet');
 
     }).then(function(planet) {
       strictEqual(planet, jupiter, 'planet is looked up correctly');
@@ -178,7 +178,7 @@ test("hasOne relationships can fail to find a record based on the relatedId", fu
 
     }).then(function(moon) {
       io = moon;
-      return io.get('planet');
+      return get(io, 'planet');
 
     }).then(function(planet) {
       ok(false, 'should not be able to find record based on a fake id');
@@ -234,9 +234,7 @@ test("hasMany relationships can be created and updated", function() {
 
         strictEqual(get(jupiter, 'moons'), moons, 'ManyArray is still the same object');
 
-        strictEqual(get(jupiter, 'moons.content'), moons.get('content'), 'ManyArray is still the same object');
-
-        console.log('moons', moons.get('isFulfilled'), moons.get('content'));
+        strictEqual(get(jupiter, 'moons.content'), get(moons, 'content'), 'ManyArray content is still the same');
 
         equal(get(moons, 'length'), 1, 'Jupiter has one moon');
       });
@@ -250,7 +248,7 @@ test("model properties can be reset through transforms", function() {
 
   Ember.run(function() {
     context.add('planet', {name: 'Earth'}).then(function(planet) {
-      equal(planet.get('name'), 'Earth');
+      equal(get(planet, 'name'), 'Earth');
 
       context.transform({
         op: 'replace',
