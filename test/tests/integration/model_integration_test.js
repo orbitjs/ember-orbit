@@ -154,7 +154,7 @@ test("hasOne relationships can trigger a `find` based on the relatedId", functio
 
     }).then(function(moon) {
       io = moon;
-      return get(io, 'planet');
+      return get(io, 'planet').find();
 
     }).then(function(planet) {
       strictEqual(planet, jupiter, 'planet is looked up correctly');
@@ -178,7 +178,7 @@ test("hasOne relationships can fail to find a record based on the relatedId", fu
 
     }).then(function(moon) {
       io = moon;
-      return get(io, 'planet');
+      return get(io, 'planet').find();
 
     }).then(function(planet) {
       ok(false, 'should not be able to find record based on a fake id');
@@ -227,7 +227,7 @@ test("hasMany relationships can be created and updated", function() {
             undefined,
             'memory source patch is not yet complete');
 
-      moons.then(function() {
+      context.then(function() {
         equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
@@ -274,16 +274,14 @@ test("hasMany arrays are updated when related records are removed", function() {
       set(io, 'planet', jupiter);
       set(europa, 'planet', jupiter);
 
-      return moons;
+      context.then(function() {
+        equal(get(moons, 'length'), 2, 'Jupiter has two moons');
+        return context.remove(io);
 
-    }).then(function() {
-      equal(get(moons, 'length'), 2, 'Jupiter has two moons');
-
-      return context.remove(io);
-
-    }).then(function() {
-      equal(get(moons, 'length'), 1, 'Jupiter has one moon');
-      equal(get(moons, 'firstObject'), europa, 'That moon is Europa');
+      }).then(function() {
+        equal(get(moons, 'length'), 1, 'Jupiter has one moon');
+        equal(get(moons, 'firstObject'), europa, 'That moon is Europa');
+      });
     });
   });
 });
@@ -319,13 +317,12 @@ test("hasMany relationships are updated when a HasManyArray is updated", functio
       moons.addObject(io);
       moons.addObject(europa);
 
-      return moons;
+      context.then(function() {
+        equal(get(moons, 'length'), 2, 'Jupiter has two moons');
 
-    }).then(function() {
-      equal(get(moons, 'length'), 2, 'Jupiter has two moons');
-
-      strictEqual(get(io, 'planet.content'), jupiter, 'Jupiter has been assigned to IO');
-      strictEqual(get(europa, 'planet.content'), jupiter, 'Jupiter has been assigned to Europa');
+        strictEqual(get(io, 'planet.content'), jupiter, 'Jupiter has been assigned to IO');
+        strictEqual(get(europa, 'planet.content'), jupiter, 'Jupiter has been assigned to Europa');
+      });
     });
   });
 });
