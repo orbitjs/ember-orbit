@@ -27,7 +27,7 @@
 ## Model
 
 * belongs to a Context
-* PromiseProxyMixin
+
 
 ## Transaction
 
