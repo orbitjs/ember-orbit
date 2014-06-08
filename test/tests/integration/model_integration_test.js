@@ -23,19 +23,19 @@ module("Integration - Model", {
 
     Star = Model.extend({
       name: attr('string'),
-      planets: hasMany('planet')
+      planets: hasMany('planet', {inverse: 'star'})
     });
 
     Moon = Model.extend({
       name: attr('string'),
-      planet: hasOne('planet')
+      planet: hasOne('planet', {inverse: 'moons'})
     });
 
     Planet = Model.extend({
       name: attr('string'),
       classification: attr('string'),
-      sun: hasOne('star'),
-      moons: hasMany('moon')
+      sun: hasOne('star', {inverse: 'planets'}),
+      moons: hasMany('moon', {inverse: 'planet'})
     });
 
     store = createStore({
@@ -96,7 +96,7 @@ test("new models can be created and updated", function() {
 });
 
 test("hasOne relationships can be created and updated", function() {
-  expect(4);
+  expect(6);
 
   Ember.run(function() {
     var jupiter,
@@ -117,11 +117,13 @@ test("hasOne relationships can be created and updated", function() {
       });
 
     }).then(function() {
-      equal(get(io, 'planet'), undefined, 'Io has not been assigned a planet');
+      equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
+      equal(get(io, 'planet.name'), null, 'Io\'s planet does not yet have a name');
 
       set(io, 'planet', jupiter);
 
-      equal(get(io, 'planet'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
             undefined,
@@ -183,6 +185,62 @@ test("hasOne relationships can fail to find a record based on the relatedId", fu
 
     }, function(e) {
       ok(e instanceof RecordNotFoundException, 'RecordNotFoundException thrown');
+    });
+  });
+});
+
+test("hasMany relationships can be created and updated", function() {
+  expect(8);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa,
+        moons;
+
+    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return context.add('moon', {name: 'Io'}).then(function(moon) {
+        io = moon;
+      });
+
+    }).then(function() {
+      return context.add('moon', {name: 'Europa'}).then(function(moon) {
+        europa = moon;
+      });
+
+    }).then(function() {
+
+      moons = get(jupiter, 'moons');
+
+      equal(get(moons, 'length'), 0, 'No moons have been assigned yet');
+
+      equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
+
+      set(io, 'planet', jupiter);
+
+      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+
+      equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+            undefined,
+            'memory source patch is not yet complete');
+
+      moons.then(function() {
+        equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+              get(jupiter, 'clientid'),
+              'memory source patch is now complete');
+
+        strictEqual(get(jupiter, 'moons'), moons, 'ManyArray is still the same object');
+
+        strictEqual(get(jupiter, 'moons.content'), moons.get('content'), 'ManyArray is still the same object');
+
+        console.log('moons', moons.get('isFulfilled'), moons.get('content'));
+
+        equal(get(moons, 'length'), 1, 'Jupiter has one moon');
+      });
+
     });
   });
 });
