@@ -211,7 +211,7 @@ test("#remove will asynchronously remove a record when called with a single mode
       var id = get(planet, 'clientid');
       strictEqual(context.retrieve('planet', id), planet);
 
-      context.remove(planet).then(function() {
+      planet.remove().then(function() {
         strictEqual(context.retrieve('planet', id), undefined);
       });
     });
@@ -271,7 +271,7 @@ test("#all returns a live RecordArray that stays in sync with records of one typ
       equal(get(planets, 'length'), 2, 'two records have been added');
 
     }).then(function() {
-      return context.remove(earth);
+      return earth.remove();
 
     }).then(function() {
       equal(get(planets, 'length'), 1, 'one record is left');

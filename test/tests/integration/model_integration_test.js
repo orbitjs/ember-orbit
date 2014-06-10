@@ -277,7 +277,7 @@ test("hasMany arrays are updated when related records are removed", function() {
 
       context.then(function() {
         equal(get(moons, 'length'), 2, 'Jupiter has two moons');
-        return context.remove(io);
+        return io.remove();
 
       }).then(function() {
         equal(get(moons, 'length'), 1, 'Jupiter has one moon');
@@ -362,7 +362,7 @@ test("models can be deleted", function() {
 
       equal(get(planets, 'length'), 1, 'record has been added');
 
-      context.remove(planet).then(function() {
+      planet.remove().then(function() {
         equal(get(planets, 'length'), 0, 'record has been removed');
       });
     });
