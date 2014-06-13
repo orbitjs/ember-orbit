@@ -125,12 +125,14 @@ test("hasOne relationships can be created and updated", function() {
       equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
-      equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+      // Check internals of source
+      equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       context.then(function() {
-        equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+        // Check internals of source
+        equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
       });
@@ -150,7 +152,7 @@ test("hasOne relationships can trigger a `find` based on the relatedId", functio
       jupiter = planet;
 
     }).then(function() {
-      return context.add('moon', {name: 'Io', links: {planet: {id: '123'}}});
+      return context.add('moon', {name: 'Io', links: {planet: jupiter}});
 
     }).then(function(moon) {
       io = moon;
@@ -224,12 +226,12 @@ test("hasMany relationships can be created and updated", function() {
 
       equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
 
-      equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+      equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       context.then(function() {
-        equal(context._source.retrieve(['moon', get(io, 'clientid'), 'links', 'planet']),
+        equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
 
