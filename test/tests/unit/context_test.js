@@ -2,11 +2,11 @@ import Orbit from 'orbit';
 import { RecordNotFoundException, RecordAlreadyExistsException } from 'orbit_common/lib/exceptions';
 import attr from 'ember_orbit/attr';
 import Context from 'ember_orbit/context';
-import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
+import Schema from 'ember_orbit/schema';
 import hasOne from 'ember_orbit/relationships/has_one';
 import hasMany from 'ember_orbit/relationships/has_many';
-import { createStore } from 'test_helper';
+import { createContext } from 'test_helper';
 
 var get = Ember.get,
     set = Ember.set;
@@ -14,7 +14,6 @@ var get = Ember.get,
 var Planet,
     Moon,
     Star,
-    store,
     context;
 
 module("Unit - Context", {
@@ -39,16 +38,12 @@ module("Unit - Context", {
       planets: hasMany('planet')
     });
 
-    store = createStore({
+    context = createContext({
       models: {
         planet: Planet,
         moon: Moon,
         star: Star
       }
-    });
-
-    context = Context.create({
-      store: store
     });
   },
 
@@ -57,7 +52,6 @@ module("Unit - Context", {
     Planet = null;
     Moon = null;
     Star = null;
-    store = null;
     context = null;
   }
 });
@@ -66,14 +60,20 @@ test("it exists", function() {
   ok(context);
 });
 
-test("it has a schema", function() {
-  var schema = get(context, 'schema');
-  ok(schema, 'it has a schema');
+test("it uses a schema that's been specified", function() {
+  var schema2 = Schema.create(),
+      context2 = Context.create({schema: schema2});
+  strictEqual(context2.schema, schema2, "schema matches one that was specified");
+});
 
-// TODO - tests don't work with lazy instantiation of types:
-//  ok(schema._schema.models.planet, 'planet model is defined');
-//  ok(schema._schema.models.moon, 'moon model is defined');
-//  ok(schema._schema.models.star, 'star model is defined');
+test("it creates a schema if none has been specified", function() {
+  var container = new Ember.Container();
+  container.register('schema:main', Schema);
+
+  var context2 = Context.create({container: container});
+  var schema2 = get(context2, 'schema');
+  ok(schema2, "schema has been created");
+  ok(schema2 instanceof Schema, "schema is a `Schema`");
 });
 
 test("#add will add a new instance of a model", function() {

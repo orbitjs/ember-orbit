@@ -3,9 +3,8 @@ import attr from 'ember_orbit/attr';
 import hasOne from 'ember_orbit/relationships/has_one';
 import hasMany from 'ember_orbit/relationships/has_many';
 import Context from 'ember_orbit/context';
-import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
-import { createStore } from 'test_helper';
+import { createContext } from 'test_helper';
 import { RecordNotFoundException } from 'orbit_common/lib/exceptions';
 
 var get = Ember.get,
@@ -14,7 +13,6 @@ var get = Ember.get,
 var Planet,
     Moon,
     Star,
-    store,
     context;
 
 module("Integration - Model", {
@@ -38,16 +36,12 @@ module("Integration - Model", {
       moons: hasMany('moon', {inverse: 'planet'})
     });
 
-    store = createStore({
+    context = createContext({
       models: {
         star: Star,
         moon: Moon,
         planet: Planet
       }
-    });
-
-    context = Context.create({
-      store: store
     });
   },
 
@@ -56,17 +50,16 @@ module("Integration - Model", {
     Star = null;
     Moon = null;
     Planet = null;
-    store = null;
     context = null;
   }
 });
 
-test("store exists", function() {
-  ok(store);
+test("context exists", function() {
+  ok(context);
 });
 
-test("store is properly linked to models", function() {
-  var schema = get(store, 'schema');
+test("context is properly linked to models", function() {
+  var schema = get(context, 'schema');
   equal(schema.modelFor('star'), Star);
   equal(schema.modelFor('planet'), Planet);
   equal(schema.modelFor('moon'), Moon);
