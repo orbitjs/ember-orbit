@@ -2,9 +2,9 @@ import Orbit from 'orbit';
 import attr from 'ember_orbit/attr';
 import hasOne from 'ember_orbit/relationships/has_one';
 import hasMany from 'ember_orbit/relationships/has_many';
-import Context from 'ember_orbit/context';
+import Store from 'ember_orbit/store';
 import Model from 'ember_orbit/model';
-import { createContext } from 'test_helper';
+import { createStore } from 'test_helper';
 import { RecordNotFoundException } from 'orbit_common/lib/exceptions';
 
 var get = Ember.get,
@@ -13,7 +13,7 @@ var get = Ember.get,
 var Planet,
     Moon,
     Star,
-    context;
+    store;
 
 module("Integration - Model", {
   setup: function() {
@@ -36,7 +36,7 @@ module("Integration - Model", {
       moons: hasMany('moon', {inverse: 'planet'})
     });
 
-    context = createContext({
+    store = createStore({
       models: {
         star: Star,
         moon: Moon,
@@ -50,16 +50,16 @@ module("Integration - Model", {
     Star = null;
     Moon = null;
     Planet = null;
-    context = null;
+    store = null;
   }
 });
 
-test("context exists", function() {
-  ok(context);
+test("store exists", function() {
+  ok(store);
 });
 
-test("context is properly linked to models", function() {
-  var schema = get(context, 'schema');
+test("store is properly linked to models", function() {
+  var schema = get(store, 'schema');
   equal(schema.modelFor('star'), Star);
   equal(schema.modelFor('planet'), Planet);
   equal(schema.modelFor('moon'), Moon);
@@ -69,19 +69,19 @@ test("new models can be created and updated", function() {
   expect(4);
 
   Ember.run(function() {
-    context.add('planet', {name: 'Earth'}).then(function(planet) {
+    store.add('planet', {name: 'Earth'}).then(function(planet) {
       equal(get(planet, 'name'), 'Earth');
 
       set(planet, 'name', 'Jupiter');
 
       equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
 
-      equal(context._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
+      equal(store._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
             'Earth',
             'memory source patch is not yet complete');
 
-      context.then(function() {
-        equal(context._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
+      store.then(function() {
+        equal(store._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
               'Jupiter',
               'memory source patch is now complete');
       });
@@ -97,16 +97,16 @@ test("hasOne relationships can be created and updated", function() {
         io,
         europa;
 
-    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+    store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
 
     }).then(function() {
-      return context.add('moon', {name: 'Io'}).then(function(moon) {
+      return store.add('moon', {name: 'Io'}).then(function(moon) {
         io = moon;
       });
 
     }).then(function() {
-      return context.add('moon', {name: 'Europa'}).then(function (moon) {
+      return store.add('moon', {name: 'Europa'}).then(function (moon) {
         europa = moon;
       });
 
@@ -120,13 +120,13 @@ test("hasOne relationships can be created and updated", function() {
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       // Check internals of source
-      equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
-      context.then(function() {
+      store.then(function() {
         // Check internals of source
-        equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+        equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
       });
@@ -143,11 +143,11 @@ test("hasOne relationships can be created and updated", function() {
 //        io,
 //        europa;
 //
-//    context.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+//    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
 //      jupiter = planet;
 //
 //    }).then(function() {
-//      return context.add('moon', {name: 'Io', links: {planet: jupiter}});
+//      return store.add('moon', {name: 'Io', links: {planet: jupiter}});
 //
 //    }).then(function(moon) {
 //      io = moon;
@@ -168,11 +168,11 @@ test("hasOne relationships can be created and updated", function() {
 //        io,
 //        europa;
 //
-//    context.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+//    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
 //      jupiter = planet;
 //
 //    }).then(function() {
-//      return context.add('moon', {name: 'Io', links: {planet: {id: 'bogus'}}});
+//      return store.add('moon', {name: 'Io', links: {planet: {id: 'bogus'}}});
 //
 //    }).then(function(moon) {
 //      io = moon;
@@ -196,16 +196,16 @@ test("hasMany relationships can be created and updated", function() {
         europa,
         moons;
 
-    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+    store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
 
     }).then(function() {
-      return context.add('moon', {name: 'Io'}).then(function(moon) {
+      return store.add('moon', {name: 'Io'}).then(function(moon) {
         io = moon;
       });
 
     }).then(function() {
-      return context.add('moon', {name: 'Europa'}).then(function(moon) {
+      return store.add('moon', {name: 'Europa'}).then(function(moon) {
         europa = moon;
       });
 
@@ -221,12 +221,12 @@ test("hasMany relationships can be created and updated", function() {
 
       equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
 
-      equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
-      context.then(function() {
-        equal(context._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      store.then(function() {
+        equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
 
@@ -250,16 +250,16 @@ test("hasMany arrays are updated when related records are removed", function() {
         europa,
         moons;
 
-    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+    store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
 
     }).then(function() {
-      return context.add('moon', {name: 'Io'}).then(function(moon) {
+      return store.add('moon', {name: 'Io'}).then(function(moon) {
         io = moon;
       });
 
     }).then(function() {
-      return context.add('moon', {name: 'Europa'}).then(function(moon) {
+      return store.add('moon', {name: 'Europa'}).then(function(moon) {
         europa = moon;
       });
 
@@ -272,7 +272,7 @@ test("hasMany arrays are updated when related records are removed", function() {
       set(io, 'planet', jupiter);
       set(europa, 'planet', jupiter);
 
-      context.then(function() {
+      store.then(function() {
         equal(get(moons, 'length'), 2, 'Jupiter has two moons');
         return io.remove();
 
@@ -293,16 +293,16 @@ test("hasMany relationships are updated when a HasManyArray is updated", functio
         europa,
         moons;
 
-    context.add('planet', {name: 'Jupiter'}).then(function(planet) {
+    store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
 
     }).then(function() {
-      return context.add('moon', {name: 'Io'}).then(function(moon) {
+      return store.add('moon', {name: 'Io'}).then(function(moon) {
         io = moon;
       });
 
     }).then(function() {
-      return context.add('moon', {name: 'Europa'}).then(function(moon) {
+      return store.add('moon', {name: 'Europa'}).then(function(moon) {
         europa = moon;
       });
 
@@ -315,7 +315,7 @@ test("hasMany relationships are updated when a HasManyArray is updated", functio
       moons.addObject(io);
       moons.addObject(europa);
 
-      context.then(function() {
+      store.then(function() {
         equal(get(moons, 'length'), 2, 'Jupiter has two moons');
 
         strictEqual(get(io, 'planet.content'), jupiter, 'Jupiter has been assigned to IO');
@@ -329,10 +329,10 @@ test("model properties can be reset through transforms", function() {
   expect(3);
 
   Ember.run(function() {
-    context.add('planet', {name: 'Earth'}).then(function(planet) {
+    store.add('planet', {name: 'Earth'}).then(function(planet) {
       equal(get(planet, 'name'), 'Earth');
 
-      context.transform({
+      store.transform({
         op: 'replace',
         path: ['planet', get(planet, 'clientid'), 'name'],
         value: 'Jupiter'
@@ -340,7 +340,7 @@ test("model properties can be reset through transforms", function() {
 
       equal(get(planet, 'name'), 'Earth', 'CP has not been invalidated yet');
 
-      context.then(function() {
+      store.then(function() {
         equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
       });
     });
@@ -351,11 +351,11 @@ test("models can be deleted", function() {
   expect(3);
 
   Ember.run(function() {
-    var planets = context.all('planet');
+    var planets = store.all('planet');
 
     equal(get(planets, 'length'), 0, 'no records have been added yet');
 
-    context.add('planet', {name: 'Earth'}).then(function(planet) {
+    store.add('planet', {name: 'Earth'}).then(function(planet) {
 
       equal(get(planets, 'length'), 1, 'record has been added');
 

@@ -1,15 +1,15 @@
 import Schema from 'ember_orbit/schema';
-import Context from 'ember_orbit/context';
+import Store from 'ember_orbit/store';
 
 var get = Ember.get,
     set = Ember.set;
 
-var createContext = function(options) {
+var createStore = function(options) {
   options = options || {};
 
   var container = new Ember.Container();
   container.register('schema:main', Schema);
-  container.register('context:main', Context);
+  container.register('store:main', Store);
 
   var models = options.models;
   if (models) {
@@ -18,7 +18,7 @@ var createContext = function(options) {
     }
   }
 
-  return container.lookup('context:main');
+  return container.lookup('store:main');
 };
 
-export { createContext };
+export { createStore };
