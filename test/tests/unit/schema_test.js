@@ -12,6 +12,7 @@ var schema;
 
 module("Unit - Schema", {
   setup: function() {
+    Orbit.Promise = Ember.RSVP.Promise;
     schema = Schema.create();
   },
 
@@ -97,4 +98,16 @@ test("#defineModel defines models on the underlying Orbit schema", function() {
     type:  "hasMany",
     model: "moon"
   });
+});
+
+test("#modelFor returns the appropriate model when passed a model's name", function() {
+  var Planet = Model.extend();
+
+  var container = new Ember.Container();
+  container.register('schema:main', Schema);
+  container.register('model:planet', Planet);
+
+  set(schema, 'container', container);
+
+  equal(schema.modelFor('planet'), Planet);
 });

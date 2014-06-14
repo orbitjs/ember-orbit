@@ -48,14 +48,6 @@ test("it creates a schema if none has been specified", function() {
   ok(schema2 instanceof Schema, "schema is a `Schema`");
 });
 
-test("#modelFor returns the appropriate model when passed a model's name", function() {
-  equal(store.modelFor('planet'), Planet);
-});
-
-test("#modelFor returns the appropriate model when passed the model itself", function() {
-  equal(store.modelFor(Planet), Planet);
-});
-
 test("#createContext creates a context and assigns its `store`", function() {
   var context = store.createContext();
   equal(get(context, 'store'), store);

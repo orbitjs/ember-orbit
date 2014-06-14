@@ -11,18 +11,14 @@ var createStore = function(options) {
   container.register('schema:main', Schema);
   container.register('store:main', Store);
 
-  var store = container.lookup('store:main');
-  var schema = get(store, 'schema');
-
   var models = options.models;
   if (models) {
     for (var prop in models) {
       container.register('model:' + prop, models[prop]);
-      schema.defineModel(prop, models[prop]);
     }
   }
 
-  return store;
+  return container.lookup('store:main');
 };
 
 export { createStore };
