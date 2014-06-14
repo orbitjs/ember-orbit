@@ -39,9 +39,13 @@ test("it uses a schema that's been specified", function() {
 });
 
 test("it creates a schema if none has been specified", function() {
-  var store2 = Store.create();
-  ok(store2.schema, "schema has been created");
-  strictEqual(store2.schema.constructor, Schema, "schema is a `Schema`");
+  var container = new Ember.Container();
+  container.register('schema:main', Schema);
+
+  var store2 = Store.create({container: container});
+  var schema2 = get(store2, 'schema');
+  ok(schema2, "schema has been created");
+  ok(schema2 instanceof Schema, "schema is a `Schema`");
 });
 
 test("#modelFor returns the appropriate model when passed a model's name", function() {
