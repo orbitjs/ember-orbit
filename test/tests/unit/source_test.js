@@ -11,7 +11,7 @@ module("Unit - Source", {
     
     source = Source.create({
       schema: Schema.create(),
-      SourceClass: OCMemorySource
+      orbitSourceClass: OCMemorySource
     });
   },
   teardown: function() {
