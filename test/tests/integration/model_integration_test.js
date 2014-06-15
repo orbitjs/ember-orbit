@@ -76,12 +76,12 @@ test("new models can be created and updated", function() {
 
       equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
 
-      equal(store._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
+      equal(store.orbitSource.retrieve(['planet', get(planet, 'clientid'), 'name']),
             'Earth',
             'memory source patch is not yet complete');
 
       store.then(function() {
-        equal(store._source.retrieve(['planet', get(planet, 'clientid'), 'name']),
+        equal(store.orbitSource.retrieve(['planet', get(planet, 'clientid'), 'name']),
               'Jupiter',
               'memory source patch is now complete');
       });
@@ -120,13 +120,13 @@ test("hasOne relationships can be created and updated", function() {
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       // Check internals of source
-      equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       store.then(function() {
         // Check internals of source
-        equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+        equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
       });
@@ -221,12 +221,12 @@ test("hasMany relationships can be created and updated", function() {
 
       equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
 
-      equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       store.then(function() {
-        equal(store._source.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+        equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
               get(jupiter, 'clientid'),
               'memory source patch is now complete');
 
