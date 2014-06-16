@@ -21,7 +21,7 @@ module("Integration - Model", {
 
     Star = Model.extend({
       name: attr('string'),
-      planets: hasMany('planet', {inverse: 'star'})
+      planets: hasMany('planet', {inverse: 'sun'})
     });
 
     Moon = Model.extend({
