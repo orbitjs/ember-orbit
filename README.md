@@ -53,6 +53,27 @@ Ember-Orbit's docs can be generated to the `/docs` directory by running:
 grunt docs
 ```
 
+## Using Ember-Orbit
+
+### Initialization
+
+Configure Ember-Orbit with an application initializer that sets up Orbit and
+registers a "main" store and schema to be available in your routes and
+controllers:
+
+```javascript
+App.initializer({
+  name: 'injectStore',
+  initialize: function(container, application) {
+    Orbit.Promise = Ember.RSVP.Promise;
+    application.register('schema:main', EO.Schema);
+    application.register('store:main', EO.Store);
+    application.inject('controller', 'store', 'store:main');
+    application.inject('route', 'store', 'store:main');
+  }
+});
+```
+
 ## Acknowledgments
 
 Ember-Orbit owes a great deal to [Ember Data](https://github.com/emberjs/data),
