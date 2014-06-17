@@ -5,6 +5,12 @@ Ember-Orbit is a library that integrates
 [Ember.js](https://github.com/emberjs/ember.js).
 
 
+## Status
+
+Ember-Orbit is undergoing heavy development. Interfaces may change, so please
+use with caution.
+
+
 ## Installation
 
 For now it is necessary to build Ember-Orbit from source. See instructions
