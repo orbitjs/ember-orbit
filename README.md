@@ -2,8 +2,29 @@
 
 Ember-Orbit is a library that integrates
 [Orbit.js](https://github.com/orbitjs/orbit.js) with
-[Ember.js](https://github.com/emberjs/ember.js).
+[Ember.js](https://github.com/emberjs/ember.js) to provide flexibility and 
+control in your application's data layer.
 
+Ember-Orbit features:
+
+* Compatibility with any sources that implement interfaces from the Orbit Common
+  library.
+
+* Stores that wrap Orbit sources and provide access to their underlying data as
+  easy to use records and record arrays.
+
+* Stores that can be cloned (fully or partially) and edited in isolation, so
+  changes can be either discarded or applied back to the original source.
+
+* Live-updating filtered record arrays and model relationships.
+
+* A data schema that's declared through simple model definitions.
+
+* The ability to connect any number of sources together with Orbit transform
+  and request connectors.
+
+* Deterministic change tracking including forward, inverse and transactional
+  changes.
 
 ## Status
 
