@@ -199,12 +199,25 @@ asynchronous methods, all of which return a promise:
 Note that working with a model synchronously via `get` and `set` is generally
 more convenient than calling the above async methods.
 
-### Coming Soon
+A model's relationships can be re-queried by calling `find()` on a relationship
+object. This triggers the associated `findLink` call and returns its promise.
+Related records will be updated through transformations to the underlying
+source. Any changes should be reflected by the time the promise resolves.
+
+For example:
+
+```javascript
+planet.get('moons').find().then(function() {
+  console.log(planet.get('moons.length'));
+});
+```
+
+### Direct Access to Orbit
 
 Many aspects of Orbit are not yet encapsulated by Ember-Orbit and must be
 handled by working with the underlying Orbit sources directly.
 
-Orbit sources can be directly accessed in any EO.Source (or EO.Store) via 
+Orbit sources can be directly accessed in any `EO.Source` (or `EO.Store`) via
 `orbitSource`.
 
 Use sources to configure connectors, monitor transforms, and access remote
