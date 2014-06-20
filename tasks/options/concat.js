@@ -10,7 +10,6 @@ module.exports = {
   browser: {
     files: {
       'tmp/built/intermediate/ember-orbit.browser.js': [
-          'vendor/loader.js',
           'tmp/built/ember-orbit.amd.js']
     }
   },
