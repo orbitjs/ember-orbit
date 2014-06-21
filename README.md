@@ -1,4 +1,4 @@
-# Ember-Orbit
+# Ember-Orbit [![Build Status](https://secure.travis-ci.org/orbitjs/ember-orbit.png?branch=master)](http://travis-ci.org/orbitjs/ember-orbit)
 
 Ember-Orbit is a library that integrates
 [Orbit.js](https://github.com/orbitjs/orbit.js) with
