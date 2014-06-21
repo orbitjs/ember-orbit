@@ -26,6 +26,7 @@ Ember-Orbit features:
 * Deterministic change tracking including forward, inverse and transactional
   changes.
 
+
 ## Status
 
 Ember-Orbit is undergoing heavy development. Interfaces may change, so please
@@ -244,6 +245,7 @@ Orbit sources can be directly accessed in any `EO.Source` (or `EO.Store`) via
 Use sources to configure connectors, monitor transforms, and access remote
 servers.
 
+
 ## Acknowledgments
 
 Ember-Orbit owes a great deal to [Ember Data](https://github.com/emberjs/data),
@@ -252,6 +254,7 @@ manage record arrays.
 
 It is hoped that, by tracking Ember Data's features and interfaces where
 possible, Ember Orbit will also be able to contribute back to Ember Data.
+
 
 ## License
 
