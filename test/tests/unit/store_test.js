@@ -1,4 +1,5 @@
 import Orbit from 'orbit';
+import OCLocalStorageSource from 'orbit_common/local_storage_source';
 import { RecordNotFoundException, RecordAlreadyExistsException } from 'orbit_common/lib/exceptions';
 import attr from 'ember_orbit/attr';
 import Store from 'ember_orbit/store';
@@ -58,6 +59,26 @@ module("Unit - Store", {
 
 test("it exists", function() {
   ok(store);
+});
+
+test("it can specify a custom `orbitSourceClass` and `orbitSourceOptions`", function() {
+  expect(3);
+
+  var CustomStore = Store.extend({
+    orbitSourceClass: OCLocalStorageSource,
+    orbitSourceOptions: {
+      namespace: 'custom'
+    }
+  });
+
+  var customStore = CustomStore.create({
+    container: new Ember.Container(),
+    schema: Schema.create()
+  });
+
+  ok(customStore, 'custom store exists');
+  ok(customStore.orbitSource instanceof OCLocalStorageSource, 'custom store has the right type of `orbitSource`');
+  equal(customStore.orbitSource.namespace, 'custom', 'custom store has the right custom namespace');
 });
 
 test("it uses a schema that's been specified", function() {
