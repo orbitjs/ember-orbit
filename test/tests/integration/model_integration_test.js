@@ -21,7 +21,8 @@ module("Integration - Model", {
 
     Star = Model.extend({
       name: attr('string'),
-      planets: hasMany('planet', {inverse: 'sun'})
+      planets: hasMany('planet', {inverse: 'sun'}),
+      isStable: attr('boolean', {defaultValue: true})
     });
 
     Moon = Model.extend({
@@ -85,6 +86,16 @@ test("new models can be created and updated", function() {
               'Jupiter',
               'memory source patch is now complete');
       });
+    });
+  });
+});
+
+test("new models have default values", function(){
+  expect(1);
+
+  Ember.run(function() {
+    store.add('star', {}).then(function(star) {
+      equal(get(star, 'isStable'), true);
     });
   });
 });
