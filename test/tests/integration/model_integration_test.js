@@ -90,12 +90,12 @@ test("new models can be created and updated", function() {
   });
 });
 
-test("new models have default values", function(){
+test("new models will be assigned default values for attributes", function(){
   expect(1);
 
   Ember.run(function() {
     store.add('star', {}).then(function(star) {
-      equal(get(star, 'isStable'), true);
+      equal(get(star, 'isStable'), true, 'default value has been assigned');
     });
   });
 });
