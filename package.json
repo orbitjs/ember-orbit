@@ -9,6 +9,12 @@
     "name": "Cerebris Corporation",
     "url": "http://cerebris.com"
   },
+  "keywords": [
+    "ember-addon"
+  ],
+  "ember-addon": {
+    "main": "lib/ember-addon"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/cerebris/ember-orbit.git"
@@ -42,9 +48,8 @@
     "grunt-contrib-connect": "~0.6.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-uglify": "~0.3.2",
-    "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-yuidoc": "~0.5.0",
     "grunt-es6-module-transpiler": "~0.4.0",
     "grunt-usemin": "~2.0.2",
@@ -57,5 +62,10 @@
     "load-grunt-config": "~0.5.0",
     "load-grunt-tasks": "~0.2.0",
     "string": "~1.8.0"
+  },
+  "dependencies": {
+    "broccoli-merge-trees": "^0.1.4",
+    "broccoli-static-compiler": "^0.1.4",
+    "underscore": "^1.6.0"
   }
 }

@@ -40,9 +40,21 @@ Ember-Orbit.
 
 ## Installation
 
-For now it is necessary to build Ember-Orbit from source. See instructions
-below.
+Install as an Ember CLI addon:
 
+```
+npm install orbit/ember-orbit --save
+```
+
+You'll need to add the following to your project's environment.js file:
+
+```
+ORBIT: {
+  IMPORTS: ['orbit.js', 'orbit-common.js', 'orbit-common-jsonapi.js', 'orbit-common-local-storage.js']
+}
+```
+
+Customize this to include the Orbit files you need.
 
 ## Building and Testing Ember-Orbit
 
