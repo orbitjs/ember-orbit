@@ -40,8 +40,14 @@ Ember-Orbit.
 
 ## Installation
 
-For now it is necessary to build Ember-Orbit from source. See instructions
-below.
+Ember-Orbit can be installed with [Bower](http://bower.io):
+
+```
+bower install ember-orbit 
+```
+
+[A separate shim repo](https://github.com/orbitjs/bower-ember-orbit) is 
+maintained for Bower releases.
 
 
 ## Building and Testing Ember-Orbit
@@ -81,6 +87,51 @@ grunt docs
 ```
 
 ## Using Ember-Orbit
+
+### Using with Ember-CLI
+
+First, remove `ember-data`, which is configured by default:
+
+```
+npm rm ember-cli-ember-data --save-dev
+```
+
+Next, add `orbit.js` and `ember-orbit` as dependencies in `bower.json` and
+install them.
+
+```
+bower install
+```
+
+In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. For example:
+
+```javascript
+var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+
+var app = new EmberApp();
+
+// Required Orbit imports
+app.import({
+  development: "vendor/orbit.js/orbit.js",
+  production: "vendor/orbit.js/orbit.min.js"
+});
+app.import({
+  development: "vendor/orbit.js/orbit-common.js",
+  production: "vendor/orbit.js/orbit-common.min.js"
+});
+// Optional import of local storage source
+app.import({
+  development: "vendor/orbit.js/orbit-common-local-storage.js",
+  production: "vendor/orbit.js/orbit-common-local-storage.min.js"
+});
+// Required Ember-Orbit import
+app.import({
+  development: "vendor/ember-orbit/ember-orbit.js",
+  production: "vendor/ember-orbit/ember-orbit.min.js"
+});
+
+module.exports = app.toTree();
+```
 
 ### Initialization
 
