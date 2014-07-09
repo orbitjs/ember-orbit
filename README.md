@@ -137,19 +137,33 @@ module.exports = app.toTree();
 
 Configure Ember-Orbit with an application initializer that sets up Orbit and
 registers a "main" store and schema to be available in your routes and
-controllers:
+controllers. Example `app/initializers/ember-orbit.js` for ember-cli:
 
 ```javascript
-  App.initializer({
-    name: 'injectStore',
-    initialize: function(container, application) {
-      Orbit.Promise = Ember.RSVP.Promise;
-      application.register('schema:main', EO.Schema);
-      application.register('store:main', EO.Store);
-      application.inject('controller', 'store', 'store:main');
-      application.inject('route', 'store', 'store:main');
-    }
-  });
+import Ember from 'ember';
+
+var LocalStorageStore = EO.Source.extend({
+  orbitSourceClass: OC.LocalStorageSource,
+  orbitSourceOptions: { namespace: 'am' }
+});
+
+export default {
+  name: 'injectStore',
+
+  initialize: function(container, application) {
+    Orbit.Promise = Ember.RSVP.Promise;
+
+    application.register('schema:main', EO.Schema);
+
+    // In Memory Store:
+    // application.register('store:main', EO.Store);
+    // LocalStorage Store:
+    application.register('store:main', LocalStorageStore);
+
+    application.inject('controller', 'store', 'store:main');
+    application.inject('route', 'store', 'store:main');
+  }
+};
 ```
 
 ### Sources
