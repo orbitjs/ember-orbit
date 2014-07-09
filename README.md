@@ -310,6 +310,11 @@ Orbit sources can be directly accessed in any `EO.Source` (or `EO.Store`) via
 Use sources to configure connectors, monitor transforms, and access remote
 servers.
 
+### Example ember-orbit application
+
+While we improve and accept patches improving documentation, you may find it
+helpful to see how this sample application works with Ember.js and Orbit.js:
+https://github.com/opsb/ember-orbit-todos
 
 ## Acknowledgments
 
