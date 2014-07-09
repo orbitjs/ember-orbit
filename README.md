@@ -2,7 +2,7 @@
 
 Ember-Orbit is a library that integrates
 [Orbit.js](https://github.com/orbitjs/orbit.js) with
-[Ember.js](https://github.com/emberjs/ember.js) to provide flexibility and 
+[Ember.js](https://github.com/emberjs/ember.js) to provide flexibility and
 control in your application's data layer.
 
 Ember-Orbit features:
@@ -43,10 +43,10 @@ Ember-Orbit.
 Ember-Orbit can be installed with [Bower](http://bower.io):
 
 ```
-bower install ember-orbit 
+bower install ember-orbit
 ```
 
-[A separate shim repo](https://github.com/orbitjs/bower-ember-orbit) is 
+[A separate shim repo](https://github.com/orbitjs/bower-ember-orbit) is
 maintained for Bower releases.
 
 
@@ -166,7 +166,7 @@ follows:
   });
 ```
 
-Orbit sources can be directly accessed in any instantiated EO.Source via 
+Orbit sources can be directly accessed in any instantiated EO.Source via
 the `orbitSource` property.
 
 ### Stores
@@ -174,20 +174,20 @@ the `orbitSource` property.
 Stores extend sources and are also repositories for models. All of the data in a
 store is maintained in its internal source.
 
-Stores are by default defined with the `orbitSourceClass` set to an Orbit 
+Stores are by default defined with the `orbitSourceClass` set to an Orbit
 memory source class: `OC.MemorySource`.
 
 Stores provide immediate (i.e. synchronous) access to its models through the
 following methods:
 
-* `all` - returns all models of a specific type. 
+* `all` - returns all models of a specific type.
   For example: `store.all('planet')`.
 
 * `filter` - returns a live record array of models of a specific type that are
   filtered by a filter function.
 
 * `retrieve` - returns model with a specific client or remote id.
-  For example: `store.retrieve('planet', '123')` or  
+  For example: `store.retrieve('planet', '123')` or
   `store.retrieve('planet', {id: '1'})`.
 
 You can make requests to stores through the following asynchronous methods,
@@ -197,7 +197,7 @@ all of which return a promise:
 * `add`
 * `remove`
 * `patch`
-* `findLink` 
+* `findLink`
 * `addLink`
 * `removeLink`
 
@@ -265,7 +265,7 @@ asynchronous methods, all of which return a promise:
 
 * `remove`
 * `patch`
-* `findLink` 
+* `findLink`
 * `addLink`
 * `removeLink`
 
