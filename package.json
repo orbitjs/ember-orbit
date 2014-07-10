@@ -2,8 +2,8 @@
   "name": "ember-orbit",
   "namespace": "EO",
   "description": "Ember.js data layer built with Orbit.js",
-  "version": "0.1.2",
-  "homepage": "https://github.com/cerebris/ember-orbit",
+  "version": "0.2.0",
+  "homepage": "https://github.com/orbitjs/ember-orbit",
   "readmeFilename": "README.md",
   "author": {
     "name": "Cerebris Corporation",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/cerebris/ember-orbit.git"
+    "url": "git://github.com/orbitjs/ember-orbit.git"
   },
   "bugs": {
-    "url": "https://github.com/cerebris/ember-orbit/issues"
+    "url": "https://github.com/orbitjs/ember-orbit/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/cerebris/ember-orbit/blob/master/LICENSE"
+      "url": "https://github.com/orbitjs/ember-orbit/blob/master/LICENSE"
     }
   ],
   "main": "Gruntfile.js",
