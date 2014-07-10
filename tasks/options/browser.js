@@ -18,7 +18,7 @@ module.exports = {
       module: function(name) {
         switch (name) {
           case 'ember-orbit':
-            return 'ember_orbit';
+            return 'ember-orbit';
 
           default:
             this.fail.warn('Unrecognized file: `' + name + '`.');

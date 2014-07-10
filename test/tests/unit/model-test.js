@@ -1,8 +1,8 @@
 import Orbit from 'orbit';
-import attr from 'ember_orbit/attr';
-import hasOne from 'ember_orbit/relationships/has_one';
-import hasMany from 'ember_orbit/relationships/has_many';
-import Model from 'ember_orbit/model';
+import attr from 'ember-orbit/attr';
+import hasOne from 'ember-orbit/relationships/has-one';
+import hasMany from 'ember-orbit/relationships/has-many';
+import Model from 'ember-orbit/model';
 
 var get = Ember.get;
 

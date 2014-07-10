@@ -1,5 +1,5 @@
-import Schema from 'ember_orbit/schema';
-import Store from 'ember_orbit/store';
+import Schema from 'ember-orbit/schema';
+import Store from 'ember-orbit/store';
 
 var get = Ember.get,
     set = Ember.set;

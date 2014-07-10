@@ -2,8 +2,8 @@ module.exports = {
   amd: {
     files: {
       'tmp/built/ember-orbit.amd.js': [
-          'tmp/transpiled/lib/ember_orbit.amd.js',
-          'tmp/transpiled/lib/ember_orbit/**/*.amd.js']
+          'tmp/transpiled/lib/ember-orbit.amd.js',
+          'tmp/transpiled/lib/ember-orbit/**/*.amd.js']
     }
   },
 

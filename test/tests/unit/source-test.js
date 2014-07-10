@@ -1,8 +1,8 @@
 import Orbit from 'orbit';
-import Source from 'ember_orbit/source';
-import Schema from 'ember_orbit/schema';
-import OCMemorySource from 'orbit_common/memory_source';
-import OCLocalStorageSource from 'orbit_common/local_storage_source';
+import Source from 'ember-orbit/source';
+import Schema from 'ember-orbit/schema';
+import OCMemorySource from 'orbit-common/memory-source';
+import OCLocalStorageSource from 'orbit-common/local-storage-source';
 
 var source;
 
