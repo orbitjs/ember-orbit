@@ -40,98 +40,37 @@ Ember-Orbit.
 
 ## Installation
 
-Ember-Orbit can be installed with [Bower](http://bower.io):
+Orbit and Ember-Orbit can be installed with [Bower](http://bower.io):
 
 ```
+bower install orbit
 bower install ember-orbit
 ```
 
 [A separate shim repo](https://github.com/orbitjs/bower-ember-orbit) is
-maintained for Bower releases.
+maintained for Ember-Orbit's Bower releases.
 
-
-## Building and Testing Ember-Orbit
-
-The Ember-Orbit project is managed by [Grunt](http://gruntjs.com/). Once you've
-installed Grunt and its dependencies, you can install Ember-Orbit's development
-dependencies from inside the project root with:
-
-```
-npm install
-bower install
-```
-
-Distributable versions of Orbit can be built to the `/dist` directory by running:
-
-```
-grunt package
-```
-
-Orbit can be tested by running:
-
-```
-grunt test:ci
-```
-
-Or from within a browser
-(at [http://localhost:8010/test/](http://localhost:8010/test/)) by running:
-
-```
-grunt server
-```
-
-Ember-Orbit's docs can be generated to the `/docs` directory by running:
-
-```
-grunt docs
-```
 
 ## Using Ember-Orbit
 
-### Using with Ember-CLI
+### Configuration
 
-First, remove `ember-data`, which is configured by default:
+For an Ember CLI application, see the instructions further below.
 
-```
-npm rm ember-cli-ember-data --save-dev
-```
-
-Next, add `orbit.js` and `ember-orbit` as dependencies in `bower.json` and
-install them.
+If you just want to use the global (non-AMD) builds of Orbit and 
+Ember-Orbit, include the following scripts on your page:
 
 ```
-bower install
+<script src="/bower_components/orbit.js/orbit.js"></script>
+<script src="/bower_components/orbit.js/orbit-common.js"></script>
+<script src="/bower_components/ember-orbit/ember-orbit.js"></script>
 ```
 
-In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. For example:
+These three files will provide the `Orbit`, `OC`, and `EO` global namespaces,
+respectively.
 
-```javascript
-var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+You may also want to include scripts that provide additional Orbit sources.
 
-var app = new EmberApp();
-
-// Required Orbit imports
-app.import({
-  development: "vendor/orbit.js/orbit.js",
-  production: "vendor/orbit.js/orbit.min.js"
-});
-app.import({
-  development: "vendor/orbit.js/orbit-common.js",
-  production: "vendor/orbit.js/orbit-common.min.js"
-});
-// Optional import of local storage source
-app.import({
-  development: "vendor/orbit.js/orbit-common-local-storage.js",
-  production: "vendor/orbit.js/orbit-common-local-storage.min.js"
-});
-// Required Ember-Orbit import
-app.import({
-  development: "vendor/ember-orbit/ember-orbit.js",
-  production: "vendor/ember-orbit/ember-orbit.min.js"
-});
-
-module.exports = app.toTree();
-```
 
 ### Initialization
 
@@ -296,11 +235,125 @@ Orbit sources can be directly accessed in any `EO.Source` (or `EO.Store`) via
 Use sources to configure connectors, monitor transforms, and access remote
 servers.
 
-### Example ember-orbit application
+### Configuration with Ember-CLI
 
-While we improve and accept patches improving documentation, you may find it
-helpful to see how this sample application works with Ember.js and Orbit.js:
+First, remove `ember-data`, which is configured by default:
+
+```
+npm rm ember-cli-ember-data --save-dev
+```
+
+Next, add `orbit.js` and `ember-orbit` as dependencies in `bower.json` and
+install them.
+
+```
+bower install
+```
+
+In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. It's 
+recommended that you import the named AMD ('.amd.js') files so that modules 
+may be used within ember-cli. 
+
+For example:
+
+```javascript
+var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+
+var app = new EmberApp();
+
+// Required Orbit imports
+app.import('vendor/orbit.js/orbit.amd.js', {
+  exports: {'orbit': ['default']}
+});
+app.import('vendor/orbit.js/orbit-common.amd.js', {
+  exports: {'orbit_common': ['default']}
+});
+// Optional import of local storage source
+app.import('vendor/orbit.js/orbit-common-local-storage.amd.js', {
+  exports: {'orbit_common/local_storage_source': ['default']}
+});
+// Required Ember-Orbit import
+app.import('vendor/ember-orbit/ember-orbit.amd.js', {
+  exports: {'ember_orbit': ['default']}
+});
+
+module.exports = app.toTree();
+```
+
+Create an initializer for Ember-Orbit within your application's `initializers`
+directory.
+
+The following example creates a store backed by local storage: 
+
+```javascript
+import Ember from 'ember';
+import Orbit from 'orbit';
+import LocalStorageSource from 'orbit-common/local-storage-source';
+import EO from 'ember-orbit';
+
+var LocalStorageStore = EO.Store.extend({
+  orbitSourceClass: LocalStorageSource,
+  orbitSourceOptions: {
+    namespace: "my-app" // n.s. for localStorage
+  }
+});
+
+export default {
+  name: 'injectStore',
+  initialize: function(container, application) {
+    Orbit.Promise = Ember.RSVP.Promise;
+    application.register('schema:main', EO.Schema);
+    application.register('store:main', LocalStorageStore);
+    application.inject('controller', 'store', 'store:main');
+    application.inject('route', 'store', 'store:main');
+  }
+};
+```
+
+
+### Example Ember-Orbit / Ember-CLI Application
+
+In addition to this documentation, you may find it helpful to see an example 
+application that works works with Ember-Orbit and Ember-CLI:
+
 https://github.com/opsb/ember-orbit-todos
+
+
+## Building and Testing Ember-Orbit
+
+The Ember-Orbit project is managed by [Grunt](http://gruntjs.com/). Once you've
+installed Grunt and its dependencies, you can install Ember-Orbit's development
+dependencies from inside the project root with:
+
+```
+npm install
+```
+
+Distributable versions of Orbit can be built to the `/dist` directory by running:
+
+```
+grunt package
+```
+
+Orbit can be tested by running:
+
+```
+grunt test:ci
+```
+
+Or from within a browser
+(at [http://localhost:8010/test/](http://localhost:8010/test/)) by running:
+
+```
+grunt server
+```
+
+Ember-Orbit's docs can be generated to the `/docs` directory by running:
+
+```
+grunt docs
+```
+
 
 ## Acknowledgments
 
