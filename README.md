@@ -266,15 +266,15 @@ app.import('vendor/orbit.js/orbit.amd.js', {
   exports: {'orbit': ['default']}
 });
 app.import('vendor/orbit.js/orbit-common.amd.js', {
-  exports: {'orbit_common': ['default']}
+  exports: {'orbit-common': ['default']}
 });
 // Optional import of local storage source
 app.import('vendor/orbit.js/orbit-common-local-storage.amd.js', {
-  exports: {'orbit_common/local_storage_source': ['default']}
+  exports: {'orbit-common/local-storage-source': ['default']}
 });
 // Required Ember-Orbit import
 app.import('vendor/ember-orbit/ember-orbit.amd.js', {
-  exports: {'ember_orbit': ['default']}
+  exports: {'ember-orbit': ['default']}
 });
 
 module.exports = app.toTree();
