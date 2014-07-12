@@ -2,7 +2,7 @@
   "name": "ember-orbit",
   "namespace": "EO",
   "description": "Ember.js data layer built with Orbit.js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/orbitjs/ember-orbit",
   "readmeFilename": "README.md",
   "author": {
