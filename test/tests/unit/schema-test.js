@@ -34,6 +34,31 @@ test("its `idField` can be customized", function() {
   equal(get(schema, 'idField'), 'cid');
 });
 
+test("it has a `remoteIdField` of `id` by default", function() {
+  equal(get(schema, 'remoteIdField'), 'id');
+});
+
+test("its `remoteIdField` can be customized", function() {
+  schema = Schema.create({remoteIdField: '_id'});
+  equal(get(schema, 'remoteIdField'), '_id');
+});
+
+test("it doesn't customize `generateId` by default", function() {
+  equal(get(schema, 'generateId'), undefined);
+});
+
+test("its `generateId` can be customized", function() {
+  var customGenerateId = function() { return 'abc'; };
+  schema = Schema.create({generateId: customGenerateId});
+  equal(get(schema, 'generateId'), customGenerateId);
+
+  var Planet = Model.extend();
+  var record = {};
+  schema.defineModel('planet', Planet);
+  record = schema.normalize('planet', record);
+  equal(record.clientid, 'abc');
+});
+
 test("#defineModel defines models on the underlying Orbit schema", function() {
   var Star,
       Moon,
