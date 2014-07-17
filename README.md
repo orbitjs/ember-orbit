@@ -268,10 +268,18 @@ app.import('vendor/orbit.js/orbit.amd.js', {
 app.import('vendor/orbit.js/orbit-common.amd.js', {
   exports: {'orbit-common': ['default']}
 });
+
 // Optional import of local storage source
 app.import('vendor/orbit.js/orbit-common-local-storage.amd.js', {
   exports: {'orbit-common/local-storage-source': ['default']}
 });
+
+// Optional import of JSON API source and serializer
+app.import('vendor/orbit.js/orbit-common-jsonapi.amd.js', {
+  exports: {'orbit-common/jsonapi-source': ['default'],
+            'orbit-common/jsonapi-serializer': ['default']}
+});
+
 // Required Ember-Orbit import
 app.import('vendor/ember-orbit/ember-orbit.amd.js', {
   exports: {'ember-orbit': ['default']}
