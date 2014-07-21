@@ -4,5 +4,3 @@ dist
 docs
 node_modules
 tmp
-.idea
-.gitignore
