@@ -318,6 +318,33 @@ export default {
 };
 ```
 
+### Customizing schema
+
+You can customize functions used in Ember Orbit Schema to generate id or pluralize/singularize schema names.
+```javascript
+var Schema = EO.Schema.extend({
+  idField: 'id',
+  remoteIdField: 'id',
+  
+  generateId: function() {
+    // return a UUID
+    var s4 = function () {
+      return Math.floor((1 + Math.random()) * 0x10000)
+                 .toString(16)
+                 .substring(1);
+    };
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  },
+  pluralize: function(word){
+    // information is irregular
+    return (word==="information")?"information":word+"s";
+  },
+  singularize: function(word){
+    // information is irregular
+    return (word==="information")?"information":word.substr(0, word.length - 1);
+  }
+});
+```
 
 ### Example Ember-Orbit / Ember-CLI Application
 
