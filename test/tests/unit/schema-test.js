@@ -136,3 +136,40 @@ test("#modelFor returns the appropriate model when passed a model's name", funct
 
   equal(schema.modelFor('planet'), Planet);
 });
+
+test("#modelFor ensures that related models are also registered in the schema", function() {
+  var Star,
+      Moon,
+      Planet;
+
+  Star = Model.extend({
+    name: attr('string'),
+    planets: hasMany('planet')
+  });
+
+  Moon = Model.extend({
+    name: attr('string'),
+    planet: hasOne('planet')
+  });
+
+  Planet = Model.extend({
+    name: attr('string'),
+    classification: attr('string'),
+    sun: hasOne('star'),
+    moons: hasMany('moon')
+  });
+
+  var container = new Ember.Container();
+  container.register('schema:main', Schema);
+  container.register('model:planet', Planet);
+  container.register('model:star', Star);
+  container.register('model:moon', Moon);
+
+  set(schema, 'container', container);
+
+  deepEqual(schema.models(), [], 'no models have been registered');
+
+  schema.modelFor('planet');
+
+  deepEqual(schema.models(), ['planet', 'star', 'moon'], 'all related models have been registered');
+});
