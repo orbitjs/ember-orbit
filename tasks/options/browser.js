@@ -6,19 +6,13 @@ module.exports = {
         file = file.replace('.browser.js', '');
         return file;
       },
-      namespace: function(name) {
+      modules: function(name) {
         switch (name) {
           case 'ember-orbit':
-            return 'EO';
-
-          default:
-            this.fail.warn('Unrecognized file: `' + name + '`.');
-        }
-      },
-      module: function(name) {
-        switch (name) {
-          case 'ember-orbit':
-            return 'ember-orbit';
+            return [{
+              namespace: 'EO',
+              name: 'ember-orbit'
+            }];
 
           default:
             this.fail.warn('Unrecognized file: `' + name + '`.');
