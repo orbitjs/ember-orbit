@@ -43,7 +43,7 @@ Ember-Orbit.
 Orbit and Ember-Orbit can be installed with [Bower](http://bower.io):
 
 ```
-bower install orbit
+bower install orbit.js
 bower install ember-orbit
 ```
 
