@@ -1,12 +1,12 @@
 import Orbit from 'orbit';
 import OCLocalStorageSource from 'orbit-common/local-storage-source';
 import { RecordNotFoundException, RecordAlreadyExistsException } from 'orbit-common/lib/exceptions';
-import attr from 'ember-orbit/attr';
+import attr from 'ember-orbit/fields/attr';
+import hasOne from 'ember-orbit/fields/has-one';
+import hasMany from 'ember-orbit/fields/has-many';
 import Store from 'ember-orbit/store';
 import Model from 'ember-orbit/model';
 import Schema from 'ember-orbit/schema';
-import hasOne from 'ember-orbit/relationships/has-one';
-import hasMany from 'ember-orbit/relationships/has-many';
 import { createStore } from 'test-helper';
 
 var get = Ember.get,
