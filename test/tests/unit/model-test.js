@@ -1,8 +1,10 @@
 import Orbit from 'orbit';
+import key from 'ember-orbit/fields/key';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Model from 'ember-orbit/model';
+import { uuid } from 'orbit/lib/uuid';
 
 var get = Ember.get;
 
@@ -39,6 +41,32 @@ module("Unit - Model", {
 
 test("it exists", function() {
   ok(Planet);
+});
+
+test("#keys returns a single key, `id`, by default", function() {
+  var keys,
+      names;
+
+  keys = get(Planet, 'keys');
+  names = Object.keys(keys);
+  equal(names.length, 1);
+  equal(names[0], 'id');
+});
+
+test("#keys returns defined custom secondary keys", function() {
+  var keys,
+      names;
+
+  Planet.reopen({
+    id: key('string', {primaryKey: true, defaultValue: uuid}),
+    remoteId: key('string')
+  });
+
+  keys = get(Planet, 'keys');
+  names = Object.keys(keys);
+  equal(names.length, 2);
+  equal(names[0], 'id');
+  equal(names[1], 'remoteId');
 });
 
 test("#attributes returns defined attributes", function() {

@@ -67,22 +67,28 @@ test("store is properly linked to models", function() {
 });
 
 test("new models can be created and updated", function() {
-  expect(4);
+  expect(7);
 
   Ember.run(function() {
     store.add('planet', {name: 'Earth'}).then(function(planet) {
+      ok(get(planet, 'id'), 'id has been defined');
+
+      ok(planet.primaryId, 'primaryId has been defined');
+
+      equal(planet.primaryId, get(planet, 'id'), 'id matches primaryId');
+
       equal(get(planet, 'name'), 'Earth');
 
       set(planet, 'name', 'Jupiter');
 
       equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
 
-      equal(store.orbitSource.retrieve(['planet', get(planet, 'clientid'), 'name']),
+      equal(store.orbitSource.retrieve(['planet', planet.primaryId, 'name']),
             'Earth',
             'memory source patch is not yet complete');
 
       store.then(function() {
-        equal(store.orbitSource.retrieve(['planet', get(planet, 'clientid'), 'name']),
+        equal(store.orbitSource.retrieve(['planet', planet.primaryId, 'name']),
               'Jupiter',
               'memory source patch is now complete');
       });
@@ -131,14 +137,14 @@ test("hasOne relationships can be created and updated", function() {
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       // Check internals of source
-      equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       store.then(function() {
         // Check internals of source
-        equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
-              get(jupiter, 'clientid'),
+        equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
+              jupiter.primaryId,
               'memory source patch is now complete');
       });
     });
@@ -232,13 +238,13 @@ test("hasMany relationships can be created and updated", function() {
 
       equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
 
-      equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
+      equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
             undefined,
             'memory source patch is not yet complete');
 
       store.then(function() {
-        equal(store.orbitSource.retrieve(['moon', get(io, 'clientid'), '__rel', 'planet']),
-              get(jupiter, 'clientid'),
+        equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
+              jupiter.primaryId,
               'memory source patch is now complete');
 
         strictEqual(get(jupiter, 'moons'), moons, 'ManyArray is still the same object');
@@ -345,7 +351,7 @@ test("model properties can be reset through transforms", function() {
 
       store.transform({
         op: 'replace',
-        path: ['planet', get(planet, 'clientid'), 'name'],
+        path: ['planet', planet.primaryId, 'name'],
         value: 'Jupiter'
       });
 
