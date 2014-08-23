@@ -57,7 +57,7 @@ maintained for Ember-Orbit's Bower releases.
 
 For an Ember CLI application, see the instructions further below.
 
-If you just want to use the global (non-AMD) builds of Orbit and 
+If you just want to use the global (non-AMD) builds of Orbit and
 Ember-Orbit, include the following scripts on your page:
 
 ```
@@ -153,9 +153,43 @@ your application.
 
 Model definitions can use the following helpers:
 
+* `key()` - keys
 * `attr()` - attributes
 * `hasOne()` - has-one relationships
 * `hasMany()` - has-many relationships
+
+#### Keys
+
+Keys uniquely identify a record of a particular model type.
+
+Every model must define a single "primary key", which will be used throughout
+Orbit to identify records of that type uniquely. This should be indicated with
+the field option `primaryKey: true`.
+
+If no primary key is defined on a model, a single primary key named `id` will be
+automatically generated. This key's `defaultValue` will be set to the v4 UUID
+generator used within Orbit.
+
+When working with remote servers that do not support UUID primary keys, it's
+necessary to correlate Orbit IDs with IDs that are generated remotely. In order
+to support this scenario, one or more "secondary keys" may also be defined for
+a model.
+
+Let's say that you want to track Orbit's primary key locally as a UUID named
+`cid` and also define a remote key named `id`. You could define the following
+keys in all models by modifying the base `Model` class:
+
+```javascript
+  Model.reopen({
+    cid: key({primaryKey: true, defaultValue: uuid}),
+    id:  key()
+  });
+```
+
+Note that Orbit can maintain different keys across different models, even in the
+same schema.
+
+#### Relationships
 
 A relationship can optionally declare an `inverse`, which should point to a key
 on the related model. Orbit will ensure that relationships and their inverses
@@ -181,6 +215,8 @@ Here's an example set of model definitions:
     moons: hasMany('moon', {inverse: 'planet'})
   });
 ```
+
+### Accessing and Modifying Records
 
 Records can access properties and relationships through `get` and `set`.
 Relationships are stored in proxy objects which will be kept in sync with
@@ -250,9 +286,9 @@ install them.
 bower install
 ```
 
-In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. It's 
-recommended that you import the named AMD ('.amd.js') files so that modules 
-may be used within ember-cli. 
+In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. It's
+recommended that you import the named AMD ('.amd.js') files so that modules
+may be used within ember-cli.
 
 For example:
 
@@ -291,7 +327,7 @@ module.exports = app.toTree();
 Create an initializer for Ember-Orbit within your application's `initializers`
 directory.
 
-The following example creates a store backed by local storage: 
+The following example creates a store backed by local storage:
 
 ```javascript
 import Ember from 'ember';
@@ -320,22 +356,10 @@ export default {
 
 ### Customizing schema
 
-You can customize functions used in Ember Orbit Schema to generate id or pluralize/singularize schema names.
+You can customize functions used to pluralize/singularize model and field names:
+
 ```javascript
 var Schema = EO.Schema.extend({
-  idField: 'id',
-  remoteIdField: 'id',
-  
-  generateId: function() {
-    // return a UUID
-    var s4 = function () {
-      return Math.floor((1 + Math.random()) * 0x10000)
-                 .toString(16)
-                 .substring(1);
-    };
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-  },
-
   pluralize: function(word){
     // information is irregular
     return word === 'information' ? 'information' : word + 's';
@@ -348,9 +372,11 @@ var Schema = EO.Schema.extend({
 });
 ```
 
+Customization of ID fields and generators should be done on individual models.
+
 ### Example Ember-Orbit / Ember-CLI Application
 
-In addition to this documentation, you may find it helpful to see an example 
+In addition to this documentation, you may find it helpful to see an example
 application that works works with Ember-Orbit and Ember-CLI:
 
 https://github.com/opsb/ember-orbit-todos
