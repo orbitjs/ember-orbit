@@ -106,8 +106,8 @@ test("new models will be assigned default values for attributes", function(){
   });
 });
 
-test("hasOne relationships can be created and updated", function() {
-  expect(6);
+test("hasOne relationships can be added, updated and removed", function() {
+  expect(9);
 
   Ember.run(function() {
     var jupiter,
@@ -123,11 +123,6 @@ test("hasOne relationships can be created and updated", function() {
       });
 
     }).then(function() {
-      return store.add('moon', {name: 'Europa'}).then(function (moon) {
-        europa = moon;
-      });
-
-    }).then(function() {
       equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
       equal(get(io, 'planet.name'), null, 'Io\'s planet does not yet have a name');
 
@@ -138,15 +133,29 @@ test("hasOne relationships can be created and updated", function() {
 
       // Check internals of source
       equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
-            undefined,
-            'memory source patch is not yet complete');
+        undefined,
+        'memory source patch is not yet complete');
 
-      store.then(function() {
-        // Check internals of source
-        equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
-              jupiter.primaryId,
-              'memory source patch is now complete');
-      });
+      return store;
+
+    }).then(function() {
+      // Check internals of source
+      equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
+            jupiter.primaryId,
+            'memory source patch is now complete');
+
+      set(io, 'planet', undefined);
+
+      equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
+      equal(get(io, 'planet.name'), null, 'Io\'s planet does not yet have a name');
+
+      return store;
+
+    }).then(function() {
+      // Check internals of source
+      equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
+            undefined,
+            'memory source patch is now complete');
     });
   });
 });
