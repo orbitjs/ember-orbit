@@ -212,58 +212,54 @@ test("hasOne relationships can be added, updated and removed", function() {
   });
 });
 
-// TODO
-//test("hasOne relationships can trigger a `find` based on the relatedId", function() {
-//  expect(2);
-//
-//  Ember.run(function() {
-//    var jupiter,
-//        io,
-//        europa;
-//
-//    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
-//      jupiter = planet;
-//
-//    }).then(function() {
-//      return store.add('moon', {name: 'Io', links: {planet: jupiter}});
-//
-//    }).then(function(moon) {
-//      io = moon;
-//      return get(io, 'planet').find();
-//
-//    }).then(function(planet) {
-//      strictEqual(planet, jupiter, 'planet is looked up correctly');
-//      strictEqual(get(io, 'planet.content'), jupiter, 'planet has been set correctly in object proxy');
-//    });
-//  });
-//});
-//
-//test("hasOne relationships can fail to find a record based on the relatedId", function() {
-//  expect(1);
-//
-//  Ember.run(function() {
-//    var jupiter,
-//        io,
-//        europa;
-//
-//    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
-//      jupiter = planet;
-//
-//    }).then(function() {
-//      return store.add('moon', {name: 'Io', links: {planet: {id: 'bogus'}}});
-//
-//    }).then(function(moon) {
-//      io = moon;
-//      return get(io, 'planet').find();
-//
-//    }).then(function(planet) {
-//      ok(false, 'should not be able to find record based on a fake id');
-//
-//    }, function(e) {
-//      ok(e instanceof RecordNotFoundException, 'RecordNotFoundException thrown');
-//    });
-//  });
-//});
+test("hasOne relationships can be reloaded and return a record", function() {
+ expect(2);
+
+ Ember.run(function() {
+   var jupiter,
+       io,
+       europa;
+
+   store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+     jupiter = planet;
+
+   }).then(function() {
+     return store.add('moon', {name: 'Io', planet: jupiter});
+
+   }).then(function(moon) {
+     io = moon;
+     return get(io, 'planet').reload();
+
+   }).then(function(planet) {
+     strictEqual(planet, jupiter, 'planet is looked up correctly');
+     strictEqual(get(io, 'planet.content'), jupiter, 'planet has been set correctly in object proxy');
+   });
+ });
+});
+
+test("hasOne relationships can be reloaded and return null", function() {
+ expect(1);
+
+ Ember.run(function() {
+   var jupiter,
+       io,
+       europa;
+
+   store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
+     jupiter = planet;
+
+   }).then(function() {
+     return store.add('moon', {name: 'Io'});
+
+   }).then(function(moon) {
+     io = moon;
+     return get(io, 'planet').reload();
+
+   }).then(function(planet) {
+     equal(planet, null, 'planet can not be found.');
+   });
+ });
+});
 
 test("hasMany relationships can be created and updated", function() {
   expect(8);

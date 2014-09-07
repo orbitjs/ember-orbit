@@ -247,15 +247,16 @@ asynchronous methods, all of which return a promise:
 Note that working with a model synchronously via `get` and `set` is generally
 more convenient than calling the above async methods.
 
-A model's relationships can be re-queried by calling `find()` on a relationship
-object. This triggers the associated `findLink` call and returns its promise.
-Related records will be updated through transformations to the underlying
-source. Any changes should be reflected by the time the promise resolves.
+A model's relationships can be re-queried by calling `reload()` on a
+relationship object. This triggers the associated `findLink` call and returns
+its promise. Related records will be updated through transformations to the
+underlying source. Any changes should be reflected by the time the promise
+resolves.
 
 For example:
 
 ```javascript
-planet.get('moons').find().then(function() {
+planet.get('moons').reload().then(function() {
   console.log(planet.get('moons.length'));
 });
 ```
