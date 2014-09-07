@@ -106,6 +106,58 @@ test("new models will be assigned default values for attributes", function(){
   });
 });
 
+test("new models can be added with has-one links", function() {
+  expect(4);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa;
+
+    store.add('planet', {name: 'Jupiter'}).then(function(planet) {
+      jupiter = planet;
+
+    }).then(function() {
+      return store.add('moon', {name: 'Io', planet: jupiter}).then(function(moon) {
+        io = moon;
+      });
+
+    }).then(function() {
+      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
+
+      equal(get(jupiter, 'moons.length'), 1, 'Jupiter now has one moon');
+      equal(get(jupiter, 'moons.firstObject'), io, 'Io has been added to Jupiter\'s moons');
+    });
+  });
+});
+
+test("new models can be added with has-many links", function() {
+  expect(4);
+
+  Ember.run(function() {
+    var jupiter,
+        io,
+        europa;
+
+    store.add('moon', {name: 'Io'}).then(function(moon) {
+      io = moon;
+
+    }).then(function() {
+      return store.add('planet', {name: 'Jupiter', moons: [io]}).then(function(planet) {
+        jupiter = planet;
+      });
+
+    }).then(function() {
+      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
+
+      equal(get(jupiter, 'moons.length'), 1, 'Jupiter now has one moon');
+      equal(get(jupiter, 'moons.firstObject'), io, 'Io has been added to Jupiter\'s moons');
+    });
+  });
+});
+
 test("hasOne relationships can be added, updated and removed", function() {
   expect(9);
 
