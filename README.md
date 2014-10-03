@@ -277,14 +277,15 @@ servers.
 First, remove `ember-data`, which is configured by default:
 
 ```
-npm rm ember-cli-ember-data --save-dev
+npm rm ember-data --save-dev
+bower uninstall --save ember-data
 ```
 
 Next, add `orbit.js` and `ember-orbit` as dependencies in `bower.json` and
-install them.
+install them by running this command.
 
 ```
-bower install
+bower install --save orbit.js ember-orbit
 ```
 
 In your `Brocfile`, import dependencies for Orbit and Ember-Orbit. It's
@@ -299,26 +300,26 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var app = new EmberApp();
 
 // Required Orbit imports
-app.import('vendor/orbit.js/orbit.amd.js', {
+app.import('bower_components/orbit.js/orbit.amd.js', {
   exports: {'orbit': ['default']}
 });
-app.import('vendor/orbit.js/orbit-common.amd.js', {
+app.import('bower_components/orbit.js/orbit-common.amd.js', {
   exports: {'orbit-common': ['default']}
 });
 
 // Optional import of local storage source
-app.import('vendor/orbit.js/orbit-common-local-storage.amd.js', {
+app.import('bower_components/orbit.js/orbit-common-local-storage.amd.js', {
   exports: {'orbit-common/local-storage-source': ['default']}
 });
 
 // Optional import of JSON API source and serializer
-app.import('vendor/orbit.js/orbit-common-jsonapi.amd.js', {
+app.import('bower_components/orbit.js/orbit-common-jsonapi.amd.js', {
   exports: {'orbit-common/jsonapi-source': ['default'],
             'orbit-common/jsonapi-serializer': ['default']}
 });
 
 // Required Ember-Orbit import
-app.import('vendor/ember-orbit/ember-orbit.amd.js', {
+app.import('bower_components/ember-orbit/ember-orbit.amd.js', {
   exports: {'ember-orbit': ['default']}
 });
 
@@ -335,23 +336,27 @@ import Ember from 'ember';
 import Orbit from 'orbit';
 import LocalStorageSource from 'orbit-common/local-storage-source';
 import EO from 'ember-orbit';
+import config from '../config/environment';
 
 var LocalStorageStore = EO.Store.extend({
   orbitSourceClass: LocalStorageSource,
   orbitSourceOptions: {
-    namespace: "my-app" // n.s. for localStorage
+    namespace: config.modulePrefix // n.s. for localStorage
   }
 });
 
+export var initialize = function(container, application) {
+  Orbit.Promise = Ember.RSVP.Promise;
+  application.register('schema:main', EO.Schema);
+  application.register('store:main', LocalStorageStore);
+  application.inject('controller', 'store', 'store:main');
+  application.inject('route', 'store', 'store:main');
+};
+
 export default {
-  name: 'injectStore',
-  initialize: function(container, application) {
-    Orbit.Promise = Ember.RSVP.Promise;
-    application.register('schema:main', EO.Schema);
-    application.register('store:main', LocalStorageStore);
-    application.inject('controller', 'store', 'store:main');
-    application.inject('route', 'store', 'store:main');
-  }
+  name: 'inject-store',
+
+  initialize: initialize
 };
 ```
 
