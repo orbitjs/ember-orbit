@@ -400,7 +400,7 @@ test("hasMany relationships are updated when a HasManyArray is updated", functio
 });
 
 test("model properties can be reset through transforms", function() {
-  expect(3);
+  expect(2);
 
   Ember.run(function() {
     store.add('planet', {name: 'Earth'}).then(function(planet) {
@@ -410,11 +410,7 @@ test("model properties can be reset through transforms", function() {
         op: 'replace',
         path: ['planet', planet.primaryId, 'name'],
         value: 'Jupiter'
-      });
-
-      equal(get(planet, 'name'), 'Earth', 'CP has not been invalidated yet');
-
-      store.then(function() {
+      }).then(function() {
         equal(get(planet, 'name'), 'Jupiter', 'CP reflects transformed value');
       });
     });
