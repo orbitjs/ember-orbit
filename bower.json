@@ -2,10 +2,10 @@
   "name": "ember-orbit",
   "private": true,
   "dependencies": {
-    "handlebars": "~1.1.2",
-    "jquery": "~1.9.1",
-    "qunit": "~1.12.0",
-    "ember": ">= 1.7.0",
+    "handlebars": ">= 2.0.0 < 3.0.0",
+    "jquery": "~1.10.2",
+    "qunit": "~1.15.0",
+    "ember": ">= 1.9.1",
     "orbit.js": ">= 0.5.3"
   }
 }
