@@ -196,14 +196,14 @@ test("hasOne relationships can be added, updated and removed", function() {
 
       set(io, 'planet', undefined);
 
-      equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
-      equal(get(io, 'planet.name'), null, 'Io\'s planet does not yet have a name');
+      equal(get(io, 'planet.content'), undefined, 'Io has not been assigned a planet');
+      equal(get(io, 'planet.name'), undefined, 'Io\'s planet does not yet have a name');
 
     }).then(function() {
       // Check internals of source
       equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
-            undefined,
-            'memory source patch is now complete');
+            null,
+            'memory source has been reset');
     });
   });
 });
