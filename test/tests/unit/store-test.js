@@ -100,6 +100,7 @@ test("it creates a schema if none has been specified", function() {
 test("#add will add a new instance of a model", function() {
   Ember.run(function() {
     store.add('planet', {name: 'Earth'}).then(function(planet) {
+      ok(planet instanceof Planet);
       ok(get(planet, 'primaryId'), 'assigned primaryId');
       equal(get(planet, 'name'), 'Earth');
     });
@@ -240,6 +241,24 @@ test("#remove will asynchronously remove a record when called with a single mode
     });
   });
 });
+
+test("#remove operation on source will trigger Model didUnload event", function() {
+  expect(1);
+
+  Ember.run(function() {
+    store.add('planet', {name: 'Earth'})
+      .then(function(planet) {
+        var id = get(planet, 'primaryId');
+
+        planet.on('didUnload', function() {
+          ok(true, 'didUnload fired');
+        });
+
+        store.orbitSource.remove('planet', id);
+      });
+  });
+});
+
 
 test("#retrieve can synchronously retrieve a record by id", function() {
   Ember.run(function() {
