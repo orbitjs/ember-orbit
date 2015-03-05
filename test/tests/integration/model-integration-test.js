@@ -188,6 +188,8 @@ test("hasOne relationships can be added, updated and removed", function() {
         undefined,
         'memory source patch is not yet complete');
 
+      return store.settleTransforms();
+
     }).then(function() {
       // Check internals of source
       equal(store.orbitSource.retrieve(['moon', io.primaryId, '__rel', 'planet']),
@@ -198,6 +200,8 @@ test("hasOne relationships can be added, updated and removed", function() {
 
       equal(get(io, 'planet.content'), undefined, 'Io has not been assigned a planet');
       equal(get(io, 'planet.name'), undefined, 'Io\'s planet does not yet have a name');
+
+      return store.settleTransforms();
 
     }).then(function() {
       // Check internals of source
