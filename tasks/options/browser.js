@@ -20,7 +20,7 @@ module.exports = {
       },
       preDefine: function(name) {
         return [
-          "var define = global.Orbit.__defineModule__;",
+          "var define = global.Orbit.__define__;",
           "var requireModule = global.Orbit.__requireModule__;"
         ];
       }
