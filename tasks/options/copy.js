@@ -10,7 +10,7 @@ module.exports = {
       flatten: true,
       filter: 'isFile',
       cwd: 'bower_components/',
-      src: ['ember/ember.js',
+      src: ['ember/ember.debug.js',
             'handlebars/handlebars.js',
             'jquery/jquery.js',
             'qunit/qunit/qunit.js',
