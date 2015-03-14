@@ -387,42 +387,75 @@ application that works works with Ember-Orbit and Ember-CLI:
 
 https://github.com/opsb/ember-orbit-todos
 
+## Contributing
 
-## Building and Testing Ember-Orbit
+### Installing Ember-Orbit
 
-The Ember-Orbit project is managed by [Grunt](http://gruntjs.com/). Once you've
-installed Grunt and its dependencies, you can install Ember-Orbit's development
-dependencies from inside the project root with:
+Install the CLI for [Broccoli](https://github.com/broccolijs/broccoli) globally:
+
+```
+npm install -g broccoli-cli
+```
+
+Install the rest of ember-orbit's dependencies:
 
 ```
 npm install
 ```
 
-Distributable versions of Orbit can be built to the `/dist` directory by running:
+### Building Ember-Orbit
+
+Distributable versions of ember-orbit can be built to the `/build` directory
+by running:
 
 ```
-grunt package
+npm run build
 ```
 
-Orbit can be tested by running:
+### Testing Ember-Orbit
+
+#### CI Testing
+
+ember-orbit can be tested in CI mode by running:
 
 ```
-grunt test:ci
+npm test
 ```
 
-Or from within a browser
-(at [http://localhost:8010/test/](http://localhost:8010/test/)) by running:
+Or directly with testem (useful for configuring options):
 
 ```
-grunt server
+testem ci
 ```
 
-Ember-Orbit's docs can be generated to the `/docs` directory by running:
+#### Browser Testing
+
+ember-orbit can be tested within a browser
+(at [http://localhost:4200/tests/](http://localhost:4200/tests/)) by running:
 
 ```
-grunt docs
+npm start
 ```
 
+Or directly with `broccoli` (useful for configuring the port, etc.):
+
+```
+broccoli serve
+```
+
+### Generating Documentation
+
+Install [yuidoc](http://yui.github.io/yuidoc/) globally:
+
+```
+npm install -g yuidocjs
+```
+
+Generate docs in the `/docs` directory:
+
+```
+yuidoc .
+```
 
 ## Acknowledgments
 

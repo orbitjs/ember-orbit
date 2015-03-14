@@ -7,7 +7,7 @@ import hasMany from 'ember-orbit/fields/has-many';
 import Store from 'ember-orbit/store';
 import Model from 'ember-orbit/model';
 import Schema from 'ember-orbit/schema';
-import { createStore } from 'test-helper';
+import { createStore } from 'tests/test-helper';
 
 var get = Ember.get,
     set = Ember.set;

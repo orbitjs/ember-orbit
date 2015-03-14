@@ -4,7 +4,7 @@ import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Store from 'ember-orbit/store';
 import Model from 'ember-orbit/model';
-import { createStore } from 'test-helper';
+import { createStore } from 'tests/test-helper';
 import { RecordNotFoundException } from 'orbit-common/lib/exceptions';
 
 var get = Ember.get,
