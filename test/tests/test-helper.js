@@ -7,7 +7,7 @@ var get = Ember.get,
 var createStore = function(options) {
   options = options || {};
 
-  var container = new Ember.Container();
+  var container = options.container || new Ember.Container();
   container.register('schema:main', Schema);
   container.register('store:main', Store);
 
