@@ -211,6 +211,26 @@ test("#find will asynchronously return an array of records when called with a `t
   });
 });
 
+test("#find passes options through to find on the orbit source", function(){
+  expect(1);
+
+  var options = {include: 'moons'};
+  store.orbitSource.find = sinon.stub().returns(Ember.RSVP.resolve({}));
+
+  store.find('planet', 'planet1', options);
+  ok(store.orbitSource.find.calledWith('planet', 'planet1', options), "options were passed through");
+});
+
+test("#findLinked passes options through to findLinked on the orbit source", function(){
+  expect(1);
+
+  var options = {include: 'moons'};
+  store.orbitSource.findLinked = sinon.stub().returns(Ember.RSVP.resolve({}));
+
+  store.findLinked('planet', 'planet1', 'moons', options);
+  ok(store.orbitSource.findLinked.calledWith('planet', 'planet1', 'moons', options), "options were passed through");
+});
+
 test("#remove will asynchronously remove a record when called with a `type` and a single `id`", function() {
   expect(2);
 
