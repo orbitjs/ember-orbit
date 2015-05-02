@@ -13,7 +13,12 @@ var Planet,
     Star,
     store;
 
-module("Integration - Model", {
+// Run this integration test fully with MODEL_FACTORY_INJECTIONS both true and false
+[true, false].forEach(function(MODEL_FACTORY_INJECTIONS) {
+
+var flag = MODEL_FACTORY_INJECTIONS ? " w/ Ember.MODEL_FACTORY_INJECTIONS" : "";
+
+module("Integration - Model" + flag, {
   setup: function() {
     Orbit.Promise = Ember.RSVP.Promise;
 
@@ -36,6 +41,7 @@ module("Integration - Model", {
     });
 
     store = createStore({
+      MODEL_FACTORY_INJECTIONS: MODEL_FACTORY_INJECTIONS,
       models: {
         star: Star,
         moon: Moon,
@@ -59,9 +65,24 @@ test("store exists", function() {
 
 test("store is properly linked to models", function() {
   var schema = get(store, 'schema');
-  equal(schema.modelFor('star'), Star);
-  equal(schema.modelFor('planet'), Planet);
-  equal(schema.modelFor('moon'), Moon);
+  var tests = {
+    'star': Star,
+    'planet': Planet,
+    'moon': Moon,
+  };
+
+  expect(6);
+
+  for (var key in tests) {
+    var model = schema.modelFor(key);
+    if (MODEL_FACTORY_INJECTIONS) {
+      ok(model.proto() instanceof tests[key], key + ' model class is an extension of model class');
+    } else {
+      equal(model, tests[key], key + ' is equal to the model class');
+    }
+
+    equal(get(model, 'primaryKey'), 'id', key + ' primaryKey is id');
+  }
 });
 
 test("new models can be created and updated", function() {
@@ -91,6 +112,21 @@ test("new models can be created and updated", function() {
               'memory source patch is now complete');
       });
     });
+  });
+});
+
+test("models can be found and accessed", function() {
+  expect(1);
+  var planetId;
+  Ember.run(function() {
+    store.add('planet', {name: 'Earth'})
+      .then(function(planet) {
+        planetId = planet.get('id');
+        return store.find('planet', planetId);
+      })
+      .then(function(planet) {
+        equal(planet.get('id'), planetId, 'Can retrieve primaryId');
+      });
   });
 });
 
@@ -427,4 +463,7 @@ test("models can be deleted", function() {
       });
     });
   });
+});
+
+// MODEL_FACTORY_INJECTIONS
 });
