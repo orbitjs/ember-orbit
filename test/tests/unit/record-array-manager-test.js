@@ -1,7 +1,4 @@
-import Orbit from 'orbit';
 import RecordArrayManager from 'ember-orbit/record-array-manager';
-
-var get = Ember.get;
 
 var jupiter,
     recordArrayManager;

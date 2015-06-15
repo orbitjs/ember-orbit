@@ -5,8 +5,7 @@ import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Model from 'ember-orbit/model';
 
-var get = Ember.get,
-    set = Ember.set;
+var set = Ember.set;
 
 var schema;
 
@@ -45,7 +44,7 @@ test("#defineModel defines models on the underlying Orbit schema", function() {
     classification: attr('string'),
     sun: hasOne('star'),
     moons: hasMany('moon')
-  });         
+  });
 
   schema.defineModel('star', Star);
   schema.defineModel('moon', Moon);

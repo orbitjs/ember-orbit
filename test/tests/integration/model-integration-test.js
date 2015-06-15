@@ -2,10 +2,8 @@ import Orbit from 'orbit';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
-import Store from 'ember-orbit/store';
 import Model from 'ember-orbit/model';
 import { createStore } from 'tests/test-helper';
-import { RecordNotFoundException } from 'orbit-common/lib/exceptions';
 
 var get = Ember.get,
     set = Ember.set;
@@ -111,8 +109,7 @@ test("new models can be added with has-one links", function() {
 
   Ember.run(function() {
     var jupiter,
-        io,
-        europa;
+        io;
 
     store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
@@ -137,8 +134,7 @@ test("new models can be added with has-many links", function() {
 
   Ember.run(function() {
     var jupiter,
-        io,
-        europa;
+        io;
 
     store.add('moon', {name: 'Io'}).then(function(moon) {
       io = moon;
@@ -163,8 +159,7 @@ test("hasOne relationships can be added, updated and removed", function() {
 
   Ember.run(function() {
     var jupiter,
-        io,
-        europa;
+        io;
 
     store.add('planet', {name: 'Jupiter'}).then(function(planet) {
       jupiter = planet;
@@ -217,8 +212,7 @@ test("hasOne relationships can be reloaded and return a record", function() {
 
  Ember.run(function() {
    var jupiter,
-       io,
-       europa;
+       io;
 
    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
      jupiter = planet;
@@ -242,8 +236,7 @@ test("hasOne relationships can be reloaded and return null", function() {
 
  Ember.run(function() {
    var jupiter,
-       io,
-       europa;
+       io;
 
    store.add('planet', {id: '123', name: 'Jupiter'}).then(function(planet) {
      jupiter = planet;
