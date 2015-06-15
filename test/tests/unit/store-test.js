@@ -72,7 +72,7 @@ test("it can specify a custom `orbitSourceClass` and `orbitSourceOptions`", func
   });
 
   var customStore = CustomStore.create({
-    container: new Ember.Container(),
+    container: new Ember.Registry().container(),
     schema: Schema.create()
   });
 
@@ -88,8 +88,9 @@ test("it uses a schema that's been specified", function() {
 });
 
 test("it creates a schema if none has been specified", function() {
-  var container = new Ember.Container();
-  container.register('schema:main', Schema);
+  var registry = new Ember.Registry();
+  var container = registry.container();
+  registry.register('schema:main', Schema);
 
   var store2 = Store.create({container: container});
   var schema2 = get(store2, 'schema');

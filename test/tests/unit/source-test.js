@@ -9,7 +9,7 @@ var source;
 module("Unit - Source", {
   setup: function() {
     Orbit.Promise = Ember.RSVP.Promise;
-    
+
     source = Source.create({
       schema: Schema.create(),
       orbitSourceClass: OCMemorySource
@@ -35,7 +35,7 @@ test("it can specify a custom `orbitSourceClass` and `orbitSourceOptions`", func
   });
 
   var customSource = CustomSource.create({
-    container: new Ember.Container(),
+    container: new Ember.Registry().container(),
     schema: Schema.create()
   });
 
