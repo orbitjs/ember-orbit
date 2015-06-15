@@ -4,6 +4,8 @@ import Store from 'ember-orbit/store';
 var createStore = function(options) {
   options = options || {};
 
+  Ember.MODEL_FACTORY_INJECTIONS = !!options.MODEL_FACTORY_INJECTIONS;
+
   var registry = new Ember.Registry();
   var container = registry.container();
   registry.register('schema:main', Schema);
