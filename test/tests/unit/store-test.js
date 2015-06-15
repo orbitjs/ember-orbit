@@ -1,6 +1,6 @@
 import Orbit from 'orbit';
 import OCLocalStorageSource from 'orbit-common/local-storage-source';
-import { RecordNotFoundException, RecordAlreadyExistsException } from 'orbit-common/lib/exceptions';
+import { RecordNotFoundException } from 'orbit-common/lib/exceptions';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
@@ -119,8 +119,8 @@ test("#find will asynchronously return a record when called with a `type` and a 
 
 test("#find will asynchronously fail if a record can't be found", function() {
   Ember.run(function() {
-    store.add('planet', {name: 'Earth'}).then(function(planet) {
-      store.find('planet', 'bogus').then(function(foundPlanet) {
+    store.add('planet', {name: 'Earth'}).then(function() {
+      store.find('planet', 'bogus').then(function() {
         ok(false);
       }, function(e) {
         ok(e instanceof RecordNotFoundException);
@@ -285,7 +285,7 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
       store.add('planet', {name: 'Jupiter'})
 
     ]).then(function() {
-      var planets = store.retrieve('planet');
+      var planets = Ember.A(store.retrieve('planet'));
       equal(planets.length, 2);
       equal(get(planets.objectAt(0), 'name'), 'Earth');
       equal(get(planets.objectAt(1), 'name'), 'Jupiter');

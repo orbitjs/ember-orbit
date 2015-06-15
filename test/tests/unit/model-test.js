@@ -1,4 +1,3 @@
-import Orbit from 'orbit';
 import key from 'ember-orbit/fields/key';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
@@ -108,7 +107,7 @@ test("#links returns defined links", function() {
 test("#create cannot be called directly on models", function() {
   throws(
     function() {
-      var earth = Planet.create();
+      Planet.create();
     },
     'You should not call `create` on a model'
   );

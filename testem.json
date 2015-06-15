@@ -6,6 +6,7 @@
     "test/**/*.js"
   ],
   "serve_files": [
+    "test/ember-env.js",
     "build/assets/loader.js",
     "build/assets/vendor.js",
     "build/assets/tests.amd.js",
