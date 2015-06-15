@@ -93,9 +93,10 @@ test("#defineModel defines models on the underlying Orbit schema", function() {
 test("#modelFor returns the appropriate model when passed a model's name", function() {
   var Planet = Model.extend();
 
-  var container = new Ember.Container();
-  container.register('schema:main', Schema);
-  container.register('model:planet', Planet);
+  var registry = new Ember.Registry();
+  var container = registry.container();
+  registry.register('schema:main', Schema);
+  registry.register('model:planet', Planet);
 
   set(schema, 'container', container);
 
@@ -124,11 +125,12 @@ test("#modelFor ensures that related models are also registered in the schema", 
     moons: hasMany('moon')
   });
 
-  var container = new Ember.Container();
-  container.register('schema:main', Schema);
-  container.register('model:planet', Planet);
-  container.register('model:star', Star);
-  container.register('model:moon', Moon);
+  var registry = new Ember.Registry();
+  var container = registry.container();
+  registry.register('schema:main', Schema);
+  registry.register('model:planet', Planet);
+  registry.register('model:star', Star);
+  registry.register('model:moon', Moon);
 
   set(schema, 'container', container);
 
