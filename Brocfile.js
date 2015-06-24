@@ -30,14 +30,14 @@ var globalizedLoader = new Funnel('build-support', {
   destDir: '/assets/'
 });
 
-var generatedBowerConfig = new Funnel('build-support', {
+var generatedPackageConfigs = new Funnel('build-support', {
   srcDir: '/',
   destDir: '/',
-  files: ['bower.json']
+  files: ['bower.json', 'package.json']
 });
 
-generatedBowerConfig = replace(generatedBowerConfig, {
-  files: ['bower.json'],
+generatedPackageConfigs = replace(generatedPackageConfigs, {
+  files: ['bower.json', 'package.json'],
   pattern: {
     match: /VERSION_PLACEHOLDER/,
     replacement: function() {
@@ -141,4 +141,4 @@ var testIndex = new Funnel('test', {
 
 module.exports = mergeTrees([loader, globalizedLoader, allMain,
   allGlobalized, mainWithTests, vendor, qunit, testSupport, testIndex,
-  generatedBowerConfig, buildExtras]);
+  generatedPackageConfigs, buildExtras]);
