@@ -156,7 +156,7 @@ test("new models can be added with has-one links", function() {
       });
 
     }).then(function() {
-      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet'), jupiter, 'Io has been assigned a planet');
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       equal(get(jupiter, 'moons.length'), 1, 'Jupiter now has one moon');
@@ -181,7 +181,7 @@ test("new models can be added with has-many links", function() {
       });
 
     }).then(function() {
-      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet'), jupiter, 'Io has been assigned a planet');
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       equal(get(jupiter, 'moons.length'), 1, 'Jupiter now has one moon');
@@ -206,12 +206,12 @@ test("hasOne relationships can be added, updated and removed", function() {
       });
 
     }).then(function() {
-      equal(get(io, 'planet.content'), null, 'Io has not been assigned a planet');
+      equal(get(io, 'planet'), null, 'Io has not been assigned a planet');
       equal(get(io, 'planet.name'), null, 'Io\'s planet does not yet have a name');
 
       set(io, 'planet', jupiter);
 
-      equal(get(io, 'planet.content'), jupiter, 'Io has been assigned a planet');
+      equal(get(io, 'planet'), jupiter, 'Io has been assigned a planet');
       equal(get(io, 'planet.name'), 'Jupiter', 'Io\'s planet is named Jupiter');
 
       // Check internals of source
@@ -229,7 +229,7 @@ test("hasOne relationships can be added, updated and removed", function() {
 
       set(io, 'planet', undefined);
 
-      equal(get(io, 'planet.content'), undefined, 'Io has not been assigned a planet');
+      equal(get(io, 'planet'), undefined, 'Io has not been assigned a planet');
       equal(get(io, 'planet.name'), undefined, 'Io\'s planet does not yet have a name');
 
       return store.settleTransforms();
@@ -262,7 +262,7 @@ test("hasOne relationships can be reloaded and return a record", function() {
 
    }).then(function(planet) {
      strictEqual(planet, jupiter, 'planet is looked up correctly');
-     strictEqual(get(io, 'planet.content'), jupiter, 'planet has been set correctly in object proxy');
+     strictEqual(get(io, 'planet'), jupiter, 'planet has been set correctly in object proxy');
    });
  });
 });
