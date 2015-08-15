@@ -4,8 +4,10 @@
   "dependencies": {
     "ember": "^2.0.0",
     "orbit.js": "~0.7.0"
+  },
+  "devDependencies": {
     "jquery": "~1.11.1",
-    "qunit": "~1.17.1",
+    "qunit": "~1.18.0",
     "loader": "stefanpenner/loader.js#1.0.1"
   }
 }
