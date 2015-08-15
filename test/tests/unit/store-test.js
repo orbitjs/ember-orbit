@@ -212,6 +212,26 @@ test("#find will asynchronously return an array of records when called with a `t
   });
 });
 
+test("#find passes options through to find on the orbit source", function(){
+  expect(1);
+
+  var options = {include: 'moons'};
+  store.orbitSource.find = sinon.stub().returns(Ember.RSVP.resolve({}));
+
+  store.find('planet', 'planet1', options);
+  ok(store.orbitSource.find.calledWith('planet', 'planet1', options), "options were passed through");
+});
+
+test("#findLinked passes options through to findLinked on the orbit source", function(){
+  expect(1);
+
+  var options = {include: 'moons'};
+  store.orbitSource.findLinked = sinon.stub().returns(Ember.RSVP.resolve({}));
+
+  store.findLinked('planet', 'planet1', 'moons', options);
+  ok(store.orbitSource.findLinked.calledWith('planet', 'planet1', 'moons', options), "options were passed through");
+});
+
 test("#remove will asynchronously remove a record when called with a `type` and a single `id`", function() {
   expect(2);
 
@@ -292,6 +312,17 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
       equal(get(planets.objectAt(1), 'name'), 'Jupiter');
     });
   });
+});
+
+test("#retrieveLinks throws an error if the link hasn't been loaded yet", function(){
+  store.orbitSource.retrieve = sinon.stub().withArgs(['planet', 'planet1', '__rel', 'moons']).returns(undefined);
+
+  try {
+    store.retrieveLinks('planet', 'planet1', 'moons');
+  }
+  catch(error){
+    equal(error.message, "Link planet/planet1/moons is not loaded. Add it to your includes e.g. find('planet', 'planet1', {include: ['moons']})");
+  }
 });
 
 test("#all returns a live RecordArray that stays in sync with records of one type", function() {
