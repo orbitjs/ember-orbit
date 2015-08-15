@@ -2,9 +2,9 @@
   "name": "ember-orbit",
   "private": true,
   "dependencies": {
+    "ember": "^2.0.0",
     "jquery": "~1.11.1",
     "qunit": "~1.17.1",
-    "ember": "~1.13.0",
     "orbit.js": "~0.6.0",
     "loader": "stefanpenner/loader.js#1.0.1"
   }
