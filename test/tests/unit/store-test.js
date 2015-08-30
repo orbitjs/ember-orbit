@@ -186,7 +186,7 @@ test("#find will asynchronously return an array of all records when called with 
   });
 });
 
-test("#find will asynchronously return an array of records when called with a `type` and a query object", function() {
+test("#query will asynchronously return an array of records when called with a `type` and a query object", function() {
   expect(2);
 
   Ember.run(function() {
@@ -203,7 +203,7 @@ test("#find will asynchronously return an array of records when called with a `t
       ids.push(get(planet, 'primaryId'));
 
     }).then(function() {
-      store.find('planet', {name: 'Jupiter'}).then(function(foundPlanets) {
+      store.query('planet', {name: 'Jupiter'}).then(function(foundPlanets) {
         equal(foundPlanets.length, 1, 'only one planet is named "Jupiter"');
 
         strictEqual(foundPlanets[0], planets[1], 'found planet matches created planet');
@@ -372,46 +372,45 @@ test("#filter returns a live RecordArray that stays in sync with filtered record
     equal(get(atmosphericPlanets, 'length'), 0, 'no records have been added yet');
 
     Ember.RSVP.all([
-      store.add('planet', {name: 'Jupiter', classification: 'gas giant', atmosphere: true}),
-      store.add('planet', {name: 'Venus', classification: 'terrestrial', atmosphere: true}),
-      store.add('planet', {name: 'Mercury', classification: 'terrestrial', atmosphere: false})
+        store.add('planet', {name: 'Jupiter', classification: 'gas giant', atmosphere: true}),
+        store.add('planet', {name: 'Venus', classification: 'terrestrial', atmosphere: true}),
+        store.add('planet', {name: 'Mercury', classification: 'terrestrial', atmosphere: false})
+      ])
+      .then(function() {
+        equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+        equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
+        equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
 
-    ]).then(function() {
-      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
-      equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
-      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
+        return store.add('planet', {name: 'Earth', classification: 'terrestrial', atmosphere: true});
+      })
+      .then(function(earth) {
+        equal(get(allPlanets, 'length'), 4, '4 total planets have been added');
+        equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
+        equal(get(atmosphericPlanets, 'length'), 3, '3 atmospheric planets have been added');
 
-      return store.add('planet', {name: 'Earth', classification: 'terrestrial', atmosphere: true});
+        return store.remove('planet', earth);
+      })
+      .then(function() {
+        equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+        equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
+        equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
 
-    }).then(function(earth) {
-
-      equal(get(allPlanets, 'length'), 4, '4 total planets have been added');
-      equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
-      equal(get(atmosphericPlanets, 'length'), 3, '3 atmospheric planets have been added');
-
-      return store.remove('planet', earth);
-
-    }).then(function() {
-      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
-      equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
-      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
-
-      return store.find('planet', {name: 'Jupiter'});
-
-    }).then(function(planetsNamedJupiter) {
-      Ember.run(function() {
-        set(planetsNamedJupiter[0], 'classification', 'terrestrial'); // let's just pretend :)
+        return store.query('planet', {name: 'Jupiter'});
+      })
+      .then(function(planetsNamedJupiter) {
+        Ember.run(function() {
+          set(planetsNamedJupiter[0], 'classification', 'terrestrial'); // let's just pretend :)
+        });
+      })
+      .then(function() {
+        equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
+        equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
+        equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
       });
-
-    }).then(function() {
-      equal(get(allPlanets, 'length'), 3, '3 total planets have been added');
-      equal(get(terrestrialPlanets, 'length'), 3, '3 terrestrial planets have been added');
-      equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
-    });
   });
 });
 
-test("#filter can be passed a query object for `find` and the resulting live RecordArray will stay in sync with a filter function", function() {
+test("#filter can be passed a query object for `query` and the resulting live RecordArray will stay in sync with a filter function", function() {
   expect(13);
 
   Ember.run(function() {
@@ -459,7 +458,7 @@ test("#filter can be passed a query object for `find` and the resulting live Rec
       equal(get(terrestrialPlanets, 'length'), 2, '2 terrestrial planets have been added');
       equal(get(atmosphericPlanets, 'length'), 2, '2 atmospheric planets have been added');
 
-      return store.find('planet', {name: 'Jupiter'});
+      return store.query('planet', {name: 'Jupiter'});
 
     }).then(function(planetsNamedJupiter) {
       Ember.run(function() {
