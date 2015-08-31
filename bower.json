@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "ember": "^2.0.0",
-    "orbit.js": "~0.7.0"
+    "orbit.js": "~0.7.0-beta.2"
   },
   "devDependencies": {
     "jquery": "~1.11.1",
