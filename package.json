@@ -34,6 +34,7 @@
   "devDependencies": {
     "bower": "^1.3.12",
     "broccoli": "^0.13.0",
+    "broccoli-babel-transpiler": "^5.5.0",
     "broccoli-cli": "0.0.1",
     "broccoli-es6modules": "^0.4.0",
     "broccoli-funnel": "^0.1.6",
