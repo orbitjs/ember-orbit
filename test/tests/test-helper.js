@@ -1,3 +1,4 @@
+import './support/rsvp-extension';
 import Schema from 'ember-orbit/schema';
 import Store from 'ember-orbit/store';
 
