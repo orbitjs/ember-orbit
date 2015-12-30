@@ -8,5 +8,5 @@
       return this.then(function (result) {
         return RSVP.Promise.resolve(callback(result)).then(() => result);
       });
-    }
+    };
 })(Ember.RSVP);
