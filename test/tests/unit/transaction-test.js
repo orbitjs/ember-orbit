@@ -1,10 +1,11 @@
+import { createStore } from 'tests/test-helper';
 import Orbit from 'orbit';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Transaction from 'ember-orbit/transaction';
 import Model from 'ember-orbit/model';
-import { createStore } from 'tests/test-helper';
+
 
 var get = Ember.get;
 // var set = Ember.set;

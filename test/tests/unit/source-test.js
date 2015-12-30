@@ -1,3 +1,4 @@
+import 'tests/test-helper';
 import Orbit from 'orbit';
 import Source from 'ember-orbit/source';
 import Schema from 'ember-orbit/schema';
