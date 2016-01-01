@@ -64,7 +64,7 @@ module('Integration - Model', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         jupiter.get('moons').pushObject(callisto);
-        return store.settleTransforms();
+        return store;
       })
       .then(([jupiter, callisto]) => {
         assert.ok(jupiter.get('moons').contains(callisto), 'added record to hasMany');
@@ -85,7 +85,7 @@ module('Integration - Model', function(hooks) {
       .tap(([jupiter, callisto]) => store.addToHasMany(jupiter, 'moons', callisto))
       .tap(([jupiter, callisto]) => {
         jupiter.get('moons').removeObject(callisto);
-        return store.settleTransforms();
+        return store;
       })
       .then(([jupiter, callisto]) => {
         assert.ok(!jupiter.get('moons').contains(callisto), 'removed record from hasMany');
@@ -105,7 +105,7 @@ module('Integration - Model', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', jupiter);
-        return store.settleTransforms();
+        return store;
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), jupiter, 'replaced hasOne with record');
@@ -126,7 +126,7 @@ module('Integration - Model', function(hooks) {
       .tap(([jupiter, callisto]) => store.replaceHasOne(callisto, 'planet', jupiter))
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', null);
-        return store.settleTransforms();
+        return store;
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), null, 'replaced hasOne with null');
