@@ -44,11 +44,12 @@ module('Integration - Model', function(hooks) {
   test('remove model', function(assert) {
     Ember.run(() => {
       const done = assert.async();
+      const cache = store.get('cache');
 
       store
         .addRecord({type: 'star', name: 'The Sun'})
         .tap(record => record.remove())
-        .then(record => assert.ok(store.findRecord('star', record.get('id'))))
+        .then(record => assert.ok(!cache.retrieve(['star', record.get('id')])))
         .then(done);
     });
   });
