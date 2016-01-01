@@ -135,7 +135,6 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-
       Ember.RSVP.Promise.all([
         store.addRecord({type: 'planet', name: 'Jupiter'}),
         store.addRecord({type: 'moon', name: 'Callisto'})
@@ -148,6 +147,15 @@ module('Integration - Cache', function(hooks) {
         assert.equal(cache.retrieveHasOne(callisto, 'planet'), jupiter);
         done();
       });
+    });
+  });
+
+  test('#retrieveRecord', function(assert) {
+    Ember.run(() => {
+      store
+        .addRecord({type: 'planet', name: 'Jupiter'})
+        .then((record) => cache.retrieveRecord('planet', record.get('id')))
+        .then((retrievedRecord) => assert.ok(retrievedRecord, 'retrieved record'));
     });
   });
 });
