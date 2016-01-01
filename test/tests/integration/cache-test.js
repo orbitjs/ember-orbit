@@ -105,14 +105,14 @@ module('Integration - Cache', function(hooks) {
   });
 
 
-  test('#getAttribute', function(assert) {
+  test('#retrieveAttribute', function(assert) {
     const done = assert.async();
 
     Ember.run(() => {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .then((jupiter) => {
-          assert.equal(cache.getAttribute(jupiter, 'name'), 'Jupiter');
+          assert.equal(cache.retrieveAttribute(jupiter, 'name'), 'Jupiter');
           done();
         });
     });
@@ -131,7 +131,7 @@ module('Integration - Cache', function(hooks) {
     });
   });
 
-  test('#getHasOne', function(assert) {
+  test('#retrieveHasOne', function(assert) {
     const done = assert.async();
 
     Ember.run(() => {
@@ -145,7 +145,7 @@ module('Integration - Cache', function(hooks) {
         return store.settleTransforms();
       })
       .then(([jupiter, callisto]) => {
-        assert.equal(cache.getHasOne(callisto, 'planet'), jupiter);
+        assert.equal(cache.retrieveHasOne(callisto, 'planet'), jupiter);
         done();
       });
     });
