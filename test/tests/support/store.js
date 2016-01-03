@@ -21,8 +21,8 @@ var createStore = function(options) {
       registry.register('model:' + prop, models[prop]);
     }
   }
-
-  return container.lookup('store:main');
+  const store =  container.lookup('store:main');
+  return store;
 };
 
 export { createStore };
