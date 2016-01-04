@@ -49,7 +49,11 @@ module('Integration - Model', function(hooks) {
       store
         .addRecord({type: 'star', name: 'The Sun'})
         .tap(record => record.remove())
-        .then(record => assert.ok(!cache.retrieve(['star', record.get('id')])))
+        .then(record => {
+          assert.ok(!cache.retrieve(['star', record.get('id')]));
+          assert.ok(record.get('disconnected'), 'record has been disconnected from store');
+          assert.throws(() => record.get('name'), Ember.Error, 'record has been removed from Store');
+        })
         .then(done);
     });
   });
