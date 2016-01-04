@@ -147,4 +147,20 @@ module('Integration - Model', function(hooks) {
         .then(done);
     });
   });
+
+  test('destroy model', function(assert) {
+    Ember.run(() => {
+      const done = assert.async();
+      const cache = store.get('cache');
+
+      store
+        .addRecord({type: 'planet', name: 'Jupiter'})
+        .tap(record => record.destroy())
+        .then(record => {
+          const identifier = record.getProperties('type', 'id');
+          assert.ok(!cache.get('_identityMap').contains(identifier), 'removed from identity map');
+        })
+        .then(done);
+    });
+  });
 });

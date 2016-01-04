@@ -12,8 +12,6 @@ var Planet,
     Moon,
     Star;
 
-const skip = QUnit.skip;
-
 module("Unit - Model", {
   setup: function() {
     Planet = Model.extend({
@@ -114,28 +112,4 @@ test("#create cannot be called directly on models", function() {
     },
     'You should not call `create` on a model'
   );
-});
-
-skip("#destroy emits didUnload event and notifies store", function() {
-  expect(3);
-
-  var mockStore = {
-    unload: function(type, id) {
-      equal(type, mockTypeKey);
-      equal(id, mockPlanetId);
-      start();
-    }
-  };
-  var mockPlanetId = "1";
-  var mockTypeKey = Planet.typeKey = "test-type-key";
-
-  var planet = Planet._create(mockStore, mockPlanetId);
-
-  stop();
-
-  planet.on('didUnload', function() {
-    ok(true, 'didUnload event fired');
-  });
-
-  planet.destroy();
 });
