@@ -1,22 +1,24 @@
-import 'tests/test-helper';
+import {
+  dummyModels,
+  createStore
+} from 'tests/test-helper';
 import Orbit from 'orbit';
-import OrbitSchema from 'orbit-common/schema';
 import Schema from 'ember-orbit/schema';
-import attr from 'ember-orbit/fields/attr';
-import hasOne from 'ember-orbit/fields/has-one';
-import hasMany from 'ember-orbit/fields/has-many';
-import Model from 'ember-orbit/model';
+
+const { Planet, Moon, Star } = dummyModels;
 
 const set = Ember.set;
 
-let schema;
-
 module("Integration - Schema", function(hooks) {
+  let store;
+  let schema;
+
   hooks.beforeEach(function() {
     Orbit.Promise = Ember.RSVP.Promise;
-    const orbitSchema = new OrbitSchema();
 
-    schema = Schema.create({_orbitSchema: orbitSchema});
+    const models = { planet: Planet, moon: Moon, star: Star };
+    store = createStore({ models });
+    schema = store.get('schema');
   });
 
   hooks.afterEach(function() {
@@ -28,34 +30,11 @@ module("Integration - Schema", function(hooks) {
   });
 
   test("#defineModel defines models on the underlying Orbit schema", function() {
-    let Star;
-    let Moon;
-    let Planet;
+    schema.modelFor('planet');
 
-    Star = Model.extend({
-      name: attr('string'),
-      planets: hasMany('planet')
-    });
+    deepEqual(schema.models(), ['planet', 'star', 'moon']);
 
-    Moon = Model.extend({
-      name: attr('string'),
-      planet: hasOne('planet')
-    });
-
-    Planet = Model.extend({
-      name: attr('string'),
-      classification: attr('string'),
-      sun: hasOne('star'),
-      moons: hasMany('moon')
-    });
-
-    schema.defineModel('star', Star);
-    schema.defineModel('moon', Moon);
-    schema.defineModel('planet', Planet);
-
-    deepEqual(schema.models(), ['star', 'moon', 'planet']);
-
-    deepEqual(schema.attributes('star'), ['name']);
+    deepEqual(schema.attributes('star'), ['name', 'isStable']);
     deepEqual(schema.relationships('star'), ['planets']);
     deepEqual(schema.attributeProperties('star', 'name'), {
       type: "string"
@@ -71,11 +50,12 @@ module("Integration - Schema", function(hooks) {
       type: "string"
     });
     deepEqual(schema.relationshipProperties('moon', 'planet'), {
+      inverse: "moons",
       type:  "hasOne",
       model: "planet"
     });
 
-    deepEqual(schema.attributes('planet'), ['name', 'classification']);
+    deepEqual(schema.attributes('planet'), ['name', 'atmosphere', 'classification']);
     deepEqual(schema.relationships('planet'), ['sun', 'moons']);
     deepEqual(schema.attributeProperties('planet', 'name'), {
       type: "string"
@@ -88,48 +68,20 @@ module("Integration - Schema", function(hooks) {
       model: "star"
     });
     deepEqual(schema.relationshipProperties('planet', 'moons'), {
+      inverse: "planet",
       type:  "hasMany",
       model: "moon"
     });
   });
 
   test("#modelFor returns the appropriate model when passed a model's name", function() {
-    const Planet = Model.extend();
-
-    const registry = new Ember.Registry();
-    const container = registry.container();
-    registry.register('schema:main', Schema);
-    registry.register('model:planet', Planet);
-
-    set(schema, 'container', container);
-
     equal(schema.modelFor('planet'), Planet);
   });
 
   test("#modelFor ensures that related models are also registered in the schema", function() {
-    let Star;
-    let Moon;
-    let Planet;
-
-    Star = Model.extend({
-      name: attr('string'),
-      planets: hasMany('planet')
-    });
-
-    Moon = Model.extend({
-      name: attr('string'),
-      planet: hasOne('planet')
-    });
-
-    Planet = Model.extend({
-      name: attr('string'),
-      classification: attr('string'),
-      sun: hasOne('star'),
-      moons: hasMany('moon')
-    });
-
     const registry = new Ember.Registry();
     const container = registry.container();
+
     registry.register('schema:main', Schema);
     registry.register('model:planet', Planet);
     registry.register('model:star', Star);
@@ -142,5 +94,43 @@ module("Integration - Schema", function(hooks) {
     schema.modelFor('planet');
 
     deepEqual(schema.models(), ['planet', 'star', 'moon'], 'all related models have been registered');
+  });
+
+  test('#normalize', function(assert) {
+    const done = assert.async();
+
+    Ember.RSVP.Promise.all([
+      store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
+      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'}),
+    ])
+    .then(([callisto, sun]) => {
+      const normalized = schema.normalize({
+        type: 'planet',
+        id: 'jupiter',
+        name: 'Jupiter',
+        moons: [callisto],
+        sun: sun
+      });
+
+      assert.equal(normalized.id, 'jupiter', 'normalized id');
+      assert.equal(normalized.type, 'planet', 'normalized type');
+      assert.deepEqual(normalized.keys, { galaxyAlias: undefined, id: 'jupiter' }, 'normalized keys');
+      assert.deepEqual(normalized.attributes, { atmosphere: false, classification: undefined, name: 'Jupiter' });
+      assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
+      assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');
+
+      done();
+    });
+  });
+
+  test('#normalize - undefined relationships', function(assert) {
+    const normalized = schema.normalize({
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter'
+    });
+
+    assert.deepEqual(normalized.relationships.moons, { data: {} }, 'normalized hasMany');
+    assert.deepEqual(normalized.relationships.sun, { data: null }, 'normalized hasOne');
   });
 });
