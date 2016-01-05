@@ -53,10 +53,6 @@ test("#keys returns a single key, `id`, by default", function() {
   equal(names[0], 'id');
 });
 
-test("#primaryKey returns `id` by default", function() {
-  equal(get(Planet, 'primaryKey'), 'id');
-});
-
 test("#keys returns defined custom secondary keys", function() {
   var keys,
       names;
