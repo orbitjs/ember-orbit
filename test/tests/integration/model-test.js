@@ -28,11 +28,12 @@ module('Integration - Model', function(hooks) {
       ])
       .then(([theSun, callisto]) => {
         store
-          .addRecord({type: 'planet', name: 'Jupiter', star: theSun, moons: [callisto]})
+          .addRecord({type: 'planet', galaxyAlias: 'planet:jupiter', name: 'Jupiter', star: theSun, moons: [callisto]})
           .then(record => {
             assert.ok(record.get('id'), 'assigned id');
             assert.equal(record.get('name'), 'Jupiter', 'assigned specified attribute');
             assert.equal(record.get('atmosphere'), false, 'assigned default value for unspecified attribute');
+            assert.equal(record.get('galaxyAlias'), 'planet:jupiter', 'assigned secondary key');
             assert.equal(record.get('star'), theSun, 'assigned hasOne');
             assert.deepEqual(record.get('moons.firstObject'), callisto, 'assigned hasMany');
             done();
@@ -148,6 +149,18 @@ module('Integration - Model', function(hooks) {
         .addRecord({type: 'planet', name: 'Jupiter'})
         .tap(record => record.set('name', 'Jupiter2'))
         .then(record => assert.equal(record.get('name'), 'Jupiter2'))
+        .then(done);
+    });
+  });
+
+  test('replace key', function(assert) {
+    Ember.run(() => {
+      const done = assert.async();
+
+      store
+        .addRecord({type: 'planet', name: 'Jupiter', galaxyAlias: 'planet:jupiter'})
+        .tap(record => record.set('galaxyAlias', 'planet:joopiter'))
+        .then(record => assert.equal(record.get('galaxyAlias'), 'planet:joopiter'))
         .then(done);
     });
   });
