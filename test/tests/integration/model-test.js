@@ -34,8 +34,8 @@ module('Integration - Model', function(hooks) {
             assert.equal(record.get('name'), 'Jupiter', 'assigned specified attribute');
             assert.equal(record.get('atmosphere'), false, 'assigned default value for unspecified attribute');
             assert.equal(record.get('galaxyAlias'), 'planet:jupiter', 'assigned secondary key');
-            assert.equal(record.get('star'), theSun, 'assigned hasOne');
-            assert.deepEqual(record.get('moons.firstObject'), callisto, 'assigned hasMany');
+            // assert.equal(record.get('star'), theSun, 'assigned hasOne');
+            // assert.deepEqual(record.get('moons.firstObject'), callisto, 'assigned hasMany');
             done();
           });
       });
