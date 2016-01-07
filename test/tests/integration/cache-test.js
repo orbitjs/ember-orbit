@@ -42,6 +42,7 @@ module('Integration - Cache', function(hooks) {
         .addRecord({type: 'planet', name: 'Jupiter2'})
         .tap(jupiter => store.replaceAttribute(jupiter, 'name', 'Jupiter'))
         .then(jupiter => assert.ok(planets.contains(jupiter)))
+        .then(() => assert.equal(planets.get('length'), 1))
         .then(() => done());
     });
   });
