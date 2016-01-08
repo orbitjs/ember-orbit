@@ -1,3 +1,4 @@
+import 'tests/test-helper';
 import key from 'ember-orbit/fields/key';
 import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
@@ -52,10 +53,6 @@ test("#keys returns a single key, `id`, by default", function() {
   equal(names[0], 'id');
 });
 
-test("#primaryKey returns `id` by default", function() {
-  equal(get(Planet, 'primaryKey'), 'id');
-});
-
 test("#keys returns defined custom secondary keys", function() {
   var keys,
       names;
@@ -83,23 +80,23 @@ test("#attributes returns defined attributes", function() {
   equal(keys[1], 'classification');
 });
 
-test("#links returns defined links", function() {
-  var links,
+test("#relationships returns defined relationships", function() {
+  var relationships,
       keys;
 
-  links = get(Planet, 'links');
-  keys = Object.keys(links);
+  relationships = get(Planet, 'relationships');
+  keys = Object.keys(relationships);
   equal(keys.length, 2);
   equal(keys[0], 'sun');
   equal(keys[1], 'moons');
 
-  links = get(Moon, 'links');
-  keys = Object.keys(links);
+  relationships = get(Moon, 'relationships');
+  keys = Object.keys(relationships);
   equal(keys.length, 1);
   equal(keys[0], 'planet');
 
-  links = get(Star, 'links');
-  keys = Object.keys(links);
+  relationships = get(Star, 'relationships');
+  keys = Object.keys(relationships);
   equal(keys.length, 1);
   equal(keys[0], 'planets');
 });
@@ -111,28 +108,4 @@ test("#create cannot be called directly on models", function() {
     },
     'You should not call `create` on a model'
   );
-});
-
-test("#destroy emits didUnload event and notifies store", function() {
-  expect(3);
-
-  var mockStore = {
-    unload: function(type, id) {
-      equal(type, mockTypeKey);
-      equal(id, mockPlanetId);
-      start();
-    }
-  };
-  var mockPlanetId = "1";
-  var mockTypeKey = Planet.typeKey = "test-type-key";
-
-  var planet = Planet._create(mockStore, mockPlanetId);
-
-  stop();
-
-  planet.on('didUnload', function() {
-    ok(true, 'didUnload event fired');
-  });
-
-  planet.destroy();
 });

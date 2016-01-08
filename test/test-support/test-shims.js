@@ -4,7 +4,7 @@
 define('rsvp', [], function() {
   "use strict";
 
-  return RSVP;
+  return Ember.RSVP;
 });
 })();
 
