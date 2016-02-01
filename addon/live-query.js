@@ -26,21 +26,20 @@ export default ReadOnlyArrayProxy.extend({
     });
   },
 
-  _addRecord(operation) {
+  _addRecordToSet(operation) {
     const record = this._recordFor(operation);
     this.get('content').pushObject(record);
   },
 
-  _removeRecord(operation) {
+  _removeRecordFromSet(operation) {
     const record = this._recordFor(operation);
     this.get('content').removeObject(record);
   },
 
   _recordFor(operation) {
     const identityMap = this.get('_identityMap');
-    const [type, id] = operation.path;
+    const [type, id] = operation.path[0].split(':');
     const record = identityMap.lookup({id, type});
-
     return record;
   }
 });

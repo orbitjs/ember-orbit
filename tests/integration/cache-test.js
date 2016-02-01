@@ -2,7 +2,7 @@ import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 
 import Orbit from 'orbit';
-import { queryExpression as oqe } from 'orbit-common/oql/expressions';
+import { queryExpression as oqe } from 'orbit/query/expression';
 const { Planet, Moon, Star } = dummyModels;
 
 
@@ -30,11 +30,10 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery({
-        oql:
-          oqe('filter',
-            oqe('recordsOfType', 'planet'),
-            oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')) });
+      const planets = cache.liveQuery(
+        oqe('filter',
+          oqe('recordsOfType', 'planet'),
+          oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')) );
 
       store
         .addRecord({type: 'planet', name: 'Jupiter2'})
@@ -49,7 +48,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery({oql: oqe('recordsOfType', 'planet')});
+      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
@@ -62,7 +61,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery({oql: oqe('recordsOfType', 'planet')});
+      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
@@ -76,7 +75,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery({oql: oqe('recordsOfType', 'planet')});
+      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
 
       store
         .addRecord({type: 'moon', name: 'Callisto'})
@@ -89,11 +88,10 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery({
-        oql:
-          oqe('filter',
-            oqe('recordsOfType', 'planet'),
-            oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')) });
+      const planets = cache.liveQuery(
+        oqe('filter',
+          oqe('recordsOfType', 'planet'),
+          oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})

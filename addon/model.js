@@ -1,7 +1,7 @@
 import HasMany from './relationships/has-many';
 import key from 'ember-orbit/fields/key';
 import { uuid } from 'orbit/lib/uuid';
-import { queryExpression as oqe } from 'orbit-common/oql/expressions';
+import { queryExpression as oqe } from 'orbit/query/expression';
 
 /**
  @module ember-orbit
@@ -54,7 +54,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
     const type = get(this.constructor, 'typeKey');
     const id = get(this, 'id');
 
-    const query = {oql: oqe('relatedRecords', type, id, field)};
+    const query = oqe('relatedRecords', type, id, field);
 
     return HasMany.create({
       content: cache.liveQuery(query),
