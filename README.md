@@ -461,7 +461,8 @@ yuidoc .
 
 Ember-Orbit owes a great deal to [Ember Data](https://github.com/emberjs/data),
 not only for the design of several interfaces but also for the base code used to
-manage record arrays.
+manage record arrays. Many thanks to the Ember Data Core Team, including
+Yehuda Katz, Tom Dale, and Igor Terzic, for their work.
 
 It is hoped that, by tracking Ember Data's features and interfaces where
 possible, Ember Orbit will also be able to contribute back to Ember Data.
