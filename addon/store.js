@@ -17,7 +17,6 @@ var Store = Ember.Object.extend({
 
   init: function(...args) {
     this._super(...args);
-
     const { orbitStore, container } = this.getProperties('orbitStore', 'container');
 
     Ember.assert(get(this, 'orbitStore'), 'orbitStore is required');

@@ -1,28 +1,39 @@
+import Ember from 'ember';
 import Store from 'ember-orbit/store';
 import OrbitStore from 'orbit-common/store';
 import OrbitSchema from 'orbit-common/schema';
+import Owner from './owner';
 
-var createStore = function(options) {
+function createOwner() {
+  const registry = new Ember.Registry();
+  const owner = new Owner({ __registry__: registry});
+  const container = registry.container({ owner });
+
+  owner.__container__ = container;
+
+  return owner;
+}
+
+function createStore(options) {
   options = options || {};
 
   Ember.MODEL_FACTORY_INJECTIONS = !!options.MODEL_FACTORY_INJECTIONS;
 
-  const registry = new Ember.Registry();
-  const container = registry.container();
+  const owner = createOwner();
 
   const orbitSchema = new OrbitSchema();
   const orbitStore = new OrbitStore({ schema: orbitSchema });
-  registry.register('service:orbitStore', orbitStore, { instantiate: false });
-  registry.register('store:main', Store);
+  owner.register('service:orbitStore', orbitStore, { instantiate: false });
+  owner.register('store:main', Store);
 
-  const models = options.models;
+ const models = options.models;
   if (models) {
     for (let prop in models) {
-      registry.register('model:' + prop, models[prop]);
+      owner.register('model:' + prop, models[prop]);
     }
   }
-  const store =  container.lookup('store:main');
+  const store = owner.lookup('store:main');
   return store;
-};
+}
 
-export { createStore };
+export { createOwner, createStore };
