@@ -1,13 +1,52 @@
 import Schema from 'ember-orbit/schema';
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
-import { operationType } from 'orbit-common/lib/operations';
 
 /**
  @module ember-orbit
  */
 
-const get = Ember.get;
+const {
+  get,
+  RSVP
+} = Ember;
+
+class PromiseTracker {
+  constructor() {
+    this._pending = [];
+    this._reset();
+  }
+
+  track(promise) {
+    console.debug('tracking', promise);
+    this._pending.push(promise);
+
+    return promise.finally(result => this._fulfill(promise));
+  }
+
+  fulfillAll() {
+    return this._onEmpty.promise.tap(() => console.debug('fulfillAll'));
+  }
+
+  _reset() {
+    this._onEmpty = RSVP.defer();
+  }
+
+  _fulfill(promise) {
+    console.debug('fulfilled', promise);
+    this._remove(promise);
+
+    if (this._pending.length === 0) {
+      this._onEmpty.resolve();
+      this._reset();
+    }
+  }
+
+  _remove(promise) {
+    const index = this._pending.indexOf(promise);
+    this._pending.splice(index, 1);
+  }
+}
 
 var Store = Ember.Object.extend({
   orbitStore: Ember.inject.service('orbitStore'),
@@ -17,7 +56,6 @@ var Store = Ember.Object.extend({
 
   init: function(...args) {
     this._super(...args);
-
     const { orbitStore, container } = this.getProperties('orbitStore', 'container');
 
     Ember.assert(get(this, 'orbitStore'), 'orbitStore is required');
@@ -29,11 +67,12 @@ var Store = Ember.Object.extend({
     const cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
 
     this.setProperties({ schema, cache });
-    orbitCache.on('patch', this._didPatch, this);
+    orbitCache.patches.subscribe(operation => this._didPatch(operation));
+    this._transformTracker = new PromiseTracker();
   },
 
-  then: function(success, failure) {
-    return this.get('orbitStore').settleTransforms().then(success, failure);
+  then: function(success, error) {
+    return this._transformTracker.fulfillAll().tap(() => console.debug('then')).then(success, error);
   },
 
   willDestroy: function() {
@@ -53,57 +92,36 @@ var Store = Ember.Object.extend({
   //   return this._request(promise);
   // },
 
+  transform(...args) {
+    const orbitStore = this.get('orbitStore');
+    const transformTracker = this.get('_transformTracker');
+
+    const promisedTransform = orbitStore.transform(...args);
+    transformTracker.track(promisedTransform);
+
+    return promisedTransform;
+  },
+
   addRecord(properties = {}) {
     const { schema, orbitStore } = this.getProperties('schema', 'orbitStore');
 
     this._verifyType(properties.type);
 
     const normalizedProperties = schema.normalize(properties);
-    return orbitStore.addRecord(normalizedProperties).then(data => {
-      return this._identityMap.lookup(data);
+    return orbitStore.update(t => t.addRecord(normalizedProperties)).then(() => {
+      const { type, id } = normalizedProperties;
+      return this._identityMap.lookup({ type, id });
     });
   },
 
   findRecord(type, id) {
-    return this.get('orbitStore')
-      .findRecord(type, id)
+    return this
+      .get('orbitStore').query(q => q.record({type, id}))
       .then(record => this._identityMap.lookup(record));
   },
 
   removeRecord(record) {
-    const identifier = this._identityMap.identifier(record);
-    return this.get('orbitStore').removeRecord(identifier);
-  },
-
-  replaceKey(record, attribute, value) {
-    const identifier = this._identityMap.identifier(record);
-    return this.get('orbitStore').replaceKey(identifier, attribute, value);
-  },
-
-  replaceAttribute(record, attribute, value) {
-    const identifier = this._identityMap.identifier(record);
-    return this.get('orbitStore').replaceAttribute(identifier, attribute, value);
-  },
-
-  addToHasMany(record, relationship, value) {
-    const recordIdentifier = this._identityMap.identifier(record);
-    const valueIdentifier = this._identityMap.identifier(value);
-
-    return this.get('orbitStore').addToHasMany(recordIdentifier, relationship, valueIdentifier);
-  },
-
-  removeFromHasMany(record, relationship, value) {
-    const recordIdentifier = this._identityMap.identifier(record);
-    const valueIdentifier = this._identityMap.identifier(value);
-
-    return this.get('orbitStore').removeFromHasMany(recordIdentifier, relationship, valueIdentifier);
-  },
-
-  replaceHasOne(record, relationship, value) {
-    const recordIdentifier = this._identityMap.identifier(record);
-    const valueIdentifier = value && this._identityMap.identifier(value);
-
-    return this.get('orbitStore').replaceHasOne(recordIdentifier, relationship, valueIdentifier);
+    return this.get('orbitStore').transform(t => t.removeRecord(record.getIdentifier()));
   },
 
   _verifyType(type) {
@@ -111,12 +129,14 @@ var Store = Ember.Object.extend({
   },
 
   _didPatch: function(operation) {
+    console.debug('didPatch', operation);
     const { path } = operation;
-    const record = this._identityMap.lookup({type: path[0], id: path[1]});
+    const { type, id } = operation.record;
+    const record = this._identityMap.lookup({ type, id });
 
-    switch(operationType(operation)) {
-      case 'replaceAttribute': return record.propertyDidChange(path[3]);
-      case 'replaceHasOne': return record.propertyDidChange(path[3]);
+    switch(operation.op) {
+      case 'replaceAttribute': return record.propertyDidChange(operation.attribute);
+      case 'replaceHasOne': return record.propertyDidChange(operation.relationship);
       case 'removeRecord': return record.disconnect();
     }
   }

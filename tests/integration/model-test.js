@@ -66,9 +66,11 @@ module('Integration - Model', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         jupiter.get('moons').pushObject(callisto);
-        return store;
+        console.debug('pushed');
+        return store.then(() => console.debug('boo')).then(() => [jupiter, callisto]);
       })
       .then(([jupiter, callisto]) => {
+        console.debug('asserting');
         assert.ok(jupiter.get('moons').contains(callisto), 'added record to hasMany');
         assert.equal(callisto.get('planet'), jupiter, 'updated inverse');
         done();
@@ -84,7 +86,7 @@ module('Integration - Model', function(hooks) {
         store.addRecord({type: 'planet', name: 'Jupiter'}),
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
-      .tap(([jupiter, callisto]) => store.addToHasMany(jupiter, 'moons', callisto))
+      .tap(([jupiter, callisto]) => jupiter.get('moons').pushObject(callisto))
       .tap(([jupiter, callisto]) => {
         jupiter.get('moons').removeObject(callisto);
         return store;
@@ -125,7 +127,7 @@ module('Integration - Model', function(hooks) {
         store.addRecord({type: 'planet', name: 'Jupiter'}),
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
-      .tap(([jupiter, callisto]) => store.replaceHasOne(callisto, 'planet', jupiter))
+      .tap(([jupiter, callisto]) => callisto.set('planet', jupiter))
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', null);
         return store;

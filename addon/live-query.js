@@ -1,4 +1,3 @@
-import { operationType } from 'orbit-common/lib/operations';
 import ReadOnlyArrayProxy from 'ember-orbit/system/read-only-array-proxy';
 
 export default ReadOnlyArrayProxy.extend({
@@ -7,6 +6,7 @@ export default ReadOnlyArrayProxy.extend({
   _identityMap: null,
 
   init(...args) {
+    console.debug('creating liveQuery', this);
     this.set('content', Ember.A());
 
     this._super(...args);
@@ -16,7 +16,9 @@ export default ReadOnlyArrayProxy.extend({
     const orbitLiveQuery = orbitCache.liveQuery(query);
 
     orbitLiveQuery.subscribe((operation) => {
-      const handler = `_${operationType(operation)}`;
+      console.debug('liveQuery', operation);
+
+      const handler = `_${operation.op}`;
 
       if (!this[handler]) return;
 
@@ -26,20 +28,19 @@ export default ReadOnlyArrayProxy.extend({
     });
   },
 
-  _addRecordToSet(operation) {
+  _addRecord(operation) {
     const record = this._recordFor(operation);
     this.get('content').pushObject(record);
   },
 
-  _removeRecordFromSet(operation) {
+  _removeRecord(operation) {
     const record = this._recordFor(operation);
     this.get('content').removeObject(record);
   },
 
   _recordFor(operation) {
     const identityMap = this.get('_identityMap');
-    const [type, id] = operation.path[0].split(':');
-    const record = identityMap.lookup({id, type});
-    return record;
+    const { type, id } = operation.record;
+    return identityMap.lookup({id, type});
   }
 });

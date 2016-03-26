@@ -47,6 +47,7 @@ export default Ember.Object.extend({
   },
 
   unload(record) {
+    console.debug('unload', record);
     this.get('_identityMap').evict(record);
   },
 
