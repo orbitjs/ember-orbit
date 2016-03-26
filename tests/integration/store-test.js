@@ -45,103 +45,11 @@ module('Integration - Store', function(hooks) {
     Ember.run(() => {
       store
         .addRecord({ type: 'planet', name: 'Earth' })
-        .then(record => {
-          store
-            .removeRecord(record)
-            .then(() => store.findRecord('planet', record.get('id')))
-            .then(planet => assert.ok(!planet, 'removed planet'));
+        .tap(record => store.removeRecord(record))
+        .then(record => store.findRecord(record.getIdentifier()))
+        .catch(error => {
+          assert.ok(error.message.match(/Record not found/));
         });
-    });
-  });
-
-  test('#replaceAttribute', function(assert) {
-    Ember.run(() => {
-      store
-        .addRecord({ type: 'planet', name: 'Earth' })
-        .then(record => {
-          store
-            .replaceAttribute(record, 'name', 'Jupiter')
-            .then(() => assert.equal(record.get('name'), 'Jupiter'));
-        });
-    });
-  });
-
-  test('#addToHasMany', function(assert) {
-    Ember.run(() => {
-      const done = assert.async();
-
-      Ember.RSVP.Promise.all([
-        store.addRecord({type: 'planet', name: 'Jupiter'}),
-        store.addRecord({type: 'moon', name: 'Callisto'})
-      ])
-      .then(([jupiter, callisto]) => {
-        store
-          .addToHasMany(jupiter, 'moons', callisto)
-          .then(() => {
-            assert.ok(jupiter.get('moons').contains(callisto), 'added record to hasMany');
-            assert.equal(callisto.get('planet'), jupiter, 'updated inverse');
-            done();
-          });
-      });
-    });
-  });
-
-  test('#removeFromHasMany', function(assert) {
-    Ember.run(() => {
-      const done = assert.async();
-
-      Ember.RSVP.Promise.all([
-        store.addRecord({type: 'planet', name: 'Jupiter'}),
-        store.addRecord({type: 'moon', name: 'Callisto'})
-      ])
-      .tap(([jupiter, callisto]) => store.addToHasMany(jupiter, 'moons', callisto))
-      .then(([jupiter, callisto]) => {
-        store
-          .removeFromHasMany(jupiter, 'moons', callisto)
-          .then(() => {
-            assert.ok(!jupiter.get('moons').contains(callisto), 'removed record from hasMany');
-            assert.ok(!callisto.get('planet'), 'updated inverse');
-            done();
-          });
-      });
-    });
-  });
-
-  test('#replaceHasOne - with record', function(assert) {
-    Ember.run(() => {
-      const done = assert.async();
-
-      Ember.RSVP.Promise.all([
-        store.addRecord({type: 'planet', name: 'Jupiter'}),
-        store.addRecord({type: 'moon', name: 'Callisto'})
-      ])
-      .then(([jupiter, callisto]) => {
-        store
-          .replaceHasOne(callisto, 'planet', jupiter)
-          .then(() => {
-            assert.equal(callisto.get('planet'), jupiter, 'replaced hasOne with record');
-            assert.ok(jupiter.get('moons').contains(callisto), 'updated inverse');
-            done();
-          });
-      });
-    });
-  });
-
-  test('#replaceHasOne with null', function(assert) {
-    Ember.run(() => {
-      const done = assert.async();
-
-      Ember.RSVP.Promise.all([
-        store.addRecord({type: 'planet', name: 'Jupiter'}),
-        store.addRecord({type: 'moon', name: 'Callisto'})
-      ])
-      .tap(([jupiter, callisto]) => store.replaceHasOne(callisto, 'planet', jupiter))
-      .tap(([jupiter, callisto]) => store.replaceHasOne(callisto, 'planet', null))
-      .then(([jupiter, callisto]) => {
-        assert.equal(callisto.get('planet'), null, 'replaced hasOne with null');
-        assert.ok(!jupiter.get('moons').contains(callisto), 'removed from inverse hasMany');
-        done();
-      });
     });
   });
 });

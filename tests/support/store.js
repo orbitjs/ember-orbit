@@ -23,16 +23,26 @@ function createStore(options) {
 
   const orbitSchema = new OrbitSchema();
   const orbitStore = new OrbitStore({ schema: orbitSchema });
+
   owner.register('service:orbitStore', orbitStore, { instantiate: false });
   owner.register('store:main', Store);
 
- const models = options.models;
+  const models = options.models;
   if (models) {
     for (let prop in models) {
       owner.register('model:' + prop, models[prop]);
     }
   }
+
   const store = owner.lookup('store:main');
+  const schema = store.get('schema');
+
+  if (models) {
+    for (let model in models) {
+      schema.modelFor(model);
+    }
+  }
+
   return store;
 }
 

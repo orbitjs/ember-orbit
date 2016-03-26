@@ -28,9 +28,14 @@ const Model = Ember.Object.extend(Ember.Evented, {
     }
   },
 
+  getIdentifier() {
+    const { type, id } = this.getProperties('type', 'id');
+    return { type, id };
+  },
+
   replaceKey(field, value) {
     const store = get(this, '_storeOrError');
-    store.replaceKey(this, field, value);
+    store.transform(t => t.replaceKey(this.getIdentifier(), field, value));
   },
 
   getAttribute(field) {
@@ -43,21 +48,19 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveHasOne(this, relationship);
   },
 
-  replaceHasOne(relationship, value) {
+  replaceHasOne(relationship, record) {
     const store = get(this, '_storeOrError');
-    store.replaceHasOne(this, relationship, value);
+    const recordIdentifier = record && record.getIdentifier();
+    store.transform(t => t.replaceHasOne(this.getIdentifier(), relationship, recordIdentifier));
   },
 
   getHasMany(field) {
     const store = get(this, '_storeOrError');
     const cache = get(store, 'cache');
-    const type = get(this.constructor, 'typeKey');
-    const id = get(this, 'id');
-
-    const query = oqe('relatedRecords', type, id, field);
+    const identifier = this.getIdentifier();
 
     return HasMany.create({
-      content: cache.liveQuery(query),
+      content: cache.liveQuery(q => q.relatedRecords(identifier, field)),
       _store: store,
       _model: this,
       _relationship: field
@@ -66,8 +69,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceAttribute(attribute, value) {
     const store = get(this, '_storeOrError');
-
-    store.replaceAttribute(this, attribute, value);
+    store.transform(t => t.replaceAttribute(this.getIdentifier(), attribute, value));
   },
 
   remove() {
@@ -80,6 +82,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
   },
 
   willDestroy() {
+    console.debug('willDestroy hook');
     if (this.trigger) {
       this.trigger('didUnload');
     }
@@ -96,6 +99,10 @@ const Model = Ember.Object.extend(Ember.Evented, {
     if (!store) throw new Ember.Error('record has been removed from Store');
 
     return store;
+  }),
+
+  type: Ember.computed(function() {
+    return get(this.constructor, 'typeKey');
   })
 });
 

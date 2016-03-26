@@ -1,15 +1,30 @@
 /* jshint node: true */
 'use strict';
+
+var Funnel     = require('broccoli-funnel');
+var MergeTrees = require('broccoli-merge-trees');
+var path = require('path');
+
 module.exports = {
   name: 'ember-orbit',
 
-  included: function(app) {
-    this._super.included(app);
+  treeForAddon: function(tree) {
+    var addonTree = this._super.treeForAddon.call(this, tree);
 
-    app.import('bower_components/orbit.js/orbit.amd.js');
-    app.import('bower_components/orbit.js/orbit-common.amd.js');
-    app.import('bower_components/orbit.js/orbit-common-jsonapi.amd.js');
-    app.import('bower_components/orbit.js/orbit-common-local-storage.amd.js');
-    app.import('bower_components/rxjs/dist/rx.all.js');
+    var orbitSrc = path.join(require.resolve('orbit.js'), '..', 'lib');
+    var orbit = new Funnel(orbitSrc, {
+      include: ['orbit.js', 'orbit-common.js', 'orbit/**/*', 'orbit-common/**/*'],
+      destDir: './modules'
+    });
+
+    var rxjsSource = path.join(require.resolve('rxjs-es'), '..');
+    var rxjs = new Funnel(rxjsSource, {
+      include: ['**/*.js'],
+      destDir: './modules/rxjs'
+    });
+
+    tree = MergeTrees([addonTree, rxjs, orbit]);
+
+    return tree;
   }
 };

@@ -27,34 +27,19 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - adds record that becomes a match', function(assert) {
-    const done = assert.async();
+    store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
+    const liveQuery = cache.liveQuery(q => q.recordsOfType('planet')
+                                           .filterAttributes({ name: 'Jupiter' }));
 
-    Ember.run(() => {
-      const planets = cache.liveQuery(
-        oqe('filter',
-          oqe('recordsOfType', 'planet'),
-          oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')) );
+    store.transform(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
 
-      store
-        .addRecord({type: 'planet', name: 'Jupiter2'})
-        .tap(jupiter => store.replaceAttribute(jupiter, 'name', 'Jupiter'))
-        .then(jupiter => assert.ok(planets.contains(jupiter)))
-        .then(() => assert.equal(planets.get('length'), 1))
-        .then(() => done());
-    });
+    assert.equal(liveQuery.get('length'), 1);
   });
 
   test('liveQuery - updates when matching record is added', function(assert) {
-    const done = assert.async();
-
-    Ember.run(() => {
-      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
-
-      store
-        .addRecord({type: 'planet', name: 'Jupiter'})
-        .then(jupiter => assert.ok(planets.contains(jupiter)))
-        .then(() => done());
-    });
+    const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
+    const addJupiter = store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
+    return addJupiter.then(jupiter => assert.ok(planets.contains(jupiter)));
   });
 
   test('liveQuery - updates when matching record is removed', function(assert) {
@@ -91,11 +76,11 @@ module('Integration - Cache', function(hooks) {
       const planets = cache.liveQuery(
         oqe('filter',
           oqe('recordsOfType', 'planet'),
-          oqe('equal', oqe('get', 'attributes/name'), 'Jupiter')));
+          oqe('equal', oqe('attribute', 'name'), 'Jupiter')));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
-        .tap(jupiter => store.replaceAttribute(jupiter, 'name', 'Jupiter2'))
+        .tap(jupiter => store.transform(t => t.replaceAttribute(jupiter.getIdentifier(), 'name', 'Jupiter2')))
         .then(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());
     });
@@ -138,7 +123,6 @@ module('Integration - Cache', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', jupiter);
-        return store;
       })
       .then(([jupiter, callisto]) => {
         assert.equal(cache.retrieveHasOne(callisto, 'planet'), jupiter);

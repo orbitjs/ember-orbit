@@ -45,14 +45,17 @@ export default Ember.Object.extend({
   },
 
   evict(record) {
+    console.debug('evicting', record);
     const materialized = this.get('_materialized');
-    const identifier = this.identifier(record);
-    const identifierKey = this._identifierKey(identifier);
+    const identifier = record.getIdentifier();
+    const identifierKey = this._identifierKey(identifier.type, identifier.id);
     delete materialized[identifierKey];
+    console.debug('materialized after evict', identifierKey, materialized);
     record.disconnect();
   },
 
   _materialize(type, id) {
+    console.debug('materializing', type, id);
     const schema = this.get('_schema');
     const store = this.get('_store');
     const materialized = this.get('_materialized');

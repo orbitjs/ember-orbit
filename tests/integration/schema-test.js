@@ -1,11 +1,8 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import Orbit from 'orbit';
-import Schema from 'ember-orbit/schema';
 
 const { Planet, Moon, Star } = dummyModels;
-
-const set = Ember.set;
 
 module("Integration - Schema", function(hooks) {
   let store;
@@ -76,23 +73,23 @@ module("Integration - Schema", function(hooks) {
     equal(schema.modelFor('planet'), Planet);
   });
 
-  test("#modelFor ensures that related models are also registered in the schema", function() {
-    const registry = new Ember.Registry();
-    const container = registry.container();
+  // test("#modelFor ensures that related models are also registered in the schema", function() {
+  //   const registry = new Ember.Registry();
+  //   const container = registry.container();
 
-    registry.register('schema:main', Schema);
-    registry.register('model:planet', Planet);
-    registry.register('model:star', Star);
-    registry.register('model:moon', Moon);
+  //   registry.register('schema:main', Schema);
+  //   registry.register('model:planet', Planet);
+  //   registry.register('model:star', Star);
+  //   registry.register('model:moon', Moon);
 
-    set(schema, 'container', container);
+  //   set(schema, 'container', container);
 
-    deepEqual(schema.models(), [], 'no models have been registered');
+  //   deepEqual(schema.models(), [], 'no models have been registered');
 
-    schema.modelFor('planet');
+  //   schema.modelFor('planet');
 
-    deepEqual(schema.models(), ['planet', 'star', 'moon'], 'all related models have been registered');
-  });
+  //   deepEqual(schema.models(), ['planet', 'star', 'moon'], 'all related models have been registered');
+  // });
 
   test('#normalize', function(assert) {
     const done = assert.async();
