@@ -60,13 +60,7 @@ export default Ember.Object.extend({
   init() {
     this._super(...arguments);
 
-    if (!this.schema) {
-      const owner = getOwner(this);
-      this.schema = owner.lookup('schema:main');
-      if (!this.schema) {
-        this.schema = Schema.create(owner.ownerInjection());
-      }
-    }
+    assert("`schema` must be injected onto a Store", this.schema);
 
     if (!this.orbitStore) {
       this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema });
@@ -135,7 +129,7 @@ export default Ember.Object.extend({
   },
 
   _verifyType(type) {
-    Ember.assert("`type` must be registered as a model in the container", get(this, 'schema').modelFor(type));
+    assert("`type` must be registered as a model in the container", get(this, 'schema').modelFor(type));
   },
 
   _didPatch: function(operation) {

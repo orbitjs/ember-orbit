@@ -22,6 +22,7 @@ function createStore(options) {
 
   owner.register('schema:main', Schema);
   owner.register('store:main', Store);
+  owner.inject('store', 'schema', 'schema:main');
 
   const models = options.models;
   if (models) {
