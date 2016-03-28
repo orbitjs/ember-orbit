@@ -22,7 +22,10 @@ Store.reopen({
   createTransaction(options = {}) {
     return Transaction.create(
       getOwner(this).ownerInjection(),
-      { orbitStore: this.get('orbitStore').createTransaction(options) }
+      {
+        orbitStore: this.orbitStore.createTransaction(options),
+        schema: this.schema
+      }
     );
   }
 });
