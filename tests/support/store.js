@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import Store from 'ember-orbit/store';
-import OrbitStore from 'orbit-common/store';
-import OrbitSchema from 'orbit-common/schema';
+import Schema from 'ember-orbit/schema';
 import Owner from './owner';
 
 function createOwner() {
@@ -21,10 +20,7 @@ function createStore(options) {
 
   const owner = createOwner();
 
-  const orbitSchema = new OrbitSchema();
-  const orbitStore = new OrbitStore({ schema: orbitSchema });
-
-  owner.register('service:orbitStore', orbitStore, { instantiate: false });
+  owner.register('schema:main', Schema);
   owner.register('store:main', Store);
 
   const models = options.models;
@@ -35,7 +31,7 @@ function createStore(options) {
   }
 
   const store = owner.lookup('store:main');
-  const schema = store.get('schema');
+  const schema = store.schema;
 
   if (models) {
     for (let model in models) {

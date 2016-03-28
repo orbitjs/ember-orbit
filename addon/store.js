@@ -1,13 +1,16 @@
 import Schema from 'ember-orbit/schema';
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
+import OrbitStore from 'orbit-common/store';
 
 /**
  @module ember-orbit
  */
 
 const {
+  assert,
   get,
+  getOwner,
   RSVP
 } = Ember;
 
@@ -48,25 +51,32 @@ class PromiseTracker {
   }
 }
 
-var Store = Ember.Object.extend({
-  orbitStore: Ember.inject.service('orbitStore'),
+export default Ember.Object.extend({
+  orbitStore: null,
   schema: null,
   cache: null,
   _identityMap: null,
 
-  init: function(...args) {
-    this._super(...args);
-    const { orbitStore, container } = this.getProperties('orbitStore', 'container');
+  init() {
+    this._super(...arguments);
 
-    Ember.assert(get(this, 'orbitStore'), 'orbitStore is required');
+    if (!this.schema) {
+      const owner = getOwner(this);
+      this.schema = owner.lookup('schema:main');
+      if (!this.schema) {
+        this.schema = Schema.create(owner.ownerInjection());
+      }
+    }
 
-    const orbitCache = orbitStore.cache;
+    if (!this.orbitStore) {
+      this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema });
+    }
 
-    const schema = Schema.create({ container, _orbitSchema: orbitStore.schema });
-    this._identityMap = IdentityMap.create({ _schema: schema, _orbitCache: orbitCache, _store: this });
-    const cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
+    const orbitCache = this.orbitStore.cache;
 
-    this.setProperties({ schema, cache });
+    this._identityMap = IdentityMap.create({ _schema: this.schema, _orbitCache: orbitCache, _store: this });
+    this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
+
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
     this._transformTracker = new PromiseTracker();
   },
@@ -141,5 +151,3 @@ var Store = Ember.Object.extend({
     }
   }
 });
-
-export default Store;
