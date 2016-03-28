@@ -14,18 +14,13 @@ const get = Ember.get;
  @namespace EO
  */
 const Model = Ember.Object.extend(Ember.Evented, {
-  _id: null,
+  id: null,
   _store: null,
   disconnected: Ember.computed.empty('_store'),
 
   getKey(field) {
     const cache = get(this, '_storeOrError.cache');
-
-    if ('id' === field) {
-      return this._id;
-    } else {
-      return cache.retrieveKey(this, field);
-    }
+    return cache.retrieveKey(this, field);
   },
 
   getIdentifier() {
@@ -110,12 +105,18 @@ const _create = Model.create;
 
 Model.reopenClass({
   _create: function(id, store) {
-    return _create.call(this, {_id: id, _store: store});
+    return _create.call(this, { id, _store: store });
   },
 
   create: function() {
-    throw new Ember.Error("You should not call `create` on a model. Instead, call `store.add` with the attributes you would like to set.");
+    throw new Ember.Error("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.");
   },
+
+  id: Ember.computed(function() {
+    return {
+      defaultValue: uuid
+    };
+  }),
 
   keys: Ember.computed(function() {
     const map = {};
@@ -127,10 +128,6 @@ Model.reopenClass({
         map[name] = meta.options;
       }
     });
-
-    const options = {defaultValue: uuid};
-    this.reopen({id: key(options)});
-    map.id = options;
 
     return map;
   }),

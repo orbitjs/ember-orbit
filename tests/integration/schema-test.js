@@ -109,7 +109,7 @@ module("Integration - Schema", function(hooks) {
 
       assert.equal(normalized.id, 'jupiter', 'normalized id');
       assert.equal(normalized.type, 'planet', 'normalized type');
-      assert.deepEqual(normalized.keys, { galaxyAlias: undefined, id: 'jupiter' }, 'normalized keys');
+      assert.deepEqual(normalized.keys, { galaxyAlias: undefined }, 'normalized keys');
       assert.deepEqual(normalized.attributes, { atmosphere: false, classification: undefined, name: 'Jupiter' });
       assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
       assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');

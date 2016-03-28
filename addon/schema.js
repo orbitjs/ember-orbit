@@ -115,10 +115,6 @@ var Schema = Ember.Object.extend({
     return Object.keys(this._orbitSchema.models);
   },
 
-  primaryKey: function(type) {
-    return this._orbitSchema.modelDefinition(type).primaryKey.name;
-  },
-
   keys: function(type) {
     return Object.keys(this._orbitSchema.modelDefinition(type).keys);
   },
