@@ -31,9 +31,10 @@ module('Integration - Cache', function(hooks) {
     const liveQuery = cache.liveQuery(q => q.recordsOfType('planet')
                                            .filterAttributes({ name: 'Jupiter' }));
 
-    store.transform(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
-
-    assert.equal(liveQuery.get('length'), 1);
+    return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+      .then(() => {
+        assert.equal(liveQuery.get('length'), 1);
+      });
   });
 
   test('liveQuery - updates when matching record is added', function(assert) {
@@ -80,7 +81,7 @@ module('Integration - Cache', function(hooks) {
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
-        .tap(jupiter => store.transform(t => t.replaceAttribute(jupiter.getIdentifier(), 'name', 'Jupiter2')))
+        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter.getIdentifier(), 'name', 'Jupiter2')))
         .then(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());
     });

@@ -30,7 +30,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceKey(field, value) {
     const store = get(this, '_storeOrError');
-    store.transform(t => t.replaceKey(this.getIdentifier(), field, value));
+    store.update(t => t.replaceKey(this.getIdentifier(), field, value));
   },
 
   getAttribute(field) {
@@ -46,7 +46,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
   replaceHasOne(relationship, record) {
     const store = get(this, '_storeOrError');
     const recordIdentifier = record && record.getIdentifier();
-    store.transform(t => t.replaceHasOne(this.getIdentifier(), relationship, recordIdentifier));
+    store.update(t => t.replaceHasOne(this.getIdentifier(), relationship, recordIdentifier));
   },
 
   getHasMany(field) {
@@ -64,7 +64,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceAttribute(attribute, value) {
     const store = get(this, '_storeOrError');
-    store.transform(t => t.replaceAttribute(this.getIdentifier(), attribute, value));
+    store.update(t => t.replaceAttribute(this.getIdentifier(), attribute, value));
   },
 
   remove() {

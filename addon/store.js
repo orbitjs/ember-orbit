@@ -96,11 +96,11 @@ export default Ember.Object.extend({
   //   return this._request(promise);
   // },
 
-  transform(...args) {
+  update(...args) {
     const orbitStore = this.get('orbitStore');
     const transformTracker = this.get('_transformTracker');
 
-    const promisedTransform = orbitStore.transform(...args);
+    const promisedTransform = orbitStore.update(...args);
     transformTracker.track(promisedTransform);
 
     return promisedTransform;
