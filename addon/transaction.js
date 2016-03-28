@@ -1,26 +1,29 @@
+import Ember from 'ember';
 import Store from './store';
 import 'orbit-common/transaction';
+
+const { getOwner } = Ember;
 
 /**
  @module ember-orbit
  */
 
-var Transaction = Store.extend({
-  begin: function() {
+const Transaction = Store.extend({
+  begin() {
     return this.get('orbitStore').begin();
   },
 
-  commit: function() {
+  commit() {
     return this.get('orbitStore').commit();
   }
 });
 
 Store.reopen({
-  createTransaction: function(options = {}) {
-    return Transaction.create({
-      orbitStore: this.get('orbitStore').createTransaction(options),
-      container: this.get('container')
-    });
+  createTransaction(options = {}) {
+    return Transaction.create(
+      getOwner(this).ownerInjection(),
+      { orbitStore: this.get('orbitStore').createTransaction(options) }
+    );
   }
 });
 

@@ -1,11 +1,16 @@
+import OrbitSchema from 'orbit-common/schema';
+
 /**
  @module ember-orbit
  */
 
-var get = Ember.get;
+const {
+  get,
+  getOwner
+} = Ember;
 
-var proxyProperty = function(source, property, defaultValue) {
-  var _property = '_' + property;
+function proxyProperty(source, property, defaultValue) {
+  const _property = '_' + property;
 
   return Ember.computed({
     set: function(key, value) {
@@ -27,56 +32,63 @@ var proxyProperty = function(source, property, defaultValue) {
       return this[_property];
     }
   });
-};
+}
 
-var Schema = Ember.Object.extend({
+export default Ember.Object.extend({
+  orbitSchema: null,
+
   /**
    @property pluralize
    @type {function}
    @default OC.Schema.pluralize
    */
-  pluralize: proxyProperty('_orbitSchema', 'pluralize'),
+  pluralize: proxyProperty('orbitSchema', 'pluralize'),
 
   /**
    @property singularize
    @type {function}
    @default OC.Schema.singularize
    */
-  singularize: proxyProperty('_orbitSchema', 'singularize'),
+  singularize: proxyProperty('orbitSchema', 'singularize'),
 
-  init: function() {
-    this._super.apply(this, arguments);
+  init() {
+    this._super(...arguments);
     this._modelTypeMap = {};
 
-    // Don't use `modelDefaults` in ember-orbit.
-    // The same functionality can be achieved with a base model class that
-    // can be overridden.
-    var options = {
-      modelDefaults: {}
-    };
+    if (!this.orbitSchema) {
+      // Don't use `modelDefaults` in ember-orbit.
+      // The same functionality can be achieved with a base model class that
+      // can be overridden.
+      const options = {
+        modelDefaults: {}
+      };
 
-    var pluralize = this.get('pluralize');
-    if (pluralize) {
-      options.pluralize = pluralize;
+      const pluralize = this.get('pluralize');
+      if (pluralize) {
+        options.pluralize = pluralize;
+      }
+
+      const singularize = this.get('singularize');
+      if (singularize) {
+        options.singularize = singularize;
+      }
+
+      this.orbitSchema = new OrbitSchema(options);
+
+      // Lazy load model definitions as they are requested.
+      const _this = this;
+      this.orbitSchema.modelNotDefined = function(type) {
+        _this.modelFor(type);
+      };
     }
-
-    var singularize = this.get('singularize');
-    if (singularize) {
-      options.singularize = singularize;
-    }
-
-    // Lazy load model definitions as they are requested.
-    var _this = this;
-    this.get('_orbitSchema').modelNotDefined = function(type) {
-      _this.modelFor(type);
-    };
   },
 
   defineModel: function(type, modelClass) {
-    const definedModels = this._orbitSchema.models;
+    const definedModels = this.orbitSchema.models;
     if (definedModels[type]) return;
 
-    this._orbitSchema.registerModel(type, {
+    this.orbitSchema.registerModel(type, {
+      id: get(modelClass, 'id'),
       keys: get(modelClass, 'keys'),
       attributes: get(modelClass, 'attributes'),
       relationships: get(modelClass, 'relationships')
@@ -88,7 +100,7 @@ var Schema = Ember.Object.extend({
 
     var model = this._modelTypeMap[type];
     if (!model) {
-      model = get(this, 'container').lookupFactory('model:' + type);
+      model = getOwner(this)._lookupFactory('model:' + type);
 
       if (!model) {
         throw new Ember.Error("No model was found for '" + type + "'");
@@ -103,44 +115,40 @@ var Schema = Ember.Object.extend({
       this._modelTypeMap[type] = model;
 
       // look up related models
-      this.relationships(type).forEach(function(relationship) {
+      this.relationships(type).forEach(relationship => {
         this.modelFor(this.relationshipProperties(type, relationship).model);
-      }, this);
+      });
     }
 
     return model;
   },
 
   models: function() {
-    return Object.keys(this._orbitSchema.models);
-  },
-
-  primaryKey: function(type) {
-    return this._orbitSchema.modelDefinition(type).primaryKey.name;
+    return Object.keys(this.orbitSchema.models);
   },
 
   keys: function(type) {
-    return Object.keys(this._orbitSchema.modelDefinition(type).keys);
+    return Object.keys(this.orbitSchema.modelDefinition(type).keys);
   },
 
   keyProperties: function(type, name) {
-    return this._orbitSchema.modelDefinition(type).keys[name];
+    return this.orbitSchema.modelDefinition(type).keys[name];
   },
 
   attributes: function(type) {
-    return Object.keys(this._orbitSchema.modelDefinition(type).attributes);
+    return Object.keys(this.orbitSchema.modelDefinition(type).attributes);
   },
 
   attributeProperties: function(type, name) {
-    return this._orbitSchema.modelDefinition(type).attributes[name];
+    return this.orbitSchema.modelDefinition(type).attributes[name];
   },
 
   relationships: function(type) {
-    return Object.keys(this._orbitSchema.modelDefinition(type).relationships);
+    return Object.keys(this.orbitSchema.modelDefinition(type).relationships);
   },
 
   relationshipProperties: function(type, name) {
-    return this._orbitSchema.modelDefinition(type).relationships[name];
+    return this.orbitSchema.modelDefinition(type).relationships[name];
   },
 
   normalize(properties) {
@@ -155,8 +163,7 @@ var Schema = Ember.Object.extend({
     this.normalizeKeys(properties, normalizedProperties);
     this.normalizeAttributes(properties, normalizedProperties);
     this.normalizeRelationships(properties, normalizedProperties);
-
-    this._orbitSchema.normalize(normalizedProperties);
+    this.orbitSchema.normalize(normalizedProperties);
 
     return normalizedProperties;
   },
@@ -216,7 +223,4 @@ var Schema = Ember.Object.extend({
       relationship.data = [modelType, value].join(':');
     }
   }
-
 });
-
-export default Schema;

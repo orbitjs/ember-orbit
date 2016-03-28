@@ -3,9 +3,8 @@ import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Model from 'ember-orbit/model';
-import { uuid } from 'orbit/lib/uuid';
 
-var get = Ember.get;
+const { get } = Ember;
 
 var Planet,
     Moon,
@@ -42,14 +41,13 @@ test("it exists", function() {
   ok(Planet);
 });
 
-test("#keys returns a single key, `id`, by default", function() {
+test("#keys returns no keys by default", function(assert) {
   var keys,
       names;
 
   keys = get(Planet, 'keys');
   names = Object.keys(keys);
-  equal(names.length, 1);
-  equal(names[0], 'id');
+  assert.equal(names.length, 0);
 });
 
 test("#keys returns defined custom secondary keys", function() {
@@ -57,15 +55,13 @@ test("#keys returns defined custom secondary keys", function() {
       names;
 
   Planet.reopen({
-    id: key('string', {primaryKey: true, defaultValue: uuid}),
     remoteId: key('string')
   });
 
   keys = get(Planet, 'keys');
   names = Object.keys(keys);
-  equal(names.length, 2);
-  equal(names[0], 'id');
-  equal(names[1], 'remoteId');
+  equal(names.length, 1);
+  equal(names[0], 'remoteId');
 });
 
 test("#attributes returns defined attributes", function() {
