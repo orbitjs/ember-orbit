@@ -36,11 +36,6 @@ export default Ember.Object.extend({
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
   },
 
-  willDestroy: function() {
-    this.orbitStore.off('didTransform', this.didTransform, this);
-    this._super(...arguments);
-  },
-
   // query: function(type, query, options) {
   //   var _this = this;
   //   this._verifyType(type);
