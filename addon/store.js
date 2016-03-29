@@ -10,46 +10,8 @@ import OrbitStore from 'orbit-common/store';
 const {
   assert,
   get,
-  getOwner,
   RSVP
 } = Ember;
-
-class PromiseTracker {
-  constructor() {
-    this._pending = [];
-    this._reset();
-  }
-
-  track(promise) {
-    console.debug('tracking', promise);
-    this._pending.push(promise);
-
-    return promise.finally(result => this._fulfill(promise));
-  }
-
-  fulfillAll() {
-    return this._onEmpty.promise.tap(() => console.debug('fulfillAll'));
-  }
-
-  _reset() {
-    this._onEmpty = RSVP.defer();
-  }
-
-  _fulfill(promise) {
-    console.debug('fulfilled', promise);
-    this._remove(promise);
-
-    if (this._pending.length === 0) {
-      this._onEmpty.resolve();
-      this._reset();
-    }
-  }
-
-  _remove(promise) {
-    const index = this._pending.indexOf(promise);
-    this._pending.splice(index, 1);
-  }
-}
 
 export default Ember.Object.extend({
   orbitStore: null,
@@ -72,17 +34,11 @@ export default Ember.Object.extend({
     this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
 
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
-    this._transformTracker = new PromiseTracker();
-  },
-
-  then: function(success, error) {
-    return this._transformTracker.fulfillAll().tap(() => console.debug('then')).then(success, error);
   },
 
   willDestroy: function() {
-    get(this, 'orbitStore').off('didTransform', this.didTransform, this);
-    // this._recordArrayManager.destroy();
-    this._super.apply(this, arguments);
+    this.orbitStore.off('didTransform', this.didTransform, this);
+    this._super(...arguments);
   },
 
   // query: function(type, query, options) {
@@ -97,43 +53,35 @@ export default Ember.Object.extend({
   // },
 
   update(...args) {
-    const orbitStore = this.get('orbitStore');
-    const transformTracker = this.get('_transformTracker');
-
-    const promisedTransform = orbitStore.update(...args);
-    transformTracker.track(promisedTransform);
-
-    return promisedTransform;
+    return this.orbitStore.update(...args);
   },
 
   addRecord(properties = {}) {
-    const { schema, orbitStore } = this.getProperties('schema', 'orbitStore');
-
     this._verifyType(properties.type);
 
-    const normalizedProperties = schema.normalize(properties);
-    return orbitStore.update(t => t.addRecord(normalizedProperties)).then(() => {
+    const normalizedProperties = this.schema.normalize(properties);
+    return this.orbitStore.update(t => t.addRecord(normalizedProperties)).then(() => {
       const { type, id } = normalizedProperties;
       return this._identityMap.lookup({ type, id });
     });
   },
 
   findRecord(type, id) {
-    return this
-      .get('orbitStore').query(q => q.record({type, id}))
+    return this.orbitStore
+      .query(q => q.record({type, id}))
       .then(record => this._identityMap.lookup(record));
   },
 
   removeRecord(record) {
-    return this.get('orbitStore').transform(t => t.removeRecord(record.getIdentifier()));
+    return this.orbitStore.transform(t => t.removeRecord(record.getIdentifier()));
   },
 
   _verifyType(type) {
-    assert("`type` must be registered as a model in the container", get(this, 'schema').modelFor(type));
+    assert("`type` must be registered as a model in the store's schema", this.schema.modelFor(type));
   },
 
   _didPatch: function(operation) {
-    console.debug('didPatch', operation);
+    // console.debug('didPatch', operation);
     const { path } = operation;
     const { type, id } = operation.record;
     const record = this._identityMap.lookup({ type, id });
