@@ -36,16 +36,9 @@ export default Ember.Object.extend({
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
   },
 
-  // query: function(type, query, options) {
-  //   var _this = this;
-  //   this._verifyType(type);
-
-  //   var promise = this.orbitSource.query(type, query, options).then(function(data) {
-  //     return _this._lookupFromData(type, data);
-  //   });
-
-  //   return this._request(promise);
-  // },
+  query(...args) {
+    return this.orbitStore.query(...args);
+  },
 
   update(...args) {
     return this.orbitStore.update(...args);
@@ -62,8 +55,7 @@ export default Ember.Object.extend({
   },
 
   findRecord(type, id) {
-    return this.orbitStore
-      .query(q => q.record({type, id}))
+    return this.query(q => q.record({type, id}))
       .then(record => this._identityMap.lookup(record));
   },
 
