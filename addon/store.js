@@ -48,10 +48,11 @@ export default Ember.Object.extend({
     this._verifyType(properties.type);
 
     const normalizedProperties = this.schema.normalize(properties);
-    return this.orbitStore.update(t => t.addRecord(normalizedProperties)).then(() => {
-      const { type, id } = normalizedProperties;
-      return this._identityMap.lookup({ type, id });
-    });
+    return this.update(t => t.addRecord(normalizedProperties))
+      .then(() => {
+        const { type, id } = normalizedProperties;
+        return this._identityMap.lookup({ type, id });
+      });
   },
 
   findRecord(type, id) {
@@ -60,7 +61,7 @@ export default Ember.Object.extend({
   },
 
   removeRecord(record) {
-    return this.orbitStore.transform(t => t.removeRecord(record.getIdentifier()));
+    return this.update(t => t.removeRecord(record.getIdentifier()));
   },
 
   _verifyType(type) {
