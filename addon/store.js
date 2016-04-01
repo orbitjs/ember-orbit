@@ -2,6 +2,7 @@ import Schema from 'ember-orbit/schema';
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
 import OrbitStore from 'orbit-common/store';
+import Query from 'orbit/query';
 
 /**
  @module ember-orbit
@@ -36,8 +37,17 @@ export default Ember.Object.extend({
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
   },
 
-  query(...args) {
-    return this.orbitStore.query(...args);
+  query(queryOrExpression) {
+    const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
+    return this.orbitStore.query(query)
+      .then(result => {
+        switch(query.expression.op) {
+          case 'record':        return this._identityMap.lookup(result);
+          case 'recordsOfType': return this._identityMap.lookupMany(Object.values(result));
+          case 'filter':        return this._identityMap.lookupMany(Object.values(result));
+          default:              return result;
+        }
+      });
   },
 
   update(...args) {
@@ -47,17 +57,13 @@ export default Ember.Object.extend({
   addRecord(properties = {}) {
     this._verifyType(properties.type);
 
-    const normalizedProperties = this.schema.normalize(properties);
-    return this.update(t => t.addRecord(normalizedProperties))
-      .then(() => {
-        const { type, id } = normalizedProperties;
-        return this._identityMap.lookup({ type, id });
-      });
+    const record = this.schema.normalize(properties);
+    return this.update(t => t.addRecord(record))
+      .then(() => this._identityMap.lookup(record));
   },
 
   findRecord(type, id) {
-    return this.query(q => q.record({type, id}))
-      .then(record => this._identityMap.lookup(record));
+    return this.query(q => q.record({type, id}));
   },
 
   removeRecord(record) {

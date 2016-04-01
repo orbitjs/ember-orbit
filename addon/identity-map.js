@@ -16,7 +16,7 @@ export default Ember.Object.extend({
   },
 
   lookup(identifier) {
-    if(!identifier) return;
+    if (!identifier) return;
 
     const { type, id } = identifier;
 
@@ -26,8 +26,12 @@ export default Ember.Object.extend({
     return materialized[identifierKey] || this._materialize(type, id);
   },
 
+  lookupMany(identifiers) {
+    return identifiers.map(identifier => this.lookup(identifier));
+  },
+
   contains(identifier) {
-    if(!identifier) return;
+    if (!identifier) return;
 
     const { type, id } = identifier;
 
