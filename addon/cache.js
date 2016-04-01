@@ -15,47 +15,38 @@ export default Ember.Object.extend({
   },
 
   retrieve(path) {
-    return get(this, '_orbitCache').get(path);
+    return this._orbitCache.get(path);
   },
 
   retrieveRecord(type, id) {
-    return this.get('_identityMap').lookup({type, id});
+    return this._identityMap.lookup({type, id});
   },
 
   retrieveKey(record, key) {
-    const type = get(record.constructor, 'typeKey');
-    const id = get(record, 'id');
-
-    return this.retrieve([type, id, 'keys', key]);
+    return this.retrieve([record.type, record.id, 'keys', key]);
   },
 
   retrieveAttribute(record, attribute) {
-    const type = get(record.constructor, 'typeKey');
-    const id = get(record, 'id');
-
-    return this.retrieve([type, id, 'attributes', attribute]);
+    return this.retrieve([record.type, record.id, 'attributes', attribute]);
   },
 
   retrieveHasOne(record, relationship) {
-    const type = get(record.constructor, 'typeKey');
-    const id = get(record, 'id');
-
-    const value = this.retrieve([type, id, 'relationships', relationship, 'data']);
+    const value = this.retrieve([record.type, record.id, 'relationships', relationship, 'data']);
     if (!value) return null;
 
-    return this.get('_identityMap').lookup(parseIdentifier(value));
+    return this._identityMap.lookup(parseIdentifier(value));
   },
 
   unload(record) {
     console.debug('unload', record);
-    this.get('_identityMap').evict(record);
+    this._identityMap.evict(record);
   },
 
   liveQuery(query) {
     return LiveQuery.create({
       _query: query,
-      _orbitCache: this.get('_orbitCache'),
-      _identityMap: this.get('_identityMap')
+      _orbitCache: this._orbitCache,
+      _identityMap: this._identityMap
     });
   },
 });
