@@ -15,6 +15,7 @@ const get = Ember.get;
  */
 const Model = Ember.Object.extend(Ember.Evented, {
   id: null,
+  type: null,
   _store: null,
   disconnected: Ember.computed.empty('_store'),
 
@@ -23,14 +24,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveKey(this, field);
   },
 
-  getIdentifier() {
-    const { type, id } = this.getProperties('type', 'id');
-    return { type, id };
-  },
-
   replaceKey(field, value) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceKey(this.getIdentifier(), field, value));
+    store.update(t => t.replaceKey(this, field, value));
   },
 
   getAttribute(field) {
@@ -45,17 +41,15 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceHasOne(relationship, record) {
     const store = get(this, '_storeOrError');
-    const recordIdentifier = record && record.getIdentifier();
-    store.update(t => t.replaceHasOne(this.getIdentifier(), relationship, recordIdentifier));
+    store.update(t => t.replaceHasOne(this, relationship, record));
   },
 
   getHasMany(field) {
     const store = get(this, '_storeOrError');
     const cache = get(store, 'cache');
-    const identifier = this.getIdentifier();
 
     return HasMany.create({
-      content: cache.liveQuery(q => q.relatedRecords(identifier, field)),
+      content: cache.liveQuery(q => q.relatedRecords(this, field)),
       _store: store,
       _model: this,
       _relationship: field
@@ -64,7 +58,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceAttribute(attribute, value) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceAttribute(this.getIdentifier(), attribute, value));
+    store.update(t => t.replaceAttribute(this, attribute, value));
   },
 
   remove() {
@@ -94,10 +88,6 @@ const Model = Ember.Object.extend(Ember.Evented, {
     if (!store) throw new Ember.Error('record has been removed from Store');
 
     return store;
-  }),
-
-  type: Ember.computed(function() {
-    return get(this.constructor, 'typeKey');
   })
 });
 
@@ -105,7 +95,7 @@ const _create = Model.create;
 
 Model.reopenClass({
   _create: function(id, store) {
-    return _create.call(this, { id, _store: store });
+    return _create.call(this, { id, type: this.typeKey, _store: store });
   },
 
   create: function() {

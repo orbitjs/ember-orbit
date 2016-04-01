@@ -46,7 +46,7 @@ module('Integration - Store', function(hooks) {
       store
         .addRecord({ type: 'planet', name: 'Earth' })
         .tap(record => store.removeRecord(record))
-        .then(record => store.findRecord(record.getIdentifier()))
+        .then(record => store.findRecord('planet', record.get('id')))
         .catch(error => {
           assert.ok(error.message.match(/Record not found/));
         });

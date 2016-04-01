@@ -18,7 +18,7 @@ export default Ember.Object.extend({
   lookup(identifier) {
     if(!identifier) return;
 
-    const {type, id} = identifier;
+    const { type, id } = identifier;
 
     const materialized = this.get('_materialized');
     const identifierKey = this._identifierKey(type, id);
@@ -29,7 +29,7 @@ export default Ember.Object.extend({
   contains(identifier) {
     if(!identifier) return;
 
-    const {type, id} = identifier;
+    const { type, id } = identifier;
 
     const materialized = this.get('_materialized');
     const identifierKey = this._identifierKey(type, id);
@@ -47,8 +47,7 @@ export default Ember.Object.extend({
   evict(record) {
     console.debug('evicting', record);
     const materialized = this.get('_materialized');
-    const identifier = record.getIdentifier();
-    const identifierKey = this._identifierKey(identifier.type, identifier.id);
+    const identifierKey = this._identifierKey(record.type, record.id);
     delete materialized[identifierKey];
     console.debug('materialized after evict', identifierKey, materialized);
     record.disconnect();
@@ -59,8 +58,6 @@ export default Ember.Object.extend({
     const schema = this.get('_schema');
     const store = this.get('_store');
     const materialized = this.get('_materialized');
-
-
     const model = schema.modelFor(type);
     const record = model._create(id, store);
     const identifier = this._identifierKey(type, id);

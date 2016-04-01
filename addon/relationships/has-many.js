@@ -9,7 +9,7 @@ export default ReadOnlyArrayProxy.extend({
     const model = this.get('_model');
     const relationship = this.get('_relationship');
 
-    store.update(t => t.addToHasMany(model.getIdentifier(), relationship, record.getIdentifier()));
+    store.update(t => t.addToHasMany(model, relationship, record));
   },
 
   removeObject(record) {
@@ -17,6 +17,6 @@ export default ReadOnlyArrayProxy.extend({
     const model = this.get('_model');
     const relationship = this.get('_relationship');
 
-    store.update(t => t.removeFromHasMany(model.getIdentifier(), relationship, record.getIdentifier()));
+    store.update(t => t.removeFromHasMany(model, relationship, record));
   }
 });

@@ -81,7 +81,7 @@ module('Integration - Cache', function(hooks) {
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
-        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter.getIdentifier(), 'name', 'Jupiter2')))
+        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter, 'name', 'Jupiter2')))
         .then(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());
     });

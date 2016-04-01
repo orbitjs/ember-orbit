@@ -61,7 +61,7 @@ export default Ember.Object.extend({
   },
 
   removeRecord(record) {
-    return this.update(t => t.removeRecord(record.getIdentifier()));
+    return this.update(t => t.removeRecord(record));
   },
 
   _verifyType(type) {
