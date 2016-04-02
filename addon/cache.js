@@ -2,6 +2,7 @@ const get = Ember.get;
 
 import LiveQuery from 'ember-orbit/live-query';
 import { parseIdentifier } from 'orbit-common/lib/identifiers';
+import Query from 'orbit/query';
 
 export default Ember.Object.extend({
   _orbitCache: null,
@@ -40,6 +41,18 @@ export default Ember.Object.extend({
   unload(record) {
     console.debug('unload', record);
     this._identityMap.evict(record);
+  },
+
+  query(queryOrExpression) {
+    const query = Query.from(queryOrExpression, this._orbitCache.queryBuilder);
+    const result = this._orbitCache.query(query);
+
+    switch(query.expression.op) {
+      case 'record':        return this._identityMap.lookup(result);
+      case 'recordsOfType': return this._identityMap.lookupMany(Object.values(result));
+      case 'filter':        return this._identityMap.lookupMany(Object.values(result));
+      default:              return result;
+    }
   },
 
   liveQuery(query) {
