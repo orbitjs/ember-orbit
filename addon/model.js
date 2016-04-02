@@ -7,7 +7,7 @@ import { queryExpression as oqe } from 'orbit/query/expression';
  @module ember-orbit
  */
 
-const get = Ember.get;
+const { get, set } = Ember;
 
 /**
  @class Model
@@ -34,6 +34,11 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveAttribute(this, field);
   },
 
+  replaceAttribute(attribute, value) {
+    const store = get(this, '_storeOrError');
+    store.update(t => t.replaceAttribute(this, attribute, value));
+  },
+
   getHasOne(relationship) {
     const cache = get(this, '_storeOrError.cache');
     return cache.retrieveHasOne(this, relationship);
@@ -56,18 +61,13 @@ const Model = Ember.Object.extend(Ember.Evented, {
     });
   },
 
-  replaceAttribute(attribute, value) {
-    const store = get(this, '_storeOrError');
-    store.update(t => t.replaceAttribute(this, attribute, value));
-  },
-
   remove() {
     const store = get(this, '_storeOrError');
     return store.removeRecord(this);
   },
 
   disconnect() {
-    this.set('_store', null);
+    set(this, '_store', null);
   },
 
   willDestroy() {
