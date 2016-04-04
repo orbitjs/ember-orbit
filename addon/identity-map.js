@@ -7,65 +7,51 @@ export default Ember.Object.extend({
   _store: null,
 
   init(...args) {
-    this._super.apply(this, ...args);
+    this._super(...args);
 
-    Ember.assert(this.get('_schema'), '_schema is required');
-    Ember.assert(this.get('_orbitCache'), '_orbitCache is required');
+    Ember.assert(this._schema, '_schema is required');
+    Ember.assert(this._orbitCache, '_orbitCache is required');
 
-    this.set('_materialized', {});
+    this._materialized = {};
   },
 
   lookup(identifier) {
-    if(!identifier) return;
+    if (!identifier) return;
 
-    const {type, id} = identifier;
-
-    const materialized = this.get('_materialized');
+    const { type, id } = identifier;
     const identifierKey = this._identifierKey(type, id);
 
-    return materialized[identifierKey] || this._materialize(type, id);
+    return this._materialized[identifierKey] || this._materialize(type, id);
+  },
+
+  lookupMany(identifiers) {
+    return identifiers.map(identifier => this.lookup(identifier));
   },
 
   contains(identifier) {
-    if(!identifier) return;
+    if (!identifier) return;
 
-    const {type, id} = identifier;
-
-    const materialized = this.get('_materialized');
+    const { type, id } = identifier;
     const identifierKey = this._identifierKey(type, id);
 
-    return !!materialized[identifierKey];
-  },
-
-  identifier(record) {
-    return {
-      type: get(record.constructor, 'typeKey'),
-      id: record.get('id')
-    };
+    return !!this._materialized[identifierKey];
   },
 
   evict(record) {
-    console.debug('evicting', record);
-    const materialized = this.get('_materialized');
-    const identifier = record.getIdentifier();
-    const identifierKey = this._identifierKey(identifier.type, identifier.id);
-    delete materialized[identifierKey];
-    console.debug('materialized after evict', identifierKey, materialized);
+    // console.debug('evicting', record);
+    const identifierKey = this._identifierKey(record.type, record.id);
+    delete this._materialized[identifierKey];
+    // console.debug('materialized after evict', identifierKey, this._materialized);
     record.disconnect();
   },
 
   _materialize(type, id) {
-    console.debug('materializing', type, id);
-    const schema = this.get('_schema');
-    const store = this.get('_store');
-    const materialized = this.get('_materialized');
-
-
-    const model = schema.modelFor(type);
-    const record = model._create(id, store);
+    // console.debug('materializing', type, id);
+    const model = this._schema.modelFor(type);
+    const record = model._create(id, this._store);
     const identifier = this._identifierKey(type, id);
 
-    materialized[identifier] = record;
+    this._materialized[identifier] = record;
 
     return record;
   },

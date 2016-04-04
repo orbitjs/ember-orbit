@@ -1,59 +1,22 @@
 const { ArrayProxy } = Ember;
 
+function notSupported() {
+  throw new Error('Method not supported on read-only ArrayProxy.');
+}
+
 export default ArrayProxy.extend({
-  addObject() {
-    throw new Error('not supported');
-  },
-
-  clear() {
-    throw new Error('not supported');
-  },
-
-  insertAt() {
-    throw new Error('not supported');
-  },
-
-  popObject() {
-    throw new Error('not supported');
-  },
-
-  pushObject() {
-    throw new Error('not supported');
-  },
-
-  pushObjects() {
-    throw new Error('not supported');
-  },
-
-  removeAt() {
-    throw new Error('not supported');
-  },
-
-  removeObject() {
-    throw new Error('not supported');
-  },
-
-  replace() {
-    throw new Error('not supported');
-  },
-
-  reverseObjects() {
-    throw new Error('not supported');
-  },
-
-  setObjects() {
-    throw new Error('not supported');
-  },
-
-  shiftObject() {
-    throw new Error('not supported');
-  },
-
-  unshiftObject() {
-    throw new Error('not supported');
-  },
-
-  unshiftObjects() {
-    throw new Error('not supported');
-  }
+  addObject: notSupported,
+  clear: notSupported,
+  insertAt: notSupported,
+  popObject: notSupported,
+  pushObject: notSupported,
+  pushObjects: notSupported,
+  removeAt: notSupported,
+  removeObject: notSupported,
+  replace: notSupported,
+  reverseObjects: notSupported,
+  setObjects: notSupported,
+  shiftObject: notSupported,
+  unshiftObject: notSupported,
+  unshiftObjects: notSupported
 });

@@ -31,9 +31,10 @@ module('Integration - Cache', function(hooks) {
     const liveQuery = cache.liveQuery(q => q.recordsOfType('planet')
                                            .filterAttributes({ name: 'Jupiter' }));
 
-    store.transform(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
-
-    assert.equal(liveQuery.get('length'), 1);
+    return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+      .then(() => {
+        assert.equal(liveQuery.get('length'), 1);
+      });
   });
 
   test('liveQuery - updates when matching record is added', function(assert) {
@@ -80,12 +81,11 @@ module('Integration - Cache', function(hooks) {
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
-        .tap(jupiter => store.transform(t => t.replaceAttribute(jupiter.getIdentifier(), 'name', 'Jupiter2')))
+        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter, 'name', 'Jupiter2')))
         .then(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());
     });
   });
-
 
   test('#retrieveAttribute', function(assert) {
     const done = assert.async();
@@ -138,5 +138,56 @@ module('Integration - Cache', function(hooks) {
         .then((record) => cache.retrieveRecord('planet', record.get('id')))
         .then((retrievedRecord) => assert.ok(retrievedRecord, 'retrieved record'));
     });
+  });
+
+  test('#query - record', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+
+        const foundRecord = cache.query(q => q.record(earth));
+        assert.strictEqual(foundRecord, earth);
+      });
+  });
+
+  test('#query - recordsOfType', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+
+        const foundRecords = cache.query(q => q.recordsOfType('planet'));
+        assert.deepEqual(foundRecords, [earth, jupiter]);
+        assert.strictEqual(foundRecords[0], earth);
+        assert.strictEqual(foundRecords[1], jupiter);
+      });
+  });
+
+  test('#query - filter', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+
+        const foundRecords = cache.query(q => q.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
+        assert.deepEqual(foundRecords, [earth]);
+        assert.strictEqual(foundRecords[0], earth);
+      });
   });
 });
