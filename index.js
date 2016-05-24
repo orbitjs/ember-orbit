@@ -32,5 +32,11 @@ module.exports = {
     tree = MergeTrees([addonTree, rxjs, orbit]);
 
     return tree;
+  },
+
+  included: function(app) {
+    this._super.included(app);
+
+    app.import('vendor/immutable/dist/immutable.min.js');
   }
 };

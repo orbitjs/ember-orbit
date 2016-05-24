@@ -9,8 +9,6 @@ module.exports = function(defaults) {
     }
   });
 
-  app.import('vendor/immutable/dist/immutable.min.js');
-
   /*
     This build file specifes the options for the dummy test app of this
     addon, located in `/tests/dummy`
