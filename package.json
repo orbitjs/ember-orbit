@@ -1,7 +1,7 @@
 {
   "name": "ember-orbit",
   "private": true,
-  "version": "0.8.0-beta.2",
+  "version": "0.9.0-beta.1",
   "namespace": "EO",
   "description": "Ember.js data layer built with Orbit.js",
   "directories": {
@@ -61,12 +61,19 @@
   },
   "keywords": [
     "ember-addon",
-    "ember-orbit"
+    "ember-orbit",
+    "orbit",
+    "orbit.js",
+    "data",
+    "immutable",
+    "observable",
+    "jsonapi"
   ],
   "dependencies": {
     "ember-cli-babel": "^5.1.3",
+    "immutable": "^3.7.6",
     "rxjs-es": "git://github.com/opsb/rxjs-es#40bf9a8",
-    "orbit.js": "git://github.com/orbitjs/orbit.js#a77212b16d3f6943b56655da1ad5837b9f6acf99"
+    "orbit.js": "git://github.com/orbitjs/orbit.js#master"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
