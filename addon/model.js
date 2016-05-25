@@ -83,7 +83,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
   },
 
   _storeOrError: Ember.computed('_store', function() {
-    const store = this.get('_store');
+    const store = get(this, '_store');
 
     if (!store) throw new Ember.Error('record has been removed from Store');
 
