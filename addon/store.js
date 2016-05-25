@@ -37,6 +37,14 @@ export default Ember.Object.extend({
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
   },
 
+  find(type, id) {
+    if (id === undefined) {
+      return this.query(q => q.recordsOfType(type));
+    } else {
+      return this.query(q => q.record({type, id}));
+    }
+  },
+
   query(queryOrExpression) {
     const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
     return this.orbitStore.query(query)

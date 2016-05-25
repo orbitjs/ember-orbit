@@ -97,4 +97,40 @@ module('Integration - Store', function(hooks) {
         assert.strictEqual(records[0], earth);
       });
   });
+
+  test('#find - by type and id', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+        return store.find('planet', earth.id);
+      })
+      .then(record => {
+        assert.strictEqual(record, earth);
+      });
+  });
+
+  test('#find - by type', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+        return store.find('planet');
+      })
+      .then(records => {
+        assert.deepEqual(records, [earth, jupiter]);
+        assert.strictEqual(records[0], earth);
+        assert.strictEqual(records[1], jupiter);
+      });
+  });
 });
