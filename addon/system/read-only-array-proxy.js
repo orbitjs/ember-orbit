@@ -1,4 +1,10 @@
-const { ArrayProxy } = Ember;
+import Ember from 'ember';
+
+const {
+  get,
+  set,
+  ArrayProxy
+} = Ember;
 
 function notSupported() {
   throw new Error('Method not supported on read-only ArrayProxy.');
@@ -18,5 +24,18 @@ export default ArrayProxy.extend({
   setObjects: notSupported,
   shiftObject: notSupported,
   unshiftObject: notSupported,
-  unshiftObjects: notSupported
+  unshiftObjects: notSupported,
+
+  length: Ember.computed.alias('content.length'),
+
+  init(...args) {
+    let content = get(this, 'content');
+
+    if (!content) {
+      content = Ember.A();
+      set(this, 'content', content);
+    }
+
+    this._super(...args);
+  }
 });

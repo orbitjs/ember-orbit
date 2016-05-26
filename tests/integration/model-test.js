@@ -65,9 +65,9 @@ module('Integration - Model', function(hooks) {
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
       .tap(([jupiter, callisto]) => {
-        jupiter.get('moons').pushObject(callisto);
-        console.debug('pushed');
-        return [jupiter, callisto];
+        return jupiter.get('moons').pushObject(callisto);
+        // console.debug('pushed');
+        // return [jupiter, callisto];
       })
       .then(([jupiter, callisto]) => {
         console.debug('asserting');
