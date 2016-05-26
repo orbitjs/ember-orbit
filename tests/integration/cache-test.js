@@ -70,6 +70,26 @@ module('Integration - Cache', function(hooks) {
     });
   });
 
+  test('liveQuery - removes record that has been removed', function(assert) {
+    const done = assert.async();
+
+    Ember.run(() => {
+      const planets = cache.liveQuery(q => q.recordsOfType('planet'));
+
+      store
+        .update(t => {
+          t.addRecord({type: 'planet', id: 'Jupiter'});
+          t.addRecord({type: 'planet', id: 'Earth'});
+        })
+        .then(() => assert.equal(planets.get('length'), 2))
+        .then(() => assert.equal(planets.get('content.length'), 2))
+        .then(() => store.update(t => t.removeRecord({type: 'planet', id: 'Jupiter'})))
+        .then(() => assert.equal(planets.get('length'), 1))
+        .then(() => assert.equal(planets.get('content.length'), 1))
+        .then(() => done());
+    });
+  });
+
   test('liveQuery - removes record that no longer matches', function(assert) {
     const done = assert.async();
 
@@ -81,8 +101,11 @@ module('Integration - Cache', function(hooks) {
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
+        .tap(() => assert.equal(planets.get('length'), 1))
+        .tap(jupiter => assert.ok(planets.contains(jupiter)))
         .tap(jupiter => store.update(t => t.replaceAttribute(jupiter, 'name', 'Jupiter2')))
-        .then(jupiter => assert.ok(!planets.contains(jupiter)))
+        .tap(() => assert.equal(planets.get('length'), 0))
+        .tap(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());
     });
   });
