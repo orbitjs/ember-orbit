@@ -51,10 +51,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   getHasMany(field) {
     const store = get(this, '_storeOrError');
-    const cache = get(store, 'cache');
-
     return HasMany.create({
-      content: cache.liveQuery(q => q.relatedRecords(this, field)),
       _store: store,
       _model: this,
       _relationship: field
