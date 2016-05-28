@@ -31,6 +31,8 @@ export default Ember.Object.extend({
 
     const orbitCache = this.orbitStore.cache;
 
+    assert("A Store's `orbitStore` must have its own `cache`", orbitCache);
+
     this._identityMap = IdentityMap.create({ _schema: this.schema, _orbitCache: orbitCache, _store: this });
     this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
 
