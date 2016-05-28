@@ -35,8 +35,12 @@ module.exports = {
   },
 
   included: function(app) {
-    this._super.included(app);
-
     app.import('vendor/immutable/dist/immutable.min.js');
+
+    app.options = app.options || {};
+    app.options.babel = app.options.babel || {};
+    app.options.babel.includePolyfill = true;
+
+    return this._super.included(app);
   }
 };
