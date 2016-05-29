@@ -46,7 +46,19 @@ var modules = {
         return 'symbol-observable.js';
       }
     });
-    return symbolObservable;
+
+    // Need an AMD-compatible export
+    // See https://github.com/ReactiveX/rxjs/issues/1664
+    var withExportFix = replace(symbolObservable, {
+      files: [
+        'symbol-observable.js'
+      ],
+      patterns: [
+        { match: /module\.exports/, replace: 'exports[\'default\']' }
+      ]
+    });
+
+    return withExportFix;
   },
 
   index: function() {
