@@ -3,3 +3,4 @@ bower_components/*
 dist/*
 tmp/*
 build-support/*
+travis_phantomjs/*
