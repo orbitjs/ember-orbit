@@ -3,6 +3,7 @@ const get = Ember.get;
 import LiveQuery from 'ember-orbit/live-query';
 import { parseIdentifier } from 'orbit-common/lib/identifiers';
 import Query from 'orbit/query';
+import objectValues from 'ember-orbit/utils/object-values';
 
 export default Ember.Object.extend({
   _orbitCache: null,
@@ -51,8 +52,8 @@ export default Ember.Object.extend({
 
     switch(query.expression.op) {
       case 'record':        return this._identityMap.lookup(result);
-      case 'recordsOfType': return this._identityMap.lookupMany(Object.values(result));
-      case 'filter':        return this._identityMap.lookupMany(Object.values(result));
+      case 'recordsOfType': return this._identityMap.lookupMany(objectValues(result));
+      case 'filter':        return this._identityMap.lookupMany(objectValues(result));
       default:              return result;
     }
   },

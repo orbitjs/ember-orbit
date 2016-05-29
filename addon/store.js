@@ -2,6 +2,7 @@ import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
 import OrbitStore from 'orbit-common/store';
 import Query from 'orbit/query';
+import objectValues from 'ember-orbit/utils/object-values';
 
 /**
  @module ember-orbit
@@ -48,8 +49,8 @@ export default Ember.Object.extend({
       .then(result => {
         switch(query.expression.op) {
           case 'record':        return this._identityMap.lookup(result);
-          case 'recordsOfType': return this._identityMap.lookupMany(Object.values(result));
-          case 'filter':        return this._identityMap.lookupMany(Object.values(result));
+          case 'recordsOfType': return this._identityMap.lookupMany(objectValues(result));
+          case 'filter':        return this._identityMap.lookupMany(objectValues(result));
           default:              return result;
         }
       });
