@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 6,
     sourceType: 'module'
@@ -18,7 +19,8 @@ module.exports = {
     "no-new": 2,
     "no-unused-vars": [2, { "argsIgnorePattern": "^_" }],
     "dot-notation": 2,
-    "no-eq-null": 2
+    "no-eq-null": 2,
+    "strict": 0
   },
   globals: {
     Ember: true,
