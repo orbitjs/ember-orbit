@@ -36,12 +36,14 @@
     "test": "ember try:testall"
   },
   "devDependencies": {
+    "babel-eslint": "^6.0.4",
     "broccoli-asset-rev": "^2.1.2",
     "broccoli-babel-transpiler": "^5.5.0",
     "broccoli-debug": "^0.1.1",
-    "ember-cli": "2.4.2",
+    "ember-cli": "2.5.1",
     "ember-cli-app-version": "0.5.0",
     "ember-cli-dependency-checker": "^1.0.1",
+    "ember-cli-eslint": "1.4.0",
     "ember-cli-htmlbars": "0.7.9",
     "ember-cli-htmlbars-inline-precompile": "^0.2.0",
     "ember-cli-ic-ajax": "0.2.1",
