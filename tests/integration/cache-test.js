@@ -164,16 +164,14 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#query - record', function(assert) {
-    let earth, jupiter;
+    let earth;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(record => {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(record => {
-        jupiter = record;
-
+      .then(() => {
         const foundRecord = cache.query(q => q.record(earth));
         assert.strictEqual(foundRecord, earth);
       });
@@ -198,16 +196,14 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#query - filter', function(assert) {
-    let earth, jupiter;
+    let earth;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(record => {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(record => {
-        jupiter = record;
-
+      .then(() => {
         const foundRecords = cache.query(q => q.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
         assert.deepEqual(foundRecords, [earth]);
         assert.strictEqual(foundRecords[0], earth);

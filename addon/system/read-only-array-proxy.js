@@ -32,7 +32,7 @@ export default ArrayProxy.extend({
     let content = get(this, 'content');
 
     if (!content) {
-      content = Ember.A();
+      content = new Ember.A();
       set(this, 'content', content);
     }
 

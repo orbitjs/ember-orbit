@@ -1,5 +1,3 @@
-/* jshint node: true */
-
 module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'dummy',
@@ -40,7 +38,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    // No production config needed
   }
 
   return ENV;

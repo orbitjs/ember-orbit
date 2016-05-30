@@ -1,7 +1,5 @@
 import HasMany from './relationships/has-many';
-import key from 'ember-orbit/fields/key';
 import { uuid } from 'orbit/lib/uuid';
-import { queryExpression as oqe } from 'orbit/query/expression';
 
 /**
  @module ember-orbit
@@ -68,7 +66,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
   },
 
   willDestroy() {
-    console.debug('willDestroy hook');
+    // console.debug('willDestroy hook');
     if (this.trigger) {
       this.trigger('didUnload');
     }
@@ -82,7 +80,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
   _storeOrError: Ember.computed('_store', function() {
     const store = get(this, '_store');
 
-    if (!store) throw new Ember.Error('record has been removed from Store');
+    if (!store) {
+      throw new Ember.Error('record has been removed from Store');
+    }
 
     return store;
   })

@@ -1,1 +1,1 @@
-window.EO = requireModule("ember-orbit")["default"];
+window.EO = requireModule("ember-orbit").default;

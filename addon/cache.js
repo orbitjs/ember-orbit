@@ -33,13 +33,15 @@ export default Ember.Object.extend({
 
   retrieveHasOne(record, relationship) {
     const value = this.retrieve([record.type, record.id, 'relationships', relationship, 'data']);
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
 
     return this._identityMap.lookup(parseIdentifier(value));
   },
 
   unload(record) {
-    console.debug('unload', record);
+    // console.debug('unload', record);
     this._identityMap.evict(record);
   },
 
@@ -61,5 +63,5 @@ export default Ember.Object.extend({
       _orbitCache: this._orbitCache,
       _identityMap: this._identityMap
     });
-  },
+  }
 });
