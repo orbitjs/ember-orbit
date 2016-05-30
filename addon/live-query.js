@@ -42,7 +42,7 @@ export default ReadOnlyArrayProxy.extend({
     removeRecord(operation) {
       const record = this._recordFor(operation);
       get(this, 'content').removeObject(record);
-    },
+    }
   },
 
   _recordFor(operation) {

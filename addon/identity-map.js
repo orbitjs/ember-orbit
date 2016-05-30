@@ -1,5 +1,3 @@
-const { get } = Ember;
-
 export default Ember.Object.extend({
   _schema: null,
   _orbitCache: null,
@@ -16,7 +14,9 @@ export default Ember.Object.extend({
   },
 
   lookup(identifier) {
-    if (!identifier) return;
+    if (!identifier) {
+      return;
+    }
 
     const { type, id } = identifier;
     const identifierKey = this._identifierKey(type, id);
@@ -29,7 +29,9 @@ export default Ember.Object.extend({
   },
 
   contains(identifier) {
-    if (!identifier) return;
+    if (!identifier) {
+      return;
+    }
 
     const { type, id } = identifier;
     const identifierKey = this._identifierKey(type, id);

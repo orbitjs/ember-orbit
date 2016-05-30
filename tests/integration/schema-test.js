@@ -96,7 +96,7 @@ module("Integration - Schema", function(hooks) {
 
     Ember.RSVP.Promise.all([
       store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
-      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'}),
+      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'})
     ])
     .then(([callisto, sun]) => {
       const normalized = schema.normalize({

@@ -56,6 +56,7 @@
     "ember-disable-proxy-controllers": "^1.0.0",
     "ember-export-application-global": "^1.0.3",
     "ember-try": "0.0.6",
+    "eslint": "^2.11.0",
     "loader.js": "^4.0.1"
   },
   "keywords": [

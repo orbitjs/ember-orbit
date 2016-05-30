@@ -45,15 +45,14 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#query - record', function(assert) {
-    let earth, jupiter;
+    let earth;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(record => {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(record => {
-        jupiter = record;
+      .then(() => {
         return store.query(q => q.record(earth));
       })
       .then(record => {
@@ -81,15 +80,14 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#query - filter', function(assert) {
-    let earth, jupiter;
+    let earth;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(record => {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(record => {
-        jupiter = record;
+      .then(() => {
         return store.query(q => q.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
       })
       .then(records => {
@@ -99,15 +97,14 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#find - by type and id', function(assert) {
-    let earth, jupiter;
+    let earth;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(record => {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(record => {
-        jupiter = record;
+      .then(() => {
         return store.find('planet', earth.id);
       })
       .then(record => {

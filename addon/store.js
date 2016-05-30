@@ -1,4 +1,3 @@
-import Schema from 'ember-orbit/schema';
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
 import OrbitStore from 'orbit-common/store';
@@ -8,11 +7,7 @@ import Query from 'orbit/query';
  @module ember-orbit
  */
 
-const {
-  assert,
-  get,
-  RSVP
-} = Ember;
+const { assert } = Ember;
 
 export default Ember.Object.extend({
   orbitStore: null,
@@ -86,7 +81,6 @@ export default Ember.Object.extend({
 
   _didPatch: function(operation) {
     // console.debug('didPatch', operation);
-    const { path } = operation;
     const { type, id } = operation.record;
     const record = this._identityMap.lookup({ type, id });
 

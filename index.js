@@ -1,4 +1,5 @@
-/* jshint node: true */
+/* eslint-env node */
+/* eslint-disable new-cap */
 'use strict';
 
 var Funnel     = require('broccoli-funnel');
@@ -73,10 +74,10 @@ var modules = {
 module.exports = {
   name: 'ember-orbit',
 
-  init: function(name) {
+  init: function() {
     // Hack to set the vendor path to node_modules
     var assets_path = require('path').join('immutable','dist','immutable.js');
-    this.treePaths['vendor'] = require.resolve('immutable').replace(assets_path, '');
+    this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
   },
 
   treeForAddon: function(tree) {

@@ -85,7 +85,9 @@ export default Ember.Object.extend({
 
   defineModel: function(type, modelClass) {
     const definedModels = this.orbitSchema.models;
-    if (definedModels[type]) return;
+    if (definedModels[type]) {
+      return;
+    }
 
     this.orbitSchema.registerModel(type, {
       id: get(modelClass, 'id'),
@@ -198,7 +200,9 @@ export default Ember.Object.extend({
 
   _normalizeRelationship(properties, normalizedProperties, relationshipName, relationshipProperties) {
     const value = properties[relationshipName];
-    if (!value) return;
+    if (!value) {
+      return;
+    }
 
     const relationship = normalizedProperties.relationships[relationshipName] = {};
     const modelType = relationshipProperties.model;

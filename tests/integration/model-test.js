@@ -21,7 +21,7 @@ module('Integration - Model', function(hooks) {
 
       Ember.RSVP.Promise.all([
         store.addRecord({type: 'star', name: 'The Sun'}),
-        store.addRecord({type: 'moon', name: 'Callisto'}),
+        store.addRecord({type: 'moon', name: 'Callisto'})
       ])
       .then(([theSun, callisto]) => {
         store
@@ -70,7 +70,7 @@ module('Integration - Model', function(hooks) {
         // return [jupiter, callisto];
       })
       .then(([jupiter, callisto]) => {
-        console.debug('asserting');
+        // console.debug('asserting');
         assert.ok(jupiter.get('moons').contains(callisto), 'added record to hasMany');
         assert.equal(callisto.get('planet'), jupiter, 'updated inverse');
         done();
@@ -128,7 +128,7 @@ module('Integration - Model', function(hooks) {
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
       .tap(([jupiter, callisto]) => callisto.set('planet', jupiter))
-      .tap(([jupiter, callisto]) => {
+      .tap(([_jupiter, callisto]) => {
         callisto.set('planet', null);
         return store;
       })
