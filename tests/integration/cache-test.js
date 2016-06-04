@@ -2,6 +2,7 @@ import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 
 import Orbit from 'orbit';
+import qb from 'orbit-common/query/builder';
 import { queryExpression as oqe } from 'orbit/query/expression';
 const { Planet, Moon, Star } = dummyModels;
 
@@ -28,8 +29,8 @@ module('Integration - Cache', function(hooks) {
 
   test('liveQuery - adds record that becomes a match', function(assert) {
     store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
-    const liveQuery = cache.liveQuery(q => q.recordsOfType('planet')
-                                           .filterAttributes({ name: 'Jupiter' }));
+    const liveQuery = cache.liveQuery(qb.recordsOfType('planet')
+                                        .filterAttributes({ name: 'Jupiter' }));
 
     return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
       .then(() => {
@@ -74,7 +75,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(q => q.recordsOfType('planet'));
+      const planets = cache.liveQuery(qb.recordsOfType('planet'));
 
       store
         .update(t => {
@@ -172,7 +173,7 @@ module('Integration - Cache', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        const foundRecord = cache.query(q => q.record(earth));
+        const foundRecord = cache.query(qb.record(earth));
         assert.strictEqual(foundRecord, earth);
       });
   });
@@ -188,7 +189,7 @@ module('Integration - Cache', function(hooks) {
       .then(record => {
         jupiter = record;
 
-        const foundRecords = cache.query(q => q.recordsOfType('planet'));
+        const foundRecords = cache.query(qb.recordsOfType('planet'));
         assert.deepEqual(foundRecords, [earth, jupiter]);
         assert.strictEqual(foundRecords[0], earth);
         assert.strictEqual(foundRecords[1], jupiter);
@@ -204,7 +205,7 @@ module('Integration - Cache', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        const foundRecords = cache.query(q => q.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
+        const foundRecords = cache.query(qb.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
         assert.deepEqual(foundRecords, [earth]);
         assert.strictEqual(foundRecords[0], earth);
       });

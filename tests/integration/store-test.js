@@ -1,5 +1,6 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
+import qb from 'orbit-common/query/builder';
 
 const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;
@@ -53,7 +54,7 @@ module('Integration - Store', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        return store.query(q => q.record(earth));
+        return store.query(qb.record(earth));
       })
       .then(record => {
         assert.strictEqual(record, earth);
@@ -70,7 +71,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(record => {
         jupiter = record;
-        return store.query(q => q.recordsOfType('planet'));
+        return store.query(qb.recordsOfType('planet'));
       })
       .then(records => {
         assert.deepEqual(records, [earth, jupiter]);
@@ -88,7 +89,7 @@ module('Integration - Store', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        return store.query(q => q.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
+        return store.query(qb.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
       })
       .then(records => {
         assert.deepEqual(records, [earth]);
