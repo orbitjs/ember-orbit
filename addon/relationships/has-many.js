@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import LiveQuery from '../live-query';
+import qb from 'orbit-common/query/builder';
 
 const { get } = Ember;
 
@@ -15,7 +16,7 @@ export default LiveQuery.extend({
 
     this._orbitCache = store.cache._orbitCache;
     this._identityMap = store.cache._identityMap;
-    this._query = (q) => q.relatedRecords(model, relationship);
+    this._query = qb.relatedRecords(model, relationship);
 
     this._super(...args);
   },

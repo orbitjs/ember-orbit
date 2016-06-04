@@ -3,6 +3,7 @@ import IdentityMap from 'ember-orbit/identity-map';
 import OrbitStore from 'orbit-common/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
+import qb from 'orbit-common/query/builder';
 
 /**
  @module ember-orbit
@@ -37,9 +38,9 @@ export default Ember.Object.extend({
 
   find(type, id) {
     if (id === undefined) {
-      return this.query(q => q.recordsOfType(type));
+      return this.query(qb.recordsOfType(type));
     } else {
-      return this.query(q => q.record({type, id}));
+      return this.query(qb.record({type, id}));
     }
   },
 
@@ -69,7 +70,7 @@ export default Ember.Object.extend({
   },
 
   findRecord(type, id) {
-    return this.query(q => q.record({type, id}));
+    return this.query(qb.record({type, id}));
   },
 
   removeRecord(record) {
