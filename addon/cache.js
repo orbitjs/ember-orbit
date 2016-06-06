@@ -51,10 +51,10 @@ export default Ember.Object.extend({
     const result = this._orbitCache.query(query);
 
     switch(query.expression.op) {
-      case 'record':        return this._identityMap.lookup(result);
-      case 'recordsOfType': return this._identityMap.lookupMany(objectValues(result));
-      case 'filter':        return this._identityMap.lookupMany(objectValues(result));
-      default:              return result;
+      case 'record':  return this._identityMap.lookup(result);
+      case 'records': return this._identityMap.lookupMany(objectValues(result));
+      case 'filter':  return this._identityMap.lookupMany(objectValues(result));
+      default:        return result;
     }
   },
 

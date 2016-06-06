@@ -4,6 +4,10 @@ import OrbitStore from 'orbit-common/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
 import qb from 'orbit-common/query/builder';
+import {
+  addRecord,
+  removeRecord
+} from 'orbit-common/transform/operators';
 
 /**
  @module ember-orbit
@@ -38,7 +42,7 @@ export default Ember.Object.extend({
 
   find(type, id) {
     if (id === undefined) {
-      return this.query(qb.recordsOfType(type));
+      return this.query(qb.records(type));
     } else {
       return this.query(qb.record({type, id}));
     }
@@ -49,10 +53,10 @@ export default Ember.Object.extend({
     return this.orbitStore.query(query)
       .then(result => {
         switch(query.expression.op) {
-          case 'record':        return this._identityMap.lookup(result);
-          case 'recordsOfType': return this._identityMap.lookupMany(objectValues(result));
-          case 'filter':        return this._identityMap.lookupMany(objectValues(result));
-          default:              return result;
+          case 'record':  return this._identityMap.lookup(result);
+          case 'records': return this._identityMap.lookupMany(objectValues(result));
+          case 'filter':  return this._identityMap.lookupMany(objectValues(result));
+          default:        return result;
         }
       });
   },
@@ -65,7 +69,7 @@ export default Ember.Object.extend({
     this._verifyType(properties.type);
 
     const record = this.schema.normalize(properties);
-    return this.update(t => t.addRecord(record))
+    return this.update(addRecord(record))
       .then(() => this._identityMap.lookup(record));
   },
 
@@ -74,7 +78,7 @@ export default Ember.Object.extend({
   },
 
   removeRecord(record) {
-    return this.update(t => t.removeRecord(record));
+    return this.update(removeRecord(record));
   },
 
   _verifyType(type) {

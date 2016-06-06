@@ -1,6 +1,10 @@
 import Ember from 'ember';
 import LiveQuery from '../live-query';
 import qb from 'orbit-common/query/builder';
+import {
+  addToHasMany,
+  removeFromHasMany
+} from 'orbit-common/transform/operators';
 
 const { get } = Ember;
 
@@ -28,7 +32,7 @@ export default LiveQuery.extend({
 
     // console.log('pushObject', model.type, model.id, relationship, record.type, record.id);
 
-    return store.update(t => t.addToHasMany(model, relationship, record));
+    return store.update(addToHasMany(model, relationship, record));
   },
 
   removeObject(record) {
@@ -36,6 +40,6 @@ export default LiveQuery.extend({
     const model = this.get('_model');
     const relationship = this.get('_relationship');
 
-    return store.update(t => t.removeFromHasMany(model, relationship, record));
+    return store.update(removeFromHasMany(model, relationship, record));
   }
 });
