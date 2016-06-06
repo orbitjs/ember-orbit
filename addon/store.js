@@ -38,7 +38,7 @@ export default Ember.Object.extend({
 
   find(type, id) {
     if (id === undefined) {
-      return this.query(qb.recordsOfType(type));
+      return this.query(qb.records(type));
     } else {
       return this.query(qb.record({type, id}));
     }
@@ -49,10 +49,10 @@ export default Ember.Object.extend({
     return this.orbitStore.query(query)
       .then(result => {
         switch(query.expression.op) {
-          case 'record':        return this._identityMap.lookup(result);
-          case 'recordsOfType': return this._identityMap.lookupMany(objectValues(result));
-          case 'filter':        return this._identityMap.lookupMany(objectValues(result));
-          default:              return result;
+          case 'record':  return this._identityMap.lookup(result);
+          case 'records': return this._identityMap.lookupMany(objectValues(result));
+          case 'filter':  return this._identityMap.lookupMany(objectValues(result));
+          default:        return result;
         }
       });
   },

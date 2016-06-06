@@ -61,7 +61,7 @@ module('Integration - Store', function(hooks) {
       });
   });
 
-  test('#query - recordsOfType', function(assert) {
+  test('#query - records', function(assert) {
     let earth, jupiter;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
@@ -71,7 +71,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(record => {
         jupiter = record;
-        return store.query(qb.recordsOfType('planet'));
+        return store.query(qb.records('planet'));
       })
       .then(records => {
         assert.deepEqual(records, [earth, jupiter]);
@@ -89,7 +89,7 @@ module('Integration - Store', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        return store.query(qb.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
+        return store.query(qb.records('planet').filterAttributes({ name: 'Earth' }));
       })
       .then(records => {
         assert.deepEqual(records, [earth]);

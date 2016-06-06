@@ -29,7 +29,7 @@ module('Integration - Cache', function(hooks) {
 
   test('liveQuery - adds record that becomes a match', function(assert) {
     store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
-    const liveQuery = cache.liveQuery(qb.recordsOfType('planet')
+    const liveQuery = cache.liveQuery(qb.records('planet')
                                         .filterAttributes({ name: 'Jupiter' }));
 
     return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
@@ -39,7 +39,7 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - updates when matching record is added', function(assert) {
-    const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
+    const planets = cache.liveQuery(oqe('records', 'planet'));
     const addJupiter = store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
     return addJupiter.then(jupiter => assert.ok(planets.contains(jupiter)));
   });
@@ -48,7 +48,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
+      const planets = cache.liveQuery(oqe('records', 'planet'));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
@@ -62,7 +62,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(oqe('recordsOfType', 'planet'));
+      const planets = cache.liveQuery(oqe('records', 'planet'));
 
       store
         .addRecord({type: 'moon', name: 'Callisto'})
@@ -75,7 +75,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(qb.recordsOfType('planet'));
+      const planets = cache.liveQuery(qb.records('planet'));
 
       store
         .update(t => {
@@ -97,7 +97,7 @@ module('Integration - Cache', function(hooks) {
     Ember.run(() => {
       const planets = cache.liveQuery(
         oqe('filter',
-          oqe('recordsOfType', 'planet'),
+          oqe('records', 'planet'),
           oqe('equal', oqe('attribute', 'name'), 'Jupiter')));
 
       store
@@ -178,7 +178,7 @@ module('Integration - Cache', function(hooks) {
       });
   });
 
-  test('#query - recordsOfType', function(assert) {
+  test('#query - records', function(assert) {
     let earth, jupiter;
 
     return store.addRecord({ type: 'planet', name: 'Earth' })
@@ -189,7 +189,7 @@ module('Integration - Cache', function(hooks) {
       .then(record => {
         jupiter = record;
 
-        const foundRecords = cache.query(qb.recordsOfType('planet'));
+        const foundRecords = cache.query(qb.records('planet'));
         assert.deepEqual(foundRecords, [earth, jupiter]);
         assert.strictEqual(foundRecords[0], earth);
         assert.strictEqual(foundRecords[1], jupiter);
@@ -205,7 +205,7 @@ module('Integration - Cache', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        const foundRecords = cache.query(qb.recordsOfType('planet').filterAttributes({ name: 'Earth' }));
+        const foundRecords = cache.query(qb.records('planet').filterAttributes({ name: 'Earth' }));
         assert.deepEqual(foundRecords, [earth]);
         assert.strictEqual(foundRecords[0], earth);
       });
