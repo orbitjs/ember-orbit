@@ -1,5 +1,10 @@
 import HasMany from './relationships/has-many';
 import { uuid } from 'orbit/lib/uuid';
+import {
+  replaceKey,
+  replaceAttribute,
+  replaceHasOne
+} from 'orbit-common/transform/operators';
 
 /**
  @module ember-orbit
@@ -24,7 +29,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceKey(field, value) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceKey(this, field, value));
+    store.update(replaceKey(this, field, value));
   },
 
   getAttribute(field) {
@@ -34,7 +39,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceAttribute(attribute, value) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceAttribute(this, attribute, value));
+    store.update(replaceAttribute(this, attribute, value));
   },
 
   getHasOne(relationship) {
@@ -44,7 +49,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceHasOne(relationship, record) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceHasOne(this, relationship, record));
+    store.update(replaceHasOne(this, relationship, record));
   },
 
   getHasMany(field) {

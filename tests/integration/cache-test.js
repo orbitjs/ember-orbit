@@ -1,9 +1,13 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-
 import Orbit from 'orbit';
 import qb from 'orbit-common/query/builder';
 import { queryExpression as oqe } from 'orbit/query/expression';
+import {
+  addRecord,
+  removeRecord,
+  replaceAttribute
+} from 'orbit-common/transform/operators';
 const { Planet, Moon, Star } = dummyModels;
 
 
@@ -32,7 +36,7 @@ module('Integration - Cache', function(hooks) {
     const liveQuery = cache.liveQuery(qb.records('planet')
                                         .filterAttributes({ name: 'Jupiter' }));
 
-    return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+    return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
       .then(() => {
         assert.equal(liveQuery.get('length'), 1);
       });
@@ -78,13 +82,13 @@ module('Integration - Cache', function(hooks) {
       const planets = cache.liveQuery(qb.records('planet'));
 
       store
-        .update(t => {
-          t.addRecord({type: 'planet', id: 'Jupiter'});
-          t.addRecord({type: 'planet', id: 'Earth'});
-        })
+        .update([
+          addRecord({type: 'planet', id: 'Jupiter'}),
+          addRecord({type: 'planet', id: 'Earth'})
+        ])
         .then(() => assert.equal(planets.get('length'), 2))
         .then(() => assert.equal(planets.get('content.length'), 2))
-        .then(() => store.update(t => t.removeRecord({type: 'planet', id: 'Jupiter'})))
+        .then(() => store.update(removeRecord({type: 'planet', id: 'Jupiter'})))
         .then(() => assert.equal(planets.get('length'), 1))
         .then(() => assert.equal(planets.get('content.length'), 1))
         .then(() => done());
@@ -104,7 +108,7 @@ module('Integration - Cache', function(hooks) {
         .addRecord({type: 'planet', name: 'Jupiter'})
         .tap(() => assert.equal(planets.get('length'), 1))
         .tap(jupiter => assert.ok(planets.contains(jupiter)))
-        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter, 'name', 'Jupiter2')))
+        .tap(jupiter => store.update(replaceAttribute(jupiter, 'name', 'Jupiter2')))
         .tap(() => assert.equal(planets.get('length'), 0))
         .tap(jupiter => assert.ok(!planets.contains(jupiter)))
         .then(() => done());

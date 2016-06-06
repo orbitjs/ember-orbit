@@ -4,6 +4,10 @@ import OrbitStore from 'orbit-common/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
 import qb from 'orbit-common/query/builder';
+import {
+  addRecord,
+  removeRecord
+} from 'orbit-common/transform/operators';
 
 /**
  @module ember-orbit
@@ -65,7 +69,7 @@ export default Ember.Object.extend({
     this._verifyType(properties.type);
 
     const record = this.schema.normalize(properties);
-    return this.update(t => t.addRecord(record))
+    return this.update(addRecord(record))
       .then(() => this._identityMap.lookup(record));
   },
 
@@ -74,7 +78,7 @@ export default Ember.Object.extend({
   },
 
   removeRecord(record) {
-    return this.update(t => t.removeRecord(record));
+    return this.update(removeRecord(record));
   },
 
   _verifyType(type) {
