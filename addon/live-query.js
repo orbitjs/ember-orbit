@@ -19,7 +19,7 @@ export default ReadOnlyArrayProxy.extend({
     set(this, '_orbitLiveQuery', orbitLiveQuery);
 
     orbitLiveQuery.subscribe((operation) => {
-      // console.debug('liveQuery', operation);
+      // console.debug('liveQuery - operation', operation);
 
       const handler = this._operations[operation.op];
 
@@ -36,12 +36,29 @@ export default ReadOnlyArrayProxy.extend({
   _operations: {
     addRecord(operation) {
       const record = this._recordFor(operation);
-      get(this, 'content').pushObject(record);
+      const content = get(this, 'content');
+
+      if (!content.contains(record)) {
+        content.pushObject(record);
+      }
+    },
+
+    replaceRecord(operation) {
+      const record = this._recordFor(operation);
+      const content = get(this, 'content');
+
+      if (!content.contains(record)) {
+        content.pushObject(record);
+      }
     },
 
     removeRecord(operation) {
       const record = this._recordFor(operation);
-      get(this, 'content').removeObject(record);
+      const content = get(this, 'content');
+
+      if (content.contains(record)) {
+        content.removeObject(record);
+      }
     }
   },
 
