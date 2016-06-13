@@ -71,6 +71,12 @@ const Store = Ember.Object.extend({
     }
   },
 
+  liveQuery(queryOrExpression) {
+    const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
+    this.orbitStore.query(query);
+    return this.cache.liveQuery(query);
+  },
+
   query(queryOrExpression) {
     const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
     return this.orbitStore.query(query)
