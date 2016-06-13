@@ -1,5 +1,6 @@
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
+import KeyMap from 'orbit-common/key-map';
 import OrbitStore from 'orbit-common/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
@@ -17,6 +18,7 @@ const { assert } = Ember;
 
 export default Ember.Object.extend({
   orbitStore: null,
+  keyMap: null,
   schema: null,
   cache: null,
   _identityMap: null,
@@ -26,8 +28,12 @@ export default Ember.Object.extend({
 
     assert("`schema` must be injected onto a Store", this.schema);
 
+    if (!this.keyMap) {
+      this.keyMap = this.orbitStore ? this.orbitStore.keyMap : new KeyMap();
+    }
+
     if (!this.orbitStore) {
-      this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema });
+      this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema, keyMap: this.keyMap });
     }
 
     const orbitCache = this.orbitStore.cache;
