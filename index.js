@@ -75,6 +75,8 @@ module.exports = {
   name: 'ember-orbit',
 
   init: function() {
+    this._super.init.apply(this, arguments);
+    
     // Hack to set the vendor path to node_modules
     var assets_path = require('path').join('immutable','dist','immutable.js');
     this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
