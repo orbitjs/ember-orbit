@@ -16,6 +16,10 @@ export default Ember.Object.extend({
     Ember.assert(get(this, '_identityMap'), '_identityMap is required');
   },
 
+  containsRecord(type, id) {
+    return this._orbitCache.has([type, id]);
+  },
+
   retrieve(path) {
     return this._orbitCache.get(path);
   },

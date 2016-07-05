@@ -14,9 +14,9 @@ import {
  @module ember-orbit
  */
 
-const { assert } = Ember;
+const { assert, getOwner } = Ember;
 
-export default Ember.Object.extend({
+const Store = Ember.Object.extend({
   orbitStore: null,
   keyMap: null,
   schema: null,
@@ -44,6 +44,23 @@ export default Ember.Object.extend({
     this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
 
     orbitCache.patches.subscribe(operation => this._didPatch(operation));
+  },
+
+  fork() {
+    const forkedOrbitStore = this.orbitStore.fork();
+
+    return Store.create(
+      getOwner(this).ownerInjection(),
+      {
+        orbitStore: forkedOrbitStore,
+        keyMap: this.keyMap,
+        schema: this.schema
+      }
+    );
+  },
+
+  merge(forkedStore, options = {}) {
+    return this.orbitStore.merge(forkedStore.orbitStore, options);
   },
 
   find(type, id) {
@@ -103,3 +120,5 @@ export default Ember.Object.extend({
     }
   }
 });
+
+export default Store;
