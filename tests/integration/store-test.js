@@ -1,6 +1,9 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import qb from 'orbit-common/query/builder';
+import {
+  replaceAttribute
+} from 'orbit-common/transform/operators';
 
 const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;
@@ -94,6 +97,19 @@ module('Integration - Store', function(hooks) {
       .then(records => {
         assert.deepEqual(records, [earth]);
         assert.strictEqual(records[0], earth);
+      });
+  });
+
+  test('liveQuery - adds record that becomes a match', function(assert) {
+    store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
+    const liveQuery = store.liveQuery(qb.records('planet')
+                                        .filterAttributes({ name: 'Jupiter' }));
+
+    assert.equal(liveQuery.get('length'), 0);
+
+    return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+      .then(() => {
+        assert.equal(liveQuery.get('length'), 1);
       });
   });
 
