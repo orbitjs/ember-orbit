@@ -109,7 +109,7 @@ module('Integration - Model', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', jupiter);
-        return store;
+        return store.requestQueue.process();
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), jupiter, 'replaced hasOne with record');
@@ -130,7 +130,7 @@ module('Integration - Model', function(hooks) {
       .tap(([jupiter, callisto]) => callisto.set('planet', jupiter))
       .tap(([_jupiter, callisto]) => {
         callisto.set('planet', null);
-        return store;
+        return store.requestQueue.process();
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), null, 'replaced hasOne with null');
