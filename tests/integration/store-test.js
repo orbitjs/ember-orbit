@@ -39,6 +39,13 @@ module('Integration - Store', function(hooks) {
       });
   });
 
+  test('#findRecord - missing record', function(assert) {
+    return store.find('planet', 'jupiter')
+      .catch(e => {
+        assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
+      });
+  });
+
   test('#removeRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .tap(record => store.removeRecord(record))

@@ -1,7 +1,7 @@
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
 import KeyMap from 'orbit-common/key-map';
-import OrbitStore from 'orbit-common/store';
+import OrbitStore from 'orbit-store/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
 import qb from 'orbit-common/query/builder';
@@ -35,6 +35,9 @@ const Store = Ember.Object.extend({
     if (!this.orbitStore) {
       this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema, keyMap: this.keyMap });
     }
+
+    this.requestQueue = this.orbitStore.requestQueue;
+    this.syncQueue = this.orbitStore.syncQueue;
 
     const orbitCache = this.orbitStore.cache;
 

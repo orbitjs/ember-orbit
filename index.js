@@ -11,7 +11,18 @@ var modules = {
   orbit: function() {
     var orbitSrc = path.join(require.resolve('orbit.js'), '..', 'src');
     var orbit = new Funnel(orbitSrc, {
-      include: ['orbit.js', 'orbit-common.js', 'orbit/**/*', 'orbit-common/**/*'],
+      include: [
+        'orbit.js',
+        'orbit/**/*',
+        'orbit-common.js',
+        'orbit-common/**/*',
+        'orbit-store.js',
+        'orbit-store/**/*',
+        'orbit-jsonapi.js',
+        'orbit-jsonapi/**/*',
+        'orbit-local-storage.js',
+        'orbit-local-storage/**/*'
+      ],
       destDir: '.'
     });
 
@@ -76,7 +87,7 @@ module.exports = {
 
   init: function() {
     this._super.init.apply(this, arguments);
-    
+
     // Hack to set the vendor path to node_modules
     var assets_path = require('path').join('immutable','dist','immutable.js');
     this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
