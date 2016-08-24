@@ -6,23 +6,14 @@ var Funnel     = require('broccoli-funnel');
 var MergeTrees = require('broccoli-merge-trees');
 var path = require('path');
 
+function packageSource(pkg, namespace) {
+  return new Funnel(path.join(require.resolve(pkg), '..'), {
+    include: ['**/*.js'],
+    destDir: './' + (namespace || pkg)
+  });
+}
+
 var modules = {
-  orbit: function() {
-    var orbitSrc = path.join(require.resolve('orbit-core'), '..');
-    return new Funnel(orbitSrc, {
-      include: ['**/*.js'],
-      destDir: './orbit'
-    });
-  },
-
-  rxjs: function() {
-    var rxjsSource = path.join(require.resolve('rxjs-es'), '..');
-    return new Funnel(rxjsSource, {
-      include: ['**/*.js'],
-      destDir: './rxjs'
-    });
-  },
-
   symbolObservable: function() {
     var rxjsPath = path.join(require.resolve('rxjs-es'), '..');
     var symbolObservablePath = path.join(rxjsPath, 'node_modules', 'symbol-observable', 'es');
@@ -37,8 +28,10 @@ var modules = {
 
   index: function() {
     return MergeTrees([
-      modules.rxjs(),
-      modules.orbit(),
+      packageSource('rxjs-es', 'rxjs'),
+      packageSource('orbit-core', 'orbit'),
+      packageSource('orbit-jsonapi'),
+      packageSource('orbit-local-storage'),
       modules.symbolObservable()
     ]);
   }
