@@ -3,39 +3,32 @@
 'use strict';
 
 var Funnel     = require('broccoli-funnel');
-var MergeTrees = require('broccoli-merge-trees');
-var path = require('path');
+var mergeTrees = require('broccoli-merge-trees');
+var path       = require('path');
+var resolve    = require('resolve');
 
-function packageSource(pkg, namespace) {
-  return new Funnel(path.join(require.resolve(pkg), '..'), {
+function packageTree(name, _options) {
+  var options = _options || {};
+  var namespace = options.namespace || name;
+  var resolveOptions = options.resolveOptions || {};
+
+  return new Funnel(path.join(resolve.sync(name, resolveOptions), '..'), {
     include: ['**/*.js'],
-    destDir: './' + (namespace || pkg)
+    destDir: './' + namespace
   });
 }
 
-var modules = {
-  symbolObservable: function() {
-    var rxjsPath = path.join(require.resolve('rxjs-es'), '..');
-    var symbolObservablePath = path.join(rxjsPath, 'node_modules', 'symbol-observable', 'es');
-    return new Funnel(symbolObservablePath, {
-      include: ['ponyfill.js'],
-      destDir: '.',
-      getDestinationPath: function() {
-        return 'symbol-observable.js';
-      }
-    });
-  },
-
-  index: function() {
-    return MergeTrees([
-      packageSource('rxjs-es', 'rxjs'),
-      packageSource('orbit-core', 'orbit'),
-      packageSource('orbit-jsonapi'),
-      packageSource('orbit-local-storage'),
-      modules.symbolObservable()
-    ]);
-  }
-};
+function symbolObservableTree() {
+  var rxjsPath = path.join(require.resolve('rxjs-es'), '..');
+  var symbolObservablePath = path.join(rxjsPath, 'node_modules', 'symbol-observable', 'es');
+  return new Funnel(symbolObservablePath, {
+    include: ['ponyfill.js'],
+    destDir: '.',
+    getDestinationPath: function() {
+      return 'symbol-observable.js';
+    }
+  });
+}
 
 module.exports = {
   name: 'ember-orbit',
@@ -51,9 +44,26 @@ module.exports = {
   treeForAddon: function(tree) {
     var addonTree = this._super.treeForAddon.call(this, tree);
 
-    return MergeTrees([
+    var packageTrees = [
+      packageTree('rxjs-es', { namespace: 'rxjs' }),
+      packageTree('orbit-core', { namespace: 'orbit' }),
+      symbolObservableTree()
+    ];
+
+    var host = this.app || this.parent;
+    var orbitOptions = host.options && host.options.orbit;
+    var orbitSources = orbitOptions && orbitOptions.sources;
+
+    if (orbitSources) {
+      orbitSources.forEach(function(source) {
+        var sourceTree = packageTree(source, { resolveOptions: { basedir: this.parent.root } });
+        packageTrees.push(sourceTree);
+      }, this);
+    }
+
+    return mergeTrees([
       addonTree,
-      new Funnel(modules.index(), { destDir: './modules' })
+      new Funnel(mergeTrees(packageTrees), { destDir: './modules' })
     ]);
   },
 
