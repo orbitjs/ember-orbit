@@ -52,7 +52,6 @@
     "broccoli-merge-trees": "^1.1.1",
     "broccoli-replace": "^0.12.0",
     "ember-cli-babel": "^5.1.6",
-    "ember-network": "^0.3.0",
     "immutable": "^3.8.1",
     "rxjs-es": "5.0.0-beta.8",
     "orbit.js": "git://github.com/orbitjs/orbit.js#master",
