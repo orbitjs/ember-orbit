@@ -4,10 +4,9 @@
   "disable_watching": true,
   "phantomjs_debug_port": 5868,
   "launch_in_ci": [
-    "PhantomJS"
+    "Firefox"
   ],
   "launch_in_dev": [
-    "PhantomJS",
     "Chrome"
   ]
 }

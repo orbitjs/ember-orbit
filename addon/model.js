@@ -4,7 +4,7 @@ import {
   replaceKey,
   replaceAttribute,
   replaceHasOne
-} from 'orbit-common/transform/operators';
+} from 'orbit/transform/operators';
 
 /**
  @module ember-orbit

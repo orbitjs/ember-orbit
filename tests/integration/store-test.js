@@ -1,9 +1,9 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import qb from 'orbit-common/query/builder';
+import qb from 'orbit/query/builder';
 import {
   replaceAttribute
-} from 'orbit-common/transform/operators';
+} from 'orbit/transform/operators';
 
 const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;

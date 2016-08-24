@@ -1,10 +1,10 @@
 import Ember from 'ember';
 import LiveQuery from '../live-query';
-import qb from 'orbit-common/query/builder';
+import qb from 'orbit/query/builder';
 import {
   addToHasMany,
   removeFromHasMany
-} from 'orbit-common/transform/operators';
+} from 'orbit/transform/operators';
 
 const { get } = Ember;
 
