@@ -1,35 +1,26 @@
 {
   "name": "ember-orbit",
-  "private": true,
   "version": "0.9.0-beta.1",
-  "namespace": "EO",
   "description": "Ember.js data layer built with Orbit.js",
-  "directories": {
-    "doc": "doc",
-    "test": "tests"
-  },
   "homepage": "https://github.com/orbitjs/ember-orbit",
-  "readmeFilename": "README.md",
-  "author": {
-    "name": "Cerebris Corporation",
-    "url": "http://cerebris.com"
-  },
+  "contributors": [
+    "Dan Gebhardt (http://www.cerebris.com)"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/orbitjs/ember-orbit.git"
   },
-  "engines": {
-    "node": ">= 0.10.0"
-  },
   "bugs": {
     "url": "https://github.com/orbitjs/ember-orbit/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/orbitjs/ember-orbit/blob/master/LICENSE"
-    }
+  "keywords": [
+    "ember-addon",
+    "orbit.js",
+    "data",
+    "immutable",
+    "synchronization"
   ],
+  "license": "MIT",
   "scripts": {
     "build": "ember build",
     "start": "ember server",
@@ -49,7 +40,6 @@
     "ember-cli-release": "^0.2.9",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^1.2.0",
-    "ember-data": "^2.6.0",
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-export-application-global": "^1.0.5",
     "ember-load-initializers": "^0.5.1",
@@ -57,16 +47,6 @@
     "eslint": "^2.11.0",
     "loader.js": "^4.0.1"
   },
-  "keywords": [
-    "ember-addon",
-    "ember-orbit",
-    "orbit",
-    "orbit.js",
-    "data",
-    "immutable",
-    "observable",
-    "jsonapi"
-  ],
   "dependencies": {
     "broccoli-funnel": "^1.0.1",
     "broccoli-merge-trees": "^1.1.1",
