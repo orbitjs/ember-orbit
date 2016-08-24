@@ -1,4 +1,4 @@
-import OrbitSchema from 'orbit-common/schema';
+import OrbitSchema from 'orbit/schema';
 
 /**
  @module ember-orbit

@@ -5,72 +5,34 @@
 var Funnel     = require('broccoli-funnel');
 var MergeTrees = require('broccoli-merge-trees');
 var path = require('path');
-var replace = require('broccoli-replace');
 
 var modules = {
   orbit: function() {
-    var orbitSrc = path.join(require.resolve('orbit.js'), '..', 'src');
-    var orbit = new Funnel(orbitSrc, {
-      include: [
-        'orbit.js',
-        'orbit/**/*',
-        'orbit-common.js',
-        'orbit-common/**/*',
-        'orbit-store.js',
-        'orbit-store/**/*',
-        'orbit-jsonapi.js',
-        'orbit-jsonapi/**/*',
-        'orbit-local-storage.js',
-        'orbit-local-storage/**/*'
-      ],
-      destDir: '.'
+    var orbitSrc = path.join(require.resolve('orbit-core'), '..');
+    return new Funnel(orbitSrc, {
+      include: ['**/*.js'],
+      destDir: './orbit'
     });
-
-    return orbit;
   },
 
   rxjs: function() {
     var rxjsSource = path.join(require.resolve('rxjs-es'), '..');
-    var original = new Funnel(rxjsSource, {
+    return new Funnel(rxjsSource, {
       include: ['**/*.js'],
       destDir: './rxjs'
     });
-
-    var withAsyncFix = replace(original, {
-      files: [
-        'rxjs/Rx.DOM.js',
-        'rxjs/Rx.js'
-      ],
-      patterns: [
-        { match: /async,/, replace: 'async: async,' }
-      ]
-    });
-
-    return withAsyncFix;
   },
 
   symbolObservable: function() {
-    var symbolObservableSource = path.join(require.resolve('symbol-observable'), '..');
-    var symbolObservable = new Funnel(symbolObservableSource, {
+    var rxjsPath = path.join(require.resolve('rxjs-es'), '..');
+    var symbolObservablePath = path.join(rxjsPath, 'node_modules', 'symbol-observable', 'es');
+    return new Funnel(symbolObservablePath, {
       include: ['ponyfill.js'],
       destDir: '.',
       getDestinationPath: function() {
         return 'symbol-observable.js';
       }
     });
-
-    // Need an AMD-compatible export
-    // See https://github.com/ReactiveX/rxjs/issues/1664
-    var withExportFix = replace(symbolObservable, {
-      files: [
-        'symbol-observable.js'
-      ],
-      patterns: [
-        { match: /module\.exports/, replace: 'exports[\'default\']' }
-      ]
-    });
-
-    return withExportFix;
   },
 
   index: function() {
@@ -89,8 +51,8 @@ module.exports = {
     this._super.init.apply(this, arguments);
 
     // Hack to set the vendor path to node_modules
-    var assets_path = require('path').join('immutable','dist','immutable.js');
-    this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
+    var assets_path = path.join('orbit-core','src','index.js');
+    this.treePaths.vendor = require.resolve('orbit-core').replace(assets_path, '');
   },
 
   treeForAddon: function(tree) {
@@ -103,7 +65,7 @@ module.exports = {
   },
 
   included: function(app) {
-    app.import('vendor/immutable/dist/immutable.min.js');
+    app.import(path.join('vendor', 'immutable', 'dist', 'immutable.js'));
 
     return this._super.included(app);
   }

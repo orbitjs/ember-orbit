@@ -1,7 +1,7 @@
 const get = Ember.get;
 
 import LiveQuery from 'ember-orbit/live-query';
-import { parseIdentifier } from 'orbit-common/lib/identifiers';
+import { parseIdentifier } from 'orbit/lib/identifiers';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
 

@@ -1,14 +1,14 @@
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
-import KeyMap from 'orbit-common/key-map';
-import OrbitStore from 'orbit-store/store';
+import KeyMap from 'orbit/key-map';
+import OrbitStore from 'orbit/store';
 import Query from 'orbit/query';
 import objectValues from 'ember-orbit/utils/object-values';
-import qb from 'orbit-common/query/builder';
+import qb from 'orbit/query/builder';
 import {
   addRecord,
   removeRecord
-} from 'orbit-common/transform/operators';
+} from 'orbit/transform/operators';
 
 /**
  @module ember-orbit

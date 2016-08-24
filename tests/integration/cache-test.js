@@ -1,13 +1,13 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import Orbit from 'orbit';
-import qb from 'orbit-common/query/builder';
+import qb from 'orbit/query/builder';
 import { queryExpression as oqe } from 'orbit/query/expression';
 import {
   addRecord,
   removeRecord,
   replaceAttribute
-} from 'orbit-common/transform/operators';
+} from 'orbit/transform/operators';
 const { Planet, Moon, Star } = dummyModels;
 
 
