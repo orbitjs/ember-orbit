@@ -3,6 +3,7 @@ const get = Ember.get;
 import LiveQuery from 'ember-orbit/live-query';
 import { parseIdentifier } from 'orbit/lib/identifiers';
 import Query from 'orbit/query';
+import qb from 'orbit/query/builder';
 import objectValues from 'ember-orbit/utils/object-values';
 
 export default Ember.Object.extend({
@@ -68,5 +69,13 @@ export default Ember.Object.extend({
       _orbitCache: this._orbitCache,
       _identityMap: this._identityMap
     });
+  },
+
+  find(type, id) {
+    if (id === undefined) {
+      return this.query(qb.records(type));
+    } else {
+      return this.query(qb.record({type, id}));
+    }
   }
 });

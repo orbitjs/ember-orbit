@@ -214,4 +214,36 @@ module('Integration - Cache', function(hooks) {
         assert.strictEqual(foundRecords[0], earth);
       });
   });
+
+  test('#find - by type and id', function(assert) {
+    let earth;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(() => {
+        const foundRecord = cache.find('planet', earth.id);
+        assert.strictEqual(foundRecord, earth);
+      });
+  });
+
+  test('#find - by type', function(assert) {
+    let earth, jupiter;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(record => {
+        jupiter = record;
+
+        const foundRecords = cache.find('planet');
+        assert.deepEqual(foundRecords, [earth, jupiter]);
+        assert.strictEqual(foundRecords[0], earth);
+        assert.strictEqual(foundRecords[1], jupiter);
+      });
+  });
 });
