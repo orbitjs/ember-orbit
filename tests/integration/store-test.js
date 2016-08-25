@@ -128,12 +128,8 @@ module('Integration - Store', function(hooks) {
         earth = record;
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
-      .then(() => {
-        return store.find('planet', earth.id);
-      })
-      .then(record => {
-        assert.strictEqual(record, earth);
-      });
+      .then(() => store.find('planet', earth.id))
+      .then(record => assert.strictEqual(record, earth));
   });
 
   test('#find - by type', function(assert) {
