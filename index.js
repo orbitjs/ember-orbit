@@ -46,8 +46,9 @@ module.exports = {
 
     var packageTrees = [
       packageTree('rxjs-es', { namespace: 'rxjs' }),
+      symbolObservableTree(),
       packageTree('orbit-core', { namespace: 'orbit' }),
-      symbolObservableTree()
+      packageTree('orbit-store')
     ];
 
     var host = this.app || this.parent;
