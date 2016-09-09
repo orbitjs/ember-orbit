@@ -88,8 +88,7 @@ module('Integration - Model', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => jupiter.get('moons').pushObject(callisto))
       .tap(([jupiter, callisto]) => {
-        jupiter.get('moons').removeObject(callisto);
-        return store;
+        return jupiter.get('moons').removeObject(callisto);
       })
       .then(([jupiter, callisto]) => {
         assert.ok(!jupiter.get('moons').contains(callisto), 'removed record from hasMany');
@@ -127,7 +126,10 @@ module('Integration - Model', function(hooks) {
         store.addRecord({type: 'planet', name: 'Jupiter'}),
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
-      .tap(([jupiter, callisto]) => callisto.set('planet', jupiter))
+      .tap(([jupiter, callisto]) => {
+        callisto.set('planet', jupiter);
+        return store.requestQueue.process();
+      })
       .tap(([_jupiter, callisto]) => {
         callisto.set('planet', null);
         return store.requestQueue.process();

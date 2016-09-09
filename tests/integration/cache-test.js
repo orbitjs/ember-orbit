@@ -151,6 +151,7 @@ module('Integration - Cache', function(hooks) {
       ])
       .tap(([jupiter, callisto]) => {
         callisto.set('planet', jupiter);
+        return store.requestQueue.process();
       })
       .then(([jupiter, callisto]) => {
         assert.equal(cache.retrieveHasOne(callisto, 'planet'), jupiter);
