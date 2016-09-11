@@ -58,12 +58,11 @@ module('Integration - Store', function(hooks) {
   test('#query - record', function(assert) {
     let earth;
 
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(() => {
+    return Ember.RSVP.Promise.all([
+      store.addRecord({ type: 'planet', name: 'Earth' })
+    ])
+      .then(([result1]) => {
+        earth = result1;
         return store.query(qb.record(earth));
       })
       .then(record => {
@@ -74,13 +73,13 @@ module('Integration - Store', function(hooks) {
   test('#query - records', function(assert) {
     let earth, jupiter;
 
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(record => {
-        jupiter = record;
+    return Ember.RSVP.Promise.all([
+      store.addRecord({ type: 'planet', name: 'Earth' }),
+      store.addRecord({ type: 'planet', name: 'Jupiter' })
+    ])
+      .then(([result1, result2]) => {
+        earth = result1;
+        jupiter = result2;
         return store.query(qb.records('planet'));
       })
       .then(records => {
