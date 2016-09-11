@@ -28,6 +28,7 @@ module('Integration - Model', function(hooks) {
           .addRecord({type: 'planet', galaxyAlias: 'planet:jupiter', name: 'Jupiter', star: theSun, moons: [callisto]})
           .then(record => {
             assert.ok(record.get('id'), 'assigned id');
+            assert.deepEqual(record.get('identity'), { id: record.get('id'), type: 'planet' }, 'assigned identity that includes type and id');
             assert.equal(record.get('name'), 'Jupiter', 'assigned specified attribute');
             assert.equal(record.get('atmosphere'), false, 'assigned default value for unspecified attribute');
             assert.equal(record.get('galaxyAlias'), 'planet:jupiter', 'assigned secondary key');

@@ -32,7 +32,7 @@ export default LiveQuery.extend({
 
     // console.log('pushObject', model.type, model.id, relationship, record.type, record.id);
 
-    return store.update(addToHasMany(model, relationship, record));
+    return store.update(addToHasMany(model.identity, relationship, record.identity));
   },
 
   removeObject(record) {
@@ -40,6 +40,6 @@ export default LiveQuery.extend({
     const model = this.get('_model');
     const relationship = this.get('_relationship');
 
-    return store.update(removeFromHasMany(model, relationship, record));
+    return store.update(removeFromHasMany(model.identity, relationship, record.identity));
   }
 });

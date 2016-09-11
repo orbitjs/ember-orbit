@@ -20,36 +20,42 @@ const Model = Ember.Object.extend(Ember.Evented, {
   id: null,
   type: null,
   _store: null,
+
+  init() {
+    this._super();
+    this.identity = { id: this.id, type: this.type };
+  },
+
   disconnected: Ember.computed.empty('_store'),
 
   getKey(field) {
     const cache = get(this, '_storeOrError.cache');
-    return cache.retrieveKey(this, field);
+    return cache.retrieveKey(this.identity, field);
   },
 
   replaceKey(field, value) {
     const store = get(this, '_storeOrError');
-    store.update(replaceKey(this, field, value));
+    store.update(replaceKey(this.identity, field, value));
   },
 
   getAttribute(field) {
     const cache = get(this, '_storeOrError.cache');
-    return cache.retrieveAttribute(this, field);
+    return cache.retrieveAttribute(this.identity, field);
   },
 
   replaceAttribute(attribute, value) {
     const store = get(this, '_storeOrError');
-    store.update(replaceAttribute(this, attribute, value));
+    store.update(replaceAttribute(this.identity, attribute, value));
   },
 
   getHasOne(relationship) {
     const cache = get(this, '_storeOrError.cache');
-    return cache.retrieveHasOne(this, relationship);
+    return cache.retrieveHasOne(this.identity, relationship);
   },
 
   replaceHasOne(relationship, record) {
     const store = get(this, '_storeOrError');
-    store.update(replaceHasOne(this, relationship, record));
+    store.update(replaceHasOne(this.identity, relationship, record));
   },
 
   getHasMany(field) {
