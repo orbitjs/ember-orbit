@@ -90,6 +90,46 @@ module('Integration - Store', function(hooks) {
       });
   });
 
+  test('#query - relatedRecord', function(assert) {
+    let sun, jupiter;
+
+    return store.addRecord({type: 'star', name: 'The Sun'})
+      .then(result => {
+        sun = result;
+        return store.addRecord({ type: 'planet', name: 'Jupiter', sun });
+      })
+      .then(result => {
+        jupiter = result;
+        return store.query(qb.relatedRecord(jupiter.identity, 'sun'));
+      })
+      .then(record => {
+        assert.strictEqual(record, sun);
+      });
+  });
+
+  test('#query - relatedRecords', function(assert) {
+    let io, callisto, jupiter;
+
+    return Ember.RSVP.Promise.all([
+      store.addRecord({type: 'moon', name: 'Io'}),
+      store.addRecord({type: 'moon', name: 'Callisto'})
+    ])
+      .then(([result1, result2]) => {
+        io = result1;
+        callisto = result2;
+        return store.addRecord({ type: 'planet', name: 'Jupiter', moons: [io, callisto] });
+      })
+      .then(result => {
+        jupiter = result;
+        return store.query(qb.relatedRecords(jupiter.identity, 'moons'));
+      })
+      .then(records => {
+        assert.deepEqual(records, [io, callisto]);
+        assert.strictEqual(records[0], io);
+        assert.strictEqual(records[1], callisto);
+      });
+  });
+
   test('#query - filter', function(assert) {
     let earth;
 
