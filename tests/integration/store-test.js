@@ -40,7 +40,7 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#findRecord - missing record', function(assert) {
-    return store.find('planet', 'jupiter')
+    return store.findRecord('planet', 'jupiter')
       .catch(e => {
         assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
       });
@@ -159,18 +159,6 @@ module('Integration - Store', function(hooks) {
       });
   });
 
-  test('#find - by type and id', function(assert) {
-    let earth;
-
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(() => store.find('planet', earth.id))
-      .then(record => assert.strictEqual(record, earth));
-  });
-
   test('#find - by type', function(assert) {
     let earth, jupiter;
 
@@ -190,14 +178,33 @@ module('Integration - Store', function(hooks) {
       });
   });
 
+  test('#find - by type and id', function(assert) {
+    let earth;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(() => store.find('planet', earth.id))
+      .then(record => assert.strictEqual(record, earth));
+  });
+
+  test('#find - missing record', function(assert) {
+    return store.find('planet', 'jupiter')
+      .catch(e => {
+        assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
+      });
+  });
+
   test("#fork - creates a clone of a base store", function(assert) {
     const forkedStore = store.fork();
 
     return forkedStore
       .addRecord({type: 'planet', name: 'Jupiter', classification: 'gas giant'})
       .then(jupiter => {
-        assert.equal(store.cache.containsRecord('planet', jupiter.get('id')), false, 'store does not contain record');
-        assert.equal(forkedStore.cache.containsRecord('planet', jupiter.get('id')), true, 'fork contains record');
+        assert.equal(store.cache.includesRecord('planet', jupiter.get('id')), false, 'store does not contain record');
+        assert.equal(forkedStore.cache.includesRecord('planet', jupiter.get('id')), true, 'fork includes record');
       });
   });
 
@@ -208,8 +215,8 @@ module('Integration - Store', function(hooks) {
       .addRecord({type: 'planet', name: 'Jupiter', classification: 'gas giant'})
       .tap(() => store.merge(forkedStore))
       .then(jupiter => {
-        assert.equal(store.cache.containsRecord('planet', jupiter.get('id')), true, 'store contains record');
-        assert.equal(forkedStore.cache.containsRecord('planet', jupiter.get('id')), true, 'fork contains record');
+        assert.equal(store.cache.includesRecord('planet', jupiter.get('id')), true, 'store includes record');
+        assert.equal(forkedStore.cache.includesRecord('planet', jupiter.get('id')), true, 'fork includes record');
       });
   });
 });

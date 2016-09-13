@@ -45,7 +45,7 @@ module('Integration - Cache', function(hooks) {
   test('liveQuery - updates when matching record is added', function(assert) {
     const planets = cache.liveQuery(oqe('records', 'planet'));
     const addJupiter = store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
-    return addJupiter.then(jupiter => assert.ok(planets.contains(jupiter)));
+    return addJupiter.then(jupiter => assert.ok(planets.includes(jupiter)));
   });
 
   test('liveQuery - updates when matching record is removed', function(assert) {
@@ -57,7 +57,7 @@ module('Integration - Cache', function(hooks) {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .tap(jupiter => store.removeRecord(jupiter))
-        .then(jupiter => assert.ok(!planets.contains(jupiter)))
+        .then(jupiter => assert.ok(!planets.includes(jupiter)))
         .then(() => done());
     });
   });
@@ -70,7 +70,7 @@ module('Integration - Cache', function(hooks) {
 
       store
         .addRecord({type: 'moon', name: 'Callisto'})
-        .then(callisto => assert.ok(!planets.contains(callisto)))
+        .then(callisto => assert.ok(!planets.includes(callisto)))
         .then(() => done());
     });
   });
@@ -107,10 +107,10 @@ module('Integration - Cache', function(hooks) {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .tap(() => assert.equal(planets.get('length'), 1))
-        .tap(jupiter => assert.ok(planets.contains(jupiter)))
+        .tap(jupiter => assert.ok(planets.includes(jupiter)))
         .tap(jupiter => store.update(replaceAttribute(jupiter, 'name', 'Jupiter2')))
         .tap(() => assert.equal(planets.get('length'), 0))
-        .tap(jupiter => assert.ok(!planets.contains(jupiter)))
+        .tap(jupiter => assert.ok(!planets.includes(jupiter)))
         .then(() => done());
     });
   });

@@ -17,7 +17,7 @@ export default Ember.Object.extend({
     Ember.assert(get(this, '_identityMap'), '_identityMap is required');
   },
 
-  containsRecord(type, id) {
+  includesRecord(type, id) {
     return this._orbitCache.has([type, id]);
   },
 

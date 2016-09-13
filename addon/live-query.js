@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ReadOnlyArrayProxy from 'ember-orbit/system/read-only-array-proxy';
+import { toIdentifier } from 'orbit/lib/identifiers';
 
 const { get, set } = Ember;
 
@@ -8,6 +9,7 @@ export default ReadOnlyArrayProxy.extend({
   _query: null,
   _identityMap: null,
   _orbitLiveQuery: null,
+  _contentMap: null,
 
   init(...args) {
     this._super(...args);
@@ -17,6 +19,7 @@ export default ReadOnlyArrayProxy.extend({
     const orbitLiveQuery = this._orbitCache.liveQuery(this._query);
 
     set(this, '_orbitLiveQuery', orbitLiveQuery);
+    set(this, '_contentMap', {});
 
     orbitLiveQuery.subscribe((operation) => {
       // console.debug('liveQuery - operation', operation);
@@ -35,34 +38,39 @@ export default ReadOnlyArrayProxy.extend({
 
   _operations: {
     addRecord(operation) {
-      const record = this._recordFor(operation);
-      const content = get(this, 'content');
+      const identity = operation.record;
+      const identifier = toIdentifier(identity);
+      if (!this._contentMap[identifier]) {
+        const record = this._identityMap.lookup(identity);
+        this._contentMap[identifier] = record;
 
-      if (!content.contains(record)) {
+        const content = get(this, 'content');
         content.pushObject(record);
       }
     },
 
     replaceRecord(operation) {
-      const record = this._recordFor(operation);
-      const content = get(this, 'content');
+      const identity = operation.record;
+      const identifier = toIdentifier(identity);
+      if (!this._contentMap[identifier]) {
+        const record = this._identityMap.lookup(identity);
+        this._contentMap[identifier] = record;
 
-      if (!content.contains(record)) {
+        const content = get(this, 'content');
         content.pushObject(record);
       }
     },
 
     removeRecord(operation) {
-      const record = this._recordFor(operation);
-      const content = get(this, 'content');
+      const identity = operation.record;
+      const identifier = toIdentifier(identity);
+      if (this._contentMap[identifier]) {
+        const record = this._contentMap[identifier];
+        delete this._contentMap[identifier];
 
-      if (content.contains(record)) {
+        const content = get(this, 'content');
         content.removeObject(record);
       }
     }
-  },
-
-  _recordFor(operation) {
-    return this._identityMap.lookup(operation.record);
   }
 });

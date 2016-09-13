@@ -1,3 +1,5 @@
+import { toIdentifier } from 'orbit/lib/identifiers';
+
 export default Ember.Object.extend({
   _schema: null,
   _orbitCache: null,
@@ -13,52 +15,54 @@ export default Ember.Object.extend({
     this._materialized = {};
   },
 
-  lookup(identifier) {
-    if (!identifier) {
+  lookup(identity) {
+    if (!identity) {
       return;
     }
 
-    const { type, id } = identifier;
-    const identifierKey = this._identifierKey(type, id);
+    const { type, id } = identity;
+    const identifier = toIdentifier(type, id);
 
-    return this._materialized[identifierKey] || this._materialize(type, id);
+    return this._materialized[identifier] || this._materialize(type, id);
   },
 
-  lookupMany(identifiers) {
-    return identifiers.map(identifier => this.lookup(identifier));
+  lookupMany(identities) {
+    return identities.map(identity => this.lookup(identity));
   },
 
-  contains(identifier) {
-    if (!identifier) {
+  includes(identity) {
+    return !!this.materialized(identity);
+  },
+
+  materialized(identity) {
+    if (!identity) {
       return;
     }
 
-    const { type, id } = identifier;
-    const identifierKey = this._identifierKey(type, id);
+    const { type, id } = identity;
+    const identifier = toIdentifier(type, id);
 
-    return !!this._materialized[identifierKey];
+    return this._materialized[identifier];
   },
 
-  evict(record) {
-    // console.debug('evicting', record);
-    const identifierKey = this._identifierKey(record.type, record.id);
-    delete this._materialized[identifierKey];
-    // console.debug('materialized after evict', identifierKey, this._materialized);
-    record.disconnect();
+  evict(identity) {
+    const record = this.materialized(identity);
+
+    if (record) {
+      const identifier = toIdentifier(identity);
+      delete this._materialized[identifier];
+      record.disconnect();
+    }
   },
 
   _materialize(type, id) {
     // console.debug('materializing', type, id);
     const model = this._schema.modelFor(type);
     const record = model._create(id, this._store);
-    const identifier = this._identifierKey(type, id);
+    const identifier = toIdentifier(type, id);
 
     this._materialized[identifier] = record;
 
     return record;
-  },
-
-  _identifierKey(type, id) {
-    return `${type}:${id}`;
   }
 });
