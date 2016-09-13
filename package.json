@@ -1,6 +1,6 @@
 {
   "name": "ember-orbit",
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "description": "Ember.js data layer built with Orbit.js",
   "homepage": "https://github.com/orbitjs/ember-orbit",
   "contributors": [
