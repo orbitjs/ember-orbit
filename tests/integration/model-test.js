@@ -54,7 +54,7 @@ module('Integration - Model', function(hooks) {
     ])
       .tap(([jupiter, callisto]) => jupiter.get('moons').pushObject(callisto))
       .then(([jupiter, callisto]) => {
-        assert.ok(jupiter.get('moons').contains(callisto), 'added record to hasMany');
+        assert.ok(jupiter.get('moons').includes(callisto), 'added record to hasMany');
         assert.equal(callisto.get('planet'), jupiter, 'updated inverse');
       });
   });
@@ -67,7 +67,7 @@ module('Integration - Model', function(hooks) {
       .tap(([jupiter, callisto]) => jupiter.get('moons').pushObject(callisto))
       .tap(([jupiter, callisto]) => jupiter.get('moons').removeObject(callisto))
       .then(([jupiter, callisto]) => {
-        assert.ok(!jupiter.get('moons').contains(callisto), 'removed record from hasMany');
+        assert.ok(!jupiter.get('moons').includes(callisto), 'removed record from hasMany');
         assert.ok(!callisto.get('planet'), 'updated inverse');
       });
   });
@@ -83,7 +83,7 @@ module('Integration - Model', function(hooks) {
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), jupiter, 'replaced hasOne with record');
-        assert.ok(jupiter.get('moons').contains(callisto), 'updated inverse');
+        assert.ok(jupiter.get('moons').includes(callisto), 'updated inverse');
       });
   });
 
@@ -102,7 +102,7 @@ module('Integration - Model', function(hooks) {
       })
       .then(([jupiter, callisto]) => {
         assert.equal(callisto.get('planet'), null, 'replaced hasOne with null');
-        assert.ok(!jupiter.get('moons').contains(callisto), 'removed from inverse hasMany');
+        assert.ok(!jupiter.get('moons').includes(callisto), 'removed from inverse hasMany');
       });
   });
 
@@ -125,7 +125,7 @@ module('Integration - Model', function(hooks) {
       .tap(record => record.destroy())
       .then(record => {
         const identifier = record.getProperties('type', 'id');
-        assert.ok(!cache.get('_identityMap').contains(identifier), 'removed from identity map');
+        assert.ok(!cache.get('_identityMap').includes(identifier), 'removed from identity map');
       });
   });
 });

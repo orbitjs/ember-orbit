@@ -203,8 +203,8 @@ module('Integration - Store', function(hooks) {
     return forkedStore
       .addRecord({type: 'planet', name: 'Jupiter', classification: 'gas giant'})
       .then(jupiter => {
-        assert.equal(store.cache.containsRecord('planet', jupiter.get('id')), false, 'store does not contain record');
-        assert.equal(forkedStore.cache.containsRecord('planet', jupiter.get('id')), true, 'fork contains record');
+        assert.equal(store.cache.includesRecord('planet', jupiter.get('id')), false, 'store does not contain record');
+        assert.equal(forkedStore.cache.includesRecord('planet', jupiter.get('id')), true, 'fork includes record');
       });
   });
 
@@ -215,8 +215,8 @@ module('Integration - Store', function(hooks) {
       .addRecord({type: 'planet', name: 'Jupiter', classification: 'gas giant'})
       .tap(() => store.merge(forkedStore))
       .then(jupiter => {
-        assert.equal(store.cache.containsRecord('planet', jupiter.get('id')), true, 'store contains record');
-        assert.equal(forkedStore.cache.containsRecord('planet', jupiter.get('id')), true, 'fork contains record');
+        assert.equal(store.cache.includesRecord('planet', jupiter.get('id')), true, 'store includes record');
+        assert.equal(forkedStore.cache.includesRecord('planet', jupiter.get('id')), true, 'fork includes record');
       });
   });
 });

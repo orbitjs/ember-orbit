@@ -30,7 +30,7 @@ export default Ember.Object.extend({
     return identities.map(identity => this.lookup(identity));
   },
 
-  contains(identity) {
+  includes(identity) {
     return !!this.materialized(identity);
   },
 
