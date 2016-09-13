@@ -1,6 +1,7 @@
 import HasMany from './relationships/has-many';
 import { uuid } from 'orbit/lib/uuid';
 import {
+  removeRecord,
   replaceKey,
   replaceAttribute,
   replaceHasOne
@@ -69,7 +70,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   remove() {
     const store = get(this, '_storeOrError');
-    return store.removeRecord(this);
+    return store.update(removeRecord(this.identity));
   },
 
   disconnect() {
@@ -77,7 +78,8 @@ const Model = Ember.Object.extend(Ember.Evented, {
   },
 
   willDestroy() {
-    // console.debug('willDestroy hook');
+    // console.debug('Model#willDestroy', this.identity);
+
     if (this.trigger) {
       this.trigger('didUnload');
     }

@@ -115,7 +115,9 @@ const Store = Ember.Object.extend({
   },
 
   removeRecord(record) {
-    return this.update(removeRecord(record));
+    const { type, id } = record;
+    const identity = { type, id };
+    return this.update(removeRecord(identity));
   },
 
   _verifyType(type) {
@@ -124,13 +126,22 @@ const Store = Ember.Object.extend({
 
   _didPatch: function(operation) {
     // console.debug('didPatch', operation);
+
+    let record;
     const { type, id } = operation.record;
-    const record = this._identityMap.lookup({ type, id });
 
     switch(operation.op) {
-      case 'replaceAttribute': return record.propertyDidChange(operation.attribute);
-      case 'replaceHasOne': return record.propertyDidChange(operation.relationship);
-      case 'removeRecord': return record.disconnect();
+      case 'replaceAttribute':
+        record = this._identityMap.lookup({ type, id });
+        record.propertyDidChange(operation.attribute);
+        break;
+      case 'replaceHasOne':
+        record = this._identityMap.lookup({ type, id });
+        record.propertyDidChange(operation.relationship);
+        break;
+      case 'removeRecord':
+        this._identityMap.evict({ type, id });
+        break;
     }
   }
 });

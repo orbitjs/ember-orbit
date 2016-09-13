@@ -40,7 +40,7 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#findRecord - missing record', function(assert) {
-    return store.find('planet', 'jupiter')
+    return store.findRecord('planet', 'jupiter')
       .catch(e => {
         assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
       });
@@ -159,18 +159,6 @@ module('Integration - Store', function(hooks) {
       });
   });
 
-  test('#find - by type and id', function(assert) {
-    let earth;
-
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(() => store.find('planet', earth.id))
-      .then(record => assert.strictEqual(record, earth));
-  });
-
   test('#find - by type', function(assert) {
     let earth, jupiter;
 
@@ -187,6 +175,25 @@ module('Integration - Store', function(hooks) {
         assert.deepEqual(records, [earth, jupiter]);
         assert.strictEqual(records[0], earth);
         assert.strictEqual(records[1], jupiter);
+      });
+  });
+
+  test('#find - by type and id', function(assert) {
+    let earth;
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(record => {
+        earth = record;
+        return store.addRecord({ type: 'planet', name: 'Jupiter' });
+      })
+      .then(() => store.find('planet', earth.id))
+      .then(record => assert.strictEqual(record, earth));
+  });
+
+  test('#find - missing record', function(assert) {
+    return store.find('planet', 'jupiter')
+      .catch(e => {
+        assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
       });
   });
 
