@@ -12,6 +12,8 @@ function packageTree(name, _options) {
   var namespace = options.namespace || name;
   var resolveOptions = options.resolveOptions || {};
 
+  // console.log('packageTree:', name, resolve.sync(name, resolveOptions));
+
   return new Funnel(path.join(resolve.sync(name, resolveOptions), '..'), {
     include: ['**/*.js'],
     destDir: './' + namespace
@@ -36,9 +38,12 @@ module.exports = {
   init: function() {
     this._super.init.apply(this, arguments);
 
-    // Hack to set the vendor path to node_modules
-    var assets_path = path.join('orbit-core','src','index.js');
-    this.treePaths.vendor = require.resolve('orbit-core').replace(assets_path, '');
+    // Hack to set the vendor path to node_modules so that immutable.js can be
+    // included directly (see `included` method below)
+    var assets_path = path.join('immutable','dist','immutable.js');
+    this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
+
+    // console.log('vendor:', this.treePaths.vendor);
   },
 
   treeForAddon: function(tree) {
