@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import Store from 'ember-orbit/store';
 import Schema from 'ember-orbit/schema';
+import KeyMap from 'ember-orbit/key-map';
 import Owner from './owner';
 
 function createOwner() {
@@ -20,9 +21,11 @@ function createStore(options) {
 
   const owner = createOwner();
 
-  owner.register('schema:main', Schema);
-  owner.register('store:main', Store);
-  owner.inject('store', 'schema', 'schema:main');
+  owner.register('data-schema:main', Schema);
+  owner.register('data-key-map:main', KeyMap);
+  owner.register('service:store', Store);
+  owner.inject('service:store', 'schema', 'data-schema:main');
+  owner.inject('service:store', 'keyMap', 'data-key-map:main');
 
   const models = options.models;
   if (models) {
@@ -31,7 +34,7 @@ function createStore(options) {
     }
   }
 
-  const store = owner.lookup('store:main');
+  const store = owner.lookup('service:store');
   const schema = store.schema;
 
   if (models) {

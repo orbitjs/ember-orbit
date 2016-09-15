@@ -1,14 +1,14 @@
 import Cache from 'ember-orbit/cache';
 import IdentityMap from 'ember-orbit/identity-map';
-import KeyMap from 'orbit/key-map';
-import OrbitStore from 'orbit-store/store';
 import Query from 'orbit/query';
-import objectValues from 'ember-orbit/utils/object-values';
 import qb from 'orbit/query/builder';
 import {
   addRecord,
   removeRecord
 } from 'orbit/transform/operators';
+import OrbitStore from 'orbit-store/store';
+import objectValues from './utils/object-values';
+import Source from './source';
 
 /**
  @module ember-orbit
@@ -16,32 +16,17 @@ import {
 
 const { assert, getOwner } = Ember;
 
-const Store = Ember.Object.extend({
-  orbitStore: null,
-  keyMap: null,
-  schema: null,
+const Store = Source.extend({
+  OrbitSourceClass: OrbitStore,
   cache: null,
   _identityMap: null,
 
   init() {
     this._super(...arguments);
 
-    assert("`schema` must be injected onto a Store", this.schema);
+    const orbitCache = this.orbitSource.cache;
 
-    if (!this.keyMap) {
-      this.keyMap = this.orbitStore ? this.orbitStore.keyMap : new KeyMap();
-    }
-
-    if (!this.orbitStore) {
-      this.orbitStore = new OrbitStore({ schema: this.schema.orbitSchema, keyMap: this.keyMap });
-    }
-
-    this.requestQueue = this.orbitStore.requestQueue;
-    this.syncQueue = this.orbitStore.syncQueue;
-
-    const orbitCache = this.orbitStore.cache;
-
-    assert("A Store's `orbitStore` must have its own `cache`", orbitCache);
+    assert("A Store's `orbitSource` must have its own `cache`", orbitCache);
 
     this._identityMap = IdentityMap.create({ _schema: this.schema, _orbitCache: orbitCache, _store: this });
     this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
@@ -50,12 +35,12 @@ const Store = Ember.Object.extend({
   },
 
   fork() {
-    const forkedOrbitStore = this.orbitStore.fork();
+    const forkedOrbitStore = this.orbitSource.fork();
 
     return Store.create(
       getOwner(this).ownerInjection(),
       {
-        orbitStore: forkedOrbitStore,
+        orbitSource: forkedOrbitStore,
         keyMap: this.keyMap,
         schema: this.schema
       }
@@ -63,7 +48,11 @@ const Store = Ember.Object.extend({
   },
 
   merge(forkedStore, options = {}) {
-    return this.orbitStore.merge(forkedStore.orbitStore, options);
+    return this.orbitSource.merge(forkedStore.orbitSource, options);
+  },
+
+  rollback() {
+    return this.orbitSource.rollback(...arguments);
   },
 
   find(type, id) {
@@ -75,14 +64,14 @@ const Store = Ember.Object.extend({
   },
 
   liveQuery(queryOrExpression) {
-    const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
-    this.orbitStore.query(query);
+    const query = Query.from(queryOrExpression, this.orbitSource.queryBuilder);
+    this.orbitSource.query(query);
     return this.cache.liveQuery(query);
   },
 
   query(queryOrExpression) {
-    const query = Query.from(queryOrExpression, this.orbitStore.queryBuilder);
-    return this.orbitStore.query(query)
+    const query = Query.from(queryOrExpression, this.orbitSource.queryBuilder);
+    return this.orbitSource.query(query)
       .then(result => {
         switch(query.expression.op) {
           case 'record':
@@ -98,14 +87,11 @@ const Store = Ember.Object.extend({
       });
   },
 
-  update(...args) {
-    return this.orbitStore.update(...args);
-  },
-
   addRecord(properties = {}) {
     this._verifyType(properties.type);
 
     const record = this.schema.normalize(properties);
+
     return this.update(addRecord(record))
       .then(() => this._identityMap.lookup(record));
   },
