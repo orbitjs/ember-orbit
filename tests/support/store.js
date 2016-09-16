@@ -29,21 +29,16 @@ function createStore(options) {
 
   const models = options.models;
   if (models) {
-    for (let prop in models) {
-      owner.register('model:' + prop, models[prop]);
-    }
+    let types = [];
+    Object.keys(models).forEach(type => {
+      owner.register(`model:${type}`, models[type]);
+      types.push(type);
+    });
+    owner.register('data-types:main', types, { instantiate: false });
+    owner.inject('data-schema:main', 'types', 'data-types:main');
   }
 
-  const store = owner.lookup('service:store');
-  const schema = store.schema;
-
-  if (models) {
-    for (let model in models) {
-      schema.modelFor(model);
-    }
-  }
-
-  return store;
+  return owner.lookup('service:store');
 }
 
 export { createOwner, createStore };

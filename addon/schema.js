@@ -1,10 +1,12 @@
 import OrbitSchema from 'orbit/schema';
+import getRegisteredModels from './-private/get-registered-models';
 
 /**
  @module ember-orbit
  */
 
 const {
+  computed,
   get,
   getOwner
 } = Ember;
@@ -40,14 +42,14 @@ export default Ember.Object.extend({
   /**
    @property pluralize
    @type {function}
-   @default OC.Schema.pluralize
+   @default Schema.pluralize
    */
   pluralize: proxyProperty('orbitSchema', 'pluralize'),
 
   /**
    @property singularize
    @type {function}
-   @default OC.Schema.singularize
+   @default Schema.singularize
    */
   singularize: proxyProperty('orbitSchema', 'singularize'),
 
@@ -73,83 +75,71 @@ export default Ember.Object.extend({
         options.singularize = singularize;
       }
 
+      options.models = this._modelsSchema();
+
       this.orbitSchema = new OrbitSchema(options);
-
-      // Lazy load model definitions as they are requested.
-      const _this = this;
-      this.orbitSchema.modelNotDefined = function(type) {
-        _this.modelFor(type);
-      };
     }
   },
 
-  defineModel: function(type, modelClass) {
-    const definedModels = this.orbitSchema.models;
-    if (definedModels[type]) {
-      return;
-    }
-
-    this.orbitSchema.registerModel(type, {
-      id: get(modelClass, 'id'),
-      keys: get(modelClass, 'keys'),
-      attributes: get(modelClass, 'attributes'),
-      relationships: get(modelClass, 'relationships')
+  _modelsSchema() {
+    const models = {};
+    this.get('types').forEach(type => {
+      models[type] = this._modelSchemaFor(type);
     });
+    return models;
   },
 
-  modelFor: function(type) {
-    Ember.assert("`type` must be a string", typeof type === 'string');
+  _modelSchemaFor(type) {
+    const model = this.modelFor(type);
+    return {
+      id: get(model, 'id'),
+      keys: get(model, 'keys'),
+      attributes: get(model, 'attributes'),
+      relationships: get(model, 'relationships')
+    };
+  },
 
-    var model = this._modelTypeMap[type];
+  modelFor(type) {
+    let model = this._modelTypeMap[type];
+
     if (!model) {
-      model = getOwner(this)._lookupFactory('model:' + type);
-
-      if (!model) {
-        throw new Ember.Error("No model was found for '" + type + "'");
-      }
-
+      model = getOwner(this)._lookupFactory(`model:${type}`);
       model.typeKey = type;
-
-      // ensure model is defined in underlying OC.Schema
-      this.defineModel(type, model);
-
-      // save model in map for faster lookups
       this._modelTypeMap[type] = model;
-
-      // look up related models
-      this.relationships(type).forEach(relationship => {
-        this.modelFor(this.relationshipProperties(type, relationship).model);
-      });
     }
 
     return model;
   },
 
-  models: function() {
-    return Object.keys(this.orbitSchema.models);
-  },
+  types: computed(function() {
+    if (this.orbitSchema && this.orbitSchema.models) {
+      return Object.keys(this.orbitSchema.models);
+    } else {
+      return getRegisteredModels(getOwner(this).base);
+    }
+  }),
 
-  keys: function(type) {
+  keys(type) {
     return Object.keys(this.orbitSchema.modelDefinition(type).keys);
   },
 
-  keyProperties: function(type, name) {
+  keyProperties(type, name) {
     return this.orbitSchema.modelDefinition(type).keys[name];
   },
 
-  attributes: function(type) {
+  attributes(type) {
     return Object.keys(this.orbitSchema.modelDefinition(type).attributes);
   },
 
-  attributeProperties: function(type, name) {
+  attributeProperties(type, name) {
     return this.orbitSchema.modelDefinition(type).attributes[name];
   },
 
-  relationships: function(type) {
+  relationships(type) {
     return Object.keys(this.orbitSchema.modelDefinition(type).relationships);
   },
 
-  relationshipProperties: function(type, name) {
+  relationshipProperties(type, name) {
     return this.orbitSchema.modelDefinition(type).relationships[name];
   },
 

@@ -20,76 +20,58 @@ module("Integration - Schema", function(hooks) {
     schema = null;
   });
 
-  test("it exists", function() {
-    ok(schema);
+  test("it exists", function(assert) {
+    assert.ok(schema);
   });
 
-  test("#defineModel defines models on the underlying Orbit schema", function() {
+  test("#types - specifies models that are defined on the underlying Orbit schema", function(assert) {
     schema.modelFor('planet');
 
-    deepEqual(schema.models(), ['planet', 'star', 'moon']);
+    assert.deepEqual(schema.get('types'), ['planet', 'moon', 'star']);
 
-    deepEqual(schema.attributes('star'), ['name', 'isStable']);
-    deepEqual(schema.relationships('star'), ['planets']);
-    deepEqual(schema.attributeProperties('star', 'name'), {
+    assert.deepEqual(schema.attributes('star'), ['name', 'isStable']);
+    assert.deepEqual(schema.relationships('star'), ['planets']);
+    assert.deepEqual(schema.attributeProperties('star', 'name'), {
       type: "string"
     });
-    deepEqual(schema.relationshipProperties('star', 'planets'), {
+    assert.deepEqual(schema.relationshipProperties('star', 'planets'), {
       type:  "hasMany",
       model: "planet"
     });
 
-    deepEqual(schema.attributes('moon'), ['name']);
-    deepEqual(schema.relationships('moon'), ['planet']);
-    deepEqual(schema.attributeProperties('moon', 'name'), {
+    assert.deepEqual(schema.attributes('moon'), ['name']);
+    assert.deepEqual(schema.relationships('moon'), ['planet']);
+    assert.deepEqual(schema.attributeProperties('moon', 'name'), {
       type: "string"
     });
-    deepEqual(schema.relationshipProperties('moon', 'planet'), {
+    assert.deepEqual(schema.relationshipProperties('moon', 'planet'), {
       inverse: "moons",
       type:  "hasOne",
       model: "planet"
     });
 
-    deepEqual(schema.attributes('planet'), ['name', 'atmosphere', 'classification']);
-    deepEqual(schema.relationships('planet'), ['sun', 'moons']);
-    deepEqual(schema.attributeProperties('planet', 'name'), {
+    assert.deepEqual(schema.attributes('planet'), ['name', 'atmosphere', 'classification']);
+    assert.deepEqual(schema.relationships('planet'), ['sun', 'moons']);
+    assert.deepEqual(schema.attributeProperties('planet', 'name'), {
       type: "string"
     });
-    deepEqual(schema.attributeProperties('planet', 'classification'), {
+    assert.deepEqual(schema.attributeProperties('planet', 'classification'), {
       type: "string"
     });
-    deepEqual(schema.relationshipProperties('planet', 'sun'), {
+    assert.deepEqual(schema.relationshipProperties('planet', 'sun'), {
       type:  "hasOne",
       model: "star"
     });
-    deepEqual(schema.relationshipProperties('planet', 'moons'), {
+    assert.deepEqual(schema.relationshipProperties('planet', 'moons'), {
       inverse: "planet",
       type:  "hasMany",
       model: "moon"
     });
   });
 
-  test("#modelFor returns the appropriate model when passed a model's name", function() {
-    equal(schema.modelFor('planet'), Planet);
+  test("#modelFor returns the appropriate model when passed a model's name", function(assert) {
+    assert.strictEqual(schema.modelFor('planet'), Planet);
   });
-
-  // test("#modelFor ensures that related models are also registered in the schema", function() {
-  //   const registry = new Ember.Registry();
-  //   const container = registry.container();
-
-  //   registry.register('schema:main', Schema);
-  //   registry.register('model:planet', Planet);
-  //   registry.register('model:star', Star);
-  //   registry.register('model:moon', Moon);
-
-  //   set(schema, 'container', container);
-
-  //   deepEqual(schema.models(), [], 'no models have been registered');
-
-  //   schema.modelFor('planet');
-
-  //   deepEqual(schema.models(), ['planet', 'star', 'moon'], 'all related models have been registered');
-  // });
 
   test('#normalize', function(assert) {
     const done = assert.async();
