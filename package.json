@@ -54,7 +54,7 @@
     "ember-cli-babel": "^5.1.6",
     "immutable": "^3.8.1",
     "orbit-core": "^0.8.0-beta.6",
-    "orbit-store": "^0.8.0-beta.3",
+    "orbit-store": "^0.8.0-beta.4",
     "resolve": "^1.1.7",
     "rxjs-es": "^5.0.0-beta.11"
   },
