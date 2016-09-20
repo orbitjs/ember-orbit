@@ -42,7 +42,7 @@ module('Integration - Store', function(hooks) {
   test('#findRecord - missing record', function(assert) {
     return store.findRecord('planet', 'jupiter')
       .catch(e => {
-        assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
+        assert.equal(e.message, 'Record not found: planet:jupiter', 'query - error caught');
       });
   });
 
@@ -193,7 +193,7 @@ module('Integration - Store', function(hooks) {
   test('#find - missing record', function(assert) {
     return store.find('planet', 'jupiter')
       .catch(e => {
-        assert.equal(e.message, 'Record not found - planet:jupiter', 'query - error caught');
+        assert.equal(e.message, 'Record not found: planet:jupiter', 'query - error caught');
       });
   });
 
