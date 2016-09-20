@@ -3,7 +3,7 @@ import Bucket from 'ember-orbit/bucket';
 
 module('Unit - Bucket', function() {
   test('can be instantiated from an existing Orbit Bucket', function(assert) {
-    const orbitBucket = new OrbitBucket();
+    const orbitBucket = new OrbitBucket({ name: 'settings' });
 
     const bucket = Bucket.create({
       orbitBucket
