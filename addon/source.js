@@ -8,6 +8,8 @@ export default Ember.Object.extend({
   orbitSourceOptions: null,
   keyMap: null,
   schema: null,
+  bucket: null,
+  coordinator: null,
 
   init() {
     this._super(...arguments);
@@ -24,12 +26,26 @@ export default Ember.Object.extend({
       let options = this.orbitSourceOptions || {};
       options.schema = this.schema.orbitSchema;
       options.keyMap = this.keyMap.orbitKeyMap;
+      if (this.bucket) {
+        options.bucket = this.bucket.orbitBucket;
+      }
+
       this.orbitSource = new OrbitSourceClass(options);
     }
 
     this.transformLog = this.orbitSource.transformLog;
     this.requestQueue = this.orbitSource.requestQueue;
     this.syncQueue = this.orbitSource.syncQueue;
+
+    if (this.coordinator) {
+      this.coordinator.addSource(this);
+    }
+  },
+
+  willDestroy() {
+    if (this.coordinator) {
+      this.coordinator.removeSource(this);
+    }
   },
 
   on() {
