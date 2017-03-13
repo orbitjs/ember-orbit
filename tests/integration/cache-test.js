@@ -1,15 +1,15 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import Orbit from 'orbit';
-import qb from 'orbit/query/builder';
-import { queryExpression as oqe } from 'orbit/query/expression';
-import {
+import Orbit, {
   addRecord,
   removeRecord,
-  replaceAttribute
-} from 'orbit/transform/operators';
-const { Planet, Moon, Star } = dummyModels;
+  replaceAttribute,
+  QueryBuilder as qb,
+  queryExpression as oqe
+} from '@orbit/data';
+import { module, test } from 'qunit';
 
+const { Planet, Moon, Star } = dummyModels;
 
 module('Integration - Cache', function(hooks) {
   let store;
@@ -32,11 +32,14 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - adds record that becomes a match', function(assert) {
-    store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
     const liveQuery = cache.liveQuery(qb.records('planet')
-                                        .filterAttributes({ name: 'Jupiter' }));
+                                      .filterAttributes({ name: 'Jupiter' }));
 
-    return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+    return store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } })
+      .then(() => {
+        assert.equal(liveQuery.get('length'), 0);
+        return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+      })
       .then(() => {
         assert.equal(liveQuery.get('length'), 1);
       });
@@ -128,19 +131,6 @@ module('Integration - Cache', function(hooks) {
     });
   });
 
-  test('#retrieve', function(assert) {
-    const done = assert.async();
-
-    Ember.run(() => {
-      store
-        .addRecord({type: 'planet', name: 'Jupiter'})
-        .then((jupiter) => {
-          assert.equal(cache.retrieve(['planet', jupiter.get('id'), 'attributes', 'name']), 'Jupiter');
-          done();
-        });
-    });
-  });
-
   test('#retrieveHasOne', function(assert) {
     const done = assert.async();
 
@@ -195,9 +185,9 @@ module('Integration - Cache', function(hooks) {
         jupiter = record;
 
         const foundRecords = cache.query(qb.records('planet'));
-        assert.deepEqual(foundRecords, [earth, jupiter]);
-        assert.strictEqual(foundRecords[0], earth);
-        assert.strictEqual(foundRecords[1], jupiter);
+        assert.equal(foundRecords.length, 2, 'two records found');
+        assert.ok(foundRecords.indexOf(earth) > -1, 'earth is included');
+        assert.ok(foundRecords.indexOf(jupiter) > -1, 'jupiter is included');
       });
   });
 
@@ -242,9 +232,9 @@ module('Integration - Cache', function(hooks) {
         jupiter = record;
 
         const foundRecords = cache.find('planet');
-        assert.deepEqual(foundRecords, [earth, jupiter]);
-        assert.strictEqual(foundRecords[0], earth);
-        assert.strictEqual(foundRecords[1], jupiter);
+        assert.equal(foundRecords.length, 2, 'two records found');
+        assert.ok(foundRecords.indexOf(earth) > -1, 'earth is included');
+        assert.ok(foundRecords.indexOf(jupiter) > -1, 'jupiter is included');
       });
   });
 });

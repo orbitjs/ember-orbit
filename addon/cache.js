@@ -1,10 +1,13 @@
-const get = Ember.get;
-
+import { 
+  deserializeRecordIdentity,
+  Query,
+  QueryBuilder as qb
+} from '@orbit/data';
+import { deepGet } from '@orbit/utils';
 import LiveQuery from 'ember-orbit/live-query';
-import { parseIdentifier } from 'orbit/lib/identifiers';
-import Query from 'orbit/query';
-import qb from 'orbit/query/builder';
 import objectValues from 'ember-orbit/utils/object-values';
+
+const { get } = Ember;
 
 export default Ember.Object.extend({
   _orbitCache: null,
@@ -18,32 +21,35 @@ export default Ember.Object.extend({
   },
 
   includesRecord(type, id) {
-    return this._orbitCache.has([type, id]);
-  },
-
-  retrieve(path) {
-    return this._orbitCache.get(path);
+    return !!this._orbitCache.records(type).get(id);
   },
 
   retrieveRecord(type, id) {
-    return this._identityMap.lookup({type, id});
-  },
-
-  retrieveKey(record, key) {
-    return this.retrieve([record.type, record.id, 'keys', key]);
-  },
-
-  retrieveAttribute(record, attribute) {
-    return this.retrieve([record.type, record.id, 'attributes', attribute]);
-  },
-
-  retrieveHasOne(record, relationship) {
-    const value = this.retrieve([record.type, record.id, 'relationships', relationship, 'data']);
-    if (!value) {
-      return null;
+    if (this.includesRecord(type, id)) {
+      return this._identityMap.lookup({type, id});
     }
+  },
 
-    return this._identityMap.lookup(parseIdentifier(value));
+  retrieveKey(recordIdentity, key) {
+    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    return deepGet(record, ['keys', key]);
+  },
+
+  retrieveAttribute(recordIdentity, attribute) {
+    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    return deepGet(record, ['attributes', attribute]);
+  },
+
+  retrieveHasOne(recordIdentity, relationship) {
+    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    if (record) {
+      const value = deepGet(record, ['relationships', relationship, 'data']);
+      if (!value) {
+        return null;
+      }
+
+      return this._identityMap.lookup(deserializeRecordIdentity(value));
+    }
   },
 
   unload(record) {
@@ -51,8 +57,8 @@ export default Ember.Object.extend({
     this._identityMap.evict(record);
   },
 
-  query(queryOrExpression) {
-    const query = Query.from(queryOrExpression, this._orbitCache.queryBuilder);
+  query(queryOrExpression, options) {
+    const query = Query.from(queryOrExpression, options);
     const result = this._orbitCache.query(query);
 
     switch(query.expression.op) {
@@ -68,7 +74,9 @@ export default Ember.Object.extend({
     }
   },
 
-  liveQuery(query) {
+  liveQuery(queryOrExpression, options) {
+    const query = Query.from(queryOrExpression, options);
+
     return LiveQuery.create({
       _query: query,
       _orbitCache: this._orbitCache,
@@ -76,11 +84,11 @@ export default Ember.Object.extend({
     });
   },
 
-  find(type, id) {
+  find(type, id, options) {
     if (id === undefined) {
-      return this.query(qb.records(type));
+      return this.query(qb.records(type), options);
     } else {
-      return this.query(qb.record({type, id}));
+      return this.query(qb.record({type, id}), options);
     }
   }
 });

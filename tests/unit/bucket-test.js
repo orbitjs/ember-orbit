@@ -1,5 +1,6 @@
-import OrbitBucket from 'orbit/bucket';
+import { Bucket as OrbitBucket } from '@orbit/core';
 import Bucket from 'ember-orbit/bucket';
+import { module, test } from 'qunit';
 
 module('Unit - Bucket', function() {
   test('can be instantiated from an existing Orbit Bucket', function(assert) {

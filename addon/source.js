@@ -1,4 +1,4 @@
-import OrbitSource from 'orbit/source';
+import { Source as OrbitSource } from '@orbit/data';
 
 const { assert } = Ember;
 

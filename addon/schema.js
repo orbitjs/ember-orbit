@@ -1,9 +1,6 @@
-import OrbitSchema from 'orbit/schema';
+import { Schema as OrbitSchema } from '@orbit/data';
+import { deepSet } from '@orbit/utils';
 import getRegisteredModels from './-private/get-registered-models';
-
-/**
- @module ember-orbit
- */
 
 const {
   computed,
@@ -39,18 +36,8 @@ function proxyProperty(source, property, defaultValue) {
 export default Ember.Object.extend({
   orbitSchema: null,
 
-  /**
-   @property pluralize
-   @type {function}
-   @default Schema.pluralize
-   */
   pluralize: proxyProperty('orbitSchema', 'pluralize'),
 
-  /**
-   @property singularize
-   @type {function}
-   @default Schema.singularize
-   */
   singularize: proxyProperty('orbitSchema', 'singularize'),
 
   init() {
@@ -144,57 +131,47 @@ export default Ember.Object.extend({
   },
 
   normalize(properties) {
-    const normalizedProperties  = {
-      id: properties.id,
-      type: properties.type,
-      keys: {},
-      attributes: {},
-      relationships: {}
+    const record = {
+      id: properties.id || this.orbitSchema.generateId(properties.type),
+      type: properties.type
     };
 
-    this.normalizeKeys(properties, normalizedProperties);
-    this.normalizeAttributes(properties, normalizedProperties);
-    this.normalizeRelationships(properties, normalizedProperties);
-    this.orbitSchema.normalize(normalizedProperties);
+    this.assignKeys(record, properties);
+    this.assignAttributes(record, properties);
+    this.assignRelationships(record, properties);
 
-    return normalizedProperties;
+    return record;
   },
 
-  normalizeKeys(properties, normalizedProperties) {
-    this.keys(properties.type).forEach(key => {
-      normalizedProperties.keys[key] = properties[key];
+  assignKeys(record, properties) {
+    this.keys(record.type).forEach(key => {
+      if (properties[key] !== undefined) {
+        deepSet(record, ['keys', key], properties[key]);
+      }
     });
   },
 
-  normalizeAttributes(properties, normalizedProperties) {
-    const attributes = this.attributes(properties.type);
-
-    attributes.forEach(attribute => {
-      normalizedProperties.attributes[attribute] = properties[attribute];
+  assignAttributes(record, properties) {
+    this.attributes(record.type).forEach(attribute => {
+      if (properties[attribute] !== undefined) {
+        deepSet(record, ['attributes', attribute], properties[attribute]);
+      }
     });
   },
 
-  normalizeRelationships(properties, normalizedProperties) {
-    // Normalize links to IDs contained within the `__rel` (i.e. "forward link")
-    // element.
-
-    if (!normalizedProperties.relationships) {
-      normalizedProperties.relationships = {};
-    }
-
-    this.relationships(properties.type).forEach(relationshipName => {
-      const relationshipProperties = this.relationshipProperties(properties.type, relationshipName);
-      this._normalizeRelationship(properties, normalizedProperties, relationshipName, relationshipProperties);
+  assignRelationships(record, properties) {
+    this.relationships(record.type).forEach(relationshipName => {
+      if (properties[relationshipName] !== undefined) {
+        record.relationships = record.relationships || {};
+        const relationshipProperties = this.relationshipProperties(properties.type, relationshipName);
+        this._normalizeRelationship(record, properties, relationshipName, relationshipProperties);
+      }
     });
   },
 
-  _normalizeRelationship(properties, normalizedProperties, relationshipName, relationshipProperties) {
+  _normalizeRelationship(record, properties, relationshipName, relationshipProperties) {
     const value = properties[relationshipName];
-    if (!value) {
-      return;
-    }
-
-    const relationship = normalizedProperties.relationships[relationshipName] = {};
+    const relationship = record.relationships[relationshipName] = {};
     const modelType = relationshipProperties.model;
 
     if (Ember.isArray(value)) {

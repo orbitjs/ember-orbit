@@ -1,18 +1,19 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import qb from 'orbit/query/builder';
-import {
+import { 
+  QueryBuilder as qb,
   replaceAttribute
-} from 'orbit/transform/operators';
+} from '@orbit/data';
+import { module, test } from 'qunit';
 
 const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;
 
 module('Integration - Store', function(hooks) {
   let store;
+  const models = { planet: Planet, moon: Moon, star: Star };
 
   hooks.beforeEach(function() {
-    const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models });
   });
 
@@ -31,7 +32,7 @@ module('Integration - Store', function(hooks) {
 
   test('#findRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then( record => store.findRecord('planet', record.get('id')))
+      .then( record => store.findRecord({type: 'planet', id: record.get('id')}))
       .then( planet => {
         assert.ok(planet instanceof Planet);
         assert.ok(get(planet, 'id'), 'assigned id');
@@ -40,16 +41,16 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#findRecord - missing record', function(assert) {
-    return store.findRecord('planet', 'jupiter')
+    return store.findRecord({type: 'planet', id: 'jupiter'})
       .catch(e => {
-        assert.equal(e.message, 'Record not found: planet:jupiter', 'query - error caught');
-      });
+        assert.equal(e.message, 'Record not found: planet:jupiter');
+      })
   });
 
   test('#removeRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .tap(record => store.removeRecord(record))
-      .then(record => store.findRecord('planet', record.get('id')))
+      .then(record => store.findRecord({type: 'planet', id: record.get('id')}))
       .catch(error => {
         assert.ok(error.message.match(/Record not found/));
       });
@@ -83,9 +84,9 @@ module('Integration - Store', function(hooks) {
         return store.query(qb.records('planet'));
       })
       .then(records => {
-        assert.deepEqual(records, [earth, jupiter]);
-        assert.strictEqual(records[0], earth);
-        assert.strictEqual(records[1], jupiter);
+        assert.equal(records.length, 2);
+        assert.ok(records.indexOf(earth) > -1);
+        assert.ok(records.indexOf(jupiter) > -1);
       });
   });
 
@@ -172,9 +173,9 @@ module('Integration - Store', function(hooks) {
         return store.find('planet');
       })
       .then(records => {
-        assert.deepEqual(records, [earth, jupiter]);
-        assert.strictEqual(records[0], earth);
-        assert.strictEqual(records[1], jupiter);
+        assert.equal(records.length, 2);
+        assert.ok(records.indexOf(earth) > -1);
+        assert.ok(records.indexOf(jupiter) > -1);
       });
   });
 

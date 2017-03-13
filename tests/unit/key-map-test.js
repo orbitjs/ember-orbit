@@ -1,5 +1,6 @@
-import OrbitKeyMap from 'orbit/key-map';
+import { KeyMap as OrbitKeyMap } from '@orbit/data';
 import KeyMap from 'ember-orbit/key-map';
+import { module, test } from 'qunit';
 
 module('Unit - KeyMap', function() {
   test('can be instantiated', function(assert) {

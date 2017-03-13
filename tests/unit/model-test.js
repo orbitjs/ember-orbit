@@ -3,15 +3,16 @@ import attr from 'ember-orbit/fields/attr';
 import hasOne from 'ember-orbit/fields/has-one';
 import hasMany from 'ember-orbit/fields/has-many';
 import Model from 'ember-orbit/model';
+import { module, test } from 'qunit';
 
 const { get } = Ember;
 
-var Planet,
-    Moon,
-    Star;
+module("Unit - Model", function(hooks) {
+  let Planet,
+      Moon,
+      Star;
 
-module("Unit - Model", {
-  setup: function() {
+  hooks.beforeEach(function() {
     Planet = Model.extend({
       name: attr('string'),
       classification: attr('string'),
@@ -28,79 +29,79 @@ module("Unit - Model", {
       name: attr('string'),
       planets: hasMany('planet')
     });
-  },
+  });
 
-  teardown: function() {
+  hooks.afterEach(function() {
     Planet = null;
     Moon = null;
     Star = null;
-  }
-});
-
-test("it exists", function() {
-  ok(Planet);
-});
-
-test("#keys returns no keys by default", function(assert) {
-  var keys,
-      names;
-
-  keys = get(Planet, 'keys');
-  names = Object.keys(keys);
-  assert.equal(names.length, 0);
-});
-
-test("#keys returns defined custom secondary keys", function() {
-  var keys,
-      names;
-
-  Planet.reopen({
-    remoteId: key('string')
   });
 
-  keys = get(Planet, 'keys');
-  names = Object.keys(keys);
-  equal(names.length, 1);
-  equal(names[0], 'remoteId');
-});
+  test("it exists", function(assert) {
+    assert.ok(Planet);
+  });
 
-test("#attributes returns defined attributes", function() {
-  var attributes,
-      keys;
+  test("#keys returns no keys by default", function(assert) {
+    var keys,
+        names;
 
-  attributes = get(Planet, 'attributes');
-  keys = Object.keys(attributes);
-  equal(keys.length, 2);
-  equal(keys[0], 'name');
-  equal(keys[1], 'classification');
-});
+    keys = get(Planet, 'keys');
+    names = Object.keys(keys);
+    assert.equal(names.length, 0);
+  });
 
-test("#relationships returns defined relationships", function() {
-  var relationships,
-      keys;
+  test("#keys returns defined custom secondary keys", function(assert) {
+    var keys,
+        names;
 
-  relationships = get(Planet, 'relationships');
-  keys = Object.keys(relationships);
-  equal(keys.length, 2);
-  equal(keys[0], 'sun');
-  equal(keys[1], 'moons');
+    Planet.reopen({
+      remoteId: key()
+    });
 
-  relationships = get(Moon, 'relationships');
-  keys = Object.keys(relationships);
-  equal(keys.length, 1);
-  equal(keys[0], 'planet');
+    keys = get(Planet, 'keys');
+    names = Object.keys(keys);
+    assert.equal(names.length, 1);
+    assert.equal(names[0], 'remoteId');
+  });
 
-  relationships = get(Star, 'relationships');
-  keys = Object.keys(relationships);
-  equal(keys.length, 1);
-  equal(keys[0], 'planets');
-});
+  test("#attributes returns defined attributes", function(assert) {
+    var attributes,
+        keys;
 
-test("#create cannot be called directly on models", function() {
-  throws(
-    function() {
-      Planet.create();
-    },
-    'You should not call `create` on a model'
-  );
+    attributes = get(Planet, 'attributes');
+    keys = Object.keys(attributes);
+    assert.equal(keys.length, 2);
+    assert.equal(keys[0], 'name');
+    assert.equal(keys[1], 'classification');
+  });
+
+  test("#relationships returns defined relationships", function(assert) {
+    var relationships,
+        keys;
+
+    relationships = get(Planet, 'relationships');
+    keys = Object.keys(relationships);
+    assert.equal(keys.length, 2);
+    assert.equal(keys[0], 'sun');
+    assert.equal(keys[1], 'moons');
+
+    relationships = get(Moon, 'relationships');
+    keys = Object.keys(relationships);
+    assert.equal(keys.length, 1);
+    assert.equal(keys[0], 'planet');
+
+    relationships = get(Star, 'relationships');
+    keys = Object.keys(relationships);
+    assert.equal(keys.length, 1);
+    assert.equal(keys[0], 'planets');
+  });
+
+  test("#create cannot be called directly on models", function(assert) {
+    assert.throws(
+      function() {
+        Planet.create();
+      },
+      'You should not call `create` on a model'
+    );
+  });
 });

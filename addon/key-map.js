@@ -1,4 +1,4 @@
-import OrbitKeyMap from 'orbit/key-map';
+import { KeyMap as OrbitKeyMap } from '@orbit/data';
 
 export default Ember.Object.extend({
   orbitKeyMap: null,

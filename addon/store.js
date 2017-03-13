@@ -1,18 +1,14 @@
-import Cache from 'ember-orbit/cache';
-import IdentityMap from 'ember-orbit/identity-map';
-import Query from 'orbit/query';
-import qb from 'orbit/query/builder';
-import {
+import { 
   addRecord,
-  removeRecord
-} from 'orbit/transform/operators';
-import OrbitStore from 'orbit-store/store';
+  removeRecord,
+  Query,
+  QueryBuilder as qb
+} from '@orbit/data';
+import { Store as OrbitStore } from '@orbit/store';
 import objectValues from './utils/object-values';
+import Cache from './cache';
+import IdentityMap from './identity-map';
 import Source from './source';
-
-/**
- @module ember-orbit
- */
 
 const { assert, getOwner } = Ember;
 
@@ -31,7 +27,7 @@ const Store = Source.extend({
     this._identityMap = IdentityMap.create({ _schema: this.schema, _orbitCache: orbitCache, _store: this });
     this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
 
-    orbitCache.patches.subscribe(operation => this._didPatch(operation));
+    orbitCache.on('patch', operation => this._didPatch(operation));
   },
 
   fork() {
@@ -55,22 +51,22 @@ const Store = Source.extend({
     return this.orbitSource.rollback(...arguments);
   },
 
-  find(type, id) {
+  find(type, id, options) {
     if (id === undefined) {
-      return this.query(qb.records(type));
+      return this.query(qb.records(type), options);
     } else {
-      return this.query(qb.record({type, id}));
+      return this.query(qb.record({type, id}), options);
     }
   },
 
-  liveQuery(queryOrExpression) {
-    const query = Query.from(queryOrExpression, this.orbitSource.queryBuilder);
+  liveQuery(queryOrExpression, options) {
+    const query = Query.from(queryOrExpression, options);
     this.orbitSource.query(query);
     return this.cache.liveQuery(query);
   },
 
-  query(queryOrExpression) {
-    const query = Query.from(queryOrExpression, this.orbitSource.queryBuilder);
+  query(queryOrExpression, options) {
+    const query = Query.from(queryOrExpression, options);
     return this.orbitSource.query(query)
       .then(result => {
         switch(query.expression.op) {
@@ -87,23 +83,21 @@ const Store = Source.extend({
       });
   },
 
-  addRecord(properties = {}) {
+  addRecord(properties = {}, options) {
     this._verifyType(properties.type);
 
     const record = this.schema.normalize(properties);
 
-    return this.update(addRecord(record))
+    return this.update(addRecord(record), options)
       .then(() => this._identityMap.lookup(record));
   },
 
-  findRecord(type, id) {
-    return this.query(qb.record({type, id}));
+  findRecord(identity, options) {
+    return this.query(qb.record(identity), options);
   },
 
-  removeRecord(record) {
-    const { type, id } = record;
-    const identity = { type, id };
-    return this.update(removeRecord(identity));
+  removeRecord(identity, options) {
+    return this.update(removeRecord(identity), options);
   },
 
   _verifyType(type) {

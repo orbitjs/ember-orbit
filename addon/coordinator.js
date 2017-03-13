@@ -1,4 +1,4 @@
-import OrbitCoordinator from 'orbit/coordinator';
+import { Coordinator as OrbitCoordinator } from '@orbit/data';
 
 export default Ember.Object.extend({
   orbitCoordinator: null,

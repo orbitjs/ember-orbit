@@ -1,4 +1,4 @@
-import { toIdentifier } from 'orbit/lib/identifiers';
+import { serializeRecordIdentity } from '@orbit/data';
 
 export default Ember.Object.extend({
   _schema: null,
@@ -20,10 +20,9 @@ export default Ember.Object.extend({
       return;
     }
 
-    const { type, id } = identity;
-    const identifier = toIdentifier(type, id);
+    const identifier = serializeRecordIdentity(identity);
 
-    return this._materialized[identifier] || this._materialize(type, id);
+    return this._materialized[identifier] || this._materialize(identity);
   },
 
   lookupMany(identities) {
@@ -39,8 +38,7 @@ export default Ember.Object.extend({
       return;
     }
 
-    const { type, id } = identity;
-    const identifier = toIdentifier(type, id);
+    const identifier = serializeRecordIdentity(identity);
 
     return this._materialized[identifier];
   },
@@ -49,17 +47,17 @@ export default Ember.Object.extend({
     const record = this.materialized(identity);
 
     if (record) {
-      const identifier = toIdentifier(identity);
+      const identifier = serializeRecordIdentity(identity);
       delete this._materialized[identifier];
       record.disconnect();
     }
   },
 
-  _materialize(type, id) {
-    // console.debug('materializing', type, id);
-    const model = this._schema.modelFor(type);
-    const record = model._create(id, this._store);
-    const identifier = toIdentifier(type, id);
+  _materialize(identity) {
+    // console.debug('materializing', identity.type, identity.id);
+    const model = this._schema.modelFor(identity.type);
+    const record = model._create(identity.id, this._store);
+    const identifier = serializeRecordIdentity(identity);
 
     this._materialized[identifier] = record;
 

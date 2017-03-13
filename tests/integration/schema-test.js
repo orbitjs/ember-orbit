@@ -1,6 +1,7 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import Orbit from 'orbit';
+import Orbit from '@orbit/data';
+import { module, test } from 'qunit';
 
 const { Planet, Moon, Star } = dummyModels;
 
@@ -91,8 +92,8 @@ module("Integration - Schema", function(hooks) {
 
       assert.equal(normalized.id, 'jupiter', 'normalized id');
       assert.equal(normalized.type, 'planet', 'normalized type');
-      assert.deepEqual(normalized.keys, { galaxyAlias: undefined }, 'normalized keys');
-      assert.deepEqual(normalized.attributes, { atmosphere: false, classification: undefined, name: 'Jupiter' });
+      assert.deepEqual(normalized.keys, undefined, 'normalized keys');
+      assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
       assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
       assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');
 
@@ -107,7 +108,6 @@ module("Integration - Schema", function(hooks) {
       name: 'Jupiter'
     });
 
-    assert.deepEqual(normalized.relationships.moons, { data: {} }, 'normalized hasMany');
-    assert.deepEqual(normalized.relationships.sun, { data: null }, 'normalized hasOne');
+    assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
   });
 });

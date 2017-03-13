@@ -1,7 +1,8 @@
-import OrbitCoordinator from 'orbit/coordinator';
+import { Coordinator as OrbitCoordinator } from '@orbit/data';
 import Coordinator from 'ember-orbit/coordinator';
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
+import { module, test } from 'qunit';
 
 const { Planet, Moon, Star } = dummyModels;
 

@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import Orbit from 'orbit';
+import Orbit from '@orbit/data';
 import Store from 'ember-orbit/store';
 import Schema from 'ember-orbit/schema';
 import KeyMap from 'ember-orbit/key-map';

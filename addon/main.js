@@ -1,7 +1,3 @@
-/**
- @module ember-orbit
- */
+const EmberOrbit = {};
 
-var EO = {};
-
-export default EO;
+export default EmberOrbit;

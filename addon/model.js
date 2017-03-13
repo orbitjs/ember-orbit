@@ -1,22 +1,13 @@
 import HasMany from './relationships/has-many';
-import { uuid } from 'orbit/lib/uuid';
 import {
   removeRecord,
   replaceKey,
   replaceAttribute,
   replaceHasOne
-} from 'orbit/transform/operators';
-
-/**
- @module ember-orbit
- */
+} from '@orbit/data';
 
 const { get, set } = Ember;
 
-/**
- @class Model
- @namespace EO
- */
 const Model = Ember.Object.extend(Ember.Evented, {
   id: null,
   type: null,
@@ -104,19 +95,13 @@ const Model = Ember.Object.extend(Ember.Evented, {
 const _create = Model.create;
 
 Model.reopenClass({
-  _create: function(id, store) {
+  _create(id, store) {
     return _create.call(this, { id, type: this.typeKey, _store: store });
   },
 
-  create: function() {
+  create() {
     throw new Ember.Error("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.");
   },
-
-  id: Ember.computed(function() {
-    return {
-      defaultValue: uuid
-    };
-  }),
 
   keys: Ember.computed(function() {
     const map = {};
