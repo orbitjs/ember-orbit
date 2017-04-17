@@ -1,9 +1,9 @@
 import Ember from 'ember';
 import Orbit from '@orbit/data';
-import Store from 'ember-orbit/store';
-import Schema from 'ember-orbit/schema';
-import KeyMap from 'ember-orbit/key-map';
-import Coordinator from 'ember-orbit/coordinator';
+import Store from '../store';
+import Schema from '../schema';
+import KeyMap from '../key-map';
+import Coordinator from '../coordinator';
 
 export function initialize(application) {
   Orbit.Promise = Ember.RSVP.Promise;

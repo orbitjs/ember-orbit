@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import LiveQuery from '../live-query';
 import { 
-  QueryBuilder as qb,
+  oqb,
   addToHasMany,
   removeFromHasMany
 } from '@orbit/data';
@@ -20,7 +20,7 @@ export default LiveQuery.extend({
 
     this._orbitCache = store.cache._orbitCache;
     this._identityMap = store.cache._identityMap;
-    this._query = qb.relatedRecords(model, relationship);
+    this._query = oqb.relatedRecords(model, relationship);
 
     this._super(...args);
   },

@@ -2,9 +2,9 @@ import {
   addRecord,
   removeRecord,
   Query,
-  QueryBuilder as qb
+  oqb
 } from '@orbit/data';
-import { Store as OrbitStore } from '@orbit/store';
+import OrbitStore from '@orbit/store';
 import objectValues from './utils/object-values';
 import Cache from './cache';
 import IdentityMap from './identity-map';
@@ -53,9 +53,9 @@ const Store = Source.extend({
 
   find(type, id, options) {
     if (id === undefined) {
-      return this.query(qb.records(type), options);
+      return this.query(oqb.records(type), options);
     } else {
-      return this.query(qb.record({type, id}), options);
+      return this.query(oqb.record({type, id}), options);
     }
   },
 
@@ -93,7 +93,7 @@ const Store = Source.extend({
   },
 
   findRecord(identity, options) {
-    return this.query(qb.record(identity), options);
+    return this.query(oqb.record(identity), options);
   },
 
   removeRecord(identity, options) {

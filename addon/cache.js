@@ -1,11 +1,11 @@
 import { 
   deserializeRecordIdentity,
   Query,
-  QueryBuilder as qb
+  oqb
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
-import LiveQuery from 'ember-orbit/live-query';
-import objectValues from 'ember-orbit/utils/object-values';
+import LiveQuery from './live-query';
+import objectValues from './utils/object-values';
 
 const { get } = Ember;
 
@@ -86,9 +86,9 @@ export default Ember.Object.extend({
 
   find(type, id, options) {
     if (id === undefined) {
-      return this.query(qb.records(type), options);
+      return this.query(oqb.records(type), options);
     } else {
-      return this.query(qb.record({type, id}), options);
+      return this.query(oqb.record({type, id}), options);
     }
   }
 });

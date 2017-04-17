@@ -5,14 +5,15 @@ import getRegisteredModels from './-private/get-registered-models';
 const {
   computed,
   get,
-  getOwner
+  getOwner,
+  set
 } = Ember;
 
 function proxyProperty(source, property, defaultValue) {
   const _property = '_' + property;
 
-  return Ember.computed({
-    set: function(key, value) {
+  return computed({
+    set(key, value) {
       if (arguments.length > 1) {
         this[_property] = value;
         if (this[source]) {
@@ -24,7 +25,8 @@ function proxyProperty(source, property, defaultValue) {
       }
       return this[_property];
     },
-    get: function() {
+
+    get() {
       if (!this[_property]) {
         this[_property] = defaultValue;
       }
@@ -36,6 +38,8 @@ function proxyProperty(source, property, defaultValue) {
 export default Ember.Object.extend({
   orbitSchema: null,
 
+  modelDefinitions: proxyProperty('orbitSchema', 'models'),
+
   pluralize: proxyProperty('orbitSchema', 'pluralize'),
 
   singularize: proxyProperty('orbitSchema', 'singularize'),
@@ -45,34 +49,38 @@ export default Ember.Object.extend({
     this._modelTypeMap = {};
 
     if (!this.orbitSchema) {
-      // Don't use `modelDefaults` in ember-orbit.
-      // The same functionality can be achieved with a base model class that
-      // can be overridden.
-      const options = {
-        modelDefaults: {}
-      };
+      const options = {};
 
-      const pluralize = this.get('pluralize');
+      const pluralize = get(this, 'pluralize');
       if (pluralize) {
         options.pluralize = pluralize;
       }
 
-      const singularize = this.get('singularize');
+      const singularize = get(this, 'singularize');
       if (singularize) {
         options.singularize = singularize;
       }
 
-      options.models = this._modelsSchema();
+      let modelDefinitions = get(this, 'modelDefinitions');
+      if (!modelDefinitions) {
+        modelDefinitions = this._buildModelDefinitions();
+      }
+
+      options.models = modelDefinitions;
 
       this.orbitSchema = new OrbitSchema(options);
     }
   },
 
-  _modelsSchema() {
+  _buildModelDefinitions() {
     const models = {};
-    this.get('types').forEach(type => {
+    
+    get(this, 'types').forEach(type => {
       models[type] = this._modelSchemaFor(type);
     });
+
+    set(this, 'modelDefinitions', models);
+
     return models;
   },
 
@@ -107,27 +115,27 @@ export default Ember.Object.extend({
   }),
 
   keys(type) {
-    return Object.keys(this.orbitSchema.modelDefinition(type).keys);
+    return Object.keys(this.orbitSchema.models[type].keys);
   },
 
   keyProperties(type, name) {
-    return this.orbitSchema.modelDefinition(type).keys[name];
+    return this.orbitSchema.models[type].keys[name];
   },
 
   attributes(type) {
-    return Object.keys(this.orbitSchema.modelDefinition(type).attributes);
+    return Object.keys(this.orbitSchema.models[type].attributes);
   },
 
   attributeProperties(type, name) {
-    return this.orbitSchema.modelDefinition(type).attributes[name];
+    return this.orbitSchema.models[type].attributes[name];
   },
 
   relationships(type) {
-    return Object.keys(this.orbitSchema.modelDefinition(type).relationships);
+    return Object.keys(this.orbitSchema.models[type].relationships);
   },
 
   relationshipProperties(type, name) {
-    return this.orbitSchema.modelDefinition(type).relationships[name];
+    return this.orbitSchema.models[type].relationships[name];
   },
 
   normalize(properties) {

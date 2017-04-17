@@ -1,7 +1,7 @@
 import { dummyModels } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { 
-  QueryBuilder as qb,
+  oqb,
   replaceAttribute
 } from '@orbit/data';
 import { module, test } from 'qunit';
@@ -64,7 +64,7 @@ module('Integration - Store', function(hooks) {
     ])
       .then(([result1]) => {
         earth = result1;
-        return store.query(qb.record(earth));
+        return store.query(oqb.record(earth));
       })
       .then(record => {
         assert.strictEqual(record, earth);
@@ -81,7 +81,7 @@ module('Integration - Store', function(hooks) {
       .then(([result1, result2]) => {
         earth = result1;
         jupiter = result2;
-        return store.query(qb.records('planet'));
+        return store.query(oqb.records('planet'));
       })
       .then(records => {
         assert.equal(records.length, 2);
@@ -100,7 +100,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(result => {
         jupiter = result;
-        return store.query(qb.relatedRecord(jupiter.identity, 'sun'));
+        return store.query(oqb.relatedRecord(jupiter.identity, 'sun'));
       })
       .then(record => {
         assert.strictEqual(record, sun);
@@ -121,7 +121,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(result => {
         jupiter = result;
-        return store.query(qb.relatedRecords(jupiter.identity, 'moons'));
+        return store.query(oqb.relatedRecords(jupiter.identity, 'moons'));
       })
       .then(records => {
         assert.deepEqual(records, [io, callisto]);
@@ -139,7 +139,7 @@ module('Integration - Store', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        return store.query(qb.records('planet').filterAttributes({ name: 'Earth' }));
+        return store.query(oqb.records('planet').filterAttributes({ name: 'Earth' }));
       })
       .then(records => {
         assert.deepEqual(records, [earth]);
@@ -149,7 +149,7 @@ module('Integration - Store', function(hooks) {
 
   test('liveQuery - adds record that becomes a match', function(assert) {
     store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
-    const liveQuery = store.liveQuery(qb.records('planet')
+    const liveQuery = store.liveQuery(oqb.records('planet')
                                         .filterAttributes({ name: 'Jupiter' }));
 
     assert.equal(liveQuery.get('length'), 0);
