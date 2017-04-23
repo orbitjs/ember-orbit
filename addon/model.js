@@ -25,9 +25,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveKey(this.identity, field);
   },
 
-  replaceKey(field, value) {
+  replaceKey(field, value, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceKey(this.identity, field, value));
+    store.update(replaceKey(this.identity, field, value), options);
   },
 
   getAttribute(field) {
@@ -35,9 +35,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveAttribute(this.identity, field);
   },
 
-  replaceAttribute(attribute, value) {
+  replaceAttribute(attribute, value, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceAttribute(this.identity, attribute, value));
+    store.update(replaceAttribute(this.identity, attribute, value), options);
   },
 
   getHasOne(relationship) {
@@ -45,9 +45,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveHasOne(this.identity, relationship);
   },
 
-  replaceHasOne(relationship, record) {
+  replaceHasOne(relationship, record, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceHasOne(this.identity, relationship, record));
+    store.update(replaceHasOne(this.identity, relationship, record), options);
   },
 
   getHasMany(field) {
@@ -59,9 +59,9 @@ const Model = Ember.Object.extend(Ember.Evented, {
     });
   },
 
-  remove() {
+  remove(options) {
     const store = get(this, '_storeOrError');
-    return store.update(removeRecord(this.identity));
+    return store.update(removeRecord(this.identity), options);
   },
 
   disconnect() {
