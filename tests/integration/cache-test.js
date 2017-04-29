@@ -1,4 +1,4 @@
-import { dummyModels } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import Orbit, {
   addRecord,
@@ -8,8 +8,6 @@ import Orbit, {
   oqe
 } from '@orbit/data';
 import { module, test } from 'qunit';
-
-const { Planet, Moon, Star } = dummyModels;
 
 module('Integration - Cache', function(hooks) {
   let store;

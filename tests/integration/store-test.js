@@ -1,4 +1,4 @@
-import { dummyModels } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { 
   oqb,
@@ -6,7 +6,6 @@ import {
 } from '@orbit/data';
 import { module, test } from 'qunit';
 
-const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;
 
 module('Integration - Store', function(hooks) {
@@ -19,6 +18,43 @@ module('Integration - Store', function(hooks) {
 
   hooks.afterEach(function() {
     store = null;
+  });
+
+  test('#normalizeRecordProperties', function(assert) {
+    const done = assert.async();
+
+    Ember.RSVP.Promise.all([
+      store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
+      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'})
+    ])
+    .then(([callisto, sun]) => {
+      const normalized = store.normalizeRecordProperties({
+        type: 'planet',
+        id: 'jupiter',
+        name: 'Jupiter',
+        moons: [callisto],
+        sun: sun
+      });
+
+      assert.equal(normalized.id, 'jupiter', 'normalized id');
+      assert.equal(normalized.type, 'planet', 'normalized type');
+      assert.deepEqual(normalized.keys, undefined, 'normalized keys');
+      assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
+      assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
+      assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');
+
+      done();
+    });
+  });
+
+  test('#normalizeRecordProperties - undefined relationships', function(assert) {
+    const normalized = store.normalizeRecordProperties({
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter'
+    });
+
+    assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
   });
 
   test('#addRecord', function(assert) {

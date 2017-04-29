@@ -1,8 +1,6 @@
-import { dummyModels } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
-
-const { Planet, Moon, Star } = dummyModels;
 
 module('Integration - Model', function(hooks) {
   let store;

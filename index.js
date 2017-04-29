@@ -7,38 +7,38 @@ const mergeTrees = require('broccoli-merge-trees');
 const path       = require('path');
 const resolve    = require('resolve');
 
-function packageTree(name, options = {}) {
-  let namespace = options.namespace || name;
-
+function findLib(name, libPath) {
   let packagePath = path.join(name, 'package');
+  let packageRoot = path.dirname(require.resolve(packagePath));
+
+  libPath = libPath || getLibPath(packagePath);
+
+  return path.resolve(packageRoot, libPath);
+};
+
+function getLibPath(packagePath) {
   let packageJson = require(packagePath);
-  let packageDir = path.dirname(require.resolve(packagePath));
 
-  // For now, we're simply importing ES5 AMD output, which is assumed to be in the path `dist/amd/es5`
-  // (this is the standard output path from @glimmer/build, which is used to build all orbit packages).
-  // 
-  // However, this is very inflexible and should be converted to use the 
-  // `module` property from package.json, with fallbacks such as:
-  //
-  // packageJson['module'] || packageJson['jsnext:main'] || packageJson['main'].replace(/dist\//, 'dist/es6/');
-  //
-  // Unfortunately, it's currently unclear (to me) how to best merge 
-  // non-transpiled output with the addon's tree, while maintaining unique 
-  // namespaces for each dependency.
-  let entryModule = 'dist/amd/es5/';
+  return path.dirname(packageJson['module'] || packageJson['main'] || '.');
+}
 
-  return funnel(path.join(packageDir, entryModule), {
+function packageTree(name, destDir) {
+  let libPath = findLib(name);
+
+  destDir = destDir || path.join.apply(this, name.split('/'));
+
+  let tree = funnel(libPath, {
     include: ['**/*.js'],
-    destDir: './' + namespace
+    destDir
   });
+
+  return tree;
 }
 
 module.exports = {
   name: 'ember-orbit',
 
-  treeForAddon: function(tree) {
-    let addonTree = this._super.treeForAddon.call(this, tree);
-
+  treeForAddon(tree) {
     let packageTrees = [
       packageTree('@orbit/utils'),
       packageTree('@orbit/core'),
@@ -48,18 +48,23 @@ module.exports = {
 
     let host = this.app || this.parent;
     let orbitOptions = host.options && host.options.orbit;
-    let orbitSources = orbitOptions && orbitOptions.packages;
+    let customPackages = orbitOptions && orbitOptions.packages;
 
-    if (orbitSources) {
-      orbitSources.forEach(source => {
-        let sourceTree = packageTree(source);
-        packageTrees.push(sourceTree);
+    if (customPackages) {
+      customPackages.forEach(source => {
+        packageTrees.push(packageTree(source));
       });
     }
 
-    return mergeTrees([
-      addonTree,
-      funnel(mergeTrees(packageTrees), { destDir: './modules' })
-    ]);
+    let addonTree = this._super.treeForAddon.call(this, tree);
+    
+    let babel = this.addons.find(addon => addon.name === 'ember-cli-babel');
+    let transpiledPackageTrees = packageTrees.map(tree => babel.transpileTree(tree));
+
+    let mergedPackageTree = funnel(mergeTrees(transpiledPackageTrees), {
+      destDir: 'modules'
+    });
+
+    return mergeTrees([mergedPackageTree, addonTree]);
   }
 };

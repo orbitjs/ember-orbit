@@ -1,8 +1,11 @@
-import key from 'ember-orbit/fields/key';
-import attr from 'ember-orbit/fields/attr';
-import hasOne from 'ember-orbit/fields/has-one';
-import hasMany from 'ember-orbit/fields/has-many';
-import Model from 'ember-orbit/model';
+import Ember from 'ember';
+import { 
+  key,
+  attr,
+  hasOne,
+  hasMany,
+  Model
+} from 'ember-orbit';
 import { module, test } from 'qunit';
 
 const { get } = Ember;

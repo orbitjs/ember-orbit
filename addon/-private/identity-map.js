@@ -1,18 +1,18 @@
 import { serializeRecordIdentity } from '@orbit/data';
+import Ember from 'ember';
+
+const { getOwner } = Ember;
 
 export default Ember.Object.extend({
-  _schema: null,
-  _orbitCache: null,
   _materialized: null,
+  _modelTypeMap: null,
   _store: null,
 
   init(...args) {
     this._super(...args);
 
-    Ember.assert(this._schema, '_schema is required');
-    Ember.assert(this._orbitCache, '_orbitCache is required');
-
     this._materialized = {};
+    this._modelTypeMap = {};
   },
 
   lookup(identity) {
@@ -55,12 +55,24 @@ export default Ember.Object.extend({
 
   _materialize(identity) {
     // console.debug('materializing', identity.type, identity.id);
-    const model = this._schema.modelFor(identity.type);
+    const model = this._modelFor(identity.type);
     const record = model._create(identity.id, this._store);
     const identifier = serializeRecordIdentity(identity);
 
     this._materialized[identifier] = record;
 
     return record;
+  },
+
+  _modelFor(type) {
+    let model = this._modelTypeMap[type];
+
+    if (!model) {
+      model = getOwner(this._store).factoryFor(`model:${type}`).class;
+      model.typeKey = type;
+      this._modelTypeMap[type] = model;
+    }
+
+    return model;
   }
 });
