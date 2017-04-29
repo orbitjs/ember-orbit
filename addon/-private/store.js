@@ -4,9 +4,8 @@ import {
   Query,
   oqb
 } from '@orbit/data';
-import { deepSet } from '@orbit/utils';
+import { deepSet, objectValues } from '@orbit/utils';
 import OrbitStore from '@orbit/store';
-import objectValues from './utils/object-values';
 import Cache from './cache';
 import IdentityMap from './identity-map';
 

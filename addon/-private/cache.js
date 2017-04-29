@@ -3,9 +3,8 @@ import {
   Query,
   oqb
 } from '@orbit/data';
-import { deepGet } from '@orbit/utils';
+import { deepGet, objectValues } from '@orbit/utils';
 import LiveQuery from './live-query';
-import objectValues from './utils/object-values';
 
 const { get } = Ember;
 
