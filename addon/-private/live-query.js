@@ -4,7 +4,7 @@ import ReadOnlyArrayProxy from './system/read-only-array-proxy';
 const { get, set, computed, isArray } = Ember;
 
 export default ReadOnlyArrayProxy.extend({
-  _orbitCache: null,
+  _sourceCache: null,
   _query: null,
   _identityMap: null,
   _content: null,
@@ -12,7 +12,7 @@ export default ReadOnlyArrayProxy.extend({
   init(...args) {
     this._super(...args);
 
-    this._orbitCache.on('patch', () => {
+    this._sourceCache.on('patch', () => {
       // console.log('invalidate', patch);
       this.invalidate();
     });
@@ -25,7 +25,7 @@ export default ReadOnlyArrayProxy.extend({
   content: computed('_content', {
     get() {
       if (get(this, '_content') === null) {
-        let results = this._orbitCache.query(this._query);
+        let results = this._sourceCache.query(this._query);
 
         let content;
         if (isArray(results)) {

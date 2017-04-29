@@ -18,7 +18,7 @@ export default LiveQuery.extend({
     const model = get(this, '_model');
     const relationship = get(this, '_relationship');
 
-    this._orbitCache = store.cache._orbitCache;
+    this._sourceCache = store.cache._sourceCache;
     this._identityMap = store.cache._identityMap;
     this._query = oqb.relatedRecords(model, relationship);
 

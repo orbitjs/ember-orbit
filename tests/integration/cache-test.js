@@ -30,8 +30,10 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - adds record that becomes a match', function(assert) {
-    const liveQuery = cache.liveQuery(oqb.records('planet')
-                                      .filterAttributes({ name: 'Jupiter' }));
+    const qe = oqb.records('planet')
+                  .filterAttributes({ name: 'Jupiter' });
+
+    const liveQuery = cache.liveQuery(qe);
 
     return store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } })
       .then(() => {

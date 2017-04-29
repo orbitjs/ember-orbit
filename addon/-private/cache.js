@@ -9,18 +9,18 @@ import LiveQuery from './live-query';
 const { get } = Ember;
 
 export default Ember.Object.extend({
-  _orbitCache: null,
+  _sourceCache: null,
   _identityMap: null,
 
   init(...args) {
     this._super.apply(this, ...args);
 
-    Ember.assert(get(this, '_orbitCache'), '_orbitCache is required');
+    Ember.assert(get(this, '_sourceCache'), '_sourceCache is required');
     Ember.assert(get(this, '_identityMap'), '_identityMap is required');
   },
 
   includesRecord(type, id) {
-    return !!this._orbitCache.records(type).get(id);
+    return !!this._sourceCache.records(type).get(id);
   },
 
   retrieveRecord(type, id) {
@@ -30,17 +30,17 @@ export default Ember.Object.extend({
   },
 
   retrieveKey(recordIdentity, key) {
-    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
     return deepGet(record, ['keys', key]);
   },
 
   retrieveAttribute(recordIdentity, attribute) {
-    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
     return deepGet(record, ['attributes', attribute]);
   },
 
   retrieveHasOne(recordIdentity, relationship) {
-    const record = this._orbitCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
     if (record) {
       const value = deepGet(record, ['relationships', relationship, 'data']);
       if (!value) {
@@ -58,7 +58,7 @@ export default Ember.Object.extend({
 
   query(queryOrExpression, options) {
     const query = Query.from(queryOrExpression, options);
-    const result = this._orbitCache.query(query);
+    const result = this._sourceCache.query(query);
 
     switch(query.expression.op) {
       case 'record':
@@ -78,7 +78,7 @@ export default Ember.Object.extend({
 
     return LiveQuery.create({
       _query: query,
-      _orbitCache: this._orbitCache,
+      _sourceCache: this._sourceCache,
       _identityMap: this._identityMap
     });
   },

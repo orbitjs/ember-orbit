@@ -12,7 +12,9 @@ import IdentityMap from './identity-map';
 const { assert, getOwner, get } = Ember;
 
 const Store = Ember.Object.extend({
-  OrbitSourceClass: OrbitStore,
+  SourceClass: OrbitStore,
+  sourceOptions: null,
+  source: null,
   cache: null,
   schema: null,
   keyMap: null,
@@ -24,53 +26,53 @@ const Store = Ember.Object.extend({
     assert("`schema` must be injected onto a Source", this.schema);
     assert("`keyMap` must be injected onto a Source", this.keyMap);
 
-    if (!this.orbitSource) {
-      let OrbitSourceClass = this.OrbitSourceClass;
-      if (OrbitSourceClass.wrappedFunction) {
-        OrbitSourceClass = OrbitSourceClass.wrappedFunction;
+    if (!this.source) {
+      let SourceClass = this.SourceClass;
+      if (SourceClass.wrappedFunction) {
+        SourceClass = SourceClass.wrappedFunction;
       }
 
-      let options = this.orbitSourceOptions || {};
+      let options = this.sourceOptions || {};
       options.schema = this.schema;
       options.keyMap = this.keyMap;
       if (this.bucket) {
         options.bucket = this.bucket;
       }
 
-      this.orbitSource = new OrbitSourceClass(options);
+      this.source = new SourceClass(options);
     }
 
-    this.transformLog = this.orbitSource.transformLog;
-    this.requestQueue = this.orbitSource.requestQueue;
-    this.syncQueue = this.orbitSource.syncQueue;
+    this.transformLog = this.source.transformLog;
+    this.requestQueue = this.source.requestQueue;
+    this.syncQueue = this.source.syncQueue;
 
     if (this.coordinator) {
-      this.coordinator.addSource(this.orbitSource);
+      this.coordinator.addSource(this.source);
     }
  
-    const orbitCache = this.orbitSource.cache;
+    const sourceCache = this.source.cache;
 
-    assert("A Store's `orbitSource` must have its own `cache`", orbitCache);
+    assert("A Store's `source` must have its own `cache`", sourceCache);
 
-    this._identityMap = IdentityMap.create({ _schema: this.schema, _orbitCache: orbitCache, _store: this });
-    this.cache = Cache.create({ _orbitCache: orbitCache, _identityMap: this._identityMap });
+    this._identityMap = IdentityMap.create({ _schema: this.schema, _sourceCache: sourceCache, _store: this });
+    this.cache = Cache.create({ _sourceCache: sourceCache, _identityMap: this._identityMap });
 
-    orbitCache.on('patch', operation => this._didPatch(operation));
+    sourceCache.on('patch', operation => this._didPatch(operation));
   },
 
   willDestroy() {
     if (this.coordinator) {
-      this.coordinator.removeSource(this.orbitSource);
+      this.coordinator.removeSource(this.source);
     }
   },
 
   fork() {
-    const forkedOrbitStore = this.orbitSource.fork();
+    const forkedSource = this.source.fork();
 
     return Store.create(
       getOwner(this).ownerInjection(),
       {
-        orbitSource: forkedOrbitStore,
+        source: forkedSource,
         keyMap: this.keyMap,
         schema: this.schema
       }
@@ -78,11 +80,11 @@ const Store = Ember.Object.extend({
   },
 
   merge(forkedStore, options = {}) {
-    return this.orbitSource.merge(forkedStore.orbitSource, options);
+    return this.source.merge(forkedStore.source, options);
   },
 
   rollback() {
-    return this.orbitSource.rollback(...arguments);
+    return this.source.rollback(...arguments);
   },
 
   find(type, id, options) {
@@ -95,13 +97,13 @@ const Store = Ember.Object.extend({
 
   liveQuery(queryOrExpression, options) {
     const query = Query.from(queryOrExpression, options);
-    this.orbitSource.query(query);
+    this.source.query(query);
     return this.cache.liveQuery(query);
   },
 
   query(queryOrExpression, options) {
     const query = Query.from(queryOrExpression, options);
-    return this.orbitSource.query(query)
+    return this.source.query(query)
       .then(result => {
         switch(query.expression.op) {
           case 'record':
@@ -135,23 +137,23 @@ const Store = Ember.Object.extend({
   },
 
   on() {
-    return this.orbitSource.on(...arguments);
+    return this.source.on(...arguments);
   },
 
   off() {
-    return this.orbitSource.off(...arguments);
+    return this.source.off(...arguments);
   },
 
   one() {
-    return this.orbitSource.one(...arguments);
+    return this.source.one(...arguments);
   },
 
   sync() {
-    return this.orbitSource.sync(...arguments);
+    return this.source.sync(...arguments);
   },
 
   update() {
-    return this.orbitSource.update(...arguments);
+    return this.source.update(...arguments);
   },
 
   _verifyType(type) {
