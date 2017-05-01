@@ -43,7 +43,8 @@ module.exports = {
       packageTree('@orbit/utils'),
       packageTree('@orbit/core'),
       packageTree('@orbit/data'),
-      packageTree('@orbit/store')
+      packageTree('@orbit/store'),
+      packageTree('@orbit/coordinator')
     ];
 
     let host = this.app || this.parent;

@@ -1,4 +1,4 @@
-import { Coordinator } from '@orbit/data';
+import Coordinator from '@orbit/coordinator';
 
 export default {
   create() {

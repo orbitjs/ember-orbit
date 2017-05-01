@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@orbit/core": "^0.8.0-beta.11",
+    "@orbit/coordinator": "^0.8.0-beta.11",
     "@orbit/data": "^0.8.0-beta.11",
     "@orbit/store": "^0.8.0-beta.11",
     "@orbit/utils": "^0.8.0-beta.11",
