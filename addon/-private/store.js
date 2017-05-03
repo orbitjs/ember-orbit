@@ -163,10 +163,23 @@ const Store = Ember.Object.extend({
   _didPatch: function(operation) {
     // console.debug('didPatch', operation);
 
+    const replacement = operation.record;
+    const { type, id } = replacement;
     let record;
-    const { type, id } = operation.record;
 
     switch(operation.op) {
+      case 'replaceRecord':
+        record = this._identityMap.lookup({ type, id });
+        ['attributes', 'keys', 'relationships'].forEach(grouping => {
+          if (replacement[grouping]) {
+            Object.keys(replacement[grouping]).forEach(field => {
+              if (replacement[grouping].hasOwnProperty(field)) {
+                record.propertyDidChange(field);
+              }
+            });
+          }
+        });
+        break;
       case 'replaceAttribute':
         record = this._identityMap.lookup({ type, id });
         record.propertyDidChange(operation.attribute);

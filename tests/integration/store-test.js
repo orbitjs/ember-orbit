@@ -2,7 +2,8 @@ import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import {
   oqb,
-  replaceAttribute
+  replaceAttribute,
+  replaceRecord
 } from '@orbit/data';
 import { module, test } from 'qunit';
 
@@ -89,6 +90,25 @@ module('Integration - Store', function(hooks) {
       .then(record => store.findRecord({type: 'planet', id: record.get('id')}))
       .catch(error => {
         assert.ok(error.message.match(/Record not found/));
+      });
+  });
+
+  test('replacing a record invalidates attributes and relationships', function(assert) {
+    return Ember.RSVP.Promise.all([
+      store.addRecord({ type: 'planet', id: 'p1', name: 'Earth' }),
+      store.addRecord({type: 'star', id: 's1', name: 'The Sun'})
+    ])
+      .tap(([planet, star]) => {
+        assert.equal(get(planet, 'name'), 'Earth', 'initial attribute get is fine');
+        assert.equal(get(planet, 'sun'), null, 'initial hasOne get is fine');
+        assert.equal(get(star, 'name'), 'The Sun', 'star has been created properly');
+      })
+      .tap(([planet, star]) => store.update(
+        replaceRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: `star:${star.id}` }} }))
+      )
+      .then(([planet, star]) => {
+        assert.strictEqual(get(planet, 'name'), 'Jupiter', 'attribute has been reset');
+        assert.strictEqual(get(planet, 'sun'), star, 'hasOne has been reset');
       });
   });
 
