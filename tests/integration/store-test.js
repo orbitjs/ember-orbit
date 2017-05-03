@@ -1,6 +1,6 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import { 
+import {
   oqb,
   replaceAttribute
 } from '@orbit/data';
@@ -185,13 +185,13 @@ module('Integration - Store', function(hooks) {
 
   test('liveQuery - adds record that becomes a match', function(assert) {
     store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
-    const liveQuery = store.liveQuery(oqb.records('planet')
-                                        .filterAttributes({ name: 'Jupiter' }));
 
-    assert.equal(liveQuery.get('length'), 0);
-
-    return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
-      .then(() => {
+    return store.liveQuery(oqb.records('planet').filterAttributes({ name: 'Jupiter' }))
+      .tap(liveQuery => {
+        assert.equal(liveQuery.get('length'), 0);
+        return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
+      })
+      .then(liveQuery => {
         assert.equal(liveQuery.get('length'), 1);
       });
   });

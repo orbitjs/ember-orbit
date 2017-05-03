@@ -1,4 +1,4 @@
-import { 
+import {
   addRecord,
   removeRecord,
   Query,
@@ -49,7 +49,7 @@ const Store = Ember.Object.extend({
     if (this.coordinator) {
       this.coordinator.addSource(this.source);
     }
- 
+
     const sourceCache = this.source.cache;
 
     assert("A Store's `source` must have its own `cache`", sourceCache);
@@ -97,8 +97,8 @@ const Store = Ember.Object.extend({
 
   liveQuery(queryOrExpression, options) {
     const query = Query.from(queryOrExpression, options);
-    this.source.query(query);
-    return this.cache.liveQuery(query);
+    return this.source.query(query)
+      .then(() => this.cache.liveQuery(query));
   },
 
   query(queryOrExpression, options) {
