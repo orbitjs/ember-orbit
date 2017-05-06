@@ -87,14 +87,6 @@ const Store = Ember.Object.extend({
     return this.source.rollback(...arguments);
   },
 
-  find(type, id, options) {
-    if (id === undefined) {
-      return this.query(oqb.records(type), options);
-    } else {
-      return this.query(oqb.record({type, id}), options);
-    }
-  },
-
   liveQuery(queryOrExpression, options) {
     const query = Query.from(queryOrExpression, options);
     return this.source.query(query)
@@ -128,8 +120,20 @@ const Store = Ember.Object.extend({
       .then(() => this._identityMap.lookup(record));
   },
 
-  findRecord(identity, options) {
-    return this.query(oqb.record(identity), options);
+  find(type, id, options) {
+    if (id === undefined) {
+      return this.findAll(type, options);
+    } else {
+      return this.findRecord(type, id, options);
+    }
+  },
+
+  findAll(type, options) {
+    return this.query(oqb.records(type), options);
+  },
+
+  findRecord(type, id, options) {
+    return this.query(oqb.record({ type, id }), options);
   },
 
   removeRecord(identity, options) {

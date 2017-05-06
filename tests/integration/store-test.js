@@ -1,9 +1,11 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import {
+  addRecord,
   oqb,
   replaceAttribute,
-  replaceRecord
+  replaceRecord,
+  Transform
 } from '@orbit/data';
 import { module, test } from 'qunit';
 
@@ -69,7 +71,7 @@ module('Integration - Store', function(hooks) {
 
   test('#findRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then( record => store.findRecord({type: 'planet', id: record.get('id')}))
+      .then( record => store.findRecord('planet', record.id))
       .then( planet => {
         assert.ok(planet instanceof Planet);
         assert.ok(get(planet, 'id'), 'assigned id');
@@ -78,7 +80,7 @@ module('Integration - Store', function(hooks) {
   });
 
   test('#findRecord - missing record', function(assert) {
-    return store.findRecord({type: 'planet', id: 'jupiter'})
+    return store.findRecord('planet', 'jupiter')
       .catch(e => {
         assert.equal(e.message, 'Record not found: planet:jupiter');
       })
@@ -87,7 +89,7 @@ module('Integration - Store', function(hooks) {
   test('#removeRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .tap(record => store.removeRecord(record))
-      .then(record => store.findRecord({type: 'planet', id: record.get('id')}))
+      .then(record => store.findRecord('planet', record.id))
       .catch(error => {
         assert.ok(error.message.match(/Record not found/));
       });

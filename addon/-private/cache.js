@@ -1,4 +1,4 @@
-import { 
+import {
   deserializeRecordIdentity,
   Query,
   oqb
@@ -85,9 +85,17 @@ export default Ember.Object.extend({
 
   find(type, id, options) {
     if (id === undefined) {
-      return this.query(oqb.records(type), options);
+      return this.findAll(type, options);
     } else {
-      return this.query(oqb.record({type, id}), options);
+      return this.findRecord(type, id, options);
     }
+  },
+
+  findAll(type, options) {
+    return this.query(oqb.records(type), options);
+  },
+
+  findRecord(type, id, options) {
+    return this.query(oqb.record({ type, id }), options);
   }
 });
