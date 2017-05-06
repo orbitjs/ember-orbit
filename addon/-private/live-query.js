@@ -15,7 +15,7 @@ export default ReadOnlyArrayProxy.extend({
     this._sourceCache.on('reset', this.invalidate, this);
   },
 
-  willDestroy() {
+  willDestroy(...args) {
     this._super(...args);
     this._sourceCache.off('patch', this.invalidate, this);
     this._sourceCache.off('reset', this.invalidate, this);
