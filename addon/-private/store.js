@@ -160,6 +160,14 @@ const Store = Ember.Object.extend({
     return this.source.update(...arguments);
   },
 
+  getTransform() {
+    return this.source.getTransform(...arguments);
+  },
+
+  getInverseOperations() {
+    return this.source.getInverseOperations(...arguments);
+  },
+
   _verifyType(type) {
     assert("`type` must be registered as a model in the store's schema", this.schema.models[type]);
   },

@@ -95,6 +95,30 @@ module('Integration - Store', function(hooks) {
       });
   });
 
+  test('#getTransform - returns a particular transform given an id', function(assert) {
+    const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
+
+    const addRecordATransform = Transform.from(addRecord(recordA));
+
+    return store.sync(addRecordATransform)
+      .then(() => {
+        assert.strictEqual(store.getTransform(addRecordATransform.id), addRecordATransform);
+     });
+  });
+
+  test('#getInverseOperations - returns the inverse operations for a particular transform', function(assert) {
+    const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
+
+    const addRecordATransform = Transform.from(addRecord(recordA));
+
+    return store.sync(addRecordATransform)
+      .then(() => {
+        assert.deepEqual(store.getInverseOperations(addRecordATransform.id), [
+          { op: 'removeRecord', record: { id: 'jupiter', type: 'planet' } }
+        ]);
+     });
+  });
+
   test('replacing a record invalidates attributes and relationships', function(assert) {
     return Ember.RSVP.Promise.all([
       store.addRecord({ type: 'planet', id: 'p1', name: 'Earth' }),
