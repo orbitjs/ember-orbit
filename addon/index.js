@@ -8,3 +8,5 @@ export { default as key } from './-private/fields/key';
 export { default as Cache } from './-private/cache';
 export { default as Model } from './-private/model';
 export { default as Store } from './-private/store';
+// Provide `belongsTo` as an alias to `hasOne`
+export { default as belongsTo } from './-private/fields/has-one';
