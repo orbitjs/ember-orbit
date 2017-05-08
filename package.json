@@ -2,17 +2,6 @@
   "name": "ember-orbit",
   "version": "0.9.0-beta.6",
   "description": "Ember.js data layer built with Orbit.js",
-  "homepage": "https://github.com/orbitjs/ember-orbit",
-  "contributors": [
-    "Dan Gebhardt (http://www.cerebris.com)"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/orbitjs/ember-orbit.git"
-  },
-  "bugs": {
-    "url": "https://github.com/orbitjs/ember-orbit/issues"
-  },
   "keywords": [
     "ember-addon",
     "orbit.js",
@@ -20,10 +9,26 @@
     "synchronization"
   ],
   "license": "MIT",
+  "contributors": [
+    "Dan Gebhardt (http://www.cerebris.com)"
+  ],
+  "repository": "https://github.com/orbitjs/ember-orbit",
   "scripts": {
     "build": "ember build",
     "start": "ember server",
     "test": "ember try:testall"
+  },
+  "dependencies": {
+    "@orbit/core": "^0.9.0",
+    "@orbit/coordinator": "^0.9.0",
+    "@orbit/data": "^0.9.0",
+    "@orbit/store": "^0.9.0",
+    "@orbit/utils": "^0.9.0",
+    "broccoli-funnel": "^1.2.0",
+    "broccoli-merge-trees": "^2.0.0",
+    "broccoli-replace": "^0.12.0",
+    "ember-cli-babel": "^6.1.0",
+    "resolve": "^1.3.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -47,18 +52,6 @@
     "ember-source": "~2.13.0",
     "eslint": "^3.19.0",
     "loader.js": "^4.3.0"
-  },
-  "dependencies": {
-    "@orbit/core": "^0.9.0",
-    "@orbit/coordinator": "^0.9.0",
-    "@orbit/data": "^0.9.0",
-    "@orbit/store": "^0.9.0",
-    "@orbit/utils": "^0.9.0",
-    "broccoli-funnel": "^1.2.0",
-    "broccoli-merge-trees": "^2.0.0",
-    "broccoli-replace": "^0.12.0",
-    "ember-cli-babel": "^6.1.0",
-    "resolve": "^1.3.3"
   },
   "engines": {
     "npm": ">= 3.0.0"
