@@ -1,23 +1,63 @@
-import { dummyModels } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import qb from 'orbit/query/builder';
 import {
-  replaceAttribute
-} from 'orbit/transform/operators';
+  addRecord,
+  oqb,
+  replaceAttribute,
+  replaceRecord,
+  Transform
+} from '@orbit/data';
+import { module, test } from 'qunit';
 
-const { Planet, Moon, Star } = dummyModels;
 const { get } = Ember;
 
 module('Integration - Store', function(hooks) {
   let store;
+  const models = { planet: Planet, moon: Moon, star: Star };
 
   hooks.beforeEach(function() {
-    const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models });
   });
 
   hooks.afterEach(function() {
     store = null;
+  });
+
+  test('#normalizeRecordProperties', function(assert) {
+    const done = assert.async();
+
+    Ember.RSVP.Promise.all([
+      store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
+      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'})
+    ])
+    .then(([callisto, sun]) => {
+      const normalized = store.normalizeRecordProperties({
+        type: 'planet',
+        id: 'jupiter',
+        name: 'Jupiter',
+        moons: [callisto],
+        sun: sun
+      });
+
+      assert.equal(normalized.id, 'jupiter', 'normalized id');
+      assert.equal(normalized.type, 'planet', 'normalized type');
+      assert.deepEqual(normalized.keys, undefined, 'normalized keys');
+      assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
+      assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
+      assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');
+
+      done();
+    });
+  });
+
+  test('#normalizeRecordProperties - undefined relationships', function(assert) {
+    const normalized = store.normalizeRecordProperties({
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter'
+    });
+
+    assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
   });
 
   test('#addRecord', function(assert) {
@@ -31,7 +71,7 @@ module('Integration - Store', function(hooks) {
 
   test('#findRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then( record => store.findRecord('planet', record.get('id')))
+      .then( record => store.findRecord('planet', record.id))
       .then( planet => {
         assert.ok(planet instanceof Planet);
         assert.ok(get(planet, 'id'), 'assigned id');
@@ -42,16 +82,59 @@ module('Integration - Store', function(hooks) {
   test('#findRecord - missing record', function(assert) {
     return store.findRecord('planet', 'jupiter')
       .catch(e => {
-        assert.equal(e.message, 'Record not found: planet:jupiter', 'query - error caught');
-      });
+        assert.equal(e.message, 'Record not found: planet:jupiter');
+      })
   });
 
   test('#removeRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .tap(record => store.removeRecord(record))
-      .then(record => store.findRecord('planet', record.get('id')))
+      .then(record => store.findRecord('planet', record.id))
       .catch(error => {
         assert.ok(error.message.match(/Record not found/));
+      });
+  });
+
+  test('#getTransform - returns a particular transform given an id', function(assert) {
+    const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
+
+    const addRecordATransform = Transform.from(addRecord(recordA));
+
+    return store.sync(addRecordATransform)
+      .then(() => {
+        assert.strictEqual(store.getTransform(addRecordATransform.id), addRecordATransform);
+     });
+  });
+
+  test('#getInverseOperations - returns the inverse operations for a particular transform', function(assert) {
+    const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
+
+    const addRecordATransform = Transform.from(addRecord(recordA));
+
+    return store.sync(addRecordATransform)
+      .then(() => {
+        assert.deepEqual(store.getInverseOperations(addRecordATransform.id), [
+          { op: 'removeRecord', record: { id: 'jupiter', type: 'planet' } }
+        ]);
+     });
+  });
+
+  test('replacing a record invalidates attributes and relationships', function(assert) {
+    return Ember.RSVP.Promise.all([
+      store.addRecord({ type: 'planet', id: 'p1', name: 'Earth' }),
+      store.addRecord({type: 'star', id: 's1', name: 'The Sun'})
+    ])
+      .tap(([planet, star]) => {
+        assert.equal(get(planet, 'name'), 'Earth', 'initial attribute get is fine');
+        assert.equal(get(planet, 'sun'), null, 'initial hasOne get is fine');
+        assert.equal(get(star, 'name'), 'The Sun', 'star has been created properly');
+      })
+      .tap(([planet, star]) => store.update(
+        replaceRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: `star:${star.id}` }} }))
+      )
+      .then(([planet, star]) => {
+        assert.strictEqual(get(planet, 'name'), 'Jupiter', 'attribute has been reset');
+        assert.strictEqual(get(planet, 'sun'), star, 'hasOne has been reset');
       });
   });
 
@@ -63,7 +146,7 @@ module('Integration - Store', function(hooks) {
     ])
       .then(([result1]) => {
         earth = result1;
-        return store.query(qb.record(earth));
+        return store.query(oqb.record(earth));
       })
       .then(record => {
         assert.strictEqual(record, earth);
@@ -80,12 +163,12 @@ module('Integration - Store', function(hooks) {
       .then(([result1, result2]) => {
         earth = result1;
         jupiter = result2;
-        return store.query(qb.records('planet'));
+        return store.query(oqb.records('planet'));
       })
       .then(records => {
-        assert.deepEqual(records, [earth, jupiter]);
-        assert.strictEqual(records[0], earth);
-        assert.strictEqual(records[1], jupiter);
+        assert.equal(records.length, 2);
+        assert.ok(records.indexOf(earth) > -1);
+        assert.ok(records.indexOf(jupiter) > -1);
       });
   });
 
@@ -99,7 +182,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(result => {
         jupiter = result;
-        return store.query(qb.relatedRecord(jupiter.identity, 'sun'));
+        return store.query(oqb.relatedRecord(jupiter.identity, 'sun'));
       })
       .then(record => {
         assert.strictEqual(record, sun);
@@ -120,7 +203,7 @@ module('Integration - Store', function(hooks) {
       })
       .then(result => {
         jupiter = result;
-        return store.query(qb.relatedRecords(jupiter.identity, 'moons'));
+        return store.query(oqb.relatedRecords(jupiter.identity, 'moons'));
       })
       .then(records => {
         assert.deepEqual(records, [io, callisto]);
@@ -138,7 +221,7 @@ module('Integration - Store', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        return store.query(qb.records('planet').filterAttributes({ name: 'Earth' }));
+        return store.query(oqb.records('planet').filterAttributes({ name: 'Earth' }));
       })
       .then(records => {
         assert.deepEqual(records, [earth]);
@@ -148,13 +231,13 @@ module('Integration - Store', function(hooks) {
 
   test('liveQuery - adds record that becomes a match', function(assert) {
     store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter2' } });
-    const liveQuery = store.liveQuery(qb.records('planet')
-                                        .filterAttributes({ name: 'Jupiter' }));
 
-    assert.equal(liveQuery.get('length'), 0);
-
-    return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
-      .then(() => {
+    return store.liveQuery(oqb.records('planet').filterAttributes({ name: 'Jupiter' }))
+      .tap(liveQuery => {
+        assert.equal(liveQuery.get('length'), 0);
+        return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
+      })
+      .then(liveQuery => {
         assert.equal(liveQuery.get('length'), 1);
       });
   });
@@ -172,9 +255,9 @@ module('Integration - Store', function(hooks) {
         return store.find('planet');
       })
       .then(records => {
-        assert.deepEqual(records, [earth, jupiter]);
-        assert.strictEqual(records[0], earth);
-        assert.strictEqual(records[1], jupiter);
+        assert.equal(records.length, 2);
+        assert.ok(records.indexOf(earth) > -1);
+        assert.ok(records.indexOf(jupiter) > -1);
       });
   });
 

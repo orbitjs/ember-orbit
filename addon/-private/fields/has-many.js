@@ -1,20 +1,13 @@
-/**
- @module ember-orbit
- */
-
-var hasMany = function(model, options) {
-  options = options || {};
+export default function(model, options = {}) {
   options.type = 'hasMany';
   options.model = model;
 
   return Ember.computed({
-    get: function(key) {
+    get(key) {
       return this.getHasMany(key);
     }
   }).meta({
-    options: options,
+    options,
     isRelationship: true
   }).readOnly();
-};
-
-export default hasMany;
+}

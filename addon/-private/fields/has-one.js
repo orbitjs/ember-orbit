@@ -1,22 +1,12 @@
-/**
- @module ember-orbit
- */
-
-var hasOne = function(model, options) {
-  options = options || {};
+export default function(model, options = {}) {
   options.type = 'hasOne';
   options.model = model;
 
-  const meta = {
-    options: options,
-    isRelationship: true
-  };
-
   return Ember.computed({
-    get: function(key) {
+    get(key) {
       return this.getHasOne(key);
     },
-    set: function(key, value) {
+    set(key, value) {
       const oldValue = this.getHasOne(key);
 
       if (value !== oldValue) {
@@ -25,8 +15,8 @@ var hasOne = function(model, options) {
 
       return value;
     }
-  }).meta(meta);
-
-};
-
-export default hasOne;
+  }).meta({
+    options,
+    isRelationship: true
+  });
+}

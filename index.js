@@ -2,80 +2,69 @@
 /* eslint-disable new-cap */
 'use strict';
 
-var Funnel     = require('broccoli-funnel');
-var mergeTrees = require('broccoli-merge-trees');
-var path       = require('path');
-var resolve    = require('resolve');
+const funnel     = require('broccoli-funnel');
+const mergeTrees = require('broccoli-merge-trees');
+const path       = require('path');
 
-function packageTree(name, _options) {
-  var options = _options || {};
-  var namespace = options.namespace || name;
-  var resolveOptions = options.resolveOptions || {};
+function findLib(name, libPath) {
+  let packagePath = path.join(name, 'package');
+  let packageRoot = path.dirname(require.resolve(packagePath));
 
-  // console.log('packageTree:', name, resolve.sync(name, resolveOptions));
+  libPath = libPath || getLibPath(packagePath);
 
-  return new Funnel(path.join(resolve.sync(name, resolveOptions), '..'), {
-    include: ['**/*.js'],
-    destDir: './' + namespace
-  });
+  return path.resolve(packageRoot, libPath);
 }
 
-function symbolObservableTree() {
-  var rxjsPath = path.join(require.resolve('rxjs-es'), '..');
-  var symbolObservablePath = path.join(rxjsPath, 'node_modules', 'symbol-observable', 'es');
-  return new Funnel(symbolObservablePath, {
-    include: ['ponyfill.js'],
-    destDir: '.',
-    getDestinationPath: function() {
-      return 'symbol-observable.js';
-    }
+function getLibPath(packagePath) {
+  let packageJson = require(packagePath);
+
+  return path.dirname(packageJson.module || packageJson.main || '.');
+}
+
+function packageTree(name, destDir) {
+  let libPath = findLib(name);
+
+  destDir = destDir || path.join.apply(this, name.split('/'));
+
+  let tree = funnel(libPath, {
+    include: ['**/*.js'],
+    destDir
   });
+
+  return tree;
 }
 
 module.exports = {
   name: 'ember-orbit',
 
-  init: function() {
-    this._super.init.apply(this, arguments);
-
-    // Hack to set the vendor path to node_modules so that immutable.js can be
-    // included directly (see `included` method below)
-    var assets_path = path.join('immutable','dist','immutable.js');
-    this.treePaths.vendor = require.resolve('immutable').replace(assets_path, '');
-
-    // console.log('vendor:', this.treePaths.vendor);
-  },
-
-  treeForAddon: function(tree) {
-    var addonTree = this._super.treeForAddon.call(this, tree);
-
-    var packageTrees = [
-      packageTree('rxjs-es', { namespace: 'rxjs' }),
-      symbolObservableTree(),
-      packageTree('orbit-core', { namespace: 'orbit' }),
-      packageTree('orbit-store')
+  treeForAddon(tree) {
+    let packageTrees = [
+      packageTree('@orbit/utils'),
+      packageTree('@orbit/core'),
+      packageTree('@orbit/data'),
+      packageTree('@orbit/store'),
+      packageTree('@orbit/coordinator')
     ];
 
-    var host = this.app || this.parent;
-    var orbitOptions = host.options && host.options.orbit;
-    var orbitSources = orbitOptions && orbitOptions.sources;
+    let host = this.app || this.parent;
+    let orbitOptions = host.options && host.options.orbit;
+    let customPackages = orbitOptions && orbitOptions.packages;
 
-    if (orbitSources) {
-      orbitSources.forEach(function(source) {
-        var sourceTree = packageTree(source, { resolveOptions: { basedir: this.parent.root } });
-        packageTrees.push(sourceTree);
-      }, this);
+    if (customPackages) {
+      customPackages.forEach(source => {
+        packageTrees.push(packageTree(source));
+      });
     }
 
-    return mergeTrees([
-      addonTree,
-      new Funnel(mergeTrees(packageTrees), { destDir: './modules' })
-    ]);
-  },
+    let addonTree = this._super.treeForAddon.call(this, tree);
 
-  included: function(app) {
-    app.import(path.join('vendor', 'immutable', 'dist', 'immutable.js'));
+    let babel = this.addons.find(addon => addon.name === 'ember-cli-babel');
+    let transpiledPackageTrees = packageTrees.map(tree => babel.transpileTree(tree));
 
-    return this._super.included(app);
+    let mergedPackageTree = funnel(mergeTrees(transpiledPackageTrees), {
+      destDir: 'modules'
+    });
+
+    return mergeTrees([mergedPackageTree, addonTree]);
   }
 };

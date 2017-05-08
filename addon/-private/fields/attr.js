@@ -1,17 +1,12 @@
-/**
- @module ember-orbit
- */
-
-var attr = function(type, options) {
-  options = options || {};
+export default function(type, options = {}) {
   options.type = type;
 
   return Ember.computed({
-    get: function(key) {
+    get(key) {
       return this.getAttribute(key);
     },
-    set: function(key, value) {
-      var oldValue = this.getAttribute(key);
+    set(key, value) {
+      const oldValue = this.getAttribute(key);
 
       if (value !== oldValue) {
         this.replaceAttribute(key, value);
@@ -20,9 +15,7 @@ var attr = function(type, options) {
       return value;
     }
   }).meta({
-    options: options,
+    options,
     isAttribute: true
   });
-};
-
-export default attr;
+}

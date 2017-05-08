@@ -1,5 +1,4 @@
-import './support/rsvp-extension';
-import './support/orbit-setup';
+import './support/promise-extension';
 
 import resolver from './helpers/resolver';
 import {

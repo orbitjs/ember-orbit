@@ -1,7 +1,6 @@
-import { dummyModels } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-
-const { Planet, Moon, Star } = dummyModels;
+import { module, test } from 'qunit';
 
 module('Integration - Model', function(hooks) {
   let store;
@@ -21,13 +20,12 @@ module('Integration - Model', function(hooks) {
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
       .then(([theSun, callisto]) => {
-        store
+        return store
           .addRecord({type: 'planet', galaxyAlias: 'planet:jupiter', name: 'Jupiter', sun: theSun, moons: [callisto]})
           .then(record => {
             assert.ok(record.get('id'), 'assigned id');
             assert.deepEqual(record.get('identity'), { id: record.get('id'), type: 'planet' }, 'assigned identity that includes type and id');
             assert.equal(record.get('name'), 'Jupiter', 'assigned specified attribute');
-            assert.equal(record.get('atmosphere'), false, 'assigned default value for unspecified attribute');
             assert.equal(record.get('galaxyAlias'), 'planet:jupiter', 'assigned secondary key');
             assert.strictEqual(record.get('sun'), theSun, 'assigned hasOne');
             assert.strictEqual(record.get('moons.firstObject'), callisto, 'assigned hasMany');
@@ -41,7 +39,7 @@ module('Integration - Model', function(hooks) {
     return store.addRecord({type: 'star', name: 'The Sun'})
       .tap(record => record.remove())
       .then(record => {
-        assert.ok(!cache.retrieve(['star', record.get('id')]), 'record does not exist in cache');
+        assert.ok(!cache.retrieveRecord('star', record.id), 'record does not exist in cache');
         assert.ok(record.get('disconnected'), 'record has been disconnected from store');
         assert.throws(() => record.get('name'), Ember.Error, 'record has been removed from Store');
       });
