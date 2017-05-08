@@ -46,6 +46,11 @@ Ember-Orbit has matured quite a bit between 0.8 and 0.9. However, since it has
 not reached 1.0, we make no guarantees about interface stability. Please use
 with caution.
 
+## Demo
+
+[peeps-ember-orbit](https://github.com/cerebris/peeps-ember-orbit) is a simple
+contact manager demo that uses Ember-Orbit.
+
 ## Installation
 
 As with any Ember addon, you can install Ember-Orbit in your project with:
