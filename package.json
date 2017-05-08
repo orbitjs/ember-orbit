@@ -49,11 +49,11 @@
     "loader.js": "^4.3.0"
   },
   "dependencies": {
-    "@orbit/core": "^0.8.0-beta.11",
-    "@orbit/coordinator": "^0.8.0-beta.11",
-    "@orbit/data": "^0.8.0-beta.11",
-    "@orbit/store": "^0.8.0-beta.11",
-    "@orbit/utils": "^0.8.0-beta.11",
+    "@orbit/core": "^0.9.0",
+    "@orbit/coordinator": "^0.9.0",
+    "@orbit/data": "^0.9.0",
+    "@orbit/store": "^0.9.0",
+    "@orbit/utils": "^0.9.0",
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-replace": "^0.12.0",
