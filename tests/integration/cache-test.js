@@ -1,6 +1,6 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import Orbit, {
+import {
   addRecord,
   removeRecord,
   replaceAttribute,
@@ -14,12 +14,7 @@ module('Integration - Cache', function(hooks) {
   let cache;
 
   hooks.beforeEach(function() {
-
-    // this shouldn't be necessary, however for some reason Orbit.Promise is set to
-    // null at a seemingly random point through the cache tests (usually it occurs after 3-5 tests)
-    Orbit.Promise = Ember.RSVP.Promise;
-
-    const models = { planet: Planet, moon: Moon, star: Star };
+   const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models });
     cache = store.get('cache');
   });

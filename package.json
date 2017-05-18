@@ -19,11 +19,11 @@
     "test": "ember try:testall"
   },
   "dependencies": {
-    "@orbit/core": "^0.9.0",
-    "@orbit/coordinator": "^0.9.0",
-    "@orbit/data": "^0.9.0",
-    "@orbit/store": "^0.9.0",
-    "@orbit/utils": "^0.9.0",
+    "@orbit/core": "^0.9.2",
+    "@orbit/coordinator": "^0.9.2",
+    "@orbit/data": "^0.9.2",
+    "@orbit/store": "^0.9.2",
+    "@orbit/utils": "^0.9.2",
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-replace": "^0.12.0",
@@ -58,5 +58,8 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "peerDependencies": {
+    "ember-source": "^2.13.0"
   }
 }

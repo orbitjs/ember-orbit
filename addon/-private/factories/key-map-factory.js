@@ -1,7 +1,7 @@
 import { KeyMap } from '@orbit/data';
 
 export default {
-  create() {
-   return new KeyMap();
+  create(injections = {}) {
+   return new KeyMap(injections);
   }
 }
