@@ -1,8 +1,8 @@
 import Ember from 'ember';
-import { 
+import {
   Store,
   SchemaFactory,
-  CoordinatorFactory,
+  StoreFactory,
   KeyMapFactory
 } from 'ember-orbit';
 import Owner from './owner';
@@ -24,14 +24,15 @@ export function createStore(options) {
 
   const owner = createOwner();
 
-  owner.register('service:data-schema', SchemaFactory);
-  owner.register('service:data-coordinator', CoordinatorFactory);
-  owner.register('service:data-key-map', KeyMapFactory);
-  owner.register('service:store', Store);
+  owner.register('data-schema:main', SchemaFactory);
+  owner.register('data-key-map:main', KeyMapFactory);
 
-  owner.inject('service:store', 'schema', 'service:data-schema');
-  owner.inject('service:store', 'coordinator', 'service:data-coordinator');
-  owner.inject('service:store', 'keyMap', 'service:data-key-map');
+  owner.register('data-source:store', StoreFactory);
+  owner.register('service:store', Store);
+  owner.inject('service:store', 'source', 'data-source:store');
+
+  owner.inject('data-source', 'schema', 'data-schema:main');
+  owner.inject('data-source', 'keyMap', 'data-key-map:main');
 
   const models = options.models;
   if (models) {
@@ -43,7 +44,7 @@ export function createStore(options) {
 
     // console.log(types);
     owner.register('model-names:main', types, { instantiate: false });
-    owner.inject('service:data-schema', 'modelNames', 'model-names:main');
+    owner.inject('data-schema:main', 'modelNames', 'model-names:main');
   }
 
   return owner.lookup('service:store');

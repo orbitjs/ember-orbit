@@ -5,65 +5,36 @@ import {
   oqb
 } from '@orbit/data';
 import { deepSet, objectValues } from '@orbit/utils';
-import OrbitStore from '@orbit/store';
 import Cache from './cache';
 import IdentityMap from './identity-map';
 
 const { assert, getOwner, get } = Ember;
 
 const Store = Ember.Object.extend({
-  SourceClass: OrbitStore,
-  sourceOptions: null,
   source: null,
   cache: null,
-  schema: null,
-  keyMap: null,
   _identityMap: null,
+  transformLog: null,
+  requestQueue: null,
+  syncQueue: null,
 
   init() {
     this._super(...arguments);
 
-    assert("`schema` must be injected onto a Source", this.schema);
-    assert("`keyMap` must be injected onto a Source", this.keyMap);
-
-    if (!this.source) {
-      let SourceClass = this.SourceClass;
-      if (SourceClass.wrappedFunction) {
-        SourceClass = SourceClass.wrappedFunction;
-      }
-
-      let options = this.sourceOptions || {};
-      options.schema = this.schema;
-      options.keyMap = this.keyMap;
-      if (this.bucket) {
-        options.bucket = this.bucket;
-      }
-
-      this.source = new SourceClass(options);
-    }
+    assert("`source` must be injected onto a Store", this.source);
 
     this.transformLog = this.source.transformLog;
     this.requestQueue = this.source.requestQueue;
     this.syncQueue = this.source.syncQueue;
 
-    if (this.coordinator) {
-      this.coordinator.addSource(this.source);
-    }
-
     const sourceCache = this.source.cache;
 
     assert("A Store's `source` must have its own `cache`", sourceCache);
 
-    this._identityMap = IdentityMap.create({ _schema: this.schema, _sourceCache: sourceCache, _store: this });
+    this._identityMap = IdentityMap.create({ _schema: this.source.schema, _sourceCache: sourceCache, _store: this });
     this.cache = Cache.create({ _sourceCache: sourceCache, _identityMap: this._identityMap });
 
     sourceCache.on('patch', operation => this._didPatch(operation));
-  },
-
-  willDestroy() {
-    if (this.coordinator) {
-      this.coordinator.removeSource(this.source);
-    }
   },
 
   fork() {
@@ -71,11 +42,7 @@ const Store = Ember.Object.extend({
 
     return Store.create(
       getOwner(this).ownerInjection(),
-      {
-        source: forkedSource,
-        keyMap: this.keyMap,
-        schema: this.schema
-      }
+      { source: forkedSource }
     );
   },
 
@@ -169,7 +136,7 @@ const Store = Ember.Object.extend({
   },
 
   _verifyType(type) {
-    assert("`type` must be registered as a model in the store's schema", this.schema.models[type]);
+    assert("`type` must be registered as a model in the store's schema", this.source.schema.models[type]);
   },
 
   _didPatch: function(operation) {
@@ -207,8 +174,9 @@ const Store = Ember.Object.extend({
   },
 
   normalizeRecordProperties(properties) {
+    const schema = this.source.schema;
     const record = {
-      id: properties.id || this.schema.generateId(properties.type),
+      id: properties.id || schema.generateId(properties.type),
       type: properties.type
     };
 
@@ -220,7 +188,8 @@ const Store = Ember.Object.extend({
   },
 
   _assignKeys(record, properties) {
-    Object.keys(this.schema.models[record.type].keys).forEach(key => {
+    const schema = this.source.schema;
+    Object.keys(schema.models[record.type].keys).forEach(key => {
       if (properties[key] !== undefined) {
         deepSet(record, ['keys', key], properties[key]);
       }
@@ -228,7 +197,8 @@ const Store = Ember.Object.extend({
   },
 
   _assignAttributes(record, properties) {
-    Object.keys(this.schema.models[record.type].attributes).forEach(attribute => {
+    const schema = this.source.schema;
+    Object.keys(schema.models[record.type].attributes).forEach(attribute => {
       if (properties[attribute] !== undefined) {
         deepSet(record, ['attributes', attribute], properties[attribute]);
       }
@@ -236,10 +206,11 @@ const Store = Ember.Object.extend({
   },
 
   _assignRelationships(record, properties) {
-    Object.keys(this.schema.models[record.type].relationships).forEach(relationshipName => {
+    const schema = this.source.schema;
+    Object.keys(schema.models[record.type].relationships).forEach(relationshipName => {
       if (properties[relationshipName] !== undefined) {
         record.relationships = record.relationships || {};
-        const relationshipProperties = this.schema.models[properties.type].relationships[relationshipName];
+        const relationshipProperties = schema.models[properties.type].relationships[relationshipName];
         this._normalizeRelationship(record, properties, relationshipName, relationshipProperties);
       }
     });
