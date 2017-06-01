@@ -3,7 +3,7 @@ import {
   Query,
   oqb
 } from '@orbit/data';
-import { deepGet, objectValues } from '@orbit/utils';
+import { deepGet } from '@orbit/utils';
 import LiveQuery from './live-query';
 
 const { get } = Ember;
@@ -67,7 +67,8 @@ export default Ember.Object.extend({
       case 'records':
       case 'relatedRecords':
       case 'filter':
-        return this._identityMap.lookupMany(objectValues(result));
+      case 'sort':
+        return this._identityMap.lookupMany(result);
       default:
         return result;
     }
