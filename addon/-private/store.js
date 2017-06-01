@@ -4,7 +4,7 @@ import {
   Query,
   oqb
 } from '@orbit/data';
-import { deepSet, objectValues } from '@orbit/utils';
+import { deepSet } from '@orbit/utils';
 import Cache from './cache';
 import IdentityMap from './identity-map';
 
@@ -71,7 +71,8 @@ const Store = Ember.Object.extend({
           case 'records':
           case 'relatedRecords':
           case 'filter':
-            return this._identityMap.lookupMany(objectValues(result));
+          case 'sort':
+            return this._identityMap.lookupMany(result);
           default:
             return result;
         }
