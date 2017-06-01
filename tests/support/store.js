@@ -20,8 +20,6 @@ export function createOwner() {
 export function createStore(options) {
   options = options || {};
 
-  Ember.MODEL_FACTORY_INJECTIONS = !!options.MODEL_FACTORY_INJECTIONS;
-
   const owner = createOwner();
 
   owner.register('data-schema:main', SchemaFactory);
