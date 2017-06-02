@@ -72,6 +72,7 @@ const Store = Ember.Object.extend({
           case 'relatedRecords':
           case 'filter':
           case 'sort':
+          case 'page':
             return this._identityMap.lookupMany(result);
           default:
             return result;
