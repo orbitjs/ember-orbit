@@ -4,13 +4,13 @@ export default function(model, options = {}) {
 
   return Ember.computed({
     get(key) {
-      return this.getHasOne(key);
+      return this.getRelatedRecord(key);
     },
     set(key, value) {
-      const oldValue = this.getHasOne(key);
+      const oldValue = this.getRelatedRecord(key);
 
       if (value !== oldValue) {
-        this.replaceHasOne(key, value);
+        this.replaceRelatedRecord(key, value);
       }
 
       return value;

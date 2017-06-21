@@ -1,10 +1,4 @@
 import HasMany from './relationships/has-many';
-import {
-  removeRecord,
-  replaceKey,
-  replaceAttribute,
-  replaceHasOne
-} from '@orbit/data';
 
 const { get, set } = Ember;
 
@@ -27,7 +21,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceKey(field, value, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceKey(this.identity, field, value), options);
+    store.update(t => t.replaceKey(this.identity, field, value), options);
   },
 
   getAttribute(field) {
@@ -37,20 +31,20 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   replaceAttribute(attribute, value, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceAttribute(this.identity, attribute, value), options);
+    store.update(t => t.replaceAttribute(this.identity, attribute, value), options);
   },
 
-  getHasOne(relationship) {
+  getRelatedRecord(relationship) {
     const cache = get(this, '_storeOrError.cache');
-    return cache.retrieveHasOne(this.identity, relationship);
+    return cache.retrieveRelatedRecord(this.identity, relationship);
   },
 
-  replaceHasOne(relationship, record, options) {
+  replaceRelatedRecord(relationship, record, options) {
     const store = get(this, '_storeOrError');
-    store.update(replaceHasOne(this.identity, relationship, record), options);
+    store.update(t => t.replaceRelatedRecord(this.identity, relationship, record), options);
   },
 
-  getHasMany(field) {
+  getRelatedRecords(field) {
     const store = get(this, '_storeOrError');
     return HasMany.create({
       _store: store,
@@ -61,7 +55,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
 
   remove(options) {
     const store = get(this, '_storeOrError');
-    return store.update(removeRecord(this.identity), options);
+    return store.update(t => t.removeRecord(this.identity), options);
   },
 
   disconnect() {

@@ -1,12 +1,5 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
-import {
-  addRecord,
-  removeRecord,
-  replaceAttribute,
-  oqb,
-  oqe
-} from '@orbit/data';
 import { module, test } from 'qunit';
 
 module('Integration - Cache', function(hooks) {
@@ -25,15 +18,13 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - adds record that becomes a match', function(assert) {
-    const qe = oqb.records('planet')
-                  .filterAttributes({ name: 'Jupiter' });
-
-    const liveQuery = cache.liveQuery(qe);
+    const liveQuery = cache.liveQuery(q => q.findRecords('planet')
+                                            .filter({ attribute: 'name', value: 'Jupiter' }));
 
     return store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } })
       .then(() => {
         assert.equal(liveQuery.get('length'), 0);
-        return store.update(replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
+        return store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'))
       })
       .then(() => {
         assert.equal(liveQuery.get('length'), 1);
@@ -41,7 +32,7 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - updates when matching record is added', function(assert) {
-    const planets = cache.liveQuery(oqb.records('planet'));
+    const planets = cache.liveQuery(q => q.findRecords('planet'));
     const addJupiter = store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
     return addJupiter.then(jupiter => assert.ok(planets.includes(jupiter)));
   });
@@ -50,7 +41,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(oqb.records('planet'));
+      const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
@@ -64,7 +55,7 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(oqb.records('planet'));
+      const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
         .addRecord({type: 'moon', name: 'Callisto'})
@@ -77,16 +68,16 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(oqb.records('planet'));
+      const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
-        .update([
-          addRecord({type: 'planet', id: 'Jupiter'}),
-          addRecord({type: 'planet', id: 'Earth'})
+        .update(t => [
+          t.addRecord({type: 'planet', id: 'Jupiter'}),
+          t.addRecord({type: 'planet', id: 'Earth'})
         ])
         .then(() => assert.equal(planets.get('length'), 2))
         .then(() => assert.equal(planets.get('content.length'), 2))
-        .then(() => store.update(removeRecord({type: 'planet', id: 'Jupiter'})))
+        .then(() => store.update(t => t.removeRecord({type: 'planet', id: 'Jupiter'})))
         .then(() => assert.equal(planets.get('length'), 1))
         .then(() => assert.equal(planets.get('content.length'), 1))
         .then(() => done());
@@ -97,16 +88,14 @@ module('Integration - Cache', function(hooks) {
     const done = assert.async();
 
     Ember.run(() => {
-      const planets = cache.liveQuery(
-        oqe('filter',
-          oqe('records', 'planet'),
-          oqe('equal', oqe('attribute', 'name'), 'Jupiter')));
+      const planets = cache.liveQuery(q => q.findRecords('planet')
+                                            .filter({ attribute: 'name', value: 'Jupiter' }));
 
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .tap(() => assert.equal(planets.get('length'), 1))
         .tap(jupiter => assert.ok(planets.includes(jupiter)))
-        .tap(jupiter => store.update(replaceAttribute(jupiter, 'name', 'Jupiter2')))
+        .tap(jupiter => store.update(t => t.replaceAttribute(jupiter, 'name', 'Jupiter2')))
         .tap(() => assert.equal(planets.get('length'), 0))
         .tap(jupiter => assert.ok(!planets.includes(jupiter)))
         .then(() => done());
@@ -126,7 +115,7 @@ module('Integration - Cache', function(hooks) {
     });
   });
 
-  test('#retrieveHasOne', function(assert) {
+  test('#retrieveRelatedRecord', function(assert) {
     const done = assert.async();
 
     Ember.run(() => {
@@ -139,7 +128,7 @@ module('Integration - Cache', function(hooks) {
         return store.requestQueue.process();
       })
       .then(([jupiter, callisto]) => {
-        assert.equal(cache.retrieveHasOne(callisto, 'planet'), jupiter);
+        assert.equal(cache.retrieveRelatedRecord(callisto, 'planet'), jupiter);
         done();
       });
     });
@@ -163,7 +152,7 @@ module('Integration - Cache', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        const foundRecord = cache.query(oqb.record(earth));
+        const foundRecord = cache.query(q => q.findRecord(earth));
         assert.strictEqual(foundRecord, earth);
       });
   });
@@ -179,7 +168,7 @@ module('Integration - Cache', function(hooks) {
       .then(record => {
         jupiter = record;
 
-        const foundRecords = cache.query(oqb.records('planet'));
+        const foundRecords = cache.query(q => q.findRecords('planet'));
         assert.equal(foundRecords.length, 2, 'two records found');
         assert.ok(foundRecords.indexOf(earth) > -1, 'earth is included');
         assert.ok(foundRecords.indexOf(jupiter) > -1, 'jupiter is included');
@@ -195,7 +184,7 @@ module('Integration - Cache', function(hooks) {
         return store.addRecord({ type: 'planet', name: 'Jupiter' });
       })
       .then(() => {
-        const foundRecords = cache.query(oqb.records('planet').filterAttributes({ name: 'Earth' }));
+        const foundRecords = cache.query(q => q.findRecords('planet').filter({ attribute: 'name', value: 'Earth' }));
         assert.deepEqual(foundRecords, [earth]);
         assert.strictEqual(foundRecords[0], earth);
       });
