@@ -1,8 +1,5 @@
 import {
-  addRecord,
-  removeRecord,
-  Query,
-  oqb
+  Query
 } from '@orbit/data';
 import { deepSet } from '@orbit/utils';
 import Cache from './cache';
@@ -54,25 +51,22 @@ const Store = Ember.Object.extend({
     return this.source.rollback(...arguments);
   },
 
-  liveQuery(queryOrExpression, options) {
-    const query = Query.from(queryOrExpression, options);
+  liveQuery(queryOrExpression, options, id) {
+    const query = Query.from(queryOrExpression, options, id, this.source.queryBuilder);
     return this.source.query(query)
       .then(() => this.cache.liveQuery(query));
   },
 
-  query(queryOrExpression, options) {
-    const query = Query.from(queryOrExpression, options);
+  query(queryOrExpression, options, id) {
+    const query = Query.from(queryOrExpression, options, id, this.source.queryBuilder);
     return this.source.query(query)
       .then(result => {
         switch(query.expression.op) {
-          case 'record':
-          case 'relatedRecord':
+          case 'findRecord':
+          case 'findRelatedRecord':
             return this._identityMap.lookup(result);
-          case 'records':
-          case 'relatedRecords':
-          case 'filter':
-          case 'sort':
-          case 'page':
+          case 'findRecords':
+          case 'findRelatedRecords':
             return this._identityMap.lookupMany(result);
           default:
             return result;
@@ -85,7 +79,7 @@ const Store = Ember.Object.extend({
 
     const record = this.normalizeRecordProperties(properties);
 
-    return this.update(addRecord(record), options)
+    return this.update(t => t.addRecord(record), options)
       .then(() => this._identityMap.lookup(record));
   },
 
@@ -98,15 +92,15 @@ const Store = Ember.Object.extend({
   },
 
   findAll(type, options) {
-    return this.query(oqb.records(type), options);
+    return this.query(q => q.findRecords(type), options);
   },
 
   findRecord(type, id, options) {
-    return this.query(oqb.record({ type, id }), options);
+    return this.query(q => q.findRecord({ type, id }), options);
   },
 
   removeRecord(identity, options) {
-    return this.update(removeRecord(identity), options);
+    return this.update(t => t.removeRecord(identity), options);
   },
 
   on() {

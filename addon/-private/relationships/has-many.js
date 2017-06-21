@@ -1,10 +1,5 @@
 import Ember from 'ember';
 import LiveQuery from '../live-query';
-import { 
-  oqb,
-  addToHasMany,
-  removeFromHasMany
-} from '@orbit/data';
 
 const { get } = Ember;
 
@@ -20,7 +15,7 @@ export default LiveQuery.extend({
 
     this._sourceCache = store.cache._sourceCache;
     this._identityMap = store.cache._identityMap;
-    this._query = oqb.relatedRecords(model, relationship);
+    this._query = store.source.queryBuilder.findRelatedRecords(model, relationship);
 
     this._super(...args);
   },
@@ -32,7 +27,7 @@ export default LiveQuery.extend({
 
     // console.log('pushObject', model.type, model.id, relationship, record.type, record.id);
 
-    return store.update(addToHasMany(model.identity, relationship, record.identity));
+    return store.update(t => t.addToRelatedRecords(model.identity, relationship, record.identity));
   },
 
   removeObject(record) {
@@ -40,6 +35,6 @@ export default LiveQuery.extend({
     const model = this.get('_model');
     const relationship = this.get('_relationship');
 
-    return store.update(removeFromHasMany(model.identity, relationship, record.identity));
+    return store.update(t => t.removeFromRelatedRecords(model.identity, relationship, record.identity));
   }
 });

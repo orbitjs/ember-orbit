@@ -4,7 +4,7 @@ export default function(model, options = {}) {
 
   return Ember.computed({
     get(key) {
-      return this.getHasMany(key);
+      return this.getRelatedRecords(key);
     }
   }).meta({
     options,

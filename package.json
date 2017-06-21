@@ -19,11 +19,11 @@
     "test": "ember try:testall"
   },
   "dependencies": {
-    "@orbit/core": "^0.10.0",
-    "@orbit/coordinator": "^0.10.0",
-    "@orbit/data": "^0.10.0",
-    "@orbit/store": "^0.10.1",
-    "@orbit/utils": "^0.10.0",
+    "@orbit/coordinator": "^0.11.1",
+    "@orbit/core": "^0.11.1",
+    "@orbit/data": "^0.11.1",
+    "@orbit/store": "^0.11.1",
+    "@orbit/utils": "^0.11.1",
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-replace": "^0.12.0",
@@ -49,7 +49,7 @@
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^0.6.0",
     "ember-resolver": "^4.1.0",
-    "ember-source": "~2.13.0",
+    "ember-source": "~2.13.3",
     "eslint": "^3.19.0",
     "loader.js": "^4.3.0"
   },

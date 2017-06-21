@@ -1,7 +1,6 @@
 import {
   deserializeRecordIdentity,
-  Query,
-  oqb
+  Query
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
 import LiveQuery from './live-query';
@@ -39,7 +38,7 @@ export default Ember.Object.extend({
     return deepGet(record, ['attributes', attribute]);
   },
 
-  retrieveHasOne(recordIdentity, relationship) {
+  retrieveRelatedRecord(recordIdentity, relationship) {
     const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
     if (record) {
       const value = deepGet(record, ['relationships', relationship, 'data']);
@@ -56,27 +55,24 @@ export default Ember.Object.extend({
     this._identityMap.evict(record);
   },
 
-  query(queryOrExpression, options) {
-    const query = Query.from(queryOrExpression, options);
+  query(queryOrExpression, options, id) {
+    const query = Query.from(queryOrExpression, options, id, this._sourceCache.queryBuilder);
     const result = this._sourceCache.query(query);
 
     switch(query.expression.op) {
-      case 'record':
-      case 'relatedRecord':
+      case 'findRecord':
+      case 'findRelatedRecord':
         return this._identityMap.lookup(result);
-      case 'records':
-      case 'relatedRecords':
-      case 'filter':
-      case 'sort':
-      case 'page':
+      case 'findRecords':
+      case 'findRelatedRecords':
         return this._identityMap.lookupMany(result);
       default:
         return result;
     }
   },
 
-  liveQuery(queryOrExpression, options) {
-    const query = Query.from(queryOrExpression, options);
+  liveQuery(queryOrExpression, options, id) {
+    const query = Query.from(queryOrExpression, options, id, this._sourceCache.queryBuilder);
 
     return LiveQuery.create({
       _query: query,
@@ -94,10 +90,10 @@ export default Ember.Object.extend({
   },
 
   findAll(type, options) {
-    return this.query(oqb.records(type), options);
+    return this.query(q => q.findRecords(type), options);
   },
 
   findRecord(type, id, options) {
-    return this.query(oqb.record({ type, id }), options);
+    return this.query(q => q.findRecord({ type, id }), options);
   }
 });
