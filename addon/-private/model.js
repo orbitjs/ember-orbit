@@ -39,9 +39,10 @@ const Model = Ember.Object.extend(Ember.Evented, {
     return cache.retrieveRelatedRecord(this.identity, relationship);
   },
 
-  replaceRelatedRecord(relationship, record, options) {
+  replaceRelatedRecord(relationship, relatedRecord, options) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceRelatedRecord(this.identity, relationship, record), options);
+    const relatedRecordIdentity = relatedRecord ? relatedRecord.identity : null;
+    store.update(t => t.replaceRelatedRecord(this.identity, relationship, relatedRecordIdentity), options);
   },
 
   getRelatedRecords(field) {

@@ -215,26 +215,23 @@ const Store = Ember.Object.extend({
   _normalizeRelationship(record, properties, relationshipName, relationshipProperties) {
     const value = properties[relationshipName];
     const relationship = record.relationships[relationshipName] = {};
-    const modelType = relationshipProperties.model;
+    const type = relationshipProperties.model;
 
     if (Ember.isArray(value)) {
-      relationship.data = {};
-
-      value.forEach(function(id) {
+      relationship.data = value.map(id => {
         if (typeof id === 'object') {
           id = get(id, 'id');
         }
-        const identifier = [modelType, id].join(':');
-        relationship.data[identifier] = true;
+        return { type, id };
       });
 
     } else if (typeof value === 'object') {
-
-      const identifier = [modelType, get(value, 'id')].join(':');
-      relationship.data = identifier;
+      let id = get(value, 'id');
+      relationship.data = { type, id };
 
     } else {
-      relationship.data = [modelType, value].join(':');
+      let id = value;
+      relationship.data = { type, id };
     }
   }
 });

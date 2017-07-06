@@ -25,8 +25,6 @@ export default LiveQuery.extend({
     const model = get(this, '_model');
     const relationship = get(this, '_relationship');
 
-    // console.log('pushObject', model.type, model.id, relationship, record.type, record.id);
-
     return store.update(t => t.addToRelatedRecords(model.identity, relationship, record.identity));
   },
 

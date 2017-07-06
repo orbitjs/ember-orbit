@@ -43,6 +43,7 @@ module.exports = {
       packageTree('@orbit/core'),
       packageTree('@orbit/data'),
       packageTree('@orbit/store'),
+      packageTree('@orbit/immutable'),
       packageTree('@orbit/coordinator')
     ];
 

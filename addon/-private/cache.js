@@ -1,5 +1,4 @@
 import {
-  deserializeRecordIdentity,
   Query
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
@@ -46,7 +45,7 @@ export default Ember.Object.extend({
         return null;
       }
 
-      return this._identityMap.lookup(deserializeRecordIdentity(value));
+      return this._identityMap.lookup(value);
     }
   },
 

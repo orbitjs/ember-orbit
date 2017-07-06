@@ -39,8 +39,8 @@ module('Integration - Store', function(hooks) {
       assert.equal(normalized.type, 'planet', 'normalized type');
       assert.deepEqual(normalized.keys, undefined, 'normalized keys');
       assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
-      assert.deepEqual(normalized.relationships.moons, { data: { 'moon:callisto': true } }, 'normalized hasMany');
-      assert.deepEqual(normalized.relationships.sun, { data: 'star:sun' }, 'normalized hasOne');
+      assert.deepEqual(normalized.relationships.moons, { data: [{ type: 'moon', id: 'callisto' }] }, 'normalized hasMany');
+      assert.deepEqual(normalized.relationships.sun, { data: { type: 'star', id: 'sun' } }, 'normalized hasOne');
 
       done();
     });
@@ -126,7 +126,7 @@ module('Integration - Store', function(hooks) {
         assert.equal(get(star, 'name'), 'The Sun', 'star has been created properly');
       })
       .tap(([planet, star]) => store.update(t =>
-        t.replaceRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: `star:${star.id}` }} }))
+        t.replaceRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: { type: 'star', id: star.id } } } }))
       )
       .then(([planet, star]) => {
         assert.strictEqual(get(planet, 'name'), 'Jupiter', 'attribute has been reset');

@@ -1,7 +1,10 @@
-import { serializeRecordIdentity } from '@orbit/data';
 import Ember from 'ember';
 
 const { getOwner } = Ember;
+
+function serializeRecordIdentity(record) {
+  return `${record.type}:${record.id}`;
+}
 
 export default Ember.Object.extend({
   _materialized: null,
