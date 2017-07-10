@@ -19,12 +19,12 @@
     "test": "ember try:testall"
   },
   "dependencies": {
-    "@orbit/coordinator": "^0.12.1",
-    "@orbit/core": "^0.12.1",
-    "@orbit/data": "^0.12.1",
-    "@orbit/immutable": "^0.12.1",
-    "@orbit/store": "^0.12.1",
-    "@orbit/utils": "^0.12.1",
+    "@orbit/coordinator": "^0.13.0",
+    "@orbit/core": "^0.13.0",
+    "@orbit/data": "^0.13.0",
+    "@orbit/immutable": "^0.13.0",
+    "@orbit/store": "^0.13.0",
+    "@orbit/utils": "^0.13.0",
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-replace": "^0.12.0",
