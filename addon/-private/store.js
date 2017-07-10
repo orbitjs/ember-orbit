@@ -34,6 +34,27 @@ const Store = Ember.Object.extend({
     sourceCache.on('patch', this._didPatch, this);
   },
 
+  willDestroy() {
+    this._super(...arguments);
+    if (this.source) {
+      if (this.source.cache) {
+        this.source.cache.off('patch', this._didPatch, this);
+      }
+      this.source = null;
+    }
+    if (this.cache) {
+      this.cache.destroy();
+      this.cache = null;
+    }
+    if (this._identityMap) {
+      this._identityMap.destroy();
+      this._identityMap = null;
+    }
+    this.transformLog = null;
+    this.requestQueue = null;
+    this.syncQueue = null;
+  },
+
   fork() {
     const forkedSource = this.source.fork();
 
