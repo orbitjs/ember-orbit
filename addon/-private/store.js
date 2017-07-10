@@ -31,7 +31,7 @@ const Store = Ember.Object.extend({
     this._identityMap = IdentityMap.create({ _schema: this.source.schema, _sourceCache: sourceCache, _store: this });
     this.cache = Cache.create({ _sourceCache: sourceCache, _identityMap: this._identityMap });
 
-    sourceCache.on('patch', operation => this._didPatch(operation));
+    sourceCache.on('patch', this._didPatch, this);
   },
 
   fork() {
@@ -75,12 +75,8 @@ const Store = Ember.Object.extend({
   },
 
   addRecord(properties = {}, options) {
-    this._verifyType(properties.type);
-
-    const record = this.normalizeRecordProperties(properties);
-
-    return this.update(t => t.addRecord(record), options)
-      .then(() => this._identityMap.lookup(record));
+    return this.update(t => t.addRecord(this.normalizeRecordProperties(properties)), options)
+      .then(record => this._identityMap.lookup(record));
   },
 
   find(type, id, options) {
@@ -131,10 +127,6 @@ const Store = Ember.Object.extend({
     return this.source.getInverseOperations(...arguments);
   },
 
-  _verifyType(type) {
-    assert("`type` must be registered as a model in the store's schema", this.source.schema.models[type]);
-  },
-
   _didPatch: function(operation) {
     // console.debug('didPatch', operation);
 
@@ -170,11 +162,11 @@ const Store = Ember.Object.extend({
   },
 
   normalizeRecordProperties(properties) {
-    const schema = this.source.schema;
-    const record = {
-      id: properties.id || schema.generateId(properties.type),
-      type: properties.type
-    };
+    const { id, type } = properties;
+
+    assert("`type` must be registered as a model in the store's schema", this.source.schema.models[type]);
+
+    const record = { id, type };
 
     this._assignKeys(record, properties);
     this._assignAttributes(record, properties);
