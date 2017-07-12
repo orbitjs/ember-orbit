@@ -1,5 +1,5 @@
 import {
-  Query
+  buildQuery
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
 import LiveQuery from './live-query';
@@ -55,7 +55,7 @@ export default Ember.Object.extend({
   },
 
   query(queryOrExpression, options, id) {
-    const query = Query.from(queryOrExpression, options, id, this._sourceCache.queryBuilder);
+    const query = buildQuery(queryOrExpression, options, id, this._sourceCache.queryBuilder);
     const result = this._sourceCache.query(query);
 
     switch(query.expression.op) {
@@ -71,7 +71,7 @@ export default Ember.Object.extend({
   },
 
   liveQuery(queryOrExpression, options, id) {
-    const query = Query.from(queryOrExpression, options, id, this._sourceCache.queryBuilder);
+    const query = buildQuery(queryOrExpression, options, id, this._sourceCache.queryBuilder);
 
     return LiveQuery.create({
       _query: query,
