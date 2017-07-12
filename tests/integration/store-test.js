@@ -1,7 +1,7 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import {
-  Transform
+  buildTransform
 } from '@orbit/data';
 import { module, test } from 'qunit';
 
@@ -94,7 +94,7 @@ module('Integration - Store', function(hooks) {
   test('#getTransform - returns a particular transform given an id', function(assert) {
     const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
 
-    const addRecordATransform = Transform.from(store.source.transformBuilder.addRecord(recordA));
+    const addRecordATransform = buildTransform(store.source.transformBuilder.addRecord(recordA));
 
     return store.sync(addRecordATransform)
       .then(() => {
@@ -105,7 +105,7 @@ module('Integration - Store', function(hooks) {
   test('#getInverseOperations - returns the inverse operations for a particular transform', function(assert) {
     const recordA = { id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } };
 
-    const addRecordATransform = Transform.from(store.source.transformBuilder.addRecord(recordA));
+    const addRecordATransform = buildTransform(store.source.transformBuilder.addRecord(recordA));
 
     return store.sync(addRecordATransform)
       .then(() => {

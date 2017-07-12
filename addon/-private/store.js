@@ -1,5 +1,5 @@
 import {
-  Query
+  buildQuery
 } from '@orbit/data';
 import { deepSet } from '@orbit/utils';
 import Cache from './cache';
@@ -73,13 +73,13 @@ const Store = Ember.Object.extend({
   },
 
   liveQuery(queryOrExpression, options, id) {
-    const query = Query.from(queryOrExpression, options, id, this.source.queryBuilder);
+    const query = buildQuery(queryOrExpression, options, id, this.source.queryBuilder);
     return this.source.query(query)
       .then(() => this.cache.liveQuery(query));
   },
 
   query(queryOrExpression, options, id) {
-    const query = Query.from(queryOrExpression, options, id, this.source.queryBuilder);
+    const query = buildQuery(queryOrExpression, options, id, this.source.queryBuilder);
     return this.source.query(query)
       .then(result => {
         switch(query.expression.op) {
