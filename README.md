@@ -418,7 +418,7 @@ want to edit them:
 let jupiter = store.cache.find('planet', 'jupiter');
 let io = store.cache.find('moon', 'io');
 let europa = store.cache.find('moon', 'europa');
-let theSun = store.cache.find('star', 'theSun');
+let sun = store.cache.find('star', 'theSun');
 
 jupiter.set('name', 'JUPITER!');
 jupiter.get('moons').pushObject(io);
@@ -428,6 +428,73 @@ jupiter.set('sun', sun);
 
 Behind the scenes, these changes each result in a call to `store.update`. Of
 course, this method could also be called directly.
+
+### Forking and merging stores
+
+Because Ember-Orbit stores and caches are just thin wrappers over their
+underlying Orbit equivalents, they share the same basic capabilities.
+Thus, Ember-Orbit stores can be forked and merged, just as described in the
+[Orbit guides](http://orbitjs.com/v0.15/guide/data-stores.html#Forking-stores).
+
+The same example can be followed:
+
+```javascript
+// start by adding two planets and a moon to the store
+store.update(t => [
+  t.addRecord(earth),
+  t.addRecord(venus),
+  t.addRecord(theMoon)
+])
+  .then(() => store.query(q => q.findRecords('planet').sort('name')))
+  .then(planets => {
+    console.log('original planets');
+    console.log(planets);
+
+    // fork the store
+    forkedStore = store.fork();
+
+    // add a planet and moons to the fork
+    return forkedStore.update(t => [
+      t.addRecord(jupiter),
+      t.addRecord(io),
+      t.addRecord(europa)
+    ]);
+  })
+  // query the planets in the forked store
+  .then(() => forkedStore.query(q => q.findRecords('planet').sort('name')))
+  .then(planets => {
+    console.log('planets in fork');
+    console.log(planets);
+  })
+  // merge the forked store back into the original store
+  .then(() => store.merge(forkedStore)
+  // query the planets in the original store
+  .then(() => store.query(q => q.findRecords('planet').sort('name'))))
+  .then(planets => {
+    console.log('merged planets');
+    console.log(planets);
+  })
+  .catch(e => {
+    console.error(e);
+  });
+```
+
+And the same notes apply:
+
+* Once a store has been forked, the original and forked stores’ data can diverge
+  independently.
+
+* A store fork can simply be abandoned without cost.
+
+* Merging a fork will gather the transforms applied since the fork point,
+  coalesce the operations in those transforms into a single new transform, and
+  then update the original store.
+
+> **Important** - One additional concern to be aware of is that Ember-Orbit will
+generate new records for each store. Care should be taken to not mix records
+between stores, since the underlying data in each store can diverge. If you need
+to access a record in a store's fork, just query the forked store or cache for
+that record.
 
 ## Contributing to Ember-Orbit
 
