@@ -270,6 +270,165 @@ with the main store _before_ activating the coordinator. In this way, the
 coordination strategy that backs up the store won't be enabled until after
 the restore is complete.
 
+### Defining models
+
+Models are used to access the underlying data in an Ember-Orbit `Store`.
+They provide a proxy to get and set attributes and relationships. In addition,
+models are used to define the schema that's shared by the sources in your
+Orbit application.
+
+Define models in the `app/models` directory. Let's start with
+`app/models/planet.js`:
+
+```
+import {
+  Model,
+  attr,
+  key,
+  hasMany
+} from 'ember-orbit';
+
+export default Model.extend({
+  remoteId: key(),
+  name: attr('string'),
+  atmosphere: attr('boolean'),
+  classification: attr('string'),
+  moons: hasMany('moon', { inverse: 'planet' })
+});
+```
+
+As well as `app/models/moon.js`:
+
+```
+import {
+  Model,
+  attr,
+  key,
+  hasOne
+} from 'ember-orbit';
+
+export default Model.extend({
+  remoteId: key(),
+  name: attr('string'),
+  planet: hasOne('planet', { inverse: 'moons' })
+});
+```
+
+> Note that we're using a `key` named `remoteId`. In addition to declaring the
+`KeyMap`, this is required to maintain separate client-side and server-side
+IDs (which is required for offline applications in which servers don't
+accept client-generated IDs). It's beyond the scope of this README, but you'll
+also need to specify these remote keys in the serializer used to communicate
+with your backend.
+
+### Adding records
+
+Records can be added in a couple ways. The easiest is to use the `addRecord`
+method on the store:
+
+```javascript
+store.addRecord({ type: 'planet', name: 'Earth' })
+  .then(planet => {
+    console.log(planet.get('name')); // Earth
+  });
+```
+
+Alternatively, you can call `store.update()` and use the transform builder to
+build up a single `Transform` with any number of operations:
+
+```javascript
+store.update(t => [
+  t.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
+  t.addRecord({ type: 'planet', attributes: { name: 'Venus' } })
+])
+  .then(() => {
+    // planets added successfully in a single `Transform`
+  });
+```
+
+> Note: calling `update` is a direct passthrough to the underlying Orbit store,
+so it's important to specify records in their full normalized form
+(see [the Orbit guides](http://orbitjs.com/v0.15/guide/modeling-data.html#Records)).
+
+### Querying records
+
+There are three unique methods used to query records:
+
+* `store.query()` - returns a promise that resolves to a static recordset.
+
+* `store.liveQuery()` - returns a promise that resolves to a live recordset that
+  will be refreshed whenever the store's data changes.
+
+* `store.cache.query()` - returns a static set of in-memory results immediately.
+
+All of these query methods take the same arguments as any other queryable
+Orbit source - see
+[the Orbit guides](http://orbitjs.com/v0.15/guide/querying-data.html) for
+details.
+
+For example, the following `liveQuery` should return a promise that resolves
+to a live resultset that will stay updated with the "terrestrial" planets in
+the store:
+
+```javascript
+store.liveQuery(q => q.findRecords('planet')
+                      .filter({ attribute: 'classification',
+                                value: 'terrestrial' }));
+```
+
+Unlike the Orbit `Store`, in which results are returned as static POJOs,
+results from Ember-Orbit queries are returned as records, i.e. instantiated
+versions of their associated `Model` class.
+
+The attributes and relationships of records will be kept in sync with the
+backing store.
+
+Note that the Ember-Orbit `Store` also supports the `find` method for
+compatibility with Ember's default expectations in routes. The following
+queries are async and call `store.query` internally:
+
+```javascript
+// find all records of a type
+store.find('planet');
+
+// find a specific record by type and id
+store.find('planet', 'abc123');
+```
+
+The following queries are synchronous and call `store.cache.query` internally:
+
+```javascript
+// find all records of a type
+store.cache.find('planet');
+
+// find a specific record by type and id
+store.cache.find('planet', 'abc123');
+```
+
+### Updating records
+
+Any records retrieved from a store or its cache will stay sync'd with the
+contents of that cache. Each attribute and relationship is a computed property
+that has getters and setters which pass through to the underlying store.
+
+Let's say that you find a couple records directly in the store's cache and
+want to edit them:
+
+```javascript
+let jupiter = store.cache.find('planet', 'jupiter');
+let io = store.cache.find('moon', 'io');
+let europa = store.cache.find('moon', 'europa');
+let theSun = store.cache.find('star', 'theSun');
+
+jupiter.set('name', 'JUPITER!');
+jupiter.get('moons').pushObject(io);
+jupiter.get('moons').removeObject(europa);
+jupiter.set('sun', sun);
+```
+
+Behind the scenes, these changes each result in a call to `store.update`. Of
+course, this method could also be called directly.
+
 ## Contributing to Ember-Orbit
 
 ### Installation
