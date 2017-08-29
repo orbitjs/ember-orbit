@@ -172,7 +172,7 @@ const Store = Ember.Object.extend({
         record = this._identityMap.lookup({ type, id });
         record.propertyDidChange(operation.attribute);
         break;
-      case 'replaceHasOne':
+      case 'replaceRelatedRecord':
         record = this._identityMap.lookup({ type, id });
         record.propertyDidChange(operation.relationship);
         break;
