@@ -85,6 +85,20 @@ module('Integration - Model', function(hooks) {
       });
   });
 
+  test('replaceRelatedRecord invalidates a relationship', function(assert) {
+    return Ember.RSVP.Promise.all([
+      store.addRecord({type: 'planet', name: 'Jupiter' }),
+      store.addRecord({type: 'star', name: 'Sun' })
+    ])
+      .tap(([jupiter, sun]) => {
+        jupiter.get('sun'); // cache the relationship
+        return store.source.update(t => t.replaceRelatedRecord(jupiter, 'sun', sun));
+      })
+      .then(([jupiter, sun]) => {
+        assert.equal(jupiter.get('sun'), sun, 'invalidates the relationship');
+      });
+  });
+
   test('replace hasOne with null', function(assert) {
     return Ember.RSVP.Promise.all([
       store.addRecord({type: 'planet', name: 'Jupiter'}),
