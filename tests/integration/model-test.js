@@ -21,12 +21,12 @@ module('Integration - Model', function(hooks) {
     ])
       .then(([theSun, callisto]) => {
         return store
-          .addRecord({type: 'planet', galaxyAlias: 'planet:jupiter', name: 'Jupiter', sun: theSun, moons: [callisto]})
+          .addRecord({type: 'planet', remoteId: 'planet:jupiter', name: 'Jupiter', sun: theSun, moons: [callisto]})
           .then(record => {
             assert.ok(record.get('id'), 'assigned id');
             assert.deepEqual(record.get('identity'), { id: record.get('id'), type: 'planet' }, 'assigned identity that includes type and id');
             assert.equal(record.get('name'), 'Jupiter', 'assigned specified attribute');
-            assert.equal(record.get('galaxyAlias'), 'planet:jupiter', 'assigned secondary key');
+            assert.equal(record.get('remoteId'), 'planet:jupiter', 'assigned secondary key');
             assert.strictEqual(record.get('sun'), theSun, 'assigned hasOne');
             assert.strictEqual(record.get('moons.firstObject'), callisto, 'assigned hasMany');
           });
@@ -125,9 +125,9 @@ module('Integration - Model', function(hooks) {
   });
 
   test('replace key', function(assert) {
-    return store.addRecord({type: 'planet', name: 'Jupiter', galaxyAlias: 'planet:jupiter'})
-      .tap(record => record.set('galaxyAlias', 'planet:joopiter'))
-      .then(record => assert.equal(record.get('galaxyAlias'), 'planet:joopiter'));
+    return store.addRecord({type: 'planet', name: 'Jupiter', remoteId: 'planet:jupiter'})
+      .tap(record => record.set('remoteId', 'planet:joopiter'))
+      .then(record => assert.equal(record.get('remoteId'), 'planet:joopiter'));
   });
 
   test('destroy model', function(assert) {

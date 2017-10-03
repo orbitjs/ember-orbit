@@ -7,7 +7,7 @@ import {
 } from 'ember-orbit';
 
 export const Planet = Model.extend({
-  galaxyAlias: key(),
+  remoteId: key(),
   name: attr('string'),
   atmosphere: attr('boolean'),
   classification: attr('string'),

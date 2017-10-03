@@ -116,6 +116,16 @@ const Store = Ember.Object.extend({
     return this.query(q => q.findRecord({ type, id }), options);
   },
 
+  findRecordByKey(type, keyName, keyValue, options) {
+    let keyMap = this.source.keyMap;
+    let id = keyMap.keyToId(type, keyName, keyValue);
+    if (!id) {
+      id = this.source.schema.generateId(type);
+      keyMap.pushRecord({ type, id, keys: { [keyName]: keyValue } });
+    }
+    return this.findRecord(type, id, options);
+  },
+
   removeRecord(identity, options) {
     return this.update(t => t.removeRecord(identity), options);
   },
