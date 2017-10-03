@@ -82,6 +82,28 @@ module('Integration - Store', function(hooks) {
       })
   });
 
+  test('#findRecordByKey - can find a previously added record by key', function(assert) {
+    return store.addRecord({ type: 'planet', name: 'Earth', remoteId: 'p01' })
+      .then( () => store.findRecordByKey('planet', 'remoteId', 'p01'))
+      .then( planet => {
+        assert.ok(planet instanceof Planet);
+        assert.ok(get(planet, 'id'), 'assigned id');
+        assert.equal(get(planet, 'name'), 'Earth');
+      });
+  });
+
+  test('#findRecordByKey - will generate a local id for a record that has not been added yet', function(assert) {
+    let schema = store.source.schema;
+    let prevFn = schema.generateId;
+    schema.generateId = () => 'abc';
+    return store.findRecordByKey('planet', 'remoteId', 'p01')
+      .catch(e => {
+        assert.equal(store.source.keyMap.keyToId('planet', 'remoteId', 'p01'), 'abc');
+        assert.equal(e.message, 'Record not found: planet:abc');
+        schema.generateId = prevFn;
+      });
+  });
+
   test('#removeRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .tap(record => store.removeRecord(record))
