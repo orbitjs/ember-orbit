@@ -24,7 +24,7 @@ function getLibPath(packagePath) {
 function packageTree(name, destDir) {
   let libPath = findLib(name);
 
-  destDir = destDir || path.join.apply(this, name.split('/'));
+  destDir = destDir || path.posix.join.apply(this, name.split('/'));
 
   let tree = funnel(libPath, {
     include: ['**/*.js'],
