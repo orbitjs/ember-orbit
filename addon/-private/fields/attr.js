@@ -1,7 +1,8 @@
+import { computed } from '@ember/object';
 export default function(type, options = {}) {
   options.type = type;
 
-  return Ember.computed({
+  return computed({
     get(key) {
       return this.getAttribute(key);
     },

@@ -1,11 +1,11 @@
+import { Promise as EmberPromise } from 'rsvp';
+import { get } from '@ember/object';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import {
   buildTransform
 } from '@orbit/data';
 import { module, test } from 'qunit';
-
-const { get } = Ember;
 
 module('Integration - Store', function(hooks) {
   let store;
@@ -22,7 +22,7 @@ module('Integration - Store', function(hooks) {
   test('#normalizeRecordProperties', function(assert) {
     const done = assert.async();
 
-    Ember.RSVP.Promise.all([
+    EmberPromise.all([
       store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
       store.addRecord({type: 'star', id: 'sun', name: 'The Sun'})
     ])
@@ -138,7 +138,7 @@ module('Integration - Store', function(hooks) {
   });
 
   test('replacing a record invalidates attributes and relationships', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({ type: 'planet', id: 'p1', name: 'Earth' }),
       store.addRecord({type: 'star', id: 's1', name: 'The Sun'})
     ])
@@ -159,7 +159,7 @@ module('Integration - Store', function(hooks) {
   test('#query - findRecord', function(assert) {
     let earth;
 
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({ type: 'planet', name: 'Earth' })
     ])
       .then(([result1]) => {
@@ -174,7 +174,7 @@ module('Integration - Store', function(hooks) {
   test('#query - findRecords', function(assert) {
     let earth, jupiter;
 
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({ type: 'planet', name: 'Earth' }),
       store.addRecord({ type: 'planet', name: 'Jupiter' })
     ])
@@ -210,7 +210,7 @@ module('Integration - Store', function(hooks) {
   test('#query - findRelatedRecords', function(assert) {
     let io, callisto, jupiter;
 
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'moon', name: 'Io'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])

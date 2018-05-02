@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { get } from '@ember/object';
 import { 
   key,
   attr,
@@ -7,8 +7,6 @@ import {
   Model
 } from 'ember-orbit';
 import { module, test } from 'qunit';
-
-const { get } = Ember;
 
 module("Unit - Model", function(hooks) {
   let Planet,

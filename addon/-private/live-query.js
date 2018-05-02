@@ -1,7 +1,6 @@
-import Ember from 'ember';
+import { computed, set, get } from '@ember/object';
+import { isArray } from '@ember/array';
 import ReadOnlyArrayProxy from './system/read-only-array-proxy';
-
-const { get, set, computed, isArray } = Ember;
 
 export default ReadOnlyArrayProxy.extend({
   _sourceCache: null,

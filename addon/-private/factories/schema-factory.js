@@ -1,11 +1,11 @@
+import { camelize } from '@ember/string';
+import { get } from '@ember/object';
+import { getOwner } from '@ember/application';
 import { Schema } from '@orbit/data';
-import Ember from 'ember';
 import modulesOfType from '../system/modules-of-type';
 
-const { get, getOwner } = Ember;
-
 function getRegisteredModels(prefix) {
-  return modulesOfType(prefix, 'models').map(Ember.String.camelize);
+  return modulesOfType(prefix, 'models').map(camelize);
 }
 
 export default {

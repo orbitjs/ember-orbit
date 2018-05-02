@@ -1,3 +1,7 @@
+import { isArray } from '@ember/array';
+import { assert } from '@ember/debug';
+import { getOwner } from '@ember/application';
+import EmberObject, { get } from '@ember/object';
 import {
   buildQuery
 } from '@orbit/data';
@@ -5,9 +9,7 @@ import { deepSet } from '@orbit/utils';
 import Cache from './cache';
 import IdentityMap from './identity-map';
 
-const { assert, getOwner, get } = Ember;
-
-const Store = Ember.Object.extend({
+const Store = EmberObject.extend({
   source: null,
   cache: null,
   _identityMap: null,
@@ -172,7 +174,7 @@ const Store = Ember.Object.extend({
           if (replacement[grouping]) {
             Object.keys(replacement[grouping]).forEach(field => {
               if (replacement[grouping].hasOwnProperty(field)) {
-                record.propertyDidChange(field);
+                record.notifyPropertyChange(field);
               }
             });
           }
@@ -180,11 +182,11 @@ const Store = Ember.Object.extend({
         break;
       case 'replaceAttribute':
         record = this._identityMap.lookup({ type, id });
-        record.propertyDidChange(operation.attribute);
+        record.notifyPropertyChange(operation.attribute);
         break;
       case 'replaceRelatedRecord':
         record = this._identityMap.lookup({ type, id });
-        record.propertyDidChange(operation.relationship);
+        record.notifyPropertyChange(operation.relationship);
         break;
       case 'removeRecord':
         this._identityMap.evict({ type, id });
@@ -240,7 +242,7 @@ const Store = Ember.Object.extend({
     const relationship = record.relationships[relationshipName] = {};
     const type = relationshipProperties.model;
 
-    if (Ember.isArray(value)) {
+    if (isArray(value)) {
       relationship.data = value.map(id => {
         if (typeof id === 'object') {
           id = get(id, 'id');

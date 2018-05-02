@@ -1,8 +1,10 @@
+import EmberError from '@ember/error';
+import { empty } from '@ember/object/computed';
+import Evented from '@ember/object/evented';
+import EmberObject, { set, get, computed } from '@ember/object';
 import HasMany from './relationships/has-many';
 
-const { get, set } = Ember;
-
-const Model = Ember.Object.extend(Ember.Evented, {
+const Model = EmberObject.extend(Evented, {
   id: null,
   type: null,
   _store: null,
@@ -12,7 +14,7 @@ const Model = Ember.Object.extend(Ember.Evented, {
     this.identity = { id: this.id, type: this.type };
   },
 
-  disconnected: Ember.computed.empty('_store'),
+  disconnected: empty('_store'),
 
   getKey(field) {
     const cache = get(this, '_storeOrError.cache');
@@ -76,11 +78,11 @@ const Model = Ember.Object.extend(Ember.Evented, {
     if (cache) { cache.unload(this); }
   },
 
-  _storeOrError: Ember.computed('_store', function() {
+  _storeOrError: computed('_store', function() {
     const store = get(this, '_store');
 
     if (!store) {
-      throw new Ember.Error('record has been removed from Store');
+      throw new EmberError('record has been removed from Store');
     }
 
     return store;
@@ -95,10 +97,10 @@ Model.reopenClass({
   },
 
   create() {
-    throw new Ember.Error("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.");
+    throw new EmberError("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.");
   },
 
-  keys: Ember.computed(function() {
+  keys: computed(function() {
     const map = {};
     const _this = this;
 
@@ -112,7 +114,7 @@ Model.reopenClass({
     return map;
   }),
 
-  attributes: Ember.computed(function() {
+  attributes: computed(function() {
     const map = {};
 
     this.eachComputedProperty(function(name, meta) {
@@ -125,7 +127,7 @@ Model.reopenClass({
     return map;
   }),
 
-  relationships: Ember.computed(function() {
+  relationships: computed(function() {
     const map = {};
 
     this.eachComputedProperty(function(name, meta) {

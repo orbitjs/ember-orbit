@@ -1,10 +1,7 @@
-import Ember from 'ember';
-
-const {
-  get,
-  set,
-  ArrayProxy
-} = Ember;
+import { A } from '@ember/array';
+import { alias } from '@ember/object/computed';
+import { set, get } from '@ember/object';
+import ArrayProxy from '@ember/array/proxy';
 
 function notSupported() {
   throw new Error('Method not supported on read-only ArrayProxy.');
@@ -26,13 +23,13 @@ export default ArrayProxy.extend({
   unshiftObject: notSupported,
   unshiftObjects: notSupported,
 
-  length: Ember.computed.alias('content.length'),
+  length: alias('content.length'),
 
   init(...args) {
     let content = get(this, 'content');
 
     if (!content) {
-      content = new Ember.A();
+      content = new A();
       set(this, 'content', content);
     }
 

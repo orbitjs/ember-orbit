@@ -1,7 +1,5 @@
-import Ember from 'ember';
+import { get } from '@ember/object';
 import LiveQuery from '../live-query';
-
-const { get } = Ember;
 
 export default LiveQuery.extend({
   _store: null,
