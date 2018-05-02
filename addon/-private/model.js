@@ -56,6 +56,13 @@ const Model = EmberObject.extend(Evented, {
     });
   },
 
+  replaceAttributes(properties, options) {
+    const store = get(this, '_storeOrError');
+    const keys = Object.keys(properties);
+    return store.update(t => keys.map(key => t.replaceAttribute(this.identity, key, properties[key])), options)
+      .then(() => this);
+  },
+
   remove(options) {
     const store = get(this, '_storeOrError');
     return store.update(t => t.removeRecord(this.identity), options);
