@@ -1,8 +1,9 @@
+import { computed } from '@ember/object';
 export default function(model, options = {}) {
   options.type = 'hasOne';
   options.model = model;
 
-  return Ember.computed({
+  return computed({
     get(key) {
       return this.getRelatedRecord(key);
     },

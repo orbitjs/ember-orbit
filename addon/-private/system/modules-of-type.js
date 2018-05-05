@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /**
  * Retrieves modules registered by type in the namespace of an Application or
  * Engine.

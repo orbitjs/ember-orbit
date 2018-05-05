@@ -1,8 +1,6 @@
+import { getOwner } from '@ember/application';
 import Coordinator from '@orbit/coordinator';
 import modulesOfType from '../system/modules-of-type';
-import Ember from 'ember';
-
-const { getOwner } = Ember;
 
 export default {
   create(injections = {}) {

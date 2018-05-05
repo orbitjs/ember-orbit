@@ -1,20 +1,20 @@
+import { assert } from '@ember/debug';
+import EmberObject, { get } from '@ember/object';
 import {
   buildQuery
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
 import LiveQuery from './live-query';
 
-const { get } = Ember;
-
-export default Ember.Object.extend({
+export default EmberObject.extend({
   _sourceCache: null,
   _identityMap: null,
 
   init(...args) {
     this._super.apply(this, ...args);
 
-    Ember.assert(get(this, '_sourceCache'), '_sourceCache is required');
-    Ember.assert(get(this, '_identityMap'), '_identityMap is required');
+    assert(get(this, '_sourceCache'), '_sourceCache is required');
+    assert(get(this, '_identityMap'), '_identityMap is required');
   },
 
   includesRecord(type, id) {

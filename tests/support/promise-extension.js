@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
 import Orbit from '@orbit/data';
 
-Orbit.Promise = Ember.RSVP.Promise;
+Orbit.Promise = EmberPromise;
 
-extendPromise(Ember.RSVP.Promise);
+extendPromise(EmberPromise);
 
 function extendPromise(Promise) {
   Promise.prototype.tap = Promise.prototype.tap || function(callback) {

@@ -1,3 +1,5 @@
+import { Promise as EmberPromise } from 'rsvp';
+import { run } from '@ember/runloop';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
@@ -40,7 +42,7 @@ module('Integration - Cache', function(hooks) {
   test('liveQuery - updates when matching record is removed', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
+    run(() => {
       const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
@@ -54,7 +56,7 @@ module('Integration - Cache', function(hooks) {
   test('liveQuery - ignores non matching record', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
+    run(() => {
       const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
@@ -67,7 +69,7 @@ module('Integration - Cache', function(hooks) {
   test('liveQuery - removes record that has been removed', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
+    run(() => {
       const planets = cache.liveQuery(q => q.findRecords('planet'));
 
       store
@@ -87,7 +89,7 @@ module('Integration - Cache', function(hooks) {
   test('liveQuery - removes record that no longer matches', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
+    run(() => {
       const planets = cache.liveQuery(q => q.findRecords('planet')
                                             .filter({ attribute: 'name', value: 'Jupiter' }));
 
@@ -105,7 +107,7 @@ module('Integration - Cache', function(hooks) {
   test('#retrieveAttribute', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
+    run(() => {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .then((jupiter) => {
@@ -118,8 +120,8 @@ module('Integration - Cache', function(hooks) {
   test('#retrieveRelatedRecord', function(assert) {
     const done = assert.async();
 
-    Ember.run(() => {
-      Ember.RSVP.Promise.all([
+    run(() => {
+      EmberPromise.all([
         store.addRecord({type: 'planet', name: 'Jupiter'}),
         store.addRecord({type: 'moon', name: 'Callisto'})
       ])
@@ -135,7 +137,7 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#retrieveRecord', function(assert) {
-    Ember.run(() => {
+    run(() => {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .then((record) => cache.retrieveRecord('planet', record.get('id')))

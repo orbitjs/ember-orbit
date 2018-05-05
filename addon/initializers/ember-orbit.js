@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
 import Orbit from '@orbit/data';
 import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
@@ -7,7 +7,7 @@ import KeyMapFactory from '../-private/factories/key-map-factory';
 import StoreFactory from '../-private/factories/store-factory';
 
 export function initialize(application) {
-  Orbit.Promise = Ember.RSVP.Promise;
+  Orbit.Promise = EmberPromise;
 
   // Customize pluralization rules
   if (application.__registry__ &&

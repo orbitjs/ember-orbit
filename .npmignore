@@ -11,4 +11,9 @@
 .watchmanconfig
 .travis.yml
 ember-cli-build.js
-testem.jsom
+testem.js
+
+# ember-try
+.node_modules.ember-try/
+bower.json.ember-try
+package.json.ember-try

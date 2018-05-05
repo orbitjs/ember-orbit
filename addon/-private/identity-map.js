@@ -1,12 +1,11 @@
-import Ember from 'ember';
-
-const { getOwner } = Ember;
+import EmberObject from '@ember/object';
+import { getOwner } from '@ember/application';
 
 function serializeRecordIdentity(record) {
   return `${record.type}:${record.id}`;
 }
 
-export default Ember.Object.extend({
+export default EmberObject.extend({
   _materialized: null,
   _modelTypeMap: null,
   _store: null,

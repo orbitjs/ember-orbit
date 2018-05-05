@@ -1,3 +1,5 @@
+import EmberError from '@ember/error';
+import { Promise as EmberPromise } from 'rsvp';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
@@ -15,7 +17,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('add new model', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'star', name: 'The Sun'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
@@ -41,12 +43,12 @@ module('Integration - Model', function(hooks) {
       .then(record => {
         assert.ok(!cache.retrieveRecord('star', record.id), 'record does not exist in cache');
         assert.ok(record.get('disconnected'), 'record has been disconnected from store');
-        assert.throws(() => record.get('name'), Ember.Error, 'record has been removed from Store');
+        assert.throws(() => record.get('name'), EmberError, 'record has been removed from Store');
       });
   });
 
   test('add to hasMany', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'planet', name: 'Jupiter'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
@@ -58,7 +60,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('remove from hasMany', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'planet', name: 'Jupiter'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
@@ -71,7 +73,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('replace hasOne with record', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'planet', name: 'Jupiter'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
@@ -86,7 +88,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('replaceRelatedRecord invalidates a relationship', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'planet', name: 'Jupiter' }),
       store.addRecord({type: 'star', name: 'Sun' })
     ])
@@ -100,7 +102,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('replace hasOne with null', function(assert) {
-    return Ember.RSVP.Promise.all([
+    return EmberPromise.all([
       store.addRecord({type: 'planet', name: 'Jupiter'}),
       store.addRecord({type: 'moon', name: 'Callisto'})
     ])
@@ -108,7 +110,7 @@ module('Integration - Model', function(hooks) {
         callisto.set('planet', jupiter);
         return store.requestQueue.process();
       })
-      .tap(([_jupiter, callisto]) => {
+      .tap(([, callisto]) => {
         callisto.set('planet', null);
         return store.requestQueue.process();
       })
