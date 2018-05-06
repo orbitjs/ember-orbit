@@ -126,6 +126,15 @@ module('Integration - Model', function(hooks) {
       .then(record => assert.equal(record.get('name'), 'Jupiter2'));
   });
 
+  test('replace attributes on model', function(assert) {
+    return store.addRecord({ type: 'planet', name: 'Jupiter' })
+      .then(record => record.replaceAttributes({ name: 'Jupiter2', classification: 'gas giant2' }))
+      .then(record => {
+        assert.equal(record.get('name'), 'Jupiter2');
+        assert.equal(record.get('classification'), 'gas giant2');
+      });
+  });
+
   test('replace key', function(assert) {
     return store.addRecord({type: 'planet', name: 'Jupiter', remoteId: 'planet:jupiter'})
       .tap(record => record.set('remoteId', 'planet:joopiter'))
