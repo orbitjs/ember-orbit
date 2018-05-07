@@ -20,39 +20,39 @@
   dependencies:
     "@glimmer/di" "^0.2.0"
 
-"@orbit/coordinator@^0.15.0":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/coordinator/-/coordinator-0.15.12.tgz#bba40b7c2d5ec15c6c534af660847e800ce5ed26"
+"@orbit/coordinator@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/coordinator/-/coordinator-0.15.13.tgz#0881e81bf30496f735c61445484daed80fa94dc2"
 
-"@orbit/core@^0.15.0", "@orbit/core@^0.15.12":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.15.12.tgz#22410770a1496727cf258a16baf317ed61ae4120"
+"@orbit/core@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.15.13.tgz#a3e1cfaa3f0f6e119384d97eece2d2b451ee8d49"
   dependencies:
-    "@orbit/utils" "^0.15.12"
+    "@orbit/utils" "^0.15.13"
 
-"@orbit/data@^0.15.0", "@orbit/data@^0.15.12":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/data/-/data-0.15.12.tgz#3be2df5d47fc46cc9a04ffcb061f2b13f10c0c42"
+"@orbit/data@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/data/-/data-0.15.13.tgz#39d83013edd7eeb852fd9c32f54178d089f0b6fb"
   dependencies:
-    "@orbit/core" "^0.15.12"
-    "@orbit/utils" "^0.15.12"
+    "@orbit/core" "^0.15.13"
+    "@orbit/utils" "^0.15.13"
 
-"@orbit/immutable@^0.15.0", "@orbit/immutable@^0.15.12":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.15.12.tgz#89f533ca60608a73d2ca1b670a645c420a2620c6"
+"@orbit/immutable@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.15.13.tgz#cdaa8d82641922c37d67416ecc0e33a32a39add3"
 
-"@orbit/store@^0.15.0":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/store/-/store-0.15.12.tgz#35fceba75694d1cffefc11d0479ee67f21faa716"
+"@orbit/store@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/store/-/store-0.15.13.tgz#0366276cd23668bc14916008ee7e98cafcdd465c"
   dependencies:
-    "@orbit/core" "^0.15.12"
-    "@orbit/data" "^0.15.12"
-    "@orbit/immutable" "^0.15.12"
-    "@orbit/utils" "^0.15.12"
+    "@orbit/core" "^0.15.13"
+    "@orbit/data" "^0.15.13"
+    "@orbit/immutable" "^0.15.13"
+    "@orbit/utils" "^0.15.13"
 
-"@orbit/utils@^0.15.0", "@orbit/utils@^0.15.12":
-  version "0.15.12"
-  resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.12.tgz#18a4ee567d8673d4e1675bea118c6460dae8de14"
+"@orbit/utils@^0.15.13":
+  version "0.15.13"
+  resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.13.tgz#e5056c6c5990562d282fa2cadc24cf5a412b920f"
 
 "@sindresorhus/is@^0.7.0":
   version "0.7.0"
