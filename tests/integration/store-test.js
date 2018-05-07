@@ -79,7 +79,7 @@ module('Integration - Store', function(hooks) {
     return store.findRecord('planet', 'jupiter')
       .catch(e => {
         assert.equal(e.message, 'Record not found: planet:jupiter');
-      })
+      });
   });
 
   test('#findRecordByKey - can find a previously added record by key', function(assert) {
