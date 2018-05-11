@@ -98,8 +98,9 @@ const Store = EmberObject.extend({
   },
 
   addRecord(properties = {}, options) {
-    return this.update(t => t.addRecord(this.normalizeRecordProperties(properties)), options)
-      .then(record => this._identityMap.lookup(record));
+    let record = this.normalizeRecordProperties(properties);
+    return this.update(t => t.addRecord(record), options)
+      .then(() => this._identityMap.lookup(record));
   },
 
   find(type, id, options) {
