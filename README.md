@@ -173,8 +173,9 @@ export default {
 };
 ```
 
-You should also consider adding an event logging strategy to track events
-emitted from your sources. Let's add `app/data-strategies/event-logging.js`:
+You should also consider adding an event logging strategy to log events emitted
+from your sources to the browser console. Let's add
+`app/data-strategies/event-logging.js`:
 
 ```javascript
 import { EventLoggingStrategy } from '@orbit/coordinator';
@@ -186,9 +187,11 @@ export default {
 };
 ```
 
-A log truncation strategy will keep the size in check by observing the sources
-associated with the strategy and truncating their logs when a common transform
-has been applied to them all. Let's add `app/data-strategies/log-truncation.js`:
+Sources have another kind of log as well: a transform log, which tracks
+transforms that are applied. A log truncation strategy will keep the size of
+transform logs in check. It observes the sources associated with the strategy
+and truncates their transform logs when a common transform has been applied
+to them all. Let's add `app/data-strategies/log-truncation.js`:
 
 ```javascript
 import {
