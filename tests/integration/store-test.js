@@ -65,6 +65,19 @@ module('Integration - Store', function(hooks) {
       });
   });
 
+  test('#addRecord - with blocking sync updates', function(assert) {
+    store.source.on('beforeUpdate', (transform) => {
+      return store.source.sync(transform);
+    });
+
+    return store.addRecord({ type: 'planet', name: 'Earth' })
+      .then(function(planet) {
+         assert.ok(planet instanceof Planet);
+         assert.ok(get(planet, 'id'), 'assigned id');
+         assert.equal(get(planet, 'name'), 'Earth');
+      });
+  });
+
   test('#findRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then( record => store.findRecord('planet', record.id))
