@@ -4,7 +4,7 @@ import { Planet } from 'dummy/tests/support/dummy-models';
 import EmberObject from '@ember/object';
 import { createStore } from 'dummy/tests/support/store';
 import { Promise as EmberPromise } from 'rsvp';
-import waitForSource from 'ember-orbit/test-support';
+import { waitForSource } from 'ember-orbit/test-support';
 import { Source } from '@orbit/data';
 
 class TestSource extends Source {

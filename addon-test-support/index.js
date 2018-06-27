@@ -1,7 +1,7 @@
 import { getContext } from '@ember/test-helpers';
 import { Promise } from 'rsvp';
 
-export default async function waitForSource(sourceName) {
+export async function waitForSource(sourceName) {
   let { owner } = getContext();
   let source = owner.lookup(`data-source:${sourceName}`);
   if (source) {
