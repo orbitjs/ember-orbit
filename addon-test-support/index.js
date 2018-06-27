@@ -1,10 +1,28 @@
 import { getContext } from '@ember/test-helpers';
 import { Promise } from 'rsvp';
 
-export async function waitForSource(sourceName) {
-  let { owner } = getContext();
-  let source = owner.lookup(`data-source:${sourceName}`);
-  if (source) {
+export async function waitForSource(sourceOrSourceName) {
+  let source;
+  if (typeof sourceOrSourceName === 'string') {
+    let { owner } = getContext();
+    source = owner.lookup(`data-source:${sourceOrSourceName}`);
+    if (!source) {
+      throw new Error(`data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`);
+    }
+  } else {
+    source = sourceOrSourceName;
+  }
+
+  let promise;
+  if (source.requestQueue.empty) {
+    promise = promise.resolve();
+  } else {
+    promise = new Promise(function (resolve, reject) {
+      source.requestQueue.on('complete', resolve);
+      source.requestQueue.on('fail', reject);
+    });
+  }
+  return promise.then(() => {
     if (source.syncQueue.empty) {
       return Promise.resolve();
     } else {
@@ -13,7 +31,5 @@ export async function waitForSource(sourceName) {
         source.syncQueue.on('fail', reject);
       });
     }
-  } else {
-    throw new Error(`data-source:${sourceName} not found. Maybe you misspelled it?`);
-  }
+  });
 }

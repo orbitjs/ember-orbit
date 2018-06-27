@@ -24,7 +24,7 @@ module('waitForSource helper', function(hooks) {
     store = createStore({ models: { planet: Planet } });
   });
 
-  test('it resolves once all the pending requests to the given source have synced', async function(assert) {
+  test('it resolves once all the pending requests to the given source have synced', async function(_assert) {
     let RequesterObj = EmberObject.extend({
       init() {
         this._super(...arguments);
