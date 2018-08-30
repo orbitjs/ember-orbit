@@ -15,7 +15,7 @@ export async function waitForSource(sourceOrSourceName) {
 
   let promise;
   if (source.requestQueue.empty) {
-    promise = promise.resolve();
+    promise = Promise.resolve();
   } else {
     promise = new Promise(function (resolve, reject) {
       source.requestQueue.on('complete', resolve);
