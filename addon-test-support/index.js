@@ -13,19 +13,17 @@ export async function waitForSource(sourceOrSourceName) {
     source = sourceOrSourceName;
   }
 
-  let promise;
-  if (source.requestQueue.empty) {
-    promise = Promise.resolve();
-  } else {
-    promise = new Promise(function (resolve, reject) {
-      source.requestQueue.on('complete', resolve);
-      source.requestQueue.on('fail', reject);
+  let promise = Promise.resolve();
+  if (!source.requestQueue.empty) {
+    promise = promise.then(() => {
+      return new Promise(function(resolve, reject) {
+        source.requestQueue.on('complete', resolve);
+        source.requestQueue.on('fail', reject);
+      });
     });
   }
   return promise.then(() => {
-    if (source.syncQueue.empty) {
-      return Promise.resolve();
-    } else {
+    if (!source.syncQueue.empty) {
       return new Promise(function(resolve, reject) {
         source.syncQueue.on('complete', resolve);
         source.syncQueue.on('fail', reject);
