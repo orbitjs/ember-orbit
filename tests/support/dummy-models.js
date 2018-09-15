@@ -6,22 +6,23 @@ import {
   hasOne
 } from 'ember-orbit';
 
-export const Planet = Model.extend({
-  remoteId: key(),
+export const Orbitable = Model.extend({
   name: attr('string'),
+});
+
+export const Planet = Orbitable.extend({
+  remoteId: key(),
   atmosphere: attr('boolean'),
   classification: attr('string'),
   sun: hasOne('star'),
   moons: hasMany('moon', {inverse: 'planet'})
 });
 
-export const Moon = Model.extend({
-  name: attr('string'),
+export const Moon = Orbitable.extend({
   planet: hasOne('planet', {inverse: 'moons'})
 });
 
-export const Star = Model.extend({
-  name: attr('string'),
+export const Star = Orbitable.extend({
   planets: hasMany('planet'),
   isStable: attr('boolean')
 });
