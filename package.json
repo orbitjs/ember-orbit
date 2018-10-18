@@ -22,12 +22,12 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
-    "@orbit/coordinator": "^0.15.22",
-    "@orbit/core": "^0.15.22",
-    "@orbit/data": "^0.15.22",
-    "@orbit/immutable": "^0.15.22",
-    "@orbit/store": "^0.15.22",
-    "@orbit/utils": "^0.15.22",
+    "@orbit/coordinator": "^0.15.23",
+    "@orbit/core": "^0.15.23",
+    "@orbit/data": "^0.15.23",
+    "@orbit/immutable": "^0.15.23",
+    "@orbit/store": "^0.15.23",
+    "@orbit/utils": "^0.15.23",
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-replace": "^0.12.0",
