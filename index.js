@@ -34,7 +34,7 @@ function packageTree(name, destDir) {
 }
 
 module.exports = {
-  name: 'ember-orbit',
+  name: require('./package').name,
 
   treeForAddon(tree) {
     let packageTrees = [
