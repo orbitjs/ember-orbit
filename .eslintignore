@@ -12,6 +12,7 @@
 # misc
 /coverage/
 !.*
+.eslintrc.*
 
 # ember-try
 /.node_modules.ember-try/
