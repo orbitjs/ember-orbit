@@ -7,14 +7,14 @@ function serializeRecordIdentity(record) {
 
 export default EmberObject.extend({
   _materialized: null,
-  _modelTypeMap: null,
+  _modelFactoryMap: null,
   _store: null,
 
   init(...args) {
     this._super(...args);
 
     this._materialized = {};
-    this._modelTypeMap = {};
+    this._modelFactoryMap = {};
   },
 
   lookup(identity) {
@@ -57,8 +57,12 @@ export default EmberObject.extend({
 
   _materialize(identity) {
     // console.debug('materializing', identity.type, identity.id);
-    const model = this._modelFor(identity.type);
-    const record = model._create(identity.id, this._store);
+    const modelFactory = this._modelFactoryFor(identity.type);
+    const record = modelFactory.create({
+      type: identity.type,
+      id: identity.id,
+      _store: this._store
+    });
     const identifier = serializeRecordIdentity(identity);
 
     this._materialized[identifier] = record;
@@ -66,15 +70,14 @@ export default EmberObject.extend({
     return record;
   },
 
-  _modelFor(type) {
-    let model = this._modelTypeMap[type];
+  _modelFactoryFor(type) {
+    let modelFactory = this._modelFactoryMap[type];
 
-    if (!model) {
-      model = getOwner(this._store).factoryFor(`model:${type}`).class;
-      model.typeKey = type;
-      this._modelTypeMap[type] = model;
+    if (!modelFactory) {
+      modelFactory = getOwner(this._store).factoryFor(`model:${type}`);
+      this._modelFactoryMap[type] = modelFactory;
     }
 
-    return model;
+    return modelFactory;
   }
 });

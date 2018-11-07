@@ -1,8 +1,10 @@
 import EmberError from '@ember/error';
+import EmberObject from '@ember/object';
 import { Promise as EmberPromise } from 'rsvp';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
+import { getOwner } from '@ember/application';
 
 module('Integration - Model', function(hooks) {
   let store;
@@ -14,6 +16,26 @@ module('Integration - Model', function(hooks) {
 
   hooks.afterEach(function() {
     store = null;
+  });
+
+  test('models are assigned the same owner as the store', async function(assert) {
+    const model = await store.addRecord({type: 'star', name: 'The Sun'});
+    assert.ok(getOwner(model), 'model has an owner');
+    assert.strictEqual(getOwner(model), getOwner(store), 'model has same owner as store');
+  });
+
+  test('models can receive registered injections', async function(assert) {
+    const Foo = EmberObject.extend({
+      bar: 'bar'
+    });
+
+    const app = getOwner(store);
+    app.register('service:foo', Foo);
+    app.inject('model:star', 'foo', 'service:foo');
+
+    const model = await store.addRecord({type: 'star', name: 'The Sun'});
+    assert.ok(model.get('foo'), 'service has been injected');
+    assert.equal(model.foo.bar, 'bar', 'service is correct');
   });
 
   test('add new model', function(assert) {

@@ -1,5 +1,5 @@
 import { get } from '@ember/object';
-import { 
+import {
   key,
   attr,
   hasOne,
