@@ -1,4 +1,5 @@
 import EmberError from '@ember/error';
+import { assert } from '@ember/debug';
 import { empty } from '@ember/object/computed';
 import Evented from '@ember/object/evented';
 import EmberObject, { set, get, computed } from '@ember/object';
@@ -96,15 +97,10 @@ const Model = EmberObject.extend(Evented, {
   })
 });
 
-const _create = Model.create;
-
 Model.reopenClass({
-  _create(id, store) {
-    return _create.call(this, { id, type: this.typeKey, _store: store });
-  },
-
-  create() {
-    throw new EmberError("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.");
+  create(injections) {
+    assert("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.", injections._store);
+    return this._super(...arguments);
   },
 
   keys: computed(function() {
