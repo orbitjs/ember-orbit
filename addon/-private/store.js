@@ -250,7 +250,8 @@ const Store = EmberObject.extend({
         }
         return { type, id };
       });
-
+    } else if (value === null) {
+      relationship.data = null;
     } else if (typeof value === 'object') {
       let id = get(value, 'id');
       relationship.data = { type, id };

@@ -56,6 +56,17 @@ module('Integration - Store', function(hooks) {
     assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
   });
 
+  test('#normalizeRecordProperties - nullable relationships', function(assert) {
+    const normalized = store.normalizeRecordProperties({
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter',
+      sun: null
+    });
+
+    assert.deepEqual(normalized.relationships.sun, { data: null }, 'normalized nullable hasOne');
+  });
+
   test('#addRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(function(planet) {
