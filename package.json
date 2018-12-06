@@ -1,6 +1,6 @@
 {
   "name": "ember-orbit",
-  "version": "0.15.8",
+  "version": "0.15.9",
   "description": "Ember.js data layer built with Orbit.js",
   "keywords": [
     "ember-addon",
