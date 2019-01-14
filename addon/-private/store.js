@@ -130,7 +130,8 @@ const Store = EmberObject.extend({
   },
 
   removeRecord(identity, options) {
-    return this.update(t => t.removeRecord(identity), options);
+    const { type, id } = identity;
+    return this.update(t => t.removeRecord({ type, id }), options);
   },
 
   on() {
