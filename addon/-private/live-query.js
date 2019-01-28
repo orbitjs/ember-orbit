@@ -35,6 +35,7 @@ export default ReadOnlyArrayProxy.extend({
         } else if (typeof results === 'object') {
           content = Object.keys(results).map(r => this._identityMap.lookup(results[r]))
         }
+        // eslint-disable-next-line ember/no-side-effects
         set(this, '_content', content);
       }
       return this._content;

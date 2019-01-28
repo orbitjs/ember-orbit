@@ -56,6 +56,17 @@ module('Integration - Store', function(hooks) {
     assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
   });
 
+  test('#normalizeRecordProperties - nullable relationships', function(assert) {
+    const normalized = store.normalizeRecordProperties({
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter',
+      sun: null
+    });
+
+    assert.deepEqual(normalized.relationships.sun, { data: null }, 'normalized nullable hasOne');
+  });
+
   test('#addRecord', function(assert) {
     return store.addRecord({ type: 'planet', name: 'Earth' })
       .then(function(planet) {
@@ -117,13 +128,58 @@ module('Integration - Store', function(hooks) {
       });
   });
 
-  test('#removeRecord', function(assert) {
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .tap(record => store.removeRecord(record))
-      .then(record => store.findRecord('planet', record.id))
-      .catch(error => {
-        assert.ok(error.message.match(/Record not found/));
-      });
+  test('#removeRecord - when passed a record, it should serialize its identity in a `removeRecord` op', async function(assert) {
+    assert.expect(2);
+
+    let record = await store.addRecord({ type: 'planet', name: 'Earth' });
+
+    store.on('update', (data) => {
+      assert.deepEqual(
+        data.operations,
+        [
+          {
+            op: 'removeRecord',
+            record: { type: 'planet', id: record.id }
+          }
+        ],
+        'only the identity has been serialized in the operation'
+      );
+    });
+
+    await store.removeRecord(record);
+
+    try {
+      await store.findRecord('planet', record.id);
+    } catch(error) {
+      assert.ok(error.message.match(/Record not found/));
+    }
+  });
+
+  test('#removeRecord - when passed an identity', async function(assert) {
+    assert.expect(2);
+
+    let record = await store.addRecord({ type: 'planet', name: 'Earth' });
+
+    store.on('update', (data) => {
+      assert.deepEqual(
+        data.operations,
+        [
+          {
+            op: 'removeRecord',
+            record: { type: 'planet', id: record.id }
+          }
+        ],
+        'only the identity has been serialized in the operation'
+      );
+    });
+
+    await store.removeRecord({ type: 'planet', id: record.id });
+
+    try {
+      await store.findRecord('planet', record.id);
+    } catch(error) {
+      assert.ok(error.message.match(/Record not found/));
+    }
   });
 
   test('#getTransform - returns a particular transform given an id', function(assert) {

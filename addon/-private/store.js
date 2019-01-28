@@ -130,7 +130,8 @@ const Store = EmberObject.extend({
   },
 
   removeRecord(identity, options) {
-    return this.update(t => t.removeRecord(identity), options);
+    const { type, id } = identity;
+    return this.update(t => t.removeRecord({ type, id }), options);
   },
 
   on() {
@@ -250,7 +251,8 @@ const Store = EmberObject.extend({
         }
         return { type, id };
       });
-
+    } else if (value === null) {
+      relationship.data = null;
     } else if (typeof value === 'object') {
       let id = get(value, 'id');
       relationship.data = { type, id };
