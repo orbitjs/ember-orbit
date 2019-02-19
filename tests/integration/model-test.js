@@ -137,6 +137,13 @@ module('Integration - Model', function(hooks) {
     assert.equal(record.get('remoteId'), 'planet:joopiter');
   });
 
+  test('replaceKey operation invalidates key on model', async function(assert) {
+    const record = await store.addRecord({type: 'planet', name: 'Jupiter', remoteId: 'planet:jupiter'});
+    assert.equal(record.get('remoteId'), 'planet:jupiter'); // cache the key
+    await store.update(t => t.replaceKey(record, 'remoteId', 'planet:joopiter'));
+    assert.equal(record.get('remoteId'), 'planet:joopiter');
+  });
+
   test('destroy model', async function(assert) {
     const cache = store.get('cache');
 
