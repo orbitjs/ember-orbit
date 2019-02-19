@@ -27,23 +27,22 @@ jobs:
 
   include:
     # runs linting and tests with current locked deps
+    - stage: tests
+      name: "Linting"
+      script: yarn lint:js
+    - name: "Basic tests"
+      script: yarn test
 
-    - stage: "Tests"
-      name: "Tests"
-      script:
-        - npm run lint:hbs
-        - npm run lint:js
-        - npm test
-
-    # we recommend new addons test the current and previous LTS
-    # as well as latest stable release (bonus points to beta/canary)
-    - stage: "Additional Tests"
-      env: EMBER_TRY_SCENARIO=ember-lts-2.16
-    - env: EMBER_TRY_SCENARIO=ember-lts-2.18
-    - env: EMBER_TRY_SCENARIO=ember-release
-    - env: EMBER_TRY_SCENARIO=ember-beta
-    - env: EMBER_TRY_SCENARIO=ember-canary
-    - env: EMBER_TRY_SCENARIO=ember-default-with-jquery
+    # runs tests against each supported Ember version
+    - stage: ember version tests
+      name: "Ember LTS 3.4"
+      env: EMBER_TRY_SCENARIO=ember-lts-3.4
+    - name: "Ember Release"
+      env: EMBER_TRY_SCENARIO=ember-release
+    - name: "Ember Beta"
+      env: EMBER_TRY_SCENARIO=ember-beta
+    - name: "Ember Canary"
+      env: EMBER_TRY_SCENARIO=ember-canary
 
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash

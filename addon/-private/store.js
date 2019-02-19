@@ -162,7 +162,7 @@ const Store = EmberObject.extend({
     return this.source.getInverseOperations(...arguments);
   },
 
-  _didPatch: function(operation) {
+  _didPatch(operation) {
     // console.debug('didPatch', operation);
 
     const replacement = operation.record;
@@ -185,6 +185,10 @@ const Store = EmberObject.extend({
       case 'replaceAttribute':
         record = this._identityMap.lookup({ type, id });
         record.notifyPropertyChange(operation.attribute);
+        break;
+      case 'replaceKey':
+        record = this._identityMap.lookup({ type, id });
+        record.notifyPropertyChange(operation.key);
         break;
       case 'replaceRelatedRecord':
         record = this._identityMap.lookup({ type, id });
