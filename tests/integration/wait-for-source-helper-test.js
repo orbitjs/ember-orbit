@@ -22,8 +22,6 @@ module('waitForSource helper', function(hooks) {
 
     await store.addRecord({ type: 'planet', name: 'Earth' });
 
-    assert.notOk(backup.source.requestQueue.empty);
-
     await waitForSource(backup);
 
     assert.ok(backup.source.requestQueue.empty);
@@ -40,8 +38,6 @@ module('waitForSource helper', function(hooks) {
     });
 
     await store.addRecord({ type: 'planet', name: 'Earth' });
-
-    assert.notOk(backup.source.requestQueue.empty);
 
     await waitForSource('backup');
 
