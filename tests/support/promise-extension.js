@@ -4,11 +4,12 @@ import Orbit from '@orbit/data';
 Orbit.Promise = EmberPromise;
 
 extendPromise(EmberPromise);
+extendPromise(Promise);
 
-function extendPromise(Promise) {
-  Promise.prototype.tap = Promise.prototype.tap || function(callback) {
+function extendPromise(PromiseContructor) {
+  PromiseContructor.prototype.tap = PromiseContructor.prototype.tap || function(callback) {
     return this.then(function (result) {
-      return Promise.resolve(callback(result)).then(() => result);
+      return PromiseContructor.resolve(callback(result)).then(() => result);
     });
   };
 }
