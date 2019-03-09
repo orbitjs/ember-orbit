@@ -18,7 +18,7 @@ export default EmberObject.extend({
   },
 
   includesRecord(type, id) {
-    return !!this._sourceCache.records(type).get(id);
+    return !!this._sourceCache.getRecordSync({ type, id });
   },
 
   retrieveRecord(type, id) {
@@ -28,17 +28,17 @@ export default EmberObject.extend({
   },
 
   retrieveKey(recordIdentity, key) {
-    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.getRecordSync(recordIdentity);
     return deepGet(record, ['keys', key]);
   },
 
   retrieveAttribute(recordIdentity, attribute) {
-    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.getRecordSync(recordIdentity);
     return deepGet(record, ['attributes', attribute]);
   },
 
   retrieveRelatedRecord(recordIdentity, relationship) {
-    const record = this._sourceCache.records(recordIdentity.type).get(recordIdentity.id);
+    const record = this._sourceCache.getRecordSync(recordIdentity);
     if (record) {
       const value = deepGet(record, ['relationships', relationship, 'data']);
       if (!value) {
