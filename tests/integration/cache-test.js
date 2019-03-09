@@ -137,11 +137,13 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#retrieveRecord', function(assert) {
+    const done = assert.async();
     run(() => {
       store
         .addRecord({type: 'planet', name: 'Jupiter'})
         .then((record) => cache.retrieveRecord('planet', record.get('id')))
-        .then((retrievedRecord) => assert.ok(retrievedRecord, 'retrieved record'));
+        .then((retrievedRecord) => assert.ok(retrievedRecord, 'retrieved record'))
+        .then(() => done());
     });
   });
 
