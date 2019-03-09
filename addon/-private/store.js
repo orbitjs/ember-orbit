@@ -170,7 +170,7 @@ const Store = EmberObject.extend({
     let record;
 
     switch(operation.op) {
-      case 'replaceRecord':
+      case 'updateRecord':
         record = this._identityMap.lookup({ type, id });
         ['attributes', 'keys', 'relationships'].forEach(grouping => {
           if (replacement[grouping]) {
