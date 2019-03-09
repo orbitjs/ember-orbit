@@ -217,7 +217,7 @@ module('Integration - Store', function(hooks) {
         assert.equal(get(star, 'name'), 'The Sun', 'star has been created properly');
       })
       .tap(([planet, star]) => store.update(t =>
-        t.replaceRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: { type: 'star', id: star.id } } } }))
+        t.updateRecord({ type: 'planet', id: planet.id, attributes: { name: 'Jupiter' }, relationships: { sun: { data: { type: 'star', id: star.id } } } }))
       )
       .then(([planet, star]) => {
         assert.strictEqual(get(planet, 'name'), 'Jupiter', 'attribute has been reset');
