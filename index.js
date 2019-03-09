@@ -43,7 +43,8 @@ module.exports = {
       packageTree('@orbit/data'),
       packageTree('@orbit/store'),
       packageTree('@orbit/immutable'),
-      packageTree('@orbit/coordinator')
+      packageTree('@orbit/coordinator'),
+      packageTree('@orbit/record-cache')
     ];
 
     let host = this.app || this.parent;
