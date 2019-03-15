@@ -33,14 +33,14 @@ const Store = EmberObject.extend({
     this._identityMap = IdentityMap.create({ _schema: this.source.schema, _sourceCache: sourceCache, _store: this });
     this.cache = Cache.create({ _sourceCache: sourceCache, _identityMap: this._identityMap });
 
-    sourceCache.on('patch', this._didPatch, this);
+    sourceCache.on('patch', this._didPatch.bind(this));
   },
 
   willDestroy() {
     this._super(...arguments);
     if (this.source) {
       if (this.source.cache) {
-        this.source.cache.off('patch', this._didPatch, this);
+        this.source.cache.off('patch', this._didPatch.bind(this));
       }
       this.source = null;
     }
@@ -170,7 +170,7 @@ const Store = EmberObject.extend({
     let record;
 
     switch(operation.op) {
-      case 'replaceRecord':
+      case 'updateRecord':
         record = this._identityMap.lookup({ type, id });
         ['attributes', 'keys', 'relationships'].forEach(grouping => {
           if (replacement[grouping]) {
