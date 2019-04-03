@@ -4,8 +4,8 @@ import { getOwner } from '@ember/application';
 import { Schema } from '@orbit/data';
 import modulesOfType from '../system/modules-of-type';
 
-function getRegisteredModels(prefix) {
-  return modulesOfType(prefix, 'models').map(camelize);
+function getRegisteredModels(prefix, modelsCollection) {
+  return modulesOfType(prefix, modelsCollection).map(camelize);
 }
 
 export default {
@@ -14,10 +14,11 @@ export default {
       const app = getOwner(injections);
       const modelSchemas = {};
 
-      let modelNames = injections.modelNames || getRegisteredModels(app.base.modulePrefix);
+      let orbitConfig = app.lookup('ember-orbit:config');
+      let modelNames = injections.modelNames || getRegisteredModels(app.base.modulePrefix, orbitConfig.collections.models);
 
       modelNames.forEach(name => {
-        let model = app.factoryFor(`model:${name}`).class;
+        let model = app.factoryFor(`${orbitConfig.types.model}:${name}`).class;
         modelSchemas[name] = {
           id: get(model, 'id'),
           keys: get(model, 'keys'),
