@@ -171,4 +171,10 @@ module('Integration - Model', function(hooks) {
 
     assert.ok(!cache.get('_identityMap').includes(identifier), 'removed from identity map');
   });
+
+  test('getData returns underlying record data', async function(assert){
+    const record = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    let recordData = record.getData();
+    assert.equal(recordData.attributes.name, 'Jupiter', 'returns record data (resource)');
+  });
 });

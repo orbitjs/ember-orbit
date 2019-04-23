@@ -18,13 +18,17 @@ export default EmberObject.extend({
   },
 
   includesRecord(type, id) {
-    return !!this._sourceCache.getRecordSync({ type, id });
+    return !!this.retrieveRecordData(type, id);
   },
 
   retrieveRecord(type, id) {
     if (this.includesRecord(type, id)) {
       return this._identityMap.lookup({type, id});
     }
+  },
+
+  retrieveRecordData(type, id) {
+    return this._sourceCache.getRecordSync({ type, id });
   },
 
   retrieveKey(recordIdentity, key) {
