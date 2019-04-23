@@ -37,6 +37,11 @@ const Model = EmberObject.extend(Evented, {
     store.update(t => t.replaceAttribute(this.identity, attribute, value), options);
   },
 
+  getData() {
+    const cache = get(this, '_storeOrError.cache');
+    return cache.retrieveRecordData(this.type, this.id);
+  },
+
   getRelatedRecord(relationship) {
     const cache = get(this, '_storeOrError.cache');
     return cache.retrieveRelatedRecord(this.identity, relationship);

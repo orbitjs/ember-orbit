@@ -147,6 +147,19 @@ module('Integration - Cache', function(hooks) {
     });
   });
 
+  test('#retrieveRecordData', function(assert) {
+    const done = assert.async();
+    run(() => {
+      store
+        .addRecord({type: 'planet', name: 'Jupiter'})
+        .then((record) => cache.retrieveRecordData('planet', record.get('id')))
+        .then((retrievedRecordData) => {
+          assert.ok(retrievedRecordData, 'retrieved record data');
+          assert.equal(retrievedRecordData.attributes.name, 'Jupiter', 'retrieved record data has attribute value');
+        }).then(() => done());
+    });
+  });
+
   test('#query - record', function(assert) {
     let earth;
 
