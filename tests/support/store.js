@@ -1,10 +1,5 @@
 import Ember from 'ember';
-import {
-  Store,
-  SchemaFactory,
-  StoreFactory,
-  KeyMapFactory
-} from 'ember-orbit';
+import { initialize } from 'ember-orbit/initializers/ember-orbit';
 import Owner from './owner';
 
 export function createOwner() {
@@ -20,30 +15,22 @@ export function createOwner() {
 export function createStore(options) {
   options = options || {};
 
-  const owner = createOwner();
+  const owner = options.owner || createOwner();
+  initialize(owner);
+  let orbitConfig = owner.lookup('ember-orbit:config');
 
-  owner.register('data-schema:main', SchemaFactory);
-  owner.register('data-key-map:main', KeyMapFactory);
-
-  owner.register('data-source:store', StoreFactory);
-  owner.register('service:store', Store);
-  owner.inject('service:store', 'source', 'data-source:store');
-
-  owner.inject('data-source', 'schema', 'data-schema:main');
-  owner.inject('data-source', 'keyMap', 'data-key-map:main');
-
-  const models = options.models;
+  const { models } = options;
   if (models) {
     let types = [];
     Object.keys(models).forEach(type => {
-      owner.register(`model:${type}`, models[type]);
+      owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
       types.push(type);
     });
 
     // console.log(types);
-    owner.register('model-names:main', types, { instantiate: false });
-    owner.inject('data-schema:main', 'modelNames', 'model-names:main');
+    owner.register('ember-orbit-model-names:main', types, { instantiate: false });
+    owner.inject(`service:${orbitConfig.services.schema}`, 'modelNames', 'ember-orbit-model-names:main');
   }
 
-  return owner.lookup('service:store');
+  return owner.lookup(`service:${orbitConfig.services.store}`);
 }

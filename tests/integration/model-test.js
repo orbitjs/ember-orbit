@@ -31,7 +31,7 @@ module('Integration - Model', function(hooks) {
 
     const app = getOwner(store);
     app.register('service:foo', Foo);
-    app.inject('model:star', 'foo', 'service:foo');
+    app.inject('data-model:star', 'foo', 'service:foo');
 
     const model = await store.addRecord({type: 'star', name: 'The Sun'});
     assert.ok(model.get('foo'), 'service has been injected');

@@ -74,7 +74,9 @@ export default EmberObject.extend({
     let modelFactory = this._modelFactoryMap[type];
 
     if (!modelFactory) {
-      modelFactory = getOwner(this._store).factoryFor(`model:${type}`);
+      let owner = getOwner(this._store);
+      let orbitConfig = owner.lookup('ember-orbit:config');
+      modelFactory = owner.factoryFor(`${orbitConfig.types.model}:${type}`);
       this._modelFactoryMap[type] = modelFactory;
     }
 
