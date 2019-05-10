@@ -11,7 +11,7 @@ module('Integration - Cache', function(hooks) {
   hooks.beforeEach(function() {
    const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models });
-    cache = store.get('cache');
+    cache = store.cache;
   });
 
   hooks.afterEach(function() {

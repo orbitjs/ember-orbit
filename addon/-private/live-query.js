@@ -3,9 +3,6 @@ import { isArray } from '@ember/array';
 import ReadOnlyArrayProxy from './system/read-only-array-proxy';
 
 export default ReadOnlyArrayProxy.extend({
-  _sourceCache: null,
-  _query: null,
-  _identityMap: null,
   _content: null,
 
   init(...args) {
