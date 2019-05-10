@@ -4,14 +4,15 @@ import modulesOfType from '../system/modules-of-type';
 
 export default {
   create(injections = {}) {
-    const owner = getOwner(injections);
+    const app = getOwner(injections);
+    let orbitConfig = app.lookup('ember-orbit:config');
 
     let sourceNames;
     if (injections.sourceNames) {
       sourceNames = injections.sourceNames;
       delete injections.sourceNames;
     } else {
-      sourceNames = modulesOfType(owner.base.modulePrefix, 'data-sources');
+      sourceNames = modulesOfType(app.base.modulePrefix, orbitConfig.collections.sources);
       sourceNames.push('store');
     }
 
@@ -20,12 +21,11 @@ export default {
       strategyNames = injections.strategyNames;
       delete injections.strategyNames;
     } else {
-      strategyNames = modulesOfType(owner.base.modulePrefix, 'data-strategies');
+      strategyNames = modulesOfType(app.base.modulePrefix, orbitConfig.collections.strategies);
     }
 
-    injections.sources = sourceNames.map(name => owner.lookup(`data-source:${name}`));
-
-    injections.strategies = strategyNames.map(name => owner.lookup(`data-strategy:${name}`));
+    injections.sources = sourceNames.map(name => app.lookup(`${orbitConfig.types.source}:${name}`));
+    injections.strategies = strategyNames.map(name => app.lookup(`${orbitConfig.types.strategy}:${name}`));
 
     return new Coordinator(injections);
   }
