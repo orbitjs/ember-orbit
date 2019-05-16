@@ -52,7 +52,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('remove model', async function(assert) {
-    const cache = store.get('cache');
+    const cache = store.cache;
 
     const record = await store.addRecord({type: 'star', name: 'The Sun'});
     await record.remove();
@@ -161,7 +161,7 @@ module('Integration - Model', function(hooks) {
   });
 
   test('destroy model', async function(assert) {
-    const cache = store.get('cache');
+    const cache = store.cache;
 
     const record = await store.addRecord({type: 'planet', name: 'Jupiter'});
     const identifier = record.getProperties('type', 'id');
@@ -169,7 +169,7 @@ module('Integration - Model', function(hooks) {
 
     await waitForSource(store);
 
-    assert.ok(!cache.get('_identityMap').includes(identifier), 'removed from identity map');
+    assert.ok(!cache._identityMap.has(identifier), 'removed from identity map');
   });
 
   test('getData returns underlying record data', async function(assert){
