@@ -29,6 +29,7 @@ module.exports = function() {
         },
         {
           name: 'ember-beta',
+          allowedToFail: true,
           npm: {
             devDependencies: {
               'ember-source': urls[1]
@@ -37,6 +38,7 @@ module.exports = function() {
         },
         {
           name: 'ember-canary',
+          allowedToFail: true,
           npm: {
             devDependencies: {
               'ember-source': urls[2]
