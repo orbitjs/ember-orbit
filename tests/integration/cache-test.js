@@ -207,35 +207,35 @@ module('Integration - Cache', function(hooks) {
       });
   });
 
-  test('#find - by type and id', function(assert) {
-    let earth;
-
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(() => {
-        const foundRecord = cache.find('planet', earth.id);
-        assert.strictEqual(foundRecord, earth);
-      });
+  test('#find - by type and id', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const foundRecord = cache.find('planet', earth.id);
+    assert.strictEqual(foundRecord, earth, 'exact match');
   });
 
-  test('#find - by type', function(assert) {
-    let earth, jupiter;
+  test('#find - by type', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
 
-    return store.addRecord({ type: 'planet', name: 'Earth' })
-      .then(record => {
-        earth = record;
-        return store.addRecord({ type: 'planet', name: 'Jupiter' });
-      })
-      .then(record => {
-        jupiter = record;
+    const foundRecords = cache.find('planet');
+    assert.equal(foundRecords.length, 2, 'two records found');
+    assert.ok(foundRecords.includes(earth), 'earth is included');
+    assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
+  });
 
-        const foundRecords = cache.find('planet');
-        assert.equal(foundRecords.length, 2, 'two records found');
-        assert.ok(foundRecords.indexOf(earth) > -1, 'earth is included');
-        assert.ok(foundRecords.indexOf(jupiter) > -1, 'jupiter is included');
-      });
+  test('#findRecord', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const foundRecord = cache.findRecord('planet', earth.id);
+    assert.strictEqual(foundRecord, earth, 'exact match');
+  });
+
+  test('#findRecords', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+
+    const foundRecords = cache.findRecords('planet');
+    assert.equal(foundRecords.length, 2, 'two records found');
+    assert.ok(foundRecords.includes(earth), 'earth is included');
+    assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
   });
 });
