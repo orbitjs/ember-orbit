@@ -63,9 +63,8 @@ As with any Ember addon, you can install Ember-Orbit in your project with:
 ember install ember-orbit
 ```
 
-Ember-Orbit itself already has several Orbit dependencies, including
-`@orbit/core`, `@orbit/coordinator`, `@orbit/data`, `@orbit/store`,
-`@orbit/utils`, and `@orbit/immutable`.
+Ember-Orbit depends on `ember-auto-import` to automatically import external
+dependencies, including `@orbit/coordinator` and `@orbit/store`.
 
 If you want to use additional Orbit sources and buckets, install them as
 regular dependencies. For example:
@@ -73,35 +72,6 @@ regular dependencies. For example:
 ```
 npm install @orbit/jsonapi --save
 ```
-
-You'll also need to tell Ember-Orbit to include these packages in your build.
-Modify your `ember-cli-build.js` file to add them to an `orbit.packages` array
-like this:
-
-```
-const EmberApp = require('ember-cli/lib/broccoli/ember-app');
-
-module.exports = function(defaults) {
-  const app = new EmberApp(defaults, {
-    // Orbit-specific options
-    orbit: {
-      packages: [
-        '@orbit/jsonapi',
-        '@orbit/indexeddb',
-        '@orbit/local-storage',
-        '@orbit/indexeddb-bucket',
-        '@orbit/local-storage-bucket'
-      ]
-    }
-  });
-
-  return app.toTree();
-};
-```
-
-> Note: There's nothing particularly Orbit-specific about the implementation
-that imports these packages, so expect a more generalized import solution in the
-near future.
 
 ## Using Ember-Orbit
 
