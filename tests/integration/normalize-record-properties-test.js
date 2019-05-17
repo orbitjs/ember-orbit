@@ -1,4 +1,3 @@
-import { Promise as EmberPromise } from 'rsvp';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
@@ -17,31 +16,23 @@ module('Integration - normalizeRecordProperties', function(hooks) {
     store = null;
   });
 
-  test('#normalizeRecordProperties', function(assert) {
-    const done = assert.async();
-
-    EmberPromise.all([
-      store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'}),
-      store.addRecord({type: 'star', id: 'sun', name: 'The Sun'})
-    ])
-    .then(([callisto, sun]) => {
-      const normalized = normalizeRecordProperties(store.source.schema, {
-        type: 'planet',
-        id: 'jupiter',
-        name: 'Jupiter',
-        moons: [callisto],
-        sun: sun
-      });
-
-      assert.equal(normalized.id, 'jupiter', 'normalized id');
-      assert.equal(normalized.type, 'planet', 'normalized type');
-      assert.deepEqual(normalized.keys, undefined, 'normalized keys');
-      assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
-      assert.deepEqual(normalized.relationships.moons, { data: [{ type: 'moon', id: 'callisto' }] }, 'normalized hasMany');
-      assert.deepEqual(normalized.relationships.sun, { data: { type: 'star', id: 'sun' } }, 'normalized hasOne');
-
-      done();
+  test('#normalizeRecordProperties', async function(assert) {
+    const callisto = await store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'});
+    const sun = await store.addRecord({type: 'star', id: 'sun', name: 'The Sun'});
+    const normalized = normalizeRecordProperties(store.source.schema, {
+      type: 'planet',
+      id: 'jupiter',
+      name: 'Jupiter',
+      moons: [callisto],
+      sun: sun
     });
+
+    assert.equal(normalized.id, 'jupiter', 'normalized id');
+    assert.equal(normalized.type, 'planet', 'normalized type');
+    assert.deepEqual(normalized.keys, undefined, 'normalized keys');
+    assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
+    assert.deepEqual(normalized.relationships.moons, { data: [{ type: 'moon', id: 'callisto' }] }, 'normalized hasMany');
+    assert.deepEqual(normalized.relationships.sun, { data: { type: 'star', id: 'sun' } }, 'normalized hasOne');
   });
 
   test('#normalizeRecordProperties - undefined relationships', function(assert) {
