@@ -7,15 +7,17 @@ export default ReadOnlyArrayProxy.extend({
 
   init(...args) {
     this._super(...args);
-    this._sourceCache.on('patch', this.invalidate.bind(this));
-    this._sourceCache.on('reset', this.invalidate.bind(this));
+    this._invalidatelistener = this.invalidate.bind(this);
+    this._sourceCache.on('patch', this._invalidatelistener);
+    this._sourceCache.on('reset', this._invalidatelistener);
   },
 
   willDestroy(...args) {
     this._super(...args);
-    this._sourceCache.off('patch', this.invalidate.bind(this));
-    this._sourceCache.off('reset', this.invalidate.bind(this));
-  },
+    this._sourceCache.off('patch', this._invalidatelistener);
+    this._sourceCache.off('reset', this._invalidatelistener);
+    this._invalidatelistener = null;
+},
 
   invalidate() {
     set(this, '_content', null);
