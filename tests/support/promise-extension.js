@@ -1,7 +1,4 @@
 import { Promise as EmberPromise } from 'rsvp';
-import Orbit from '@orbit/data';
-
-Orbit.Promise = EmberPromise;
 
 extendPromise(EmberPromise);
 extendPromise(Promise);
