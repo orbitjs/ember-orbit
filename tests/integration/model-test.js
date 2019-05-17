@@ -53,13 +53,22 @@ module('Integration - Model', function(hooks) {
 
   test('remove model', async function(assert) {
     const cache = store.cache;
-
     const record = await store.addRecord({type: 'star', name: 'The Sun'});
     await record.remove();
 
     assert.ok(!cache.retrieveRecord('star', record.id), 'record does not exist in cache');
     assert.ok(record.get('disconnected'), 'record has been disconnected from store');
     assert.throws(() => record.get('name'), EmberError, 'record has been removed from Store');
+  });
+
+  test('remove model with relationships', async function(assert) {
+    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+    const sun = await store.addRecord({type: 'star', name: 'Sun' });
+    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter', moons: [callisto], sun});
+    assert.deepEqual(jupiter.moons.content, [callisto], 'moons relationship has been added');
+    assert.strictEqual(jupiter.sun, sun, 'sun relationship has been added');
+
+    await jupiter.remove();
   });
 
   test('add to hasMany', async function(assert) {

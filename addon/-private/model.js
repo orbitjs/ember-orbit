@@ -79,6 +79,13 @@ const Model = EmberObject.extend(Evented, {
   },
 
   disconnect() {
+    // destroy any LiveQuery relationships associated with this record
+    if (this._relatedRecords) {
+      for (let rel in this._relatedRecords) {
+        this._relatedRecords[rel].destroy();
+        delete this._relatedRecords[rel];
+      }
+    }
     set(this, '_store', null);
   },
 
