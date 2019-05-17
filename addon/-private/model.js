@@ -54,12 +54,16 @@ const Model = EmberObject.extend(Evented, {
   },
 
   getRelatedRecords(field) {
-    const store = get(this, '_storeOrError');
-    return HasMany.create({
-      _store: store,
-      _model: this,
-      _relationship: field
-    });
+    this._relatedRecords = this._relatedRecords || {};
+    if (!this._relatedRecords[field]) {
+      const store = get(this, '_storeOrError');
+      this._relatedRecords[field] = HasMany.create({
+        _store: store,
+        _model: this,
+        _relationship: field
+      });
+    }
+    return this._relatedRecords[field];
   },
 
   replaceAttributes(properties, options) {

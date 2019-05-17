@@ -177,4 +177,13 @@ module('Integration - Model', function(hooks) {
     let recordData = record.getData();
     assert.equal(recordData.attributes.name, 'Jupiter', 'returns record data (resource)');
   });
+
+  test('getRelatedRecords always returns the same LiveQuery', async function(assert) {
+    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+    const sun = await store.addRecord({type: 'star', name: 'Sun' });
+    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter', moons: [callisto], sun});
+    assert.deepEqual(jupiter.moons.content, [callisto], 'moons relationship has been added');
+    assert.strictEqual(jupiter.moons, jupiter.getRelatedRecords('moons'), 'getRelatedRecords returns the expected LiveQuery');
+    assert.strictEqual(jupiter.getRelatedRecords('moons'), jupiter.getRelatedRecords('moons'), 'getRelatedRecords does not create additional LiveQueries');
+  });
 });
