@@ -1,10 +1,6 @@
-// import EmberError from '@ember/error';
-// import EmberObject from '@ember/object';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createOwner, createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
-// import { getOwner } from '@ember/application';
-// import { waitForSource } from 'ember-orbit/test-support';
 import Controller from '@ember/controller';
 import Route from '@ember/routing/route';
 
