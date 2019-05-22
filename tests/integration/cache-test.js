@@ -75,6 +75,19 @@ module('Integration - Cache', function(hooks) {
     assert.notOk(planets.includes(jupiter));
   });
 
+  test('liveQuery - findRelatedRecord updates when matching record is added', async function(assert) {
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
+    const planets = cache.liveQuery(q => q.findRelatedRecord(callisto, 'planet'));
+    assert.equal(planets.length, 0);
+
+    const jupiter = await store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
+    callisto.set('planet', jupiter);
+    await store.requestQueue.process();
+
+    assert.equal(planets.length, 1);
+    assert.ok(planets.includes(jupiter));
+  });
+
   test('#retrieveAttribute', async function(assert) {
     const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
     assert.equal(cache.retrieveAttribute(jupiter, 'name'), 'Jupiter');

@@ -26,13 +26,14 @@ export default ReadOnlyArrayProxy.extend({
   content: computed('_content', {
     get() {
       if (get(this, '_content') === null) {
-        let results = this._sourceCache.query(this._query);
-
-        let content;
-        if (isArray(results)) {
-          content = results.map(r => this._identityMap.lookup(r))
-        } else if (typeof results === 'object') {
-          content = Object.keys(results).map(r => this._identityMap.lookup(results[r]))
+        let result = this._sourceCache.query(this._query);
+        let content = this._identityMap.lookupQueryResult(this._query, result);
+        if (content) {
+          if (!isArray(content)) {
+            content = [content];
+          }
+        } else {
+          content = [];
         }
         // eslint-disable-next-line ember/no-side-effects
         set(this, '_content', content);
