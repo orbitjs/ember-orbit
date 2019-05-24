@@ -1,70 +1,70 @@
-import { Schema, RecordRelationship, Record } from '@orbit/data';
-import { Dict, deepSet } from '@orbit/utils';
+import { Schema, RecordRelationship, Record as OrbitRecord, ModelDefinition, RecordIdentity } from '@orbit/data';
+import { deepSet } from '@orbit/utils';
 
-export default function normalizeRecordProperties(schema: Schema, properties: Dict<any>) {
+export default function normalizeRecordProperties(schema: Schema, properties: Record<string, unknown>) {
   const { id, type } = properties;
+  const modelDefinition = schema.getModel(type as string);
+  const record = { id, type } as OrbitRecord;
 
-  schema.getModel(type);
-
-  const record = { id, type };
-
-  assignKeys(schema, record, properties);
-  assignAttributes(schema, record, properties);
-  assignRelationships(schema, record, properties);
+  assignKeys(modelDefinition, record, properties);
+  assignAttributes(modelDefinition, record, properties);
+  assignRelationships(modelDefinition, record, properties);
 
   return record;
 }
 
-function assignKeys(schema: Schema, record: Record, properties: Dict<any>) {
-  const keys = schema.getModel(record.type).keys || {};
-  Object.keys(keys).forEach(key => {
+function assignKeys(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+  const keys = modelDefinition.keys || {};
+  for (let key of Object.keys(keys)) {
     if (properties[key] !== undefined) {
       deepSet(record, ['keys', key], properties[key]);
     }
-  });
+  }
 }
 
-function assignAttributes(schema: Schema, record: Record, properties: Dict<any>) {
-  const attributes = schema.getModel(record.type).attributes || {};
-  Object.keys(attributes).forEach(attribute => {
+function assignAttributes(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+  const attributes = modelDefinition.attributes || {};
+  for (let attribute of Object.keys(attributes)) {
     if (properties[attribute] !== undefined) {
       deepSet(record, ['attributes', attribute], properties[attribute]);
     }
-  });
+  }
 }
 
-function assignRelationships(schema: Schema, record: Record, properties: Dict<any>) {
-  const relationships = schema.getModel(record.type).relationships || {};
-  Object.keys(relationships).forEach(relationshipName => {
-    if (properties[relationshipName] !== undefined) {
-      record.relationships = record.relationships || {};
-      const relationshipProperties = relationships[relationshipName];
-      normalizeRelationship(record, properties, relationshipName, relationshipProperties);
+function assignRelationships(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+  const relationships = modelDefinition.relationships || {};
+  for (let relationship of Object.keys(relationships)) {
+    if (properties[relationship] !== undefined) {
+      let relationshipType = relationships[relationship].model as string;
+      let relationshipProperties = properties[relationship] as RecordIdentity | RecordIdentity[] | string | string[] | null;
+      deepSet(record, ['relationships', relationship], normalizeRelationship(relationshipType, relationshipProperties));
     }
-  });
+  }
 }
 
-function normalizeRelationship(record: Record, properties: Dict<any>, relationshipName: string, relationshipProperties: Dict<any>) {
-  const value = properties[relationshipName];
-  const relationships = record.relationships || {};
-  const relationship: RecordRelationship = relationships[relationshipName] = {};
-  const type = relationshipProperties.model;
+function normalizeRelationship(type: string, value: RecordIdentity | RecordIdentity[] | string | string[] | null): RecordRelationship {
+  const relationship: RecordRelationship = {};
 
-  if (Array.isArray(value)) {
-    relationship.data = value.map(id => {
-      if (typeof id === 'object') {
-        id = id.id;
+  if (isHasMany(value)) {
+    relationship.data = [];
+    for (let identity of value) {
+      if (typeof identity === 'string') {
+        relationship.data.push({ type, id: identity });
+      } else {
+        relationship.data.push({ type, id: identity.id });
       }
-      return { type, id };
-    });
+    }
   } else if (value === null) {
     relationship.data = null;
-  } else if (typeof value === 'object') {
-    let id = value.id;
-    relationship.data = { type, id };
-
+  } else if (typeof value === 'string') {
+    relationship.data = { type, id: value };
   } else {
-    let id = value;
-    relationship.data = { type, id };
+    relationship.data = { type, id: value.id };
   }
+
+  return relationship;
+}
+
+function isHasMany(value: RecordIdentity | RecordIdentity[] | string | string[] | null): value is RecordIdentity[] | string[] {
+  return Array.isArray(value);
 }

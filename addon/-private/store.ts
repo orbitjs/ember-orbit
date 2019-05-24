@@ -110,6 +110,11 @@ export default class Store {
       .then(() => this.identityMap.lookup(record));
   }
 
+  updateRecord(properties = {}, options?: object) {
+    let record = normalizeRecordProperties(this.source.schema, properties);
+    return this.update(t => t.updateRecord(record), options);
+  }
+
   findAll(type: string, options?: object) {
     deprecate('`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.');
     return this.findRecords(type, options);

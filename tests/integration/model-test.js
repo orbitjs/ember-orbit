@@ -195,4 +195,41 @@ module('Integration - Model', function(hooks) {
     assert.strictEqual(jupiter.moons, jupiter.getRelatedRecords('moons'), 'getRelatedRecords returns the expected LiveQuery');
     assert.strictEqual(jupiter.getRelatedRecords('moons'), jupiter.getRelatedRecords('moons'), 'getRelatedRecords does not create additional LiveQueries');
   });
+
+  test('update record', async function(assert) {
+    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const sun = await store.addRecord({type: 'star', name: 'Sun' });
+    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+
+    assert.equal(jupiter.get('name'), 'Jupiter');
+    assert.equal(jupiter.get('sun'), null);
+    assert.deepEqual(jupiter.get('moons').content, []);
+
+    await jupiter.update({
+      name: 'Jupiter2',
+      sun,
+      moons: [callisto]
+    });
+
+    assert.equal(jupiter.get('name'), 'Jupiter2');
+    assert.equal(jupiter.get('sun'), sun, 'invalidates has one relationship');
+    assert.deepEqual(jupiter.get('moons').toArray(), [callisto], 'invalidates has many relationship');
+  });
+
+  test('update record with ids', async function(assert) {
+    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const sun = await store.addRecord({type: 'star', name: 'Sun' });
+    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+
+    assert.equal(jupiter.get('sun'), null);
+    assert.deepEqual(jupiter.get('moons').content, []);
+
+    await jupiter.update({
+      sun: sun.id,
+      moons: [callisto.id]
+    });
+
+    assert.equal(jupiter.get('sun'), sun, 'invalidates has one relationship');
+    assert.deepEqual(jupiter.get('moons').toArray(), [callisto], 'invalidates has many relationship');
+  });
 });
