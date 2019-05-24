@@ -64,7 +64,7 @@ ember install ember-orbit
 ```
 
 Ember-Orbit depends on `ember-auto-import` to automatically import external
-dependencies, including `@orbit/coordinator` and `@orbit/store`.
+dependencies, including `@orbit/coordinator` and `@orbit/memory`.
 
 If you want to use additional Orbit sources and buckets, install them as
 regular dependencies. For example:
