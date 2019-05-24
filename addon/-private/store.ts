@@ -4,7 +4,7 @@ import { notifyPropertyChange } from '@ember/object';
 import {
   buildQuery, QueryOrExpression, RecordIdentity, Transform, TransformBuilder, TransformOrOperations, RecordOperation, Record
 } from '@orbit/data';
-import MemorySource, { Cache as MemoryCache } from '@orbit/store';
+import MemorySource, { MemoryCache } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
 
 import Cache from './cache';

@@ -4,7 +4,7 @@ import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
-import StoreFactory from '../-private/factories/store-factory';
+import MemorySourceFactory from '../-private/factories/memory-source-factory';
 import { camelize } from '@ember/string';
 
 export const DEFAULT_ORBIT_CONFIG = {
@@ -54,7 +54,7 @@ export function initialize(application) {
   application.register(`service:${orbitConfig.services.store}`, Store);
 
   // Store source (which is injected in store service)
-  application.register(`${orbitConfig.types.source}:store`, StoreFactory);
+  application.register(`${orbitConfig.types.source}:store`, MemorySourceFactory);
   application.inject(`service:${orbitConfig.services.store}`, 'source', `${orbitConfig.types.source}:store`);
 
   // Injections to all sources

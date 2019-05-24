@@ -2,7 +2,7 @@ import Orbit, {
   buildQuery, RecordIdentity, QueryOrExpression
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
-import { Cache as MemoryCache } from '@orbit/store';
+import { MemoryCache } from '@orbit/memory';
 
 import LiveQuery from './live-query';
 import IdenityMap from './identity-map';

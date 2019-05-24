@@ -1,7 +1,8 @@
 export { default as CoordinatorFactory } from './-private/factories/coordinator-factory';
 export { default as KeyMapFactory } from './-private/factories/key-map-factory';
 export { default as SchemaFactory } from './-private/factories/schema-factory';
-export { default as StoreFactory } from './-private/factories/store-factory';
+export { default as MemorySourceFactory } from './-private/factories/memory-source-factory';
+export { default as StoreFactory } from './-private/factories/memory-source-factory';
 export { default as attr } from './-private/fields/attr';
 export { default as hasMany } from './-private/fields/has-many';
 export { default as hasOne } from './-private/fields/has-one';
