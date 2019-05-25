@@ -7,7 +7,7 @@
  * discovery capabilities are added to the ember-resolver.
  */
 export default function(prefix, type) {
-  const regex = new RegExp('^' + prefix + '\/' + type + '\/?\/');
+  const regex = new RegExp('^' + prefix + '/' + type + '/?/');
   const moduleNames = Object.keys(self.requirejs._eak_seen);
   const found = [];
 

@@ -5,4 +5,4 @@ export default {
     injections.name = injections.name || 'store';
     return new MemorySource(injections);
   }
-}
+};

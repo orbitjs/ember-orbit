@@ -7,7 +7,7 @@ module('Integration - Cache', function(hooks) {
   let cache;
 
   hooks.beforeEach(function() {
-   const models = { planet: Planet, moon: Moon, star: Star };
+    const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models });
     cache = store.cache;
   });
@@ -18,32 +18,43 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('liveQuery - adds record that becomes a match', async function(assert) {
-    const liveQuery = cache.liveQuery(q => q.findRecords('planet')
-                                            .filter({ attribute: 'name', value: 'Jupiter' }));
+    const liveQuery = cache.liveQuery(q =>
+      q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
+    );
 
-    await store.addRecord({ id: 'jupiter', type: 'planet', attributes: { name: 'Jupiter' } });
+    await store.addRecord({
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    });
     assert.equal(liveQuery.get('length'), 0);
 
-    await store.update(t => t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter'));
+    await store.update(t =>
+      t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
+    );
     assert.equal(liveQuery.get('length'), 1);
   });
 
   test('liveQuery - updates when matching record is added', async function(assert) {
     const planets = cache.liveQuery(q => q.findRecords('planet'));
-    const jupiter = await store.addRecord({ id: 'jupiter', type: 'planet', name: 'Jupiter' });
+    const jupiter = await store.addRecord({
+      id: 'jupiter',
+      type: 'planet',
+      name: 'Jupiter'
+    });
     assert.ok(planets.includes(jupiter));
   });
 
   test('liveQuery - updates when matching record is removed', async function(assert) {
     const planets = cache.liveQuery(q => q.findRecords('planet'));
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     await store.removeRecord(jupiter);
     assert.notOk(planets.includes(jupiter));
   });
 
   test('liveQuery - ignores non matching record', async function(assert) {
     const planets = cache.liveQuery(q => q.findRecords('planet'));
-    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
     assert.notOk(planets.includes(callisto));
   });
 
@@ -51,22 +62,23 @@ module('Integration - Cache', function(hooks) {
     const planets = cache.liveQuery(q => q.findRecords('planet'));
 
     await store.update(t => [
-      t.addRecord({type: 'planet', id: 'Jupiter'}),
-      t.addRecord({type: 'planet', id: 'Earth'})
+      t.addRecord({ type: 'planet', id: 'Jupiter' }),
+      t.addRecord({ type: 'planet', id: 'Earth' })
     ]);
     assert.equal(planets.length, 2);
     assert.equal(planets.content.length, 2);
 
-    await store.update(t => t.removeRecord({type: 'planet', id: 'Jupiter'}));
+    await store.update(t => t.removeRecord({ type: 'planet', id: 'Jupiter' }));
     assert.equal(planets.length, 1);
     assert.equal(planets.content.length, 1);
   });
 
   test('liveQuery - removes record that no longer matches', async function(assert) {
-    const planets = cache.liveQuery(q => q.findRecords('planet')
-                                          .filter({ attribute: 'name', value: 'Jupiter' }));
+    const planets = cache.liveQuery(q =>
+      q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
+    );
 
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.equal(planets.length, 1);
     assert.ok(planets.includes(jupiter));
 
@@ -76,13 +88,13 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#retrieveAttribute', async function(assert) {
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.equal(cache.retrieveAttribute(jupiter, 'name'), 'Jupiter');
   });
 
   test('#retrieveRelatedRecord', async function(assert) {
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
-    const callisto = await store.addRecord({type: 'moon', name: 'Callisto'});
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
     callisto.set('planet', jupiter);
     await store.requestQueue.process();
 
@@ -90,15 +102,23 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('#retrieveRecord', async function(assert) {
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
-    assert.strictEqual(cache.retrieveRecord('planet', jupiter.id), jupiter, 'retrieved record');
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.strictEqual(
+      cache.retrieveRecord('planet', jupiter.id),
+      jupiter,
+      'retrieved record'
+    );
   });
 
   test('#retrieveRecordData', async function(assert) {
-    const jupiter = await store.addRecord({type: 'planet', name: 'Jupiter'});
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const retrievedRecordData = cache.retrieveRecordData('planet', jupiter.id);
     assert.ok(retrievedRecordData, 'retrieved record data');
-    assert.equal(retrievedRecordData.attributes.name, 'Jupiter', 'retrieved record data has attribute value');
+    assert.equal(
+      retrievedRecordData.attributes.name,
+      'Jupiter',
+      'retrieved record data has attribute value'
+    );
   });
 
   test('#query - record', async function(assert) {
@@ -120,7 +140,9 @@ module('Integration - Cache', function(hooks) {
   test('#query - filter', async function(assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    const foundRecords = cache.query(q => q.findRecords('planet').filter({ attribute: 'name', value: 'Earth' }));
+    const foundRecords = cache.query(q =>
+      q.findRecords('planet').filter({ attribute: 'name', value: 'Earth' })
+    );
     assert.deepEqual(foundRecords, [earth]);
     assert.strictEqual(foundRecords[0], earth);
   });

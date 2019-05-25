@@ -1,4 +1,9 @@
-import Orbit, { RecordIdentity, serializeRecordIdentity, Record, Query } from '@orbit/data';
+import Orbit, {
+  RecordIdentity,
+  serializeRecordIdentity,
+  Record,
+  Query
+} from '@orbit/data';
 import { Dict } from '@orbit/utils';
 
 import ModelFactory, { RecordModel } from './model-factory';
@@ -11,7 +16,7 @@ export interface IdentityMapSettings {
 
 export default class IdenityMap {
   protected _factory: ModelFactory;
-  protected _map: Dict<RecordModel>
+  protected _map: Dict<RecordModel>;
 
   constructor(settings: IdentityMapSettings) {
     this._factory = settings.factory;
@@ -36,7 +41,7 @@ export default class IdenityMap {
   }
 
   lookupQueryResult(query: Query, result: Record | Record[] | null) {
-    switch(query.expression.op) {
+    switch (query.expression.op) {
       case 'findRecord':
       case 'findRelatedRecord':
         return this.lookup(result as RecordIdentity);
@@ -53,7 +58,9 @@ export default class IdenityMap {
   }
 
   includes(identity: RecordIdentity) {
-    deprecate('`IdentityMap.includes(identity)` is deprecated, use `IdentityMap.has(identity)`.');
+    deprecate(
+      '`IdentityMap.includes(identity)` is deprecated, use `IdentityMap.has(identity)`.'
+    );
     return this.has(identity);
   }
 
@@ -64,14 +71,6 @@ export default class IdenityMap {
       const identifier = serializeRecordIdentity(identity);
       delete this._map[identifier];
       this._factory.disconnect(record);
-    }
-  }
-
-  notifyPropertyChange(identity: RecordIdentity, property: string) {
-    const record = this._materialized(identity);
-
-    if (record) {
-      this._factory.notifyPropertyChange(record, property);
     }
   }
 

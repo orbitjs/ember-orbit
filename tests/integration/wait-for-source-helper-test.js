@@ -9,14 +9,14 @@ module('waitForSource helper', function(hooks) {
 
   setupTest(hooks);
 
-  hooks.beforeEach(function () {
+  hooks.beforeEach(function() {
     store = createStore({ models: { planet: Planet } });
   });
 
   test('it resolves once all the pending requests to the given source have synced', async function(assert) {
     const backup = createStore({ models: { planet: Planet } });
 
-    store.on('update', (transform) => {
+    store.on('update', transform => {
       backup.update(transform);
     });
 
@@ -33,7 +33,7 @@ module('waitForSource helper', function(hooks) {
 
     this.owner.register('data-source:backup', backup, { instantiate: false });
 
-    store.on('update', (transform) => {
+    store.on('update', transform => {
       backup.update(transform);
     });
 

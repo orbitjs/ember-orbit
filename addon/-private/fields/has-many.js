@@ -7,8 +7,10 @@ export default function(model, options = {}) {
     get(key) {
       return this.getRelatedRecords(key);
     }
-  }).meta({
-    options,
-    isRelationship: true
-  }).readOnly();
+  })
+    .meta({
+      options,
+      isRelationship: true
+    })
+    .readOnly();
 }

@@ -6,8 +6,8 @@ module.exports = function() {
   return Promise.all([
     getChannelURL('release'),
     getChannelURL('beta'),
-    getChannelURL('canary'),
-  ]).then((urls) => {
+    getChannelURL('canary')
+  ]).then(urls => {
     return {
       useYarn: true,
       scenarios: [
