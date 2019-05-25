@@ -2,7 +2,14 @@ import { getOwner, setOwner } from '@ember/application';
 import { notifyPropertyChange } from '@ember/object';
 
 import {
-  buildQuery, QueryOrExpression, RecordIdentity, Transform, TransformBuilder, TransformOrOperations, RecordOperation, Record
+  buildQuery,
+  QueryOrExpression,
+  RecordIdentity,
+  Transform,
+  TransformBuilder,
+  TransformOrOperations,
+  RecordOperation,
+  Record
 } from '@orbit/data';
 import MemorySource, { MemoryCache } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
@@ -15,7 +22,7 @@ import normalizeRecordProperties from './utils/normalize-record-properties';
 const { deprecate } = Orbit;
 
 export interface StoreSettings {
-  source: MemorySource
+  source: MemorySource;
 }
 
 export default class Store {
@@ -43,7 +50,7 @@ export default class Store {
     this.requestQueue = source.requestQueue;
     this.syncQueue = source.syncQueue;
 
-    const sourceCache: MemoryCache = source.cache
+    const sourceCache: MemoryCache = source.cache;
     const factory = new ModelFactory(this);
 
     this.identityMap = new IdentityMap({ factory });
@@ -92,22 +99,37 @@ export default class Store {
     return this.source.rollback(transformId, relativePosition);
   }
 
-  liveQuery(queryOrExpression: QueryOrExpression, options?: object, id?: string) {
-    const query = buildQuery(queryOrExpression, options, id, this.source.queryBuilder);
-    return this.source.query(query)
-      .then(() => this.cache.liveQuery(query));
+  liveQuery(
+    queryOrExpression: QueryOrExpression,
+    options?: object,
+    id?: string
+  ) {
+    const query = buildQuery(
+      queryOrExpression,
+      options,
+      id,
+      this.source.queryBuilder
+    );
+    return this.source.query(query).then(() => this.cache.liveQuery(query));
   }
 
   query(queryOrExpression: QueryOrExpression, options?: object, id?: string) {
-    const query = buildQuery(queryOrExpression, options, id, this.source.queryBuilder);
-    return this.source.query(query)
+    const query = buildQuery(
+      queryOrExpression,
+      options,
+      id,
+      this.source.queryBuilder
+    );
+    return this.source
+      .query(query)
       .then(result => this.identityMap.lookupQueryResult(query, result));
   }
 
   addRecord(properties = {}, options?: object) {
     let record = normalizeRecordProperties(this.source.schema, properties);
-    return this.update(t => t.addRecord(record), options)
-      .then(() => this.identityMap.lookup(record));
+    return this.update(t => t.addRecord(record), options).then(() =>
+      this.identityMap.lookup(record)
+    );
   }
 
   updateRecord(properties = {}, options?: object) {
@@ -116,7 +138,9 @@ export default class Store {
   }
 
   findAll(type: string, options?: object) {
-    deprecate('`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.');
+    deprecate(
+      '`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.'
+    );
     return this.findRecords(type, options);
   }
 
@@ -144,7 +168,12 @@ export default class Store {
     return this.cache.findRecords(type, options);
   }
 
-  findRecordByKey(type: string, keyName: string, keyValue: string, options?: object) {
+  findRecordByKey(
+    type: string,
+    keyName: string,
+    keyValue: string,
+    options?: object
+  ) {
     let keyMap = this.source.keyMap;
     let id = keyMap.keyToId(type, keyName, keyValue);
     if (!id) {
@@ -156,7 +185,10 @@ export default class Store {
 
   removeRecord(identity: RecordIdentity, options?: object) {
     const { type, id } = identity;
-    return this.update((t: TransformBuilder) => t.removeRecord({ type, id }), options);
+    return this.update(
+      (t: TransformBuilder) => t.removeRecord({ type, id }),
+      options
+    );
   }
 
   on(event: string, listener: Listener) {
@@ -175,7 +207,11 @@ export default class Store {
     return this.source.sync(transformOrTransforms);
   }
 
-  update(transformOrTransforms: TransformOrOperations, options?: object, id?: string) {
+  update(
+    transformOrTransforms: TransformOrOperations,
+    options?: object,
+    id?: string
+  ) {
     return this.source.update(transformOrTransforms, options, id);
   }
 
@@ -200,7 +236,7 @@ export default class Store {
       const { type, id, keys, attributes, relationships } = record;
       const identity = { type, id };
 
-      switch(operation.op) {
+      switch (operation.op) {
         case 'updateRecord':
           for (let properties of [attributes, keys, relationships]) {
             if (properties) {

@@ -1,5 +1,7 @@
 import Orbit, {
-  buildQuery, RecordIdentity, QueryOrExpression
+  buildQuery,
+  RecordIdentity,
+  QueryOrExpression
 } from '@orbit/data';
 import { deepGet } from '@orbit/utils';
 import { MemoryCache } from '@orbit/memory';
@@ -22,9 +24,9 @@ export default class Cache {
     return !!this.retrieveRecordData(type, id);
   }
 
-  retrieveRecord(type: string, id:string) {
+  retrieveRecord(type: string, id: string) {
     if (this.includesRecord(type, id)) {
-      return this._identityMap.lookup({type, id});
+      return this._identityMap.lookup({ type, id });
     }
     return null;
   }
@@ -61,13 +63,27 @@ export default class Cache {
   }
 
   query(queryOrExpression: QueryOrExpression, options?: object, id?: string) {
-    const query = buildQuery(queryOrExpression, options, id, this._sourceCache.queryBuilder);
+    const query = buildQuery(
+      queryOrExpression,
+      options,
+      id,
+      this._sourceCache.queryBuilder
+    );
     const result = this._sourceCache.query(query);
     return this._identityMap.lookupQueryResult(query, result);
   }
 
-  liveQuery(queryOrExpression: QueryOrExpression, options?: object, id?: string) {
-    const query = buildQuery(queryOrExpression, options, id, this._sourceCache.queryBuilder);
+  liveQuery(
+    queryOrExpression: QueryOrExpression,
+    options?: object,
+    id?: string
+  ) {
+    const query = buildQuery(
+      queryOrExpression,
+      options,
+      id,
+      this._sourceCache.queryBuilder
+    );
 
     return LiveQuery.create({
       _query: query,
@@ -85,7 +101,9 @@ export default class Cache {
   }
 
   findAll(type: string, options?: object) {
-    deprecate('`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.');
+    deprecate(
+      '`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.'
+    );
     return this.findRecords(type, options);
   }
 

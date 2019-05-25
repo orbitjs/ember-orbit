@@ -1,7 +1,16 @@
-import { Schema, RecordRelationship, Record as OrbitRecord, ModelDefinition, RecordIdentity } from '@orbit/data';
+import {
+  Schema,
+  RecordRelationship,
+  Record as OrbitRecord,
+  ModelDefinition,
+  RecordIdentity
+} from '@orbit/data';
 import { deepSet } from '@orbit/utils';
 
-export default function normalizeRecordProperties(schema: Schema, properties: Record<string, unknown>) {
+export default function normalizeRecordProperties(
+  schema: Schema,
+  properties: Record<string, unknown>
+) {
   const { id, type } = properties;
   const modelDefinition = schema.getModel(type as string);
   const record = { id, type } as OrbitRecord;
@@ -13,7 +22,11 @@ export default function normalizeRecordProperties(schema: Schema, properties: Re
   return record;
 }
 
-function assignKeys(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+function assignKeys(
+  modelDefinition: ModelDefinition,
+  record: OrbitRecord,
+  properties: Record<string, unknown>
+) {
   const keys = modelDefinition.keys || {};
   for (let key of Object.keys(keys)) {
     if (properties[key] !== undefined) {
@@ -22,7 +35,11 @@ function assignKeys(modelDefinition: ModelDefinition, record: OrbitRecord, prope
   }
 }
 
-function assignAttributes(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+function assignAttributes(
+  modelDefinition: ModelDefinition,
+  record: OrbitRecord,
+  properties: Record<string, unknown>
+) {
   const attributes = modelDefinition.attributes || {};
   for (let attribute of Object.keys(attributes)) {
     if (properties[attribute] !== undefined) {
@@ -31,18 +48,34 @@ function assignAttributes(modelDefinition: ModelDefinition, record: OrbitRecord,
   }
 }
 
-function assignRelationships(modelDefinition: ModelDefinition, record: OrbitRecord, properties: Record<string, unknown>) {
+function assignRelationships(
+  modelDefinition: ModelDefinition,
+  record: OrbitRecord,
+  properties: Record<string, unknown>
+) {
   const relationships = modelDefinition.relationships || {};
   for (let relationship of Object.keys(relationships)) {
     if (properties[relationship] !== undefined) {
       let relationshipType = relationships[relationship].model as string;
-      let relationshipProperties = properties[relationship] as RecordIdentity | RecordIdentity[] | string | string[] | null;
-      deepSet(record, ['relationships', relationship], normalizeRelationship(relationshipType, relationshipProperties));
+      let relationshipProperties = properties[relationship] as
+        | RecordIdentity
+        | RecordIdentity[]
+        | string
+        | string[]
+        | null;
+      deepSet(
+        record,
+        ['relationships', relationship],
+        normalizeRelationship(relationshipType, relationshipProperties)
+      );
     }
   }
 }
 
-function normalizeRelationship(type: string, value: RecordIdentity | RecordIdentity[] | string | string[] | null): RecordRelationship {
+function normalizeRelationship(
+  type: string,
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+): RecordRelationship {
   const relationship: RecordRelationship = {};
 
   if (isHasMany(value)) {
@@ -65,6 +98,8 @@ function normalizeRelationship(type: string, value: RecordIdentity | RecordIdent
   return relationship;
 }
 
-function isHasMany(value: RecordIdentity | RecordIdentity[] | string | string[] | null): value is RecordIdentity[] | string[] {
+function isHasMany(
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+): value is RecordIdentity[] | string[] {
   return Array.isArray(value);
 }
