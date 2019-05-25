@@ -17,7 +17,7 @@ export default ReadOnlyArrayProxy.extend({
     this._sourceCache.off('patch', this._invalidatelistener);
     this._sourceCache.off('reset', this._invalidatelistener);
     this._invalidatelistener = null;
-},
+  },
 
   invalidate() {
     set(this, '_content', null);
@@ -30,9 +30,11 @@ export default ReadOnlyArrayProxy.extend({
 
         let content;
         if (isArray(results)) {
-          content = results.map(r => this._identityMap.lookup(r))
+          content = results.map(r => this._identityMap.lookup(r));
         } else if (typeof results === 'object') {
-          content = Object.keys(results).map(r => this._identityMap.lookup(results[r]))
+          content = Object.keys(results).map(r =>
+            this._identityMap.lookup(results[r])
+          );
         }
         // eslint-disable-next-line ember/no-side-effects
         set(this, '_content', content);

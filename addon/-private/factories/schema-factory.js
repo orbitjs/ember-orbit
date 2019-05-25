@@ -15,7 +15,12 @@ export default {
       const modelSchemas = {};
 
       let orbitConfig = app.lookup('ember-orbit:config');
-      let modelNames = injections.modelNames || getRegisteredModels(app.base.modulePrefix, orbitConfig.collections.models);
+      let modelNames =
+        injections.modelNames ||
+        getRegisteredModels(
+          app.base.modulePrefix,
+          orbitConfig.collections.models
+        );
 
       modelNames.forEach(name => {
         let model = app.factoryFor(`${orbitConfig.types.model}:${name}`).class;
@@ -32,4 +37,4 @@ export default {
 
     return new Schema(injections);
   }
-}
+};

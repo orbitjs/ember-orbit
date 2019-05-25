@@ -34,7 +34,10 @@ const Model = EmberObject.extend(Evented, {
 
   replaceAttribute(attribute, value, options) {
     const store = get(this, '_storeOrError');
-    store.update(t => t.replaceAttribute(this.identity, attribute, value), options);
+    store.update(
+      t => t.replaceAttribute(this.identity, attribute, value),
+      options
+    );
   },
 
   getData() {
@@ -50,7 +53,15 @@ const Model = EmberObject.extend(Evented, {
   replaceRelatedRecord(relationship, relatedRecord, options) {
     const store = get(this, '_storeOrError');
     const relatedRecordIdentity = relatedRecord ? relatedRecord.identity : null;
-    store.update(t => t.replaceRelatedRecord(this.identity, relationship, relatedRecordIdentity), options);
+    store.update(
+      t =>
+        t.replaceRelatedRecord(
+          this.identity,
+          relationship,
+          relatedRecordIdentity
+        ),
+      options
+    );
   },
 
   getRelatedRecords(field) {
@@ -69,7 +80,14 @@ const Model = EmberObject.extend(Evented, {
   replaceAttributes(properties, options) {
     const store = get(this, '_storeOrError');
     const keys = Object.keys(properties);
-    return store.update(t => keys.map(key => t.replaceAttribute(this.identity, key, properties[key])), options)
+    return store
+      .update(
+        t =>
+          keys.map(key =>
+            t.replaceAttribute(this.identity, key, properties[key])
+          ),
+        options
+      )
       .then(() => this);
   },
 
@@ -104,7 +122,9 @@ const Model = EmberObject.extend(Evented, {
     this._super.apply(this, arguments);
 
     const cache = get(this, '_storeOrError.cache');
-    if (cache) { cache.unload(this); }
+    if (cache) {
+      cache.unload(this);
+    }
   },
 
   _storeOrError: computed('_store', function() {
@@ -120,7 +140,10 @@ const Model = EmberObject.extend(Evented, {
 
 Model.reopenClass({
   create(injections) {
-    assert("You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.", injections._store);
+    assert(
+      'You should not call `create` on a model. Instead, call `store.addRecord` with the attributes you would like to set.',
+      injections._store
+    );
     return this._super(...arguments);
   },
 

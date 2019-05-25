@@ -17,8 +17,16 @@ module('Integration - normalizeRecordProperties', function(hooks) {
   });
 
   test('#normalizeRecordProperties', async function(assert) {
-    const callisto = await store.addRecord({type: 'moon', id: 'callisto', name: 'Callisto'});
-    const sun = await store.addRecord({type: 'star', id: 'sun', name: 'The Sun'});
+    const callisto = await store.addRecord({
+      type: 'moon',
+      id: 'callisto',
+      name: 'Callisto'
+    });
+    const sun = await store.addRecord({
+      type: 'star',
+      id: 'sun',
+      name: 'The Sun'
+    });
     const normalized = normalizeRecordProperties(store.source.schema, {
       type: 'planet',
       id: 'jupiter',
@@ -31,8 +39,16 @@ module('Integration - normalizeRecordProperties', function(hooks) {
     assert.equal(normalized.type, 'planet', 'normalized type');
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
-    assert.deepEqual(normalized.relationships.moons, { data: [{ type: 'moon', id: 'callisto' }] }, 'normalized hasMany');
-    assert.deepEqual(normalized.relationships.sun, { data: { type: 'star', id: 'sun' } }, 'normalized hasOne');
+    assert.deepEqual(
+      normalized.relationships.moons,
+      { data: [{ type: 'moon', id: 'callisto' }] },
+      'normalized hasMany'
+    );
+    assert.deepEqual(
+      normalized.relationships.sun,
+      { data: { type: 'star', id: 'sun' } },
+      'normalized hasOne'
+    );
   });
 
   test('#normalizeRecordProperties - undefined relationships', function(assert) {
@@ -42,7 +58,11 @@ module('Integration - normalizeRecordProperties', function(hooks) {
       name: 'Jupiter'
     });
 
-    assert.strictEqual(normalized.relationships, undefined, 'normalized hasMany');
+    assert.strictEqual(
+      normalized.relationships,
+      undefined,
+      'normalized hasMany'
+    );
   });
 
   test('#normalizeRecordProperties - nullable relationships', function(assert) {
@@ -53,6 +73,10 @@ module('Integration - normalizeRecordProperties', function(hooks) {
       sun: null
     });
 
-    assert.deepEqual(normalized.relationships.sun, { data: null }, 'normalized nullable hasOne');
+    assert.deepEqual(
+      normalized.relationships.sun,
+      { data: null },
+      'normalized nullable hasOne'
+    );
   });
 });

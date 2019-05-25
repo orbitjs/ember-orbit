@@ -12,7 +12,10 @@ export default {
       sourceNames = injections.sourceNames;
       delete injections.sourceNames;
     } else {
-      sourceNames = modulesOfType(app.base.modulePrefix, orbitConfig.collections.sources);
+      sourceNames = modulesOfType(
+        app.base.modulePrefix,
+        orbitConfig.collections.sources
+      );
       sourceNames.push('store');
     }
 
@@ -21,12 +24,19 @@ export default {
       strategyNames = injections.strategyNames;
       delete injections.strategyNames;
     } else {
-      strategyNames = modulesOfType(app.base.modulePrefix, orbitConfig.collections.strategies);
+      strategyNames = modulesOfType(
+        app.base.modulePrefix,
+        orbitConfig.collections.strategies
+      );
     }
 
-    injections.sources = sourceNames.map(name => app.lookup(`${orbitConfig.types.source}:${name}`));
-    injections.strategies = strategyNames.map(name => app.lookup(`${orbitConfig.types.strategy}:${name}`));
+    injections.sources = sourceNames.map(name =>
+      app.lookup(`${orbitConfig.types.source}:${name}`)
+    );
+    injections.strategies = strategyNames.map(name =>
+      app.lookup(`${orbitConfig.types.strategy}:${name}`)
+    );
 
     return new Coordinator(injections);
   }
-}
+};

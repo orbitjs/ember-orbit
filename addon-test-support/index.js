@@ -6,7 +6,9 @@ export async function waitForSource(sourceOrSourceName) {
     let { owner } = getContext();
     source = owner.lookup(`data-source:${sourceOrSourceName}`);
     if (!source) {
-      throw new Error(`data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`);
+      throw new Error(
+        `data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`
+      );
     }
   } else {
     source = sourceOrSourceName;

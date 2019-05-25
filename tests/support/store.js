@@ -4,7 +4,7 @@ import Owner from './owner';
 
 export function createOwner() {
   const registry = new Ember.Registry();
-  const owner = Owner.create({ __registry__: registry});
+  const owner = Owner.create({ __registry__: registry });
   const container = registry.container({ owner });
 
   owner.__container__ = container;
@@ -28,8 +28,14 @@ export function createStore(options) {
     });
 
     // console.log(types);
-    owner.register('ember-orbit-model-names:main', types, { instantiate: false });
-    owner.inject(`service:${orbitConfig.services.schema}`, 'modelNames', 'ember-orbit-model-names:main');
+    owner.register('ember-orbit-model-names:main', types, {
+      instantiate: false
+    });
+    owner.inject(
+      `service:${orbitConfig.services.schema}`,
+      'modelNames',
+      'ember-orbit-model-names:main'
+    );
   }
 
   return owner.lookup(`service:${orbitConfig.services.store}`);
