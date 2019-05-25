@@ -30,6 +30,8 @@ jobs:
     - stage: tests
       name: "Linting"
       script: yarn lint:js
+    - name: "TS type check"
+      script: yarn lint:ts
     - name: "Basic tests"
       script: yarn test
 

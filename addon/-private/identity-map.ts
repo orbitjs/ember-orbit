@@ -74,14 +74,6 @@ export default class IdenityMap {
     }
   }
 
-  notifyPropertyChange(identity: RecordIdentity, property: string) {
-    const record = this._materialized(identity);
-
-    if (record) {
-      this._factory.notifyPropertyChange(record, property);
-    }
-  }
-
   deactivate() {
     this.forEach((record: RecordModel) => {
       this._factory.disconnect(record);
