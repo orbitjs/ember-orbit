@@ -9,29 +9,18 @@ module.exports = {
   ],
   extends: [
     'eslint:recommended',
-    'plugin:ember/recommended'
+    'plugin:ember/recommended',
+    'plugin:prettier/recommended'
   ],
   env: {
     browser: true
-  },
-  rules: {
-    "curly": 2,
-    "eqeqeq": 2,
-    "no-eval": 2,
-    "linebreak-style": 2,
-    "new-cap": 2,
-    "no-caller": 2,
-    "no-new": 2,
-    "no-unused-vars": [2, { "argsIgnorePattern": "^_" }],
-    "dot-notation": 2,
-    "no-eq-null": 2,
-    "strict": 0
   },
   overrides: [
     // node files
     {
       files: [
         '.eslintrc.js',
+        '.prettierrc.js',
         '.template-lintrc.js',
         'ember-cli-build.js',
         'index.js',

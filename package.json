@@ -66,9 +66,12 @@
     "ember-source-channel-url": "^1.1.0",
     "ember-try": "^1.0.0",
     "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-ember": "^6.4.0",
     "eslint-plugin-node": "^9.0.1",
+    "eslint-plugin-prettier": "=2.6.0",
     "loader.js": "^4.7.0",
+    "prettier": "^1.17.1",
     "qunit-dom": "^0.8.4",
     "typescript": "^3.4.5"
   },
