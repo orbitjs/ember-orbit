@@ -1,21 +1,17 @@
 import { getOwner, setOwner } from '@ember/application';
-import { notifyPropertyChange } from '@ember/object';
 
 import {
   buildQuery,
   QueryOrExpression,
   RecordIdentity,
   Transform,
-  TransformBuilder,
   TransformOrOperations,
-  RecordOperation,
-  Record
+  cloneRecordIdentity
 } from '@orbit/data';
-import MemorySource, { MemoryCache } from '@orbit/memory';
+import MemorySource from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
 
 import Cache from './cache';
-import IdentityMap from './identity-map';
 import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
 
@@ -28,13 +24,10 @@ export interface StoreSettings {
 export default class Store {
   source: MemorySource;
   cache: Cache;
-  identityMap: IdentityMap;
 
   transformLog: Log;
   requestQueue: TaskQueue;
   syncQueue: TaskQueue;
-
-  private _listener: Listener;
 
   static create(injections: StoreSettings) {
     const owner = getOwner(injections);
@@ -44,41 +37,23 @@ export default class Store {
   }
 
   constructor(settings: StoreSettings) {
-    const source = settings.source;
+    this.source = settings.source;
 
-    this.transformLog = source.transformLog;
-    this.requestQueue = source.requestQueue;
-    this.syncQueue = source.syncQueue;
+    this.cache = new Cache({
+      sourceCache: this.source.cache,
+      modelFactory: new ModelFactory(this)
+    });
 
-    const sourceCache: MemoryCache = source.cache;
-    const factory = new ModelFactory(this);
-
-    this.identityMap = new IdentityMap({ factory });
-
-    this.source = source;
-    this.cache = new Cache(source.cache, this.identityMap);
-
-    this._listener = this.generateListener();
-    sourceCache.on('patch', this._listener);
+    this.transformLog = this.source.transformLog;
+    this.requestQueue = this.source.requestQueue;
+    this.syncQueue = this.source.syncQueue;
   }
 
   destroy() {
-    this.willDestroy();
-  }
+    this.cache.destroy();
 
-  protected willDestroy() {
-    if (this.source) {
-      if (this.source.cache) {
-        this.source.cache.off('patch', this._listener);
-      }
-      delete this.source;
-    }
-
+    delete this.source;
     delete this.cache;
-
-    this.identityMap.deactivate();
-    delete this.identityMap;
-
     delete this.transformLog;
     delete this.requestQueue;
     delete this.syncQueue;
@@ -120,21 +95,24 @@ export default class Store {
       id,
       this.source.queryBuilder
     );
-    return this.source
-      .query(query)
-      .then(result => this.identityMap.lookupQueryResult(query, result));
+    return this.source.query(query).then(result => this.cache.lookup(result));
   }
 
   addRecord(properties = {}, options?: object) {
     let record = normalizeRecordProperties(this.source.schema, properties);
     return this.update(t => t.addRecord(record), options).then(() =>
-      this.identityMap.lookup(record)
+      this.cache.lookup(record)
     );
   }
 
   updateRecord(properties = {}, options?: object) {
     let record = normalizeRecordProperties(this.source.schema, properties);
     return this.update(t => t.updateRecord(record), options);
+  }
+
+  removeRecord(record: RecordIdentity, options?: object) {
+    const identity = cloneRecordIdentity(record);
+    return this.update(t => t.removeRecord(identity), options);
   }
 
   findAll(type: string, options?: object) {
@@ -183,14 +161,6 @@ export default class Store {
     return this.findRecord(type, id, options);
   }
 
-  removeRecord(identity: RecordIdentity, options?: object) {
-    const { type, id } = identity;
-    return this.update(
-      (t: TransformBuilder) => t.removeRecord({ type, id }),
-      options
-    );
-  }
-
   on(event: string, listener: Listener) {
     return this.source.on(event, listener);
   }
@@ -221,46 +191,5 @@ export default class Store {
 
   getInverseOperations(transformId: string) {
     return this.source.getInverseOperations(transformId);
-  }
-
-  protected notifyPropertyChange(identity: RecordIdentity, property: string) {
-    if (this.identityMap.has(identity)) {
-      const record = this.identityMap.lookup(identity) as object;
-      notifyPropertyChange(record, property);
-    }
-  }
-
-  private generateListener() {
-    return (operation: RecordOperation) => {
-      const record = operation.record as Record;
-      const { type, id, keys, attributes, relationships } = record;
-      const identity = { type, id };
-
-      switch (operation.op) {
-        case 'updateRecord':
-          for (let properties of [attributes, keys, relationships]) {
-            if (properties) {
-              for (let property of Object.keys(properties)) {
-                if (properties.hasOwnProperty(property)) {
-                  this.notifyPropertyChange(identity, property);
-                }
-              }
-            }
-          }
-          break;
-        case 'replaceAttribute':
-          this.notifyPropertyChange(identity, operation.attribute);
-          break;
-        case 'replaceKey':
-          this.notifyPropertyChange(identity, operation.key);
-          break;
-        case 'replaceRelatedRecord':
-          this.notifyPropertyChange(identity, operation.relationship);
-          break;
-        case 'removeRecord':
-          this.identityMap.evict(identity);
-          break;
-      }
-    };
   }
 }

@@ -261,12 +261,12 @@ module('Integration - Store', function(hooks) {
     let liveQuery = await store.liveQuery(q =>
       q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
     );
-    assert.equal(liveQuery.get('length'), 0);
+    assert.equal(liveQuery.length, 0);
 
     await store.update(t =>
       t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
     );
-    assert.equal(liveQuery.get('length'), 1);
+    assert.equal(liveQuery.length, 1);
   });
 
   test('#find - by type', async function(assert) {

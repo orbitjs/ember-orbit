@@ -1,7 +1,8 @@
 import { computed } from '@ember/object';
-export default function(model, options = {}) {
-  options.type = 'hasOne';
-  options.model = model;
+
+export default function(type: string, options: Record<string, unknown> = {}) {
+  options.kind = 'hasOne';
+  options.type = type;
 
   return computed({
     get(key) {

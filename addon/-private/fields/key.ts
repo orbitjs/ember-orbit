@@ -1,5 +1,6 @@
 import { computed } from '@ember/object';
-export default function(options = {}) {
+
+export default function(options: Record<string, unknown> = {}) {
   options.type = 'string';
 
   return computed({

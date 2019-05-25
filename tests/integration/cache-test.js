@@ -27,12 +27,12 @@ module('Integration - Cache', function(hooks) {
       type: 'planet',
       attributes: { name: 'Jupiter' }
     });
-    assert.equal(liveQuery.get('length'), 0);
+    assert.equal(liveQuery.length, 0);
 
     await store.update(t =>
       t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
     );
-    assert.equal(liveQuery.get('length'), 1);
+    assert.equal(liveQuery.length, 1);
   });
 
   test('liveQuery - updates when matching record is added', async function(assert) {
@@ -66,11 +66,9 @@ module('Integration - Cache', function(hooks) {
       t.addRecord({ type: 'planet', id: 'Earth' })
     ]);
     assert.equal(planets.length, 2);
-    assert.equal(planets.content.length, 2);
 
     await store.update(t => t.removeRecord({ type: 'planet', id: 'Jupiter' }));
     assert.equal(planets.length, 1);
-    assert.equal(planets.content.length, 1);
   });
 
   test('liveQuery - removes record that no longer matches', async function(assert) {
