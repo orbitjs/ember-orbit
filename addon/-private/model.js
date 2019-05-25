@@ -73,9 +73,14 @@ const Model = EmberObject.extend(Evented, {
       .then(() => this);
   },
 
+  update(properties = {}, options) {
+    const store = get(this, '_storeOrError');
+    return store.updateRecord({ ...properties, ...this.identity }, options);
+  },
+
   remove(options) {
     const store = get(this, '_storeOrError');
-    return store.update(t => t.removeRecord(this.identity), options);
+    return store.removeRecord(this.identity, options);
   },
 
   disconnect() {
