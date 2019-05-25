@@ -47,6 +47,15 @@ module.exports = {
       rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
         // add your custom rules and overrides for node files here
       })
+    },
+    {
+      files: [
+        '**/*.ts'
+      ],
+      parser: '@typescript-eslint/parser',
+      rules: {
+        'no-unused-vars': ['off']
+      }
     }
   ]
 };
