@@ -4,7 +4,7 @@ import Owner from './owner';
 
 export function createOwner() {
   const registry = new Ember.Registry();
-  const owner = new Owner({ __registry__: registry});
+  const owner = Owner.create({ __registry__: registry});
   const container = registry.container({ owner });
 
   owner.__container__ = container;
