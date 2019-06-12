@@ -3,6 +3,7 @@ import { get } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { Schema } from '@orbit/data';
 import modulesOfType from '../system/modules-of-type';
+import { singularize, pluralize } from 'ember-inflector';
 
 function getRegisteredModels(prefix, modelsCollection) {
   return modulesOfType(prefix, modelsCollection).map(camelize);
@@ -33,6 +34,14 @@ export default {
       });
 
       injections.models = modelSchemas;
+    }
+
+    if (!injections.pluralize) {
+      injections.pluralize = pluralize;
+    }
+
+    if (!injections.singularize) {
+      injections.singularize = singularize;
     }
 
     return new Schema(injections);
