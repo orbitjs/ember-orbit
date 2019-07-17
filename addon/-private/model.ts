@@ -1,6 +1,7 @@
 import EmberObject from '@ember/object';
 import { Dict } from '@orbit/utils';
 import {
+  Record,
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
@@ -29,51 +30,62 @@ export default class Model extends EmberObject {
     this.identity = settings.identity;
   }
 
-  get id() {
+  get id(): string {
     return this.identity.id;
   }
 
-  get type() {
+  get type(): string {
     return this.identity.type;
   }
 
-  get disconnected() {
+  get disconnected(): boolean {
     return !this._store;
   }
 
-  getKey(field: string) {
+  getData(): Record | undefined {
+    return this.store.cache.retrieveRecordData(this.type, this.id);
+  }
+
+  getKey(field: string): string | undefined {
     return this.store.cache.retrieveKey(this.identity, field);
   }
 
-  replaceKey(field: string, value: string, options?: object) {
-    this.store.update(t => t.replaceKey(this.identity, field, value), options);
+  async replaceKey(
+    field: string,
+    value: string,
+    options?: object
+  ): Promise<void> {
+    await this.store.update(
+      t => t.replaceKey(this.identity, field, value),
+      options
+    );
   }
 
-  getAttribute(field: string) {
+  getAttribute(field: string): any {
     return this.store.cache.retrieveAttribute(this.identity, field);
   }
 
-  replaceAttribute(attribute: string, value: unknown, options?: object) {
-    this.store.update(
+  async replaceAttribute(
+    attribute: string,
+    value: unknown,
+    options?: object
+  ): Promise<void> {
+    await this.store.update(
       t => t.replaceAttribute(this.identity, attribute, value),
       options
     );
   }
 
-  getData() {
-    return this.store.cache.retrieveRecordData(this.type, this.id);
-  }
-
-  getRelatedRecord(relationship: string) {
+  getRelatedRecord(relationship: string): Record | null | undefined {
     return this.store.cache.retrieveRelatedRecord(this.identity, relationship);
   }
 
-  replaceRelatedRecord(
+  async replaceRelatedRecord(
     relationship: string,
-    relatedRecord?: Model,
+    relatedRecord: Model | null,
     options?: object
-  ) {
-    this.store.update(
+  ): Promise<void> {
+    await this.store.update(
       t =>
         t.replaceRelatedRecord(
           this.identity,
@@ -104,19 +116,23 @@ export default class Model extends EmberObject {
     return this._relatedRecords[relationship];
   }
 
-  addToRelatedRecords(relationship: string, record: Model, options?: object) {
-    return this.store.update(
+  async addToRelatedRecords(
+    relationship: string,
+    record: Model,
+    options?: object
+  ): Promise<void> {
+    await this.store.update(
       t => t.addToRelatedRecords(this.identity, relationship, record.identity),
       options
     );
   }
 
-  removeFromRelatedRecords(
+  async removeFromRelatedRecords(
     relationship: string,
     record: Model,
     options?: object
-  ) {
-    return this.store.update(
+  ): Promise<void> {
+    await this.store.update(
       t =>
         t.removeFromRelatedRecords(
           this.identity,
@@ -127,9 +143,12 @@ export default class Model extends EmberObject {
     );
   }
 
-  replaceAttributes(properties: Dict<unknown> = {}, options?: object) {
+  async replaceAttributes(
+    properties: Dict<unknown> = {},
+    options?: object
+  ): Promise<void> {
     const keys = Object.keys(properties);
-    return this.store
+    await this.store
       .update(
         t =>
           keys.map(key =>
@@ -140,29 +159,29 @@ export default class Model extends EmberObject {
       .then(() => this);
   }
 
-  update(properties: Dict<unknown> = {}, options?: object) {
-    return this.store.updateRecord(
-      { ...properties, ...this.identity },
-      options
-    );
+  async update(
+    properties: Dict<unknown> = {},
+    options?: object
+  ): Promise<void> {
+    await this.store.updateRecord({ ...properties, ...this.identity }, options);
   }
 
-  remove(options?: object) {
-    return this.store.removeRecord(this.identity, options);
+  async remove(options?: object): Promise<void> {
+    await this.store.removeRecord(this.identity, options);
   }
 
-  disconnect() {
+  disconnect(): void {
     this._store = undefined;
   }
 
-  willDestroy() {
+  willDestroy(): void {
     const cache = this.store.cache;
     if (cache) {
       cache.unload(this);
     }
   }
 
-  private get store() {
+  private get store(): Store {
     if (!this._store) {
       throw new Error('record has been removed from Store');
     }
@@ -170,7 +189,7 @@ export default class Model extends EmberObject {
     return this._store;
   }
 
-  static get keys() {
+  static get keys(): Dict<KeyDefinition> {
     const map: Dict<KeyDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
@@ -185,7 +204,7 @@ export default class Model extends EmberObject {
     return map;
   }
 
-  static get attributes() {
+  static get attributes(): Dict<AttributeDefinition> {
     const map: Dict<AttributeDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
@@ -200,7 +219,7 @@ export default class Model extends EmberObject {
     return map;
   }
 
-  static get relationships() {
+  static get relationships(): Dict<RelationshipDefinition> {
     const map: Dict<RelationshipDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
