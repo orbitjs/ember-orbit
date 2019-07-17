@@ -50,59 +50,66 @@ export default class Cache {
     this._sourceCache.on('reset', this._resetListener);
   }
 
-  retrieveRecordData(type: string, id: string) {
+  retrieveRecordData(type: string, id: string): Record | undefined {
     return this._sourceCache.getRecordSync({ type, id });
   }
 
-  includesRecord(type: string, id: string) {
+  includesRecord(type: string, id: string): boolean {
     return !!this.retrieveRecordData(type, id);
   }
 
-  retrieveRecord(type: string, id: string) {
+  retrieveRecord(type: string, id: string): Model | undefined {
     if (this.includesRecord(type, id)) {
-      return this.lookup({ type, id });
+      return this.lookup({ type, id }) as Model;
     }
-    return null;
+    return undefined;
   }
 
-  retrieveKey(identity: RecordIdentity, key: string) {
+  retrieveKey(identity: RecordIdentity, key: string): string | undefined {
     const record = this._sourceCache.getRecordSync(identity);
-    return deepGet(record, ['keys', key]);
+    return record && deepGet(record, ['keys', key]);
   }
 
-  retrieveAttribute(identity: RecordIdentity, attribute: string) {
+  retrieveAttribute(identity: RecordIdentity, attribute: string): any {
     const record = this._sourceCache.getRecordSync(identity);
-    return deepGet(record, ['attributes', attribute]);
+    return record && deepGet(record, ['attributes', attribute]);
   }
 
   retrieveRelatedRecord(
     identity: RecordIdentity,
     relationship: string
-  ): Model | null {
-    const record = this._sourceCache.getRecordSync(identity);
-    if (record) {
-      const identity = deepGet(record, ['relationships', relationship, 'data']);
-      if (!identity) {
-        return null;
-      }
-
-      return this.lookup(identity) as Model | null;
+  ): Model | null | undefined {
+    const relatedRecord = this._sourceCache.getRelatedRecordSync(
+      identity,
+      relationship
+    );
+    if (relatedRecord) {
+      return this.lookup(relatedRecord) as Model;
+    } else {
+      return relatedRecord;
     }
-    return null;
   }
 
   retrieveRelatedRecords(
     identity: RecordIdentity,
     relationship: string
-  ): Model[] {
-    const query = this._sourceCache.queryBuilder.findRelatedRecords(
+  ): Model[] | undefined {
+    const relatedRecords = this._sourceCache.getRelatedRecordsSync(
       identity,
       relationship
     );
-    return this.query(query) as Model[];
+    if (relatedRecords) {
+      return this.lookup(relatedRecords) as Model[];
+    } else {
+      return undefined;
+    }
   }
 
-  query(queryOrExpression: QueryOrExpression, options?: object, id?: string) {
+  query(
+    queryOrExpression: QueryOrExpression,
+    options?: object,
+    id?: string
+  ): Model | Model[] | null {
     const query = buildQuery(
       queryOrExpression,
       options,
@@ -110,7 +117,11 @@ export default class Cache {
       this._sourceCache.queryBuilder
     );
     const result = this._sourceCache.query(query);
-    return this.lookup(result);
+    if (result) {
+      return this.lookup(result);
+    } else {
+      return result;
+    }
   }
 
   liveQuery(
@@ -135,7 +146,7 @@ export default class Cache {
     return liveQuery;
   }
 
-  find(type: string, id?: string) {
+  find(type: string, id?: string): Model | Model[] {
     if (id === undefined) {
       return this.findRecords(type);
     } else {
@@ -143,22 +154,22 @@ export default class Cache {
     }
   }
 
-  findAll(type: string, options?: object) {
+  findAll(type: string, options?: object): Model[] {
     deprecate(
       '`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.'
     );
     return this.findRecords(type, options);
   }
 
-  findRecord(type: string, id: string, options?: object) {
-    return this.query(q => q.findRecord({ type, id }), options);
+  findRecord(type: string, id: string, options?: object): Model {
+    return this.query(q => q.findRecord({ type, id }), options) as Model;
   }
 
-  findRecords(type: string, options?: object) {
-    return this.query(q => q.findRecords(type), options);
+  findRecords(type: string, options?: object): Model[] {
+    return this.query(q => q.findRecords(type), options) as Model[];
   }
 
-  unload(identity: RecordIdentity) {
+  unload(identity: RecordIdentity): void {
     const record = this._identityMap.get(identity);
     if (record) {
       record.disconnect();
@@ -183,7 +194,7 @@ export default class Cache {
     return null;
   }
 
-  destroy() {
+  destroy(): void {
     this._sourceCache.off('patch', this._patchListener);
     this._sourceCache.off('reset', this._resetListener);
 
@@ -195,7 +206,10 @@ export default class Cache {
     this._liveQuerySet.clear();
   }
 
-  private notifyPropertyChange(identity: RecordIdentity, property: string) {
+  private notifyPropertyChange(
+    identity: RecordIdentity,
+    property: string
+  ): void {
     const record = this._identityMap.get(identity);
 
     if (record) {
@@ -203,13 +217,13 @@ export default class Cache {
     }
   }
 
-  private notifyLiveQueryChange() {
+  private notifyLiveQueryChange(): void {
     for (let liveQuery of this._liveQuerySet) {
       liveQuery.invalidate();
     }
   }
 
-  private generatePatchListener() {
+  private generatePatchListener(): (operation: RecordOperation) => void {
     return (operation: RecordOperation) => {
       const record = operation.record as Record;
       const { type, id, keys, attributes, relationships } = record;
@@ -248,7 +262,7 @@ export default class Cache {
     };
   }
 
-  private generateResetListener() {
+  private generateResetListener(): () => void {
     return () => this.notifyLiveQueryChange();
   }
 }
