@@ -7,7 +7,7 @@ import Orbit, {
   RecordIdentity,
   QueryOrExpression,
   RecordOperation,
-  Record as OrbitRecord
+  Record
 } from '@orbit/data';
 import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
@@ -211,7 +211,7 @@ export default class Cache {
 
   private generatePatchListener() {
     return (operation: RecordOperation) => {
-      const record = operation.record as OrbitRecord;
+      const record = operation.record as Record;
       const { type, id, keys, attributes, relationships } = record;
       const identity = { type, id };
 

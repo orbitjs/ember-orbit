@@ -1,6 +1,7 @@
 import { computed } from '@ember/object';
+import { Dict } from '@orbit/utils';
 
-export default function(options: Record<string, unknown> = {}) {
+export default function(options: Dict<unknown> = {}) {
   options.type = 'string';
 
   return computed({

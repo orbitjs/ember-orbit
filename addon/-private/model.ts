@@ -1,5 +1,5 @@
 import EmberObject from '@ember/object';
-
+import { Dict } from '@orbit/utils';
 import {
   RecordIdentity,
   KeyDefinition,
@@ -22,7 +22,7 @@ export default class Model extends EmberObject {
   identity: RecordIdentity;
 
   private _store?: Store;
-  private _relatedRecords: Record<string, HasManyContract> = {};
+  private _relatedRecords: Dict<HasManyContract> = {};
 
   constructor(settings: ModelSettings) {
     super(...arguments);
@@ -127,10 +127,7 @@ export default class Model extends EmberObject {
     );
   }
 
-  replaceAttributes(
-    properties: Record<string, unknown> = {},
-    options?: object
-  ) {
+  replaceAttributes(properties: Dict<unknown> = {}, options?: object) {
     const keys = Object.keys(properties);
     return this.store
       .update(
@@ -143,7 +140,7 @@ export default class Model extends EmberObject {
       .then(() => this);
   }
 
-  update(properties: Record<string, unknown> = {}, options?: object) {
+  update(properties: Dict<unknown> = {}, options?: object) {
     return this.store.updateRecord(
       { ...properties, ...this.identity },
       options
@@ -174,7 +171,7 @@ export default class Model extends EmberObject {
   }
 
   static get keys() {
-    const map: Record<string, KeyDefinition> = {};
+    const map: Dict<KeyDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
       if (meta.isKey) {
@@ -189,7 +186,7 @@ export default class Model extends EmberObject {
   }
 
   static get attributes() {
-    const map: Record<string, AttributeDefinition> = {};
+    const map: Dict<AttributeDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
       if (meta.isAttribute) {
@@ -204,7 +201,7 @@ export default class Model extends EmberObject {
   }
 
   static get relationships() {
-    const map: Record<string, RelationshipDefinition> = {};
+    const map: Dict<RelationshipDefinition> = {};
 
     this.eachComputedProperty((name, meta) => {
       if (meta.isRelationship) {

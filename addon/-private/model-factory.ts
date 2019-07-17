@@ -1,13 +1,12 @@
 import { getOwner } from '@ember/application';
-
+import { Dict } from '@orbit/utils';
 import { RecordIdentity, cloneRecordIdentity } from '@orbit/data';
-
 import Store from './store';
 import Model from './model';
 
 export default class ModelFactory {
   private _store: Store;
-  private _modelFactoryMap: Record<string, any>;
+  private _modelFactoryMap: Dict<any>;
 
   constructor(store: Store) {
     this._store = store;
