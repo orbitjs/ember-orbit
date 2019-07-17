@@ -1,6 +1,7 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
+import { waitForSource } from 'ember-orbit/test-support';
 
 module('Integration - Cache', function(hooks) {
   let store;
@@ -94,8 +95,7 @@ module('Integration - Cache', function(hooks) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
     callisto.set('planet', jupiter);
-    await store.requestQueue.process();
-
+    await waitForSource(store);
     assert.equal(cache.retrieveRelatedRecord(callisto, 'planet'), jupiter);
   });
 
