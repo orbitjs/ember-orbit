@@ -1,9 +1,8 @@
-import { get } from '@ember/object';
 import { key, attr, hasOne, hasMany, Model } from 'ember-orbit';
 import { module, test } from 'qunit';
 
 module('Unit - Model', function(hooks) {
-  let Planet, Moon, Star;
+  let Planet: any, Moon: any, Star: any;
 
   hooks.beforeEach(function() {
     Planet = Model.extend({
@@ -37,7 +36,7 @@ module('Unit - Model', function(hooks) {
   test('#keys returns no keys by default', function(assert) {
     var keys, names;
 
-    keys = get(Planet, 'keys');
+    keys = Planet.keys;
     names = Object.keys(keys);
     assert.equal(names.length, 0);
   });
@@ -49,7 +48,7 @@ module('Unit - Model', function(hooks) {
       remoteId: key()
     });
 
-    keys = get(Planet, 'keys');
+    keys = Planet.keys;
     names = Object.keys(keys);
     assert.equal(names.length, 1);
     assert.equal(names[0], 'remoteId');
@@ -58,7 +57,7 @@ module('Unit - Model', function(hooks) {
   test('#attributes returns defined attributes', function(assert) {
     var attributes, keys;
 
-    attributes = get(Planet, 'attributes');
+    attributes = Planet.attributes;
     keys = Object.keys(attributes);
     assert.equal(keys.length, 2);
     assert.equal(keys[0], 'name');
@@ -68,26 +67,20 @@ module('Unit - Model', function(hooks) {
   test('#relationships returns defined relationships', function(assert) {
     var relationships, keys;
 
-    relationships = get(Planet, 'relationships');
+    relationships = Planet.relationships;
     keys = Object.keys(relationships);
     assert.equal(keys.length, 2);
     assert.equal(keys[0], 'sun');
     assert.equal(keys[1], 'moons');
 
-    relationships = get(Moon, 'relationships');
+    relationships = Moon.relationships;
     keys = Object.keys(relationships);
     assert.equal(keys.length, 1);
     assert.equal(keys[0], 'planet');
 
-    relationships = get(Star, 'relationships');
+    relationships = Star.relationships;
     keys = Object.keys(relationships);
     assert.equal(keys.length, 1);
     assert.equal(keys[0], 'planets');
-  });
-
-  test('#create cannot be called directly on models', function(assert) {
-    assert.throws(function() {
-      Planet.create();
-    }, 'You should not call `create` on a model');
   });
 });

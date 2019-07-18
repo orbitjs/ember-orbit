@@ -1,14 +1,8 @@
 import { getOwner } from '@ember/application';
-
 import { Dict } from '@orbit/utils';
-import { RecordIdentity } from '@orbit/data';
-
+import { RecordIdentity, cloneRecordIdentity } from '@orbit/data';
 import Store from './store';
-
-export interface RecordModel {
-  id: string;
-  disconnect(): void;
-}
+import Model from './model';
 
 export default class ModelFactory {
   private _store: Store;
@@ -19,17 +13,12 @@ export default class ModelFactory {
     this._modelFactoryMap = {};
   }
 
-  create(identity: RecordIdentity) {
+  create(identity: RecordIdentity): Model {
     const modelFactory = this.modelFactoryFor(identity.type);
     return modelFactory.create({
-      type: identity.type,
-      id: identity.id,
+      identity: cloneRecordIdentity(identity),
       _store: this._store
     });
-  }
-
-  disconnect(record: RecordModel) {
-    record.disconnect();
   }
 
   private modelFactoryFor(type: string) {

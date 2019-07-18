@@ -1,6 +1,5 @@
-import { A } from '@ember/array';
-import { alias } from '@ember/object/computed';
-import { set, get } from '@ember/object';
+import { readOnly } from '@ember/object/computed';
+import { computed } from '@ember/object';
 import ArrayProxy from '@ember/array/proxy';
 
 function notSupported() {
@@ -23,16 +22,20 @@ export default ArrayProxy.extend({
   unshiftObject: notSupported,
   unshiftObjects: notSupported,
 
-  length: alias('content.length'),
+  length: readOnly('content.length'),
 
-  init(...args) {
-    let content = get(this, 'content');
+  init() {
+    this._super();
+    Object.defineProperty(this, Symbol.iterator, {
+      value: () => this.toArray()[Symbol.iterator]()
+    });
+  },
 
-    if (!content) {
-      content = new A();
-      set(this, 'content', content);
-    }
+  content: computed(function() {
+    return this.getContent();
+  }),
 
-    this._super(...args);
+  invalidate() {
+    this.notifyPropertyChange('content');
   }
 });

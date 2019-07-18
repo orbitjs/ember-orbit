@@ -1,5 +1,4 @@
 import { camelize } from '@ember/string';
-import { get } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { Schema } from '@orbit/data';
 import modulesOfType from '../system/modules-of-type';
@@ -26,10 +25,9 @@ export default {
       modelNames.forEach(name => {
         let model = app.factoryFor(`${orbitConfig.types.model}:${name}`).class;
         modelSchemas[name] = {
-          id: get(model, 'id'),
-          keys: get(model, 'keys'),
-          attributes: get(model, 'attributes'),
-          relationships: get(model, 'relationships')
+          keys: model.keys,
+          attributes: model.attributes,
+          relationships: model.relationships
         };
       });
 
