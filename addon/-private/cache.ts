@@ -50,32 +50,86 @@ export default class Cache {
     this._sourceCache.on('reset', this._resetListener);
   }
 
+  /**
+   * @deprecated
+   */
   retrieveRecordData(type: string, id: string): Record | undefined {
+    deprecate(
+      '`Cache#retrieveRecordData(type, id)` is deprecated, use `Cache#peekRecordData(type, id)`.'
+    );
+    return this.peekRecordData(type, id);
+  }
+
+  peekRecordData(type: string, id: string): Record | undefined {
     return this._sourceCache.getRecordSync({ type, id });
   }
 
   includesRecord(type: string, id: string): boolean {
-    return !!this.retrieveRecordData(type, id);
+    return !!this.peekRecordData(type, id);
   }
 
+  /**
+   * @deprecated
+   */
   retrieveRecord(type: string, id: string): Model | undefined {
+    deprecate(
+      '`Cache#retrieveRecord(type, id)` is deprecated, use `Cache#peekRecord(type, id)`.'
+    );
+    return this.peekRecord(type, id);
+  }
+
+  peekRecord(type: string, id: string): Model | undefined {
     if (this.includesRecord(type, id)) {
       return this.lookup({ type, id }) as Model;
     }
     return undefined;
   }
 
+  /**
+   * @deprecated
+   */
   retrieveKey(identity: RecordIdentity, key: string): string | undefined {
+    deprecate(
+      '`Cache#retrieveKey(identity, key)` is deprecated, use `Cache#peekKey(identity, key)`.'
+    );
+    return this.peekKey(identity, key);
+  }
+
+  peekKey(identity: RecordIdentity, key: string): string | undefined {
     const record = this._sourceCache.getRecordSync(identity);
     return record && deepGet(record, ['keys', key]);
   }
 
+  /**
+   * @deprecated
+   */
   retrieveAttribute(identity: RecordIdentity, attribute: string): any {
+    deprecate(
+      '`Cache#retrieveAttribute(identity, attribute)` is deprecated, use `Cache#peekAttribute(identity, key)`.'
+    );
     const record = this._sourceCache.getRecordSync(identity);
     return record && deepGet(record, ['attributes', attribute]);
   }
 
+  peekAttribute(identity: RecordIdentity, attribute: string): any {
+    const record = this._sourceCache.getRecordSync(identity);
+    return record && deepGet(record, ['attributes', attribute]);
+  }
+
+  /**
+   * @deprecated
+   */
   retrieveRelatedRecord(
+    identity: RecordIdentity,
+    relationship: string
+  ): Model | null | undefined {
+    deprecate(
+      '`Cache#retrieveRelatedRecord(identity, relationship)` is deprecated, use `Cache#peekRelatedRecord(identity, relationship)`.'
+    );
+    return this.peekRelatedRecord(identity, relationship);
+  }
+
+  peekRelatedRecord(
     identity: RecordIdentity,
     relationship: string
   ): Model | null | undefined {
@@ -90,7 +144,20 @@ export default class Cache {
     }
   }
 
+  /**
+   * @deprecated
+   */
   retrieveRelatedRecords(
+    identity: RecordIdentity,
+    relationship: string
+  ): Model[] | undefined {
+    deprecate(
+      '`Cache#retrieveRelatedRecords(identity, relationship)` is deprecated, use `Cache#peekRelatedRecords(identity, relationship)`.'
+    );
+    return this.peekRelatedRecords(identity, relationship);
+  }
+
+  peekRelatedRecords(
     identity: RecordIdentity,
     relationship: string
   ): Model[] | undefined {

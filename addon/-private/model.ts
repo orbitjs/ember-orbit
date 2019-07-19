@@ -43,11 +43,11 @@ export default class Model extends EmberObject {
   }
 
   getData(): Record | undefined {
-    return this.store.cache.retrieveRecordData(this.type, this.id);
+    return this.store.cache.peekRecordData(this.type, this.id);
   }
 
   getKey(field: string): string | undefined {
-    return this.store.cache.retrieveKey(this.identity, field);
+    return this.store.cache.peekKey(this.identity, field);
   }
 
   async replaceKey(
@@ -62,7 +62,7 @@ export default class Model extends EmberObject {
   }
 
   getAttribute(field: string): any {
-    return this.store.cache.retrieveAttribute(this.identity, field);
+    return this.store.cache.peekAttribute(this.identity, field);
   }
 
   async replaceAttribute(
@@ -77,7 +77,7 @@ export default class Model extends EmberObject {
   }
 
   getRelatedRecord(relationship: string): Record | null | undefined {
-    return this.store.cache.retrieveRelatedRecord(this.identity, relationship);
+    return this.store.cache.peekRelatedRecord(this.identity, relationship);
   }
 
   async replaceRelatedRecord(
@@ -102,7 +102,7 @@ export default class Model extends EmberObject {
     if (!this._relatedRecords[relationship]) {
       this._relatedRecords[relationship] = HasMany.create({
         getContent: () =>
-          this.store.cache.retrieveRelatedRecords(this.identity, relationship),
+          this.store.cache.peekRelatedRecords(this.identity, relationship),
         addToContent: (record: Model): Promise<void> => {
           return this.addToRelatedRecords(relationship, record);
         },
