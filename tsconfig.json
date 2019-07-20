@@ -4,7 +4,7 @@
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
@@ -20,28 +20,13 @@
     "baseUrl": ".",
     "module": "es6",
     "paths": {
-      "dummy/tests/*": [
-        "tests/*"
-      ],
-      "dummy/*": [
-        "tests/dummy/app/*",
-        "app/*"
-      ],
-      "ember-orbit": [
-        "addon"
-      ],
-      "ember-orbit/*": [
-        "addon/*"
-      ],
-      "ember-orbit/test-support": [
-        "addon-test-support"
-      ],
-      "ember-orbit/test-support/*": [
-        "addon-test-support/*"
-      ],
-      "*": [
-        "types/*"
-      ]
+      "dummy/tests/*": ["tests/*"],
+      "dummy/*": ["tests/dummy/app/*", "app/*"],
+      "ember-orbit": ["addon"],
+      "ember-orbit/*": ["addon/*"],
+      "ember-orbit/test-support": ["addon-test-support"],
+      "ember-orbit/test-support/*": ["addon-test-support/*"],
+      "*": ["types/*"]
     }
   },
   "include": [
