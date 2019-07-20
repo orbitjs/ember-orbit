@@ -26,8 +26,8 @@ export interface StoreSettings {
 }
 
 export default class Store {
-  source: MemorySource;
-  cache: Cache;
+  private _source: MemorySource;
+  private _cache: Cache;
 
   static create(injections: StoreSettings): Store {
     const owner = getOwner(injections);
@@ -37,18 +37,26 @@ export default class Store {
   }
 
   constructor(settings: StoreSettings) {
-    this.source = settings.source;
+    this._source = settings.source;
 
-    this.cache = new Cache({
+    this._cache = new Cache({
       sourceCache: this.source.cache,
       modelFactory: new ModelFactory(this)
     });
   }
 
   destroy() {
-    this.cache.destroy();
-    delete this.source;
-    delete this.cache;
+    this._cache.destroy();
+    delete this._source;
+    delete this._cache;
+  }
+
+  get source(): MemorySource {
+    return this._source;
+  }
+
+  get cache(): Cache {
+    return this._cache;
   }
 
   get keyMap(): KeyMap | undefined {
