@@ -15,6 +15,11 @@ module('Integration - Store', function(hooks) {
     store = null;
   });
 
+  test('exposes keyMap and schema', function(assert) {
+    assert.strictEqual(store.keyMap, store.source.keyMap);
+    assert.strictEqual(store.schema, store.source.schema);
+  });
+
   test('#addRecord', async function(assert) {
     const planet = await store.addRecord({ type: 'planet', name: 'Earth' });
 

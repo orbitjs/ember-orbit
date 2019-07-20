@@ -7,7 +7,9 @@ import {
   Transform,
   TransformOrOperations,
   cloneRecordIdentity,
-  RecordOperation
+  RecordOperation,
+  KeyMap,
+  Schema
 } from '@orbit/data';
 import MemorySource from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
@@ -58,6 +60,14 @@ export default class Store {
     delete this.transformLog;
     delete this.requestQueue;
     delete this.syncQueue;
+  }
+
+  get keyMap(): KeyMap | undefined {
+    return this.source.keyMap;
+  }
+
+  get schema(): Schema {
+    return this.source.schema;
   }
 
   fork(): Store {
