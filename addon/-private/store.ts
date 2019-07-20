@@ -154,14 +154,6 @@ export default class Store {
     return this.query(q => q.findRecords(type), options);
   }
 
-  peekRecord(type: string, id: string): Model | undefined {
-    return this.cache.peekRecord(type, id);
-  }
-
-  peekRecords(type: string): Model[] {
-    return this.cache.peekRecords(type);
-  }
-
   findRecordByKey(
     type: string,
     keyName: string,
@@ -173,6 +165,22 @@ export default class Store {
       this.cache.recordIdFromKey(type, keyName, keyValue),
       options
     );
+  }
+
+  peekRecord(type: string, id: string): Model | undefined {
+    return this.cache.peekRecord(type, id);
+  }
+
+  peekRecords(type: string): Model[] {
+    return this.cache.peekRecords(type);
+  }
+
+  peekRecordByKey(
+    type: string,
+    keyName: string,
+    keyValue: string
+  ): Model | undefined {
+    return this.cache.peekRecordByKey(type, keyName, keyValue);
   }
 
   on(event: string, listener: Listener): void {

@@ -80,6 +80,60 @@ module('Integration - Store', function(hooks) {
     }
   });
 
+  test('#peekRecord - existing record', async function(assert) {
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.strictEqual(
+      store.peekRecord('planet', jupiter.id),
+      jupiter,
+      'retrieved record'
+    );
+  });
+
+  test('#peekRecord - missing record', async function(assert) {
+    assert.strictEqual(store.peekRecord('planet', 'fake'), undefined);
+  });
+
+  test('#peekRecordByKey - existing record', async function(assert) {
+    const jupiter = await store.addRecord({
+      type: 'planet',
+      name: 'Jupiter',
+      remoteId: 'p01'
+    });
+    assert.strictEqual(
+      store.peekRecordByKey('planet', 'remoteId', 'p01'),
+      jupiter,
+      'retrieved record'
+    );
+  });
+
+  test('#peekRecordByKey - missing record', async function(assert) {
+    assert.strictEqual(
+      store.keyMap.keyToId('planet', 'remoteId', 'p01'),
+      undefined,
+      'key is not in map'
+    );
+    assert.strictEqual(
+      store.peekRecordByKey('planet', 'remoteId', 'p01'),
+      undefined
+    );
+    assert.notStrictEqual(
+      store.keyMap.keyToId('planet', 'remoteId', 'p01'),
+      undefined,
+      'id has been generated for key'
+    );
+  });
+
+  test('#peekRecords', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    await store.addRecord({ type: 'moon', name: 'Io' });
+
+    const planets = store.peekRecords('planet');
+    assert.equal(planets.length, 2);
+    assert.ok(planets.includes(earth));
+    assert.ok(planets.includes(jupiter));
+  });
+
   test('#removeRecord - when passed a record, it should serialize its identity in a `removeRecord` op', async function(assert) {
     assert.expect(2);
 
