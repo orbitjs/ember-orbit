@@ -15,9 +15,13 @@ module('Integration - Store', function(hooks) {
     store = null;
   });
 
-  test('exposes keyMap and schema', function(assert) {
+  test('exposes properties from source', function(assert) {
     assert.strictEqual(store.keyMap, store.source.keyMap);
     assert.strictEqual(store.schema, store.source.schema);
+    assert.strictEqual(store.transformBuilder, store.transformBuilder);
+    assert.strictEqual(store.transformLog, store.source.transformLog);
+    assert.strictEqual(store.requestQueue, store.source.requestQueue);
+    assert.strictEqual(store.syncQueue, store.source.syncQueue);
   });
 
   test('#addRecord', async function(assert) {
@@ -196,7 +200,7 @@ module('Integration - Store', function(hooks) {
     };
 
     const addRecordATransform = buildTransform(
-      store.source.transformBuilder.addRecord(recordA)
+      store.transformBuilder.addRecord(recordA)
     );
 
     await store.sync(addRecordATransform);
@@ -214,7 +218,7 @@ module('Integration - Store', function(hooks) {
     };
 
     const addRecordATransform = buildTransform(
-      store.source.transformBuilder.addRecord(recordA)
+      store.transformBuilder.addRecord(recordA)
     );
 
     await store.sync(addRecordATransform);
@@ -240,7 +244,7 @@ module('Integration - Store', function(hooks) {
       type: 'planet',
       attributes: { name: 'Pluto' }
     };
-    const tb = store.source.transformBuilder;
+    const tb = store.transformBuilder;
 
     const addRecordATransform = buildTransform(tb.addRecord(recordA));
     const addRecordBTransform = buildTransform(tb.addRecord(recordB));
@@ -273,7 +277,7 @@ module('Integration - Store', function(hooks) {
       type: 'planet',
       attributes: { name: 'Pluto' }
     };
-    const tb = store.source.transformBuilder;
+    const tb = store.transformBuilder;
 
     const addRecordATransform = buildTransform(tb.addRecord(recordA));
     const addRecordBTransform = buildTransform(tb.addRecord(recordB));
@@ -488,7 +492,7 @@ module('Integration - Store', function(hooks) {
       attributes: { name: 'Uranus' }
     };
 
-    const tb = store.source.transformBuilder;
+    const tb = store.transformBuilder;
     const addRecordA = buildTransform(tb.addRecord(recordA));
     const addRecordB = buildTransform(tb.addRecord(recordB));
     const addRecordC = buildTransform(tb.addRecord(recordC));

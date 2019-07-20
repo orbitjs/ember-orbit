@@ -9,7 +9,8 @@ import {
   cloneRecordIdentity,
   RecordOperation,
   KeyMap,
-  Schema
+  Schema,
+  TransformBuilder
 } from '@orbit/data';
 import MemorySource from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
@@ -28,10 +29,6 @@ export default class Store {
   source: MemorySource;
   cache: Cache;
 
-  transformLog: Log;
-  requestQueue: TaskQueue;
-  syncQueue: TaskQueue;
-
   static create(injections: StoreSettings): Store {
     const owner = getOwner(injections);
     const store = new this(injections);
@@ -46,20 +43,12 @@ export default class Store {
       sourceCache: this.source.cache,
       modelFactory: new ModelFactory(this)
     });
-
-    this.transformLog = this.source.transformLog;
-    this.requestQueue = this.source.requestQueue;
-    this.syncQueue = this.source.syncQueue;
   }
 
   destroy() {
     this.cache.destroy();
-
     delete this.source;
     delete this.cache;
-    delete this.transformLog;
-    delete this.requestQueue;
-    delete this.syncQueue;
   }
 
   get keyMap(): KeyMap | undefined {
@@ -68,6 +57,22 @@ export default class Store {
 
   get schema(): Schema {
     return this.source.schema;
+  }
+
+  get transformBuilder(): TransformBuilder {
+    return this.source.transformBuilder;
+  }
+
+  get transformLog(): Log {
+    return this.source.transformLog;
+  }
+
+  get requestQueue(): TaskQueue {
+    return this.source.requestQueue;
+  }
+
+  get syncQueue(): TaskQueue {
+    return this.source.syncQueue;
   }
 
   fork(): Store {
