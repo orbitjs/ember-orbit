@@ -18,9 +18,10 @@ module('Integration - Cache', function(hooks) {
     cache = null;
   });
 
-  test('exposes keyMap and schema', function(assert) {
+  test('exposes properties from underlying MemoryCache', function(assert) {
     assert.strictEqual(cache.keyMap, store.source.keyMap);
     assert.strictEqual(cache.schema, store.source.schema);
+    assert.strictEqual(cache.transformBuilder, store.source.transformBuilder);
   });
 
   test('liveQuery - adds record that becomes a match', async function(assert) {

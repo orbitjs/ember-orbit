@@ -8,7 +8,8 @@ import Orbit, {
   RecordOperation,
   Record,
   KeyMap,
-  Schema
+  Schema,
+  TransformBuilder
 } from '@orbit/data';
 import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
@@ -56,6 +57,10 @@ export default class Cache {
 
   get schema(): Schema {
     return this._sourceCache.schema;
+  }
+
+  get transformBuilder(): TransformBuilder {
+    return this._sourceCache.transformBuilder;
   }
 
   /**
