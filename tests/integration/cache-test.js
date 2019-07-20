@@ -104,6 +104,36 @@ module('Integration - Cache', function(hooks) {
     assert.strictEqual(cache.peekRecord('planet', 'fake'), undefined);
   });
 
+  test('#peekRecordByKey - existing record', async function(assert) {
+    const jupiter = await store.addRecord({
+      type: 'planet',
+      name: 'Jupiter',
+      remoteId: 'p01'
+    });
+    assert.strictEqual(
+      cache.peekRecordByKey('planet', 'remoteId', 'p01'),
+      jupiter,
+      'retrieved record'
+    );
+  });
+
+  test('#peekRecordByKey - missing record', async function(assert) {
+    assert.strictEqual(
+      cache.keyMap.keyToId('planet', 'remoteId', 'p01'),
+      undefined,
+      'key is not in map'
+    );
+    assert.strictEqual(
+      cache.peekRecordByKey('planet', 'remoteId', 'p01'),
+      undefined
+    );
+    assert.notStrictEqual(
+      cache.keyMap.keyToId('planet', 'remoteId', 'p01'),
+      undefined,
+      'id has been generated for key'
+    );
+  });
+
   test('#peekRecords', async function(assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });

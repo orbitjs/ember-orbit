@@ -98,6 +98,14 @@ export default class Cache {
     return this.lookup(identities) as Model[];
   }
 
+  peekRecordByKey(
+    type: string,
+    keyName: string,
+    keyValue: string
+  ): Model | undefined {
+    return this.peekRecord(type, this.recordIdFromKey(type, keyName, keyValue));
+  }
+
   recordIdFromKey(type: string, keyName: string, keyValue: string): string {
     let keyMap = this.keyMap as KeyMap;
     assert(
