@@ -85,6 +85,11 @@ export default class Cache {
     return undefined;
   }
 
+  peekRecords(type: string): Model[] {
+    const identities = this._sourceCache.getRecordsSync(type);
+    return this.lookup(identities) as Model[];
+  }
+
   /**
    * @deprecated
    */

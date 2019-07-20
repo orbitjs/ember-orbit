@@ -99,6 +99,17 @@ module('Integration - Cache', function(hooks) {
     assert.strictEqual(cache.peekRecord('planet', 'fake'), undefined);
   });
 
+  test('#peekRecords', async function(assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    await store.addRecord({ type: 'moon', name: 'Io' });
+
+    const planets = cache.peekRecords('planet');
+    assert.equal(planets.length, 2);
+    assert.ok(planets.includes(earth));
+    assert.ok(planets.includes(jupiter));
+  });
+
   test('#peekKey - existing record + key', async function(assert) {
     const jupiter = await store.addRecord({ type: 'planet', remoteId: '123' });
     assert.equal(cache.peekKey(jupiter, 'remoteId'), '123');
