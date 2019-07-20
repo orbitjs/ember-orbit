@@ -231,6 +231,23 @@ module('Integration - Cache', function(hooks) {
     assert.strictEqual(cache.peekRecordData('planet', 'fake'), undefined);
   });
 
+  test('#recordIdFromKey - retrieves a record id based on a known key', async function(assert) {
+    await store.addRecord({
+      type: 'planet',
+      id: '123',
+      name: 'Earth',
+      remoteId: 'p01'
+    });
+    const id = cache.recordIdFromKey('planet', 'remoteId', 'p01');
+    assert.equal(id, '123');
+  });
+
+  test('#recordIdFromKey - generates a record id based on an unknown key', async function(assert) {
+    cache.schema.generateId = () => '123';
+    const id = cache.recordIdFromKey('planet', 'remoteId', 'p01');
+    assert.equal(id, '123');
+  });
+
   test('#query - record', async function(assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     await store.addRecord({ type: 'planet', name: 'Jupiter' });

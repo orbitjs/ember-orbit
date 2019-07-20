@@ -18,7 +18,7 @@ import Model from './model';
 import ModelFactory from './model-factory';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
-const { deprecate } = Orbit;
+const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
@@ -96,6 +96,20 @@ export default class Cache {
   peekRecords(type: string): Model[] {
     const identities = this._sourceCache.getRecordsSync(type);
     return this.lookup(identities) as Model[];
+  }
+
+  recordIdFromKey(type: string, keyName: string, keyValue: string): string {
+    let keyMap = this.keyMap as KeyMap;
+    assert(
+      'No `keyMap` has been assigned to the Cache, so `recordIdFromKey` can not work.',
+      !!keyMap
+    );
+    let id = keyMap.keyToId(type, keyName, keyValue);
+    if (!id) {
+      id = this.schema.generateId(type);
+      keyMap.pushRecord({ type, id, keys: { [keyName]: keyValue } });
+    }
+    return id;
   }
 
   /**
