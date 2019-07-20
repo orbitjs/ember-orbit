@@ -18,6 +18,11 @@ module('Integration - Cache', function(hooks) {
     cache = null;
   });
 
+  test('exposes keyMap and schema', function(assert) {
+    assert.strictEqual(cache.keyMap, store.source.keyMap);
+    assert.strictEqual(cache.schema, store.source.schema);
+  });
+
   test('liveQuery - adds record that becomes a match', async function(assert) {
     const liveQuery = cache.liveQuery(q =>
       q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })

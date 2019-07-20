@@ -1,5 +1,4 @@
 import { notifyPropertyChange } from '@ember/object';
-
 import { Listener } from '@orbit/core';
 import { deepGet } from '@orbit/utils';
 import Orbit, {
@@ -7,12 +6,13 @@ import Orbit, {
   RecordIdentity,
   QueryOrExpression,
   RecordOperation,
-  Record
+  Record,
+  KeyMap,
+  Schema
 } from '@orbit/data';
 import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
-
 import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
@@ -48,6 +48,14 @@ export default class Cache {
 
     this._sourceCache.on('patch', this._patchListener);
     this._sourceCache.on('reset', this._resetListener);
+  }
+
+  get keyMap(): KeyMap | undefined {
+    return this._sourceCache.keyMap;
+  }
+
+  get schema(): Schema {
+    return this._sourceCache.schema;
   }
 
   /**
