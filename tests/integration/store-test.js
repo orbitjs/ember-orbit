@@ -224,6 +224,72 @@ module('Integration - Store', function(hooks) {
     ]);
   });
 
+  test('#transformsSince - returns all transforms since a specified transformId', async function(assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const tb = store.source.transformBuilder;
+
+    const addRecordATransform = buildTransform(tb.addRecord(recordA));
+    const addRecordBTransform = buildTransform(tb.addRecord(recordB));
+    const addRecordCTransform = buildTransform(tb.addRecord(recordC));
+
+    await store.sync(addRecordATransform);
+    await store.sync(addRecordBTransform);
+    await store.sync(addRecordCTransform);
+
+    assert.deepEqual(
+      store.transformsSince(addRecordATransform.id),
+      [addRecordBTransform, addRecordCTransform],
+      'returns transforms since the specified transform'
+    );
+  });
+
+  test('#allTransforms - returns all tracked transforms', async function(assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const tb = store.source.transformBuilder;
+
+    const addRecordATransform = buildTransform(tb.addRecord(recordA));
+    const addRecordBTransform = buildTransform(tb.addRecord(recordB));
+    const addRecordCTransform = buildTransform(tb.addRecord(recordC));
+
+    await store.sync(addRecordATransform);
+    await store.sync(addRecordBTransform);
+    await store.sync(addRecordCTransform);
+
+    assert.deepEqual(
+      store.allTransforms(),
+      [addRecordATransform, addRecordBTransform, addRecordCTransform],
+      'tracks transforms in correct order'
+    );
+  });
+
   test('replacing a record invalidates attributes and relationships', async function(assert) {
     const planet = await store.addRecord({
       type: 'planet',
@@ -393,5 +459,62 @@ module('Integration - Store', function(hooks) {
       forkedStore.cache.includesRecord('planet', jupiter.id),
       'fork includes record'
     );
+  });
+
+  test('#rebase - maintains only unique transforms in fork', async function(assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const recordD = {
+      id: 'neptune',
+      type: 'planet',
+      attributes: { name: 'Neptune' }
+    };
+    const recordE = {
+      id: 'uranus',
+      type: 'planet',
+      attributes: { name: 'Uranus' }
+    };
+
+    const tb = store.source.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+    const addRecordC = buildTransform(tb.addRecord(recordC));
+    const addRecordD = buildTransform(tb.addRecord(recordD));
+    const addRecordE = buildTransform(tb.addRecord(recordE));
+
+    let fork;
+
+    await store.update(addRecordA);
+    await store.update(addRecordB);
+
+    fork = store.fork();
+
+    await fork.update(addRecordD);
+    await store.update(addRecordC);
+    await fork.update(addRecordE);
+
+    fork.rebase();
+
+    assert.deepEqual(fork.allTransforms(), [addRecordD, addRecordE]);
+
+    assert.deepEqual(fork.cache.peekRecords('planet').length, 5);
+    assert.ok(fork.cache.includesRecord(recordA.type, recordA.id));
+    assert.ok(fork.cache.includesRecord(recordB.type, recordB.id));
+    assert.ok(fork.cache.includesRecord(recordC.type, recordC.id));
+    assert.ok(fork.cache.includesRecord(recordD.type, recordD.id));
+    assert.ok(fork.cache.includesRecord(recordE.type, recordE.id));
   });
 });

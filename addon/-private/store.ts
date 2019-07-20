@@ -85,6 +85,10 @@ export default class Store {
     return this.source.rollback(transformId, relativePosition);
   }
 
+  rebase(): void {
+    this.source.rebase();
+  }
+
   liveQuery(
     queryOrExpression: QueryOrExpression,
     options?: object,
@@ -205,6 +209,14 @@ export default class Store {
     id?: string
   ): Promise<any> {
     return this.source.update(transformOrTransforms, options, id);
+  }
+
+  transformsSince(transformId: string): Transform[] {
+    return this.source.transformsSince(transformId);
+  }
+
+  allTransforms(): Transform[] {
+    return this.source.allTransforms();
   }
 
   getTransform(transformId: string): Transform {
