@@ -87,6 +87,6 @@
     "configPath": "tests/dummy/config"
   },
   "peerDependencies": {
-    "ember-source": ">= 2.13.0"
+    "ember-source": ">= 3.4.0"
   }
 }
