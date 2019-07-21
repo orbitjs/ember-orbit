@@ -1,4 +1,3 @@
-import { readOnly } from '@ember/object/computed';
 import { computed } from '@ember/object';
 import ArrayProxy from '@ember/array/proxy';
 
@@ -21,8 +20,6 @@ export default ArrayProxy.extend({
   shiftObject: notSupported,
   unshiftObject: notSupported,
   unshiftObjects: notSupported,
-
-  length: readOnly('content.length'),
 
   init() {
     this._super();
