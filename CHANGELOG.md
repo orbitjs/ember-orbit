@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.16.0-beta.2 (2019-07-22)
+
+#### :bug: Bug Fix
+
+- [#201](https://github.com/orbitjs/ember-orbit/pull/201) Fix ReadOnlyArrayProxy for octane ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.16.0-beta.1 (2019-07-20)
 
 #### :rocket: Enhancement
