@@ -9,11 +9,13 @@ import { camelize } from '@ember/string';
 
 export const DEFAULT_ORBIT_CONFIG = {
   types: {
+    bucket: 'data-bucket',
     model: 'data-model',
     source: 'data-source',
     strategy: 'data-strategy'
   },
   collections: {
+    buckets: 'data-buckets',
     models: 'data-models',
     sources: 'data-sources',
     strategies: 'data-strategies'
@@ -46,6 +48,9 @@ export function initialize(application) {
     application.__registry__.resolver &&
     application.__registry__.resolver.pluralizedTypes
   ) {
+    application.__registry__.resolver.pluralizedTypes[
+      orbitConfig.types.bucket
+    ] = orbitConfig.collections.buckets;
     application.__registry__.resolver.pluralizedTypes[orbitConfig.types.model] =
       orbitConfig.collections.models;
     application.__registry__.resolver.pluralizedTypes[

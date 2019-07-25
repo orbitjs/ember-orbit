@@ -15,11 +15,13 @@ module('Integration - Config', function(hooks) {
       {
         orbit: {
           types: {
+            bucket: 'orbit-bucket',
             model: 'orbit-model',
             source: 'orbit-source',
             strategy: 'orbit-strategy'
           },
           collections: {
+            buckets: 'orbit-buckets',
             models: 'orbit-models',
             sources: 'orbit-sources',
             strategies: 'orbit-strategies'
