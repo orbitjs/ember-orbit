@@ -1,5 +1,6 @@
 import Ember from 'ember';
-import { initialize } from 'ember-orbit/initializers/ember-orbit';
+import { initialize as initializeConfig } from 'ember-orbit/initializers/ember-orbit-config';
+import { initialize as initializeServices } from 'ember-orbit/initializers/ember-orbit-services';
 import Owner from './owner';
 
 export function createOwner() {
@@ -16,7 +17,8 @@ export function createStore(options) {
   options = options || {};
 
   const owner = options.owner || createOwner();
-  initialize(owner);
+  initializeConfig(owner);
+  initializeServices(owner);
   let orbitConfig = owner.lookup('ember-orbit:config');
 
   const { models } = options;
