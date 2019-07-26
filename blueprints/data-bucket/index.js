@@ -9,18 +9,33 @@ module.exports = {
   ],
 
   fileMapTokens() {
-    const addonConfig = this.project.config()['orbit'] || {};
-    const collections = addonConfig.collections || {};
-
     return {
-      __buckets__() {
-        return collections.buckets || 'data-buckets';
+      __buckets__(options) {
+        return options.locals.bucketsCollection;
+      },
+      __initializer__(options) {
+        return options.locals.initializerName;
       }
     };
   },
 
   locals(options) {
     const { from, namespace } = options;
-    return { from, namespace };
+    const addonConfig = this.project.config()['orbit'] || {};
+    const collections = addonConfig.collections || {};
+
+    return {
+      from,
+      namespace,
+      bucketsCollection: collections.buckets || 'data-buckets',
+      initializerName: `${options.entity.name}-bucket-initializer`,
+      serviceName: `${options.entity.name}-bucket`
+    };
+  },
+
+  afterInstall(options) {
+    if (options.from) {
+      return this.addPackageToProject(options.from);
+    }
   }
 };
