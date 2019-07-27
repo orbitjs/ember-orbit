@@ -9,24 +9,23 @@ module.exports = {
     const app = this._findHost();
     const addonConfig = this.app.project.config(app.env)['orbit'] || {};
     const collections = addonConfig.collections || {};
+    const modelsDir = collections.models || 'data-models';
     let modelsPath;
 
-    if (collections.models) {
-      modelsPath = path.join('app', collections.models);
-    } else if (
+    if (
       app.project.pkg['ember-addon'] &&
       app.project.pkg['ember-addon'].configPath
     ) {
-      modelsPath = path.join('tests', 'dummy', 'app', 'data-models');
+      modelsPath = path.join('tests', 'dummy', 'app', modelsDir);
     } else {
-      modelsPath = path.join('app', 'data-models');
+      modelsPath = path.join('app', modelsDir);
     }
 
     const modelsDirectory = path.join(app.project.root, modelsPath);
 
     assert(
       fs.existsSync(modelsDirectory),
-      `You need to create models directory: "${modelsDirectory}"`
+      `[ember-orbit] The models directory is missing: "${modelsDirectory}". You can run 'ember g ember-orbit' to initialize ember-orbit and create this directory.`
     );
 
     this._super.included.apply(this, arguments);
