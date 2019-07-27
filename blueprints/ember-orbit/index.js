@@ -7,10 +7,6 @@ module.exports = {
     return '';
   },
 
-  renamedFiles: {
-    gitkeep: 'app/orbit-models/.gitkeep'
-  },
-
   fileMapTokens() {
     const addonConfig = this.project.config()['orbit'] || {};
     const collections = addonConfig.collections || {};
@@ -18,6 +14,9 @@ module.exports = {
     let tokens = {
       __gitkeep__() {
         return '.gitkeep';
+      },
+      __buckets__() {
+        return collections.buckets || 'data-buckets';
       },
       __models__() {
         return collections.models || 'data-models';
