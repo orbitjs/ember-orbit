@@ -21,6 +21,10 @@ module.exports = {
   locals(options) {
     let { type } = options;
     let name = options.entity.name;
+    let source = 'TODO';
+    let target = 'TODO';
+    let on = 'TODO';
+    let action = 'TODO';
 
     if (type === undefined) {
       if (availableTypes.includes(name)) {
@@ -32,6 +36,22 @@ module.exports = {
       }
     }
 
-    return { type };
+    if (type === 'sync') {
+      let segments = name.split('-');
+      if (segments.length >= 2) {
+        source = segments[0];
+        target = segments[1];
+      }
+    } else if (type === 'request') {
+      let segments = name.split('-');
+      if (segments.length >= 4) {
+        source = segments[0];
+        on = segments[1];
+        target = segments[2];
+        action = segments[3];
+      }
+    }
+
+    return { type, source, target, on, action };
   }
 };

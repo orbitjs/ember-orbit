@@ -6,7 +6,6 @@ export default {
     return new LogTruncationStrategy();
   }
 };
-
 <% } else if (type === 'event-logging') { %>
 import { EventLoggingStrategy } from '@orbit/coordinator';
 
@@ -15,7 +14,6 @@ export default {
     return new EventLoggingStrategy();
   }
 };
-
 <% } else if (type === 'sync') { %>
 import { SyncStrategy } from '@orbit/coordinator';
 
@@ -27,7 +25,7 @@ export default {
       /**
        * The name of the source which will have its `transform` event observed.
        */
-      source: 'TODO',
+      source: '<%= source %>',
 
       /**
        * The name of the source which will be acted upon.
@@ -35,7 +33,7 @@ export default {
        * When the source receives the `transform` event, the `sync` method
        * will be invoked on the target.
        */
-      target: 'TODO',
+      target: '<%= target %>',
 
       /**
        * A handler for any errors thrown as a result of invoking `sync` on the
@@ -63,7 +61,6 @@ export default {
     });
   }
 };
-
 <% } else if (type === 'request') { %>
 import { RequestStrategy } from '@orbit/coordinator';
 
@@ -75,18 +72,18 @@ export default {
       /**
        * The name of the source to be observed.
        */
-      source: 'TODO',
+      source: '<%= source %>',
 
       /**
        * The name of the event to observe (e.g. `beforeQuery`, `query`,
        * `beforeUpdate`, `update`, etc.).
        */
-      on: 'TODO',
+      on: '<%= on %>',
 
       /**
        * The name of the source which will be acted upon.
        */
-      target: 'TODO',
+      target: '<%= target %>',
 
       /**
        * The action to perform on the target.
@@ -95,7 +92,7 @@ export default {
        * invoked in the context of this strategy (and thus will have access to
        * both `this.source` and `this.target`).
        */
-      action: 'TODO',
+      action: '<%= action %>',
 
       /**
        * A handler for any errors thrown as a result of performing the action.
