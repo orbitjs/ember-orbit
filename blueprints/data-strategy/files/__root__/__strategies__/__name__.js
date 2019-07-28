@@ -1,25 +1,14 @@
-<% if (type === 'log-truncation') { %>
-import { LogTruncationStrategy } from '@orbit/coordinator';
-
+import { <%= strategyClass %> } from '@orbit/coordinator';
+<% if (type === 'log-truncation' || type === 'event-logging') { %>
 export default {
   create() {
-    return new LogTruncationStrategy();
-  }
-};
-<% } else if (type === 'event-logging') { %>
-import { EventLoggingStrategy } from '@orbit/coordinator';
-
-export default {
-  create() {
-    return new EventLoggingStrategy();
+    return new <%= strategyClass %>();
   }
 };
 <% } else if (type === 'sync') { %>
-import { SyncStrategy } from '@orbit/coordinator';
-
 export default {
   create() {
-    return new SyncStrategy({
+    return new <%= strategyClass %>({
       name: '<%= dasherizedModuleName %>',
 
       /**
@@ -62,11 +51,9 @@ export default {
   }
 };
 <% } else if (type === 'request') { %>
-import { RequestStrategy } from '@orbit/coordinator';
-
 export default {
   create() {
-    return new RequestStrategy({
+    return new <%= strategyClass %>({
       name: '<%= dasherizedModuleName %>',
 
       /**

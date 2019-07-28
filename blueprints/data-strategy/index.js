@@ -25,6 +25,7 @@ module.exports = {
     let target = 'TODO';
     let on = 'TODO';
     let action = 'TODO';
+    let strategyClass;
 
     if (type === undefined) {
       if (availableTypes.includes(name)) {
@@ -37,21 +38,40 @@ module.exports = {
     }
 
     if (type === 'sync') {
+      strategyClass = 'SyncStrategy';
       let segments = name.split('-');
       if (segments.length >= 2) {
         source = segments[0];
         target = segments[1];
       }
     } else if (type === 'request') {
+      strategyClass = 'RequestStrategy';
       let segments = name.split('-');
-      if (segments.length >= 4) {
+      if (segments.length >= 2) {
         source = segments[0];
         on = segments[1];
-        target = segments[2];
-        action = segments[3];
+
+        if (on === on.toLowerCase()) {
+          if (on.indexOf('before') === 0) {
+            on = `before${on.substr(6, 1).toUpperCase()}${on.substr(7)}`;
+          } else if (on.indexOf('fail') === on.length - 4) {
+            on = `${on.substr(0, on.length - 4)}Fail`;
+          }
+        }
+
+        if (segments.length >= 3) {
+          target = segments[2];
+          if (segments.length >= 4) {
+            action = segments[3];
+          }
+        }
       }
+    } else if (type === 'event-logging') {
+      strategyClass = 'EventLoggingStrategy';
+    } else if (type === 'log-truncation') {
+      strategyClass = 'LogTruncationStrategy';
     }
 
-    return { type, source, target, on, action };
+    return { type, strategyClass, source, target, on, action };
   }
 };
