@@ -20,15 +20,10 @@ interface HasManyContract {
 }
 
 export default class Model extends EmberObject {
-  identity: RecordIdentity;
+  identity!: RecordIdentity;
 
   private _store?: Store;
   private _relatedRecords: Dict<HasManyContract> = {};
-
-  constructor(settings: ModelSettings) {
-    super(...arguments);
-    this.identity = settings.identity;
-  }
 
   get id(): string {
     return this.identity.id;
