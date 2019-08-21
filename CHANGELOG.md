@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.16.1 (2019-08-20)
+
+#### :bug: Bug Fix
+
+- [#215](https://github.com/orbitjs/ember-orbit/pull/215) Fix in 3.11+ ([@cibernox](https://github.com/cibernox))
+
+#### :house: Internal
+
+- [#216](https://github.com/orbitjs/ember-orbit/pull/216) Bump @orbit deps ([@dgeb](https://github.com/dgeb))
+- [#214](https://github.com/orbitjs/ember-orbit/pull/214) Update to Ember 3.12 ([@cibernox](https://github.com/cibernox))
+
+#### Committers: 2
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+- Miguel Camba ([@cibernox](https://github.com/cibernox))
+
+## v0.16.0 (2019-07-30)
+
+#### :rocket: Enhancement
+
+- [#210](https://github.com/orbitjs/ember-orbit/pull/210) Refine strategy generator ([@dgeb](https://github.com/dgeb))
+- [#207](https://github.com/orbitjs/ember-orbit/pull/207) Make strategy name parsing even smarter ([@dgeb](https://github.com/dgeb))
+- [#206](https://github.com/orbitjs/ember-orbit/pull/206) Create data-buckets dir in default blueprint ([@dgeb](https://github.com/dgeb))
+- [#205](https://github.com/orbitjs/ember-orbit/pull/205) Refactor initializers and data-bucket generator ([@dgeb](https://github.com/dgeb))
+- [#204](https://github.com/orbitjs/ember-orbit/pull/204) Introduce `data-bucket` blueprint ([@dgeb](https://github.com/dgeb))
+- [#203](https://github.com/orbitjs/ember-orbit/pull/203) Add blueprints ([@dgeb](https://github.com/dgeb))
+
+#### :memo: Documentation
+
+- [#208](https://github.com/orbitjs/ember-orbit/pull/208) Update README ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#211](https://github.com/orbitjs/ember-orbit/pull/211) Upgrade orbit packages to v0.16 ([@dgeb](https://github.com/dgeb))
+- [#209](https://github.com/orbitjs/ember-orbit/pull/209) Remove unused Promise extension from tests ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.16.0-beta.2 (2019-07-22)
 
 #### :bug: Bug Fix
