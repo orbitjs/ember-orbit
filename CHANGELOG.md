@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.16.2 (2019-09-05)
+
+#### :bug: Bug Fix
+
+- [#218](https://github.com/orbitjs/ember-orbit/pull/218) Upgrade @orbit/coordinator@^0.16.2 ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.16.1 (2019-08-20)
 
 #### :bug: Bug Fix
