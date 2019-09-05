@@ -25,7 +25,7 @@
     "postpublish": "ember ts:clean"
   },
   "dependencies": {
-    "@orbit/coordinator": "^0.16.1",
+    "@orbit/coordinator": "^0.16.2",
     "@orbit/core": "^0.16.1",
     "@orbit/data": "^0.16.1",
     "@orbit/identity-map": "^0.16.1",
