@@ -50,8 +50,8 @@ dependencies should be accompanied by a minor version bump of EO.
 
 ## Demo
 
-[peeps-ember-orbit](https://github.com/cerebris/peeps-ember-orbit) is a simple
-contact manager demo that uses EO to illustrate a number of possible
+[todomvc-ember-orbit](https://github.com/orbitjs/todomvc-ember-orbit) is a
+simple TodoMVC example that uses EO to illustrate a number of possible
 configurations and application patterns.
 
 ## Installation
