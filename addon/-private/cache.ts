@@ -343,7 +343,9 @@ export default class Cache {
           for (let properties of [attributes, keys, relationships]) {
             if (properties) {
               for (let property of Object.keys(properties)) {
-                if (properties.hasOwnProperty(property)) {
+                if (
+                  Object.prototype.hasOwnProperty.call(properties, property)
+                ) {
                   this.notifyPropertyChange(identity, property);
                 }
               }
