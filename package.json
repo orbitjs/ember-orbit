@@ -33,7 +33,7 @@
     "@orbit/utils": "^0.16.3",
     "ember-auto-import": "^1.5.2",
     "ember-cli-babel": "^7.11.1",
-    "ember-cli-typescript": "^2.0.2",
+    "ember-cli-typescript": "^3.0.0",
     "ember-inflector": "^3.0.1",
     "ember-native-class-polyfill": "^1.0.6"
   },
@@ -46,7 +46,7 @@
     "@types/ember__test-helpers": "^0.7.8",
     "@types/qunit": "^2.9.0",
     "@types/rsvp": "^4.0.3",
-    "@typescript-eslint/parser": "^1.12.0",
+    "@typescript-eslint/parser": "^2.3.1",
     "babel-eslint": "^10.0.3",
     "broccoli-asset-rev": "^3.0.0",
     "ember-cli": "~3.13.0",
@@ -59,7 +59,7 @@
     "ember-cli-sri": "^2.1.1",
     "ember-cli-template-lint": "^1.0.0-beta.3",
     "ember-cli-test-loader": "^2.2.0",
-    "ember-cli-typescript-blueprints": "^2.0.0",
+    "ember-cli-typescript-blueprints": "^3.0.0",
     "ember-cli-uglify": "^3.0.0",
     "ember-disable-prototype-extensions": "^1.1.3",
     "ember-export-application-global": "^2.0.0",
@@ -78,7 +78,7 @@
     "loader.js": "^4.7.0",
     "prettier": "^1.18.2",
     "qunit-dom": "^0.9.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.3"
   },
   "engines": {
     "npm": ">= 3.0.0"
