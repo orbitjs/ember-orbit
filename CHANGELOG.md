@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.16.3 (2019-09-26)
+
+#### :rocket: Enhancement
+
+- [#229](https://github.com/orbitjs/ember-orbit/pull/229) Upgrade dependencies ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.16.2 (2019-09-05)
 
 #### :bug: Bug Fix
