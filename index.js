@@ -7,7 +7,7 @@ module.exports = {
   name: require('./package').name,
   included() {
     const app = this._findHost();
-    const addonConfig = this.app.project.config(app.env)['orbit'] || {};
+    const addonConfig = app.project.config(app.env)['orbit'] || {};
     const collections = addonConfig.collections || {};
     const modelsDir = collections.models || 'data-models';
     let modelsPath;
