@@ -9,10 +9,16 @@ export function initialize(application) {
   application.register(`service:${bucketService}`, BucketFactory);
 
   // Inject bucket into all sources
-  application.inject(config.types.source, 'bucket', `service:${bucketService}`);
+  if (config.types) {
+    application.inject(
+      config.types.source,
+      'bucket',
+      `service:${bucketService}`
+    );
+  }
 
   // Inject bucket into keyMap (if one is present)
-  if (!config.skipKeyMap) {
+  if (config.services && !config.skipKeyMap) {
     application.inject(
       `service:${config.services.keyMap}`,
       'bucket',
