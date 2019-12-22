@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.16.4 (2019-12-22)
+
+#### :rocket: Enhancement
+
+- [#236](https://github.com/orbitjs/ember-orbit/pull/236) Upgrade ember, orbit.js and other dependencies ([@tchak](https://github.com/tchak))
+
+#### :bug: Bug Fix
+
+- [#234](https://github.com/orbitjs/ember-orbit/pull/234) Allow ember-orbit to be used in addons ([@devotox](https://github.com/devotox))
+- [#235](https://github.com/orbitjs/ember-orbit/pull/235) Fix app reference in addon index ([@tchak](https://github.com/tchak))
+
+#### :house: Internal
+
+- [#237](https://github.com/orbitjs/ember-orbit/pull/237) Explicitly declare supported node versions ([@tchak](https://github.com/tchak))
+
+#### Committers: 2
+
+- Devonte ([@devotox](https://github.com/devotox))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+
 ## v0.16.3 (2019-09-26)
 
 #### :rocket: Enhancement
