@@ -261,9 +261,12 @@ export default class Cache {
     }
   }
 
+  /**
+   * @deprecated
+   */
   findAll(type: string, options?: object): Model[] {
     deprecate(
-      '`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.'
+      '`Cache#findAll(type)` is deprecated, use `Cache#findRecords(type)`.'
     );
     return this.findRecords(type, options);
   }

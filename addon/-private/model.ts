@@ -1,4 +1,5 @@
 import EmberObject from '@ember/object';
+import Orbit from '@orbit/core';
 import { Dict } from '@orbit/utils';
 import {
   Record,
@@ -8,22 +9,21 @@ import {
   RelationshipDefinition
 } from '@orbit/data';
 
-import HasMany from './relationships/has-many';
+const { deprecate } = Orbit;
+
+import { HasOneRelation, HasManyRelation } from './relations';
 import Store from './store';
 
 export interface ModelSettings {
   identity: RecordIdentity;
 }
 
-interface HasManyContract {
-  invalidate(): void;
-}
-
 export default class Model extends EmberObject {
   identity!: RecordIdentity;
 
   private _store?: Store;
-  private _relatedRecords: Dict<HasManyContract> = {};
+  private _hasManyRelations: Dict<HasManyRelation> = {};
+  private _hasOneRelations: Dict<HasOneRelation> = {};
 
   get id(): string {
     return this.identity.id;
@@ -56,6 +56,28 @@ export default class Model extends EmberObject {
     );
   }
 
+  hasMany(name: string): HasManyRelation {
+    let relationship = this._hasManyRelations[name];
+    if (!relationship) {
+      this._hasManyRelations[name] = relationship = new HasManyRelation(
+        this,
+        name
+      );
+    }
+    return relationship;
+  }
+
+  hasOne(name: string): HasOneRelation {
+    let relationship = this._hasOneRelations[name];
+    if (!relationship) {
+      this._hasOneRelations[name] = relationship = new HasOneRelation(
+        this,
+        name
+      );
+    }
+    return relationship;
+  }
+
   getAttribute(field: string): any {
     return this.store.cache.peekAttribute(this.identity, field);
   }
@@ -71,87 +93,69 @@ export default class Model extends EmberObject {
     );
   }
 
-  getRelatedRecord(relationship: string): Record | null | undefined {
-    return this.store.cache.peekRelatedRecord(this.identity, relationship);
+  /**
+   * @deprecated
+   */
+  getRelatedRecord(relationship: string): Record | null {
+    deprecate(
+      '`Model#getRelatedRecord(relationship)` is deprecated, use `Model#hasOne(relationship).value`.'
+    );
+    return this.hasOne(relationship).value;
   }
 
+  /**
+   * @deprecated
+   */
   async replaceRelatedRecord(
     relationship: string,
-    relatedRecord: Model | null,
+    record: RecordIdentity | null,
     options?: object
   ): Promise<void> {
-    await this.store.update(
-      t =>
-        t.replaceRelatedRecord(
-          this.identity,
-          relationship,
-          relatedRecord ? relatedRecord.identity : null
-        ),
-      options
+    deprecate(
+      '`Model#replaceRelatedRecord(relationship, record)` is deprecated, use `Model#hasOne(relationship).replace(record)`.'
     );
+    await this.hasOne(relationship).replace(record, options);
   }
 
-  getRelatedRecords(relationship: string) {
-    this._relatedRecords = this._relatedRecords || {};
-
-    if (!this._relatedRecords[relationship]) {
-      this._relatedRecords[relationship] = HasMany.create({
-        getContent: () =>
-          this.store.cache.peekRelatedRecords(this.identity, relationship),
-        addToContent: (record: Model): Promise<void> => {
-          return this.addToRelatedRecords(relationship, record);
-        },
-        removeFromContent: (record: Model): Promise<void> => {
-          return this.removeFromRelatedRecords(relationship, record);
-        }
-      });
-    }
-    this._relatedRecords[relationship].invalidate();
-
-    return this._relatedRecords[relationship];
-  }
-
+  /**
+   * @deprecated
+   */
   async addToRelatedRecords(
     relationship: string,
-    record: Model,
+    record: RecordIdentity,
     options?: object
   ): Promise<void> {
-    await this.store.update(
-      t => t.addToRelatedRecords(this.identity, relationship, record.identity),
-      options
+    deprecate(
+      '`Model#addToRelatedRecords(relationship, record)` is deprecated, use `Model#hasMany(relationship).add(record)`.'
     );
+    await this.hasMany(relationship).add(record, options);
   }
 
+  /**
+   * @deprecated
+   */
   async removeFromRelatedRecords(
     relationship: string,
-    record: Model,
+    record: RecordIdentity,
     options?: object
   ): Promise<void> {
-    await this.store.update(
-      t =>
-        t.removeFromRelatedRecords(
-          this.identity,
-          relationship,
-          record.identity
-        ),
-      options
+    deprecate(
+      '`Model#removeFromRelatedRecords(relationship, record)` is deprecated, use `Model#hasMany(relationship).remove(record)`.'
     );
+    await this.hasMany(relationship).remove(record, options);
   }
 
+  /**
+   * @deprecated
+   */
   async replaceAttributes(
     properties: Dict<unknown> = {},
     options?: object
   ): Promise<void> {
-    const keys = Object.keys(properties);
-    await this.store
-      .update(
-        t =>
-          keys.map(key =>
-            t.replaceAttribute(this.identity, key, properties[key])
-          ),
-        options
-      )
-      .then(() => this);
+    deprecate(
+      '`Model#replaceAttributes(properties)` is deprecated, use `Model#update(properties)`.'
+    );
+    await this.update(properties, options);
   }
 
   async update(
@@ -176,7 +180,7 @@ export default class Model extends EmberObject {
     }
   }
 
-  private get store(): Store {
+  get store(): Store {
     if (!this._store) {
       throw new Error('record has been removed from Store');
     }

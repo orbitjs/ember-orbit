@@ -1,14 +1,16 @@
 import { computed } from '@ember/object';
 import { Dict } from '@orbit/utils';
 
+import Model from '../model';
+
 export default function(type: string, options: Dict<unknown> = {}) {
   options.type = type;
 
   return computed({
-    get(key) {
+    get(this: Model, key) {
       return this.getAttribute(key);
     },
-    set(key, value) {
+    set(this: Model, key, value) {
       const oldValue = this.getAttribute(key);
 
       if (value !== oldValue) {

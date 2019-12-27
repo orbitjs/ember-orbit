@@ -25,6 +25,7 @@
     "postpublish": "ember ts:clean"
   },
   "dependencies": {
+    "@glimmer/env": "^0.1.7",
     "@orbit/coordinator": "^0.16.4",
     "@orbit/core": "^0.16.3",
     "@orbit/data": "^0.16.4",

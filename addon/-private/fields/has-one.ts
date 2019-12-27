@@ -1,19 +1,21 @@
 import { computed } from '@ember/object';
 import { Dict } from '@orbit/utils';
 
+import Model from '../model';
+
 export default function(type: string, options: Dict<unknown> = {}) {
   options.kind = 'hasOne';
   options.type = type;
 
   return computed({
-    get(key) {
-      return this.getRelatedRecord(key);
+    get(this: Model, key) {
+      return this.hasOne(key).value;
     },
-    set(key, value) {
-      const oldValue = this.getRelatedRecord(key);
+    set(this: Model, key, value: Model | null) {
+      const oldValue = this.hasOne(key).value;
 
       if (value !== oldValue) {
-        this.replaceRelatedRecord(key, value);
+        this.hasOne(key).replace(value);
       }
 
       return value;
