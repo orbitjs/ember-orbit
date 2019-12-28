@@ -18,6 +18,12 @@ import Cache from './cache';
 import Model from './model';
 import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
+import {
+  FindRecordQueryBuilder,
+  FindRecordsQueryBuilder,
+  FindRelatedRecordQueryBuilder,
+  FindRelatedRecordsQueryBuilder
+} from './query-builders';
 
 const { deprecate } = Orbit;
 
@@ -102,11 +108,17 @@ export default class Store {
     this.source.rebase();
   }
 
+  /**
+   * @deprecated
+   */
   liveQuery(
     queryOrExpression: QueryOrExpression,
     options?: object,
     id?: string
   ): Promise<any> {
+    deprecate(
+      '`Store#liveQuery(type)` is deprecated, use `Store#findRecords(type).live()`.'
+    );
     const query = buildQuery(
       queryOrExpression,
       options,
@@ -148,27 +160,102 @@ export default class Store {
     await this.update(t => t.removeRecord(identity), options);
   }
 
+  /**
+   * @deprecated
+   */
   findAll(type: string, options?: object): Promise<Model[]> {
     deprecate(
-      '`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.'
+      '`Store#findAll(type)` is deprecated, use `Store#findRecords(type)`.'
     );
-    return this.findRecords(type, options);
+    return this.findRecords(type, options).then(result => result);
   }
 
+  /**
+   * @deprecated
+   */
   find(type: string, id?: string | undefined): Promise<Model | Model[]> {
     if (id === undefined) {
-      return this.findRecords(type);
+      deprecate(
+        '`Store#find(type)` is deprecated, use `Store#findRecords(type)`.'
+      );
+      return this.findRecords(type).then(result => result);
     } else {
-      return this.findRecord(type, id);
+      deprecate(
+        '`Store#find(type, id)` is deprecated, use `Store#findRecord({ type, id })`.'
+      );
+      return this.findRecord(type, id).then(result => result);
     }
   }
 
-  findRecord(type: string, id: string, options?: object): Promise<Model> {
-    return this.query(q => q.findRecord({ type, id }), options);
+  findRecord(
+    identifier: RecordIdentity | string,
+    id?: string | object,
+    options?: object
+  ): FindRecordQueryBuilder {
+    if (typeof identifier === 'string' && typeof id === 'string') {
+      deprecate(
+        '`Store#findRecord(type, id)` is deprecated, use `Store#findRecord({ type, id })`.'
+      );
+      identifier = { type: identifier, id };
+    } else {
+      options = id as object;
+    }
+    if (typeof identifier !== 'object') {
+      throw new TypeError('findRecord should be called with an identifier.');
+    }
+
+    const queryBuilder = new FindRecordQueryBuilder(this, identifier);
+
+    if (options) {
+      return queryBuilder.options(options);
+    }
+    return queryBuilder;
   }
 
-  findRecords(type: string, options?: object): Promise<Model[]> {
-    return this.query(q => q.findRecords(type), options);
+  findRecords(
+    type: string | RecordIdentity[],
+    options?: object
+  ): FindRecordsQueryBuilder {
+    const queryBuilder = new FindRecordsQueryBuilder(this, type);
+
+    if (options) {
+      return queryBuilder.options(options);
+    }
+    return queryBuilder;
+  }
+
+  findRelatedRecord(
+    identifier: RecordIdentity,
+    relationship: string,
+    options?: object
+  ): FindRelatedRecordQueryBuilder {
+    const queryBuilder = new FindRelatedRecordQueryBuilder(
+      this,
+      identifier,
+      relationship
+    );
+
+    if (options) {
+      return queryBuilder.options(options);
+    }
+    return queryBuilder;
+  }
+
+  findRelatedRecords(
+    identifier: RecordIdentity,
+    relationship: string,
+    options?: object
+  ): FindRelatedRecordsQueryBuilder {
+    const queryBuilder = new FindRelatedRecordsQueryBuilder(
+      this,
+      identifier,
+      relationship
+    );
+
+    if (options) {
+      return queryBuilder.options(options);
+    }
+    return queryBuilder;
   }
 
   findRecordByKey(
@@ -178,10 +265,12 @@ export default class Store {
     options?: object
   ): Promise<Model> {
     return this.findRecord(
-      type,
-      this.cache.recordIdFromKey(type, keyName, keyValue),
+      {
+        type,
+        id: this.cache.recordIdFromKey(type, keyName, keyValue)
+      },
       options
-    );
+    ).then(result => result);
   }
 
   peekRecord(

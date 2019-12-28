@@ -293,26 +293,50 @@ export default class Cache {
     return liveQuery;
   }
 
+  /**
+   * @deprecated
+   */
   find(type: string, id?: string): Model | Model[] {
     if (id === undefined) {
-      return this.findRecords(type);
+      deprecate(
+        '`Cache#find(type)` is deprecated, use `Store#findRecords(type).peek()`.'
+      );
+      return this.query(q => q.findRecords(type)) as Model[];
     } else {
-      return this.findRecord(type, id);
+      deprecate(
+        '`Cache#find(type, id)` is deprecated, use `Store#findRecord({ type, id }).peek()`.'
+      );
+      return this.query(q => q.findRecord({ type, id })) as Model[];
     }
   }
 
+  /**
+   * @deprecated
+   */
   findAll(type: string, options?: object): Model[] {
     deprecate(
-      '`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.'
+      '`Cache#findAll(type)` is deprecated, use `Store#findRecords(type).peek()`.'
     );
-    return this.findRecords(type, options);
+    return this.query(q => q.findRecords(type), options) as Model[];
   }
 
+  /**
+   * @deprecated
+   */
   findRecord(type: string, id: string, options?: object): Model {
+    deprecate(
+      '`Cache#findRecord(type, id)` is deprecated, use `Store#findRecord({ type, id }).peek()`.'
+    );
     return this.query(q => q.findRecord({ type, id }), options) as Model;
   }
 
+  /**
+   * @deprecated
+   */
   findRecords(type: string, options?: object): Model[] {
+    deprecate(
+      '`Cache#findRecords(type)` is deprecated, use `Store#findRecords(type).peek()`.'
+    );
     return this.query(q => q.findRecords(type), options) as Model[];
   }
 
