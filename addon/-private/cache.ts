@@ -68,17 +68,42 @@ export default class Cache {
    */
   retrieveRecordData(type: string, id: string): Record | undefined {
     deprecate(
-      '`Cache#retrieveRecordData(type, id)` is deprecated, use `Cache#peekRecordData(type, id)`.'
+      '`Cache#retrieveRecordData(type, id)` is deprecated, use `Cache#peekRecordData({ type, id })`.'
     );
-    return this.peekRecordData(type, id);
+    return this.peekRecordData({ type, id });
   }
 
-  peekRecordData(type: string, id: string): Record | undefined {
-    return this._sourceCache.getRecordSync({ type, id });
+  peekRecordData(
+    identifier: RecordIdentity | string,
+    id?: string
+  ): Record | undefined {
+    if (typeof identifier === 'string' && id) {
+      deprecate(
+        '`Cache#peekRecordData(type, id)` is deprecated, use `Cache#peekRecordData({ type, id })`.'
+      );
+      identifier = { type: identifier, id };
+    }
+    if (typeof identifier !== 'object') {
+      throw new TypeError(
+        'peekRecordData should be called with an identifier.'
+      );
+    }
+    return this._sourceCache.getRecordSync(identifier);
   }
 
-  includesRecord(type: string, id: string): boolean {
-    return !!this.peekRecordData(type, id);
+  includesRecord(identifier: RecordIdentity | string, id?: string): boolean {
+    if (typeof identifier === 'string' && id) {
+      deprecate(
+        '`Cache#includesRecord(type, id)` is deprecated, use `Cache#includesRecord({ type, id })`.'
+      );
+      identifier = { type: identifier, id };
+    }
+    if (typeof identifier !== 'object') {
+      throw new TypeError(
+        'includesRecord should be called with an identifier.'
+      );
+    }
+    return !!this.peekRecordData(identifier);
   }
 
   /**
@@ -86,14 +111,26 @@ export default class Cache {
    */
   retrieveRecord(type: string, id: string): Model | undefined {
     deprecate(
-      '`Cache#retrieveRecord(type, id)` is deprecated, use `Cache#peekRecord(type, id)`.'
+      '`Cache#retrieveRecord(type, id)` is deprecated, use `Cache#peekRecord({ type, id })`.'
     );
-    return this.peekRecord(type, id);
+    return this.peekRecord({ type, id });
   }
 
-  peekRecord(type: string, id: string): Model | undefined {
-    if (this.includesRecord(type, id)) {
-      return this.lookup({ type, id }) as Model;
+  peekRecord(
+    identifier: RecordIdentity | string,
+    id?: string
+  ): Model | undefined {
+    if (typeof identifier === 'string' && id) {
+      deprecate(
+        '`Cache#peekRecord(type, id)` is deprecated, use `Cache#peekRecord({ type, id })`.'
+      );
+      identifier = { type: identifier, id };
+    }
+    if (typeof identifier !== 'object') {
+      throw new TypeError('peekRecord should be called with an identifier.');
+    }
+    if (this.includesRecord(identifier)) {
+      return this.lookup(identifier) as Model;
     }
     return undefined;
   }
@@ -108,7 +145,10 @@ export default class Cache {
     keyName: string,
     keyValue: string
   ): Model | undefined {
-    return this.peekRecord(type, this.recordIdFromKey(type, keyName, keyValue));
+    return this.peekRecord({
+      type,
+      id: this.recordIdFromKey(type, keyName, keyValue)
+    });
   }
 
   recordIdFromKey(type: string, keyName: string, keyValue: string): string {

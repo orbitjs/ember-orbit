@@ -184,8 +184,17 @@ export default class Store {
     );
   }
 
-  peekRecord(type: string, id: string): Model | undefined {
-    return this.cache.peekRecord(type, id);
+  peekRecord(
+    identifier: RecordIdentity | string,
+    id?: string
+  ): Model | undefined {
+    if (typeof identifier === 'string' && id) {
+      deprecate(
+        '`Store#peekRecord(type, id)` is deprecated, use `Store#peekRecord({ type, id })`.'
+      );
+      identifier = { type: identifier, id };
+    }
+    return this.cache.peekRecord(identifier);
   }
 
   peekRecords(type: string): Model[] {

@@ -38,7 +38,7 @@ export default class Model extends EmberObject {
   }
 
   getData(): Record | undefined {
-    return this.store.cache.peekRecordData(this.type, this.id);
+    return this.store.cache.peekRecordData({ type: this.type, id: this.id });
   }
 
   getKey(field: string): string | undefined {
