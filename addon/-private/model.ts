@@ -5,7 +5,8 @@ import {
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
-  RelationshipDefinition
+  RelationshipDefinition,
+  RequestOptions
 } from '@orbit/data';
 
 import HasMany from './relationships/has-many';
@@ -48,7 +49,7 @@ export default class Model extends EmberObject {
   async replaceKey(
     field: string,
     value: string,
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
       (t) => t.replaceKey(this.identity, field, value),
@@ -63,7 +64,7 @@ export default class Model extends EmberObject {
   async replaceAttribute(
     attribute: string,
     value: unknown,
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
       (t) => t.replaceAttribute(this.identity, attribute, value),
@@ -78,7 +79,7 @@ export default class Model extends EmberObject {
   async replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -114,7 +115,7 @@ export default class Model extends EmberObject {
   async addToRelatedRecords(
     relationship: string,
     record: Model,
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -126,7 +127,7 @@ export default class Model extends EmberObject {
   async removeFromRelatedRecords(
     relationship: string,
     record: Model,
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -141,7 +142,7 @@ export default class Model extends EmberObject {
 
   async replaceAttributes(
     properties: Dict<unknown> = {},
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     const keys = Object.keys(properties);
     await this.store
@@ -157,12 +158,12 @@ export default class Model extends EmberObject {
 
   async update(
     properties: Dict<unknown> = {},
-    options?: object
+    options?: RequestOptions
   ): Promise<void> {
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
   }
 
-  async remove(options?: object): Promise<void> {
+  async remove(options?: RequestOptions): Promise<void> {
     await this.store.removeRecord(this.identity, options);
   }
 
@@ -222,8 +223,8 @@ export default class Model extends EmberObject {
       if (meta.isRelationship) {
         meta.name = name;
         map[name] = {
-          type: meta.options.kind,
-          model: meta.options.type,
+          kind: meta.options.kind,
+          type: meta.options.type,
           inverse: meta.options.inverse,
           dependent: meta.options.dependent
         };

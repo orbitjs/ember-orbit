@@ -2,7 +2,7 @@ import { getOwner, setOwner } from '@ember/application';
 
 import {
   buildQuery,
-  QueryOrExpression,
+  QueryOrExpressions,
   RecordIdentity,
   Transform,
   TransformOrOperations,
@@ -10,7 +10,8 @@ import {
   RecordOperation,
   KeyMap,
   Schema,
-  TransformBuilder
+  TransformBuilder,
+  RequestOptions
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
@@ -106,12 +107,12 @@ export default class Store {
   }
 
   liveQuery(
-    queryOrExpression: QueryOrExpression,
-    options?: object,
+    queryOrExpressions: QueryOrExpressions,
+    options?: RequestOptions,
     id?: string
   ): Promise<any> {
     const query = buildQuery(
-      queryOrExpression,
+      queryOrExpressions,
       options,
       id,
       this.source.queryBuilder
@@ -120,18 +121,18 @@ export default class Store {
   }
 
   async query(
-    queryOrExpression: QueryOrExpression,
-    options?: object,
+    queryOrExpressions: QueryOrExpressions,
+    options?: RequestOptions,
     id?: string
   ): Promise<any> {
     const query = buildQuery(
-      queryOrExpression,
+      queryOrExpressions,
       options,
       id,
       this.source.queryBuilder
     );
     const result = await this.source.query(query);
-    return this.cache.lookup(result);
+    return this.cache.lookup(result, query.expressions.length);
   }
 
   /**
@@ -140,13 +141,16 @@ export default class Store {
    * @param {object} properties
    * @param {object} options
    */
-  async addRecord(properties = {}, options?: object): Promise<Model> {
+  async addRecord(properties = {}, options?: RequestOptions): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.addRecord(record), options);
     return this.cache.lookup(record) as Model;
   }
 
-  async updateRecord(properties = {}, options?: object): Promise<Model> {
+  async updateRecord(
+    properties = {},
+    options?: RequestOptions
+  ): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.updateRecord(record), options);
     return this.cache.lookup(record) as Model;
@@ -158,12 +162,15 @@ export default class Store {
    * @param {RecordIdentity} record
    * @param {object} options
    */
-  async removeRecord(record: RecordIdentity, options?: object): Promise<void> {
+  async removeRecord(
+    record: RecordIdentity,
+    options?: RequestOptions
+  ): Promise<void> {
     const identity = cloneRecordIdentity(record);
     await this.update((t) => t.removeRecord(identity), options);
   }
 
-  findAll(type: string, options?: object): Promise<Model[]> {
+  findAll(type: string, options?: RequestOptions): Promise<Model[]> {
     deprecate(
       '`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.'
     );
@@ -183,11 +190,15 @@ export default class Store {
     }
   }
 
-  findRecord(type: string, id: string, options?: object): Promise<Model> {
+  findRecord(
+    type: string,
+    id: string,
+    options?: RequestOptions
+  ): Promise<Model> {
     return this.query((q) => q.findRecord({ type, id }), options);
   }
 
-  findRecords(type: string, options?: object): Promise<Model[]> {
+  findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
     return this.query((q) => q.findRecords(type), options);
   }
 
@@ -195,7 +206,7 @@ export default class Store {
     type: string,
     keyName: string,
     keyValue: string,
-    options?: object
+    options?: RequestOptions
   ): Promise<Model> {
     return this.findRecord(
       type,
@@ -238,7 +249,7 @@ export default class Store {
 
   update(
     transformOrTransforms: TransformOrOperations,
-    options?: object,
+    options?: RequestOptions,
     id?: string
   ): Promise<any> {
     return this.source.update(transformOrTransforms, options, id);

@@ -4,14 +4,15 @@ import { deepGet } from '@orbit/utils';
 import Orbit, {
   buildQuery,
   RecordIdentity,
-  QueryOrExpression,
+  QueryOrExpressions,
   RecordOperation,
   Record,
   KeyMap,
   Schema,
-  TransformBuilder
+  TransformBuilder,
+  RequestOptions
 } from '@orbit/data';
-import { QueryResultData } from '@orbit/record-cache';
+import { QueryResult, QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
 import LiveQuery from './live-query';
@@ -213,31 +214,31 @@ export default class Cache {
   }
 
   query(
-    queryOrExpression: QueryOrExpression,
-    options?: object,
+    queryOrExpressions: QueryOrExpressions,
+    options?: RequestOptions,
     id?: string
-  ): Model | Model[] | null {
+  ): Model | Model[] | null | (Model | Model[] | null)[] {
     const query = buildQuery(
-      queryOrExpression,
+      queryOrExpressions,
       options,
       id,
       this._sourceCache.queryBuilder
     );
     const result = this._sourceCache.query(query);
     if (result) {
-      return this.lookup(result);
+      return this.lookup(result, query.expressions.length);
     } else {
       return result;
     }
   }
 
   liveQuery(
-    queryOrExpression: QueryOrExpression,
-    options?: object,
+    queryOrExpressions: QueryOrExpressions,
+    options?: RequestOptions,
     id?: string
   ) {
     const query = buildQuery(
-      queryOrExpression,
+      queryOrExpressions,
       options,
       id,
       this._sourceCache.queryBuilder
@@ -261,18 +262,18 @@ export default class Cache {
     }
   }
 
-  findAll(type: string, options?: object): Model[] {
+  findAll(type: string, options?: RequestOptions): Model[] {
     deprecate(
       '`Cache.findAll(type)` is deprecated, use `Cache.findRecords(type)`.'
     );
     return this.findRecords(type, options);
   }
 
-  findRecord(type: string, id: string, options?: object): Model {
+  findRecord(type: string, id: string, options?: RequestOptions): Model {
     return this.query((q) => q.findRecord({ type, id }), options) as Model;
   }
 
-  findRecords(type: string, options?: object): Model[] {
+  findRecords(type: string, options?: RequestOptions): Model[] {
     return this.query((q) => q.findRecords(type), options) as Model[];
   }
 
@@ -284,9 +285,22 @@ export default class Cache {
     }
   }
 
-  lookup(result: QueryResultData): Model | Model[] | null {
+  lookup(
+    result: QueryResult,
+    expressions = 1
+  ): Model | Model[] | null | (Model | Model[] | null)[] {
+    if (isQueryResultData(result, expressions)) {
+      return (result as QueryResultData[]).map((result) =>
+        this._lookup(result)
+      );
+    } else {
+      return this._lookup(result);
+    }
+  }
+
+  private _lookup(result: QueryResultData): Model | Model[] | null {
     if (Array.isArray(result)) {
-      return result.map((identity) => this.lookup(identity) as Model);
+      return result.map((identity) => this._lookup(identity) as Model);
     } else if (result) {
       let record = this._identityMap.get(result);
 
@@ -374,4 +388,11 @@ export default class Cache {
   private generateResetListener(): () => void {
     return () => this.notifyLiveQueryChange();
   }
+}
+
+function isQueryResultData(
+  _result: QueryResult,
+  expressions: number
+): _result is QueryResultData[] {
+  return expressions > 1;
 }
