@@ -95,14 +95,17 @@ module('Integration - Cache', function(hooks) {
   test('#peekRecord - existing record', async function(assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.strictEqual(
-      cache.peekRecord('planet', jupiter.id),
+      cache.peekRecord({ type: 'planet', id: jupiter.id }),
       jupiter,
       'retrieved record'
     );
   });
 
   test('#peekRecord - missing record', async function(assert) {
-    assert.strictEqual(cache.peekRecord('planet', 'fake'), undefined);
+    assert.strictEqual(
+      cache.peekRecord({ type: 'planet', id: 'fake' }),
+      undefined
+    );
   });
 
   test('#peekRecordByKey - existing record', async function(assert) {
@@ -249,7 +252,10 @@ module('Integration - Cache', function(hooks) {
 
   test('#peekRecordData - existing record', async function(assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    const retrievedRecordData = cache.peekRecordData('planet', jupiter.id);
+    const retrievedRecordData = cache.peekRecordData({
+      type: 'planet',
+      id: jupiter.id
+    });
     assert.ok(retrievedRecordData, 'retrieved record data');
     assert.equal(
       retrievedRecordData.attributes.name,
@@ -259,7 +265,10 @@ module('Integration - Cache', function(hooks) {
   });
 
   test('peekRecordData - missing record', async function(assert) {
-    assert.strictEqual(cache.peekRecordData('planet', 'fake'), undefined);
+    assert.strictEqual(
+      cache.peekRecordData({ type: 'planet', id: 'fake' }),
+      undefined
+    );
   });
 
   test('#recordIdFromKey - retrieves a record id based on a known key', async function(assert) {
@@ -310,37 +319,5 @@ module('Integration - Cache', function(hooks) {
     );
     assert.deepEqual(foundRecords, [earth]);
     assert.strictEqual(foundRecords[0], earth);
-  });
-
-  test('#find - by type and id', async function(assert) {
-    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
-    const foundRecord = cache.find('planet', earth.id);
-    assert.strictEqual(foundRecord, earth, 'exact match');
-  });
-
-  test('#find - by type', async function(assert) {
-    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-
-    const foundRecords = cache.find('planet');
-    assert.equal(foundRecords.length, 2, 'two records found');
-    assert.ok(foundRecords.includes(earth), 'earth is included');
-    assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
-  });
-
-  test('#findRecord', async function(assert) {
-    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
-    const foundRecord = cache.findRecord('planet', earth.id);
-    assert.strictEqual(foundRecord, earth, 'exact match');
-  });
-
-  test('#findRecords', async function(assert) {
-    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-
-    const foundRecords = cache.findRecords('planet');
-    assert.equal(foundRecords.length, 2, 'two records found');
-    assert.ok(foundRecords.includes(earth), 'earth is included');
-    assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
   });
 });

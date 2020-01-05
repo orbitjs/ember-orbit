@@ -70,7 +70,7 @@ module('Integration - Model', function(hooks) {
     await record.remove();
 
     assert.notOk(
-      cache.includesRecord('star', record.id),
+      cache.includesRecord({ type: 'star', id: record.id }),
       'record does not exist in cache'
     );
     assert.ok(record.disconnected, 'record has been disconnected from store');
