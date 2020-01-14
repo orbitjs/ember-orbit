@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.16.5 (2020-01-14)
+
+#### :rocket: Enhancement
+
+- [#239](https://github.com/orbitjs/ember-orbit/pull/239) Fix store#merge return type ([@tchak](https://github.com/tchak))
+
+#### :memo: Documentation
+
+- [#239](https://github.com/orbitjs/ember-orbit/pull/239) Fix store#merge return type ([@tchak](https://github.com/tchak))
+
+#### :house: Internal
+
+- [#246](https://github.com/orbitjs/ember-orbit/pull/246) Test with node 10 ([@dgeb](https://github.com/dgeb))
+- [#245](https://github.com/orbitjs/ember-orbit/pull/245) Add more LTS builds ([@tchak](https://github.com/tchak))
+
+#### Committers: 2
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+
 ## v0.16.4 (2019-12-22)
 
 #### :rocket: Enhancement
