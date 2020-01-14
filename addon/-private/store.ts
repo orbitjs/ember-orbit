@@ -12,7 +12,7 @@ import {
   Schema,
   TransformBuilder
 } from '@orbit/data';
-import MemorySource from '@orbit/memory';
+import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
 import Cache from './cache';
 import Model from './model';
@@ -90,7 +90,7 @@ export default class Store {
     return Store.create({ ...injections, source: forkedSource });
   }
 
-  merge(forkedStore: Store, options = {}): Promise<any> {
+  merge(forkedStore: Store, options?: MemorySourceMergeOptions): Promise<any> {
     return this.source.merge(forkedStore.source, options);
   }
 
