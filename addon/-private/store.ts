@@ -25,6 +25,9 @@ export interface StoreSettings {
   source: MemorySource;
 }
 
+/**
+ * @class Store
+ */
 export default class Store {
   private _source: MemorySource;
   private _cache: Cache;
@@ -131,6 +134,12 @@ export default class Store {
     return this.cache.lookup(result);
   }
 
+  /**
+   * Adds a record to the Orbit store
+   * @method addRecord
+   * @param {object} properties
+   * @param {object} options
+   */
   async addRecord(properties = {}, options?: object): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update(t => t.addRecord(record), options);
@@ -143,6 +152,12 @@ export default class Store {
     return this.cache.lookup(record) as Model;
   }
 
+  /**
+   * Removes a record from the Orbit store
+   * @method removeRecord
+   * @param {RecordIdentity} record
+   * @param {object} options
+   */
   async removeRecord(record: RecordIdentity, options?: object): Promise<void> {
     const identity = cloneRecordIdentity(record);
     await this.update(t => t.removeRecord(identity), options);
@@ -155,6 +170,11 @@ export default class Store {
     return this.findRecords(type, options);
   }
 
+  /**
+   * @method find
+   * @param {string} type
+   * @param {string} id
+   */
   find(type: string, id?: string | undefined): Promise<Model | Model[]> {
     if (id === undefined) {
       return this.findRecords(type);
