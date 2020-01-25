@@ -1,0 +1,26 @@
+<DocsViewer as |viewer|>
+  <viewer.nav as |nav|>
+    {{nav.section "Getting started"}}
+    {{nav.item "Introduction" "docs.index"}}
+    {{nav.item "Installation" "docs.installation"}}
+
+    {{nav.section "Usage"}}
+    {{nav.item "Usage" "docs.usage.index"}}
+    {{nav.item "Defining Models" "docs.usage.defining-models"}}
+    {{nav.item "Adding Records" "docs.usage.adding-records"}}
+    {{nav.item "Querying Records" "docs.usage.querying-records"}}
+    {{nav.item "Updating Records" "docs.usage.updating-records"}}
+    {{nav.item "Forking and merging stores" "docs.usage.forking-and-merging"}}
+    {{nav.item "Adding a \"backup\" source" "docs.usage.backup-source"}}
+    {{nav.item "Defining coordination strategies" "docs.usage.coordination-strategies"}}
+    {{nav.item "Activating the coordinator" "docs.usage.activating-coordinator"}}
+    {{nav.item "Defining a data bucket" "docs.usage.data-bucket"}}
+
+    {{nav.section "Configuration"}}
+    {{nav.item "Customizing ember-orbit" "docs.configuration"}}
+  </viewer.nav>
+
+  <viewer.main>
+    {{outlet}}
+  </viewer.main>
+</DocsViewer>
