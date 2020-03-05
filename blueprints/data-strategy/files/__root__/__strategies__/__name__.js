@@ -36,7 +36,7 @@ export default {
        * `filter` will be invoked in the context of this strategy (and thus will
        * have access to both `this.source` and `this.target`).
        */
-      // filter(...args) {};
+      // filter(...args) {},
 
       /**
        * Should resolution of the target's `sync` block the completion of the
@@ -92,7 +92,7 @@ export default {
        * `filter` will be invoked in the context of this strategy (and thus will
        * have access to both `this.source` and `this.target`).
        */
-      // filter(...args) {};
+      // filter(...args) {},
 
       /**
        * Should results returned from calling `action` on the `target` source be
