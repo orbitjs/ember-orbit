@@ -1,4 +1,4 @@
-import { tracked } from '@glimmer/tracking';
+import { tracked } from './tracking';
 import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';

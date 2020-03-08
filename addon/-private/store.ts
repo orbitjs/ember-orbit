@@ -106,20 +106,6 @@ export default class Store {
     this.source.rebase();
   }
 
-  liveQuery(
-    queryOrExpressions: QueryOrExpressions,
-    options?: RequestOptions,
-    id?: string
-  ): Promise<any> {
-    const query = buildQuery(
-      queryOrExpressions,
-      options,
-      id,
-      this.source.queryBuilder
-    );
-    return this.source.query(query).then(() => this.cache.liveQuery(query));
-  }
-
   async query(
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,

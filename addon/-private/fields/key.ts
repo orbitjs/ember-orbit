@@ -1,4 +1,4 @@
-import { tracked } from '@glimmer/tracking';
+import { tracked } from './tracking';
 import { Dict } from '@orbit/utils';
 
 import Model from '../model';
