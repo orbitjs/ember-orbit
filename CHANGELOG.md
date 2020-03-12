@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.16.6 (2020-03-12)
+
+#### :rocket: Enhancement
+
+- [#253](https://github.com/orbitjs/ember-orbit/pull/253) Bump Orbit deps ([@dgeb](https://github.com/dgeb))
+- [#252](https://github.com/orbitjs/ember-orbit/pull/252) Update ember-cli ([@tchak](https://github.com/tchak))
+- [#251](https://github.com/orbitjs/ember-orbit/pull/251) Small DX improvement ([@pangratz](https://github.com/pangratz))
+- [#250](https://github.com/orbitjs/ember-orbit/pull/250) Export types from addon index ([@tchak](https://github.com/tchak))
+
+#### :memo: Documentation
+
+- [#249](https://github.com/orbitjs/ember-orbit/pull/249) Add ember-cli-addon-docs site ([@rwwagner90](https://github.com/rwwagner90))
+
+#### Committers: 4
+
+- Clemens M�ller ([@pangratz](https://github.com/pangratz))
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+- Robert Wagner ([@rwwagner90](https://github.com/rwwagner90))
+
 ## v0.16.5 (2020-01-14)
 
 #### :rocket: Enhancement
