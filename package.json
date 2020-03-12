@@ -25,11 +25,11 @@
     "postpublish": "ember ts:clean"
   },
   "dependencies": {
-    "@orbit/coordinator": "^0.16.4",
+    "@orbit/coordinator": "^0.16.5",
     "@orbit/core": "^0.16.3",
-    "@orbit/data": "^0.16.4",
-    "@orbit/identity-map": "^0.16.4",
-    "@orbit/memory": "^0.16.4",
+    "@orbit/data": "^0.16.5",
+    "@orbit/identity-map": "^0.16.5",
+    "@orbit/memory": "^0.16.5",
     "@orbit/utils": "^0.16.3",
     "ember-auto-import": "^1.5.3",
     "ember-cli-babel": "^7.18.0",
