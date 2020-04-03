@@ -51,7 +51,7 @@ export default class Model extends EmberObject {
     options?: object
   ): Promise<void> {
     await this.store.update(
-      t => t.replaceKey(this.identity, field, value),
+      (t) => t.replaceKey(this.identity, field, value),
       options
     );
   }
@@ -66,7 +66,7 @@ export default class Model extends EmberObject {
     options?: object
   ): Promise<void> {
     await this.store.update(
-      t => t.replaceAttribute(this.identity, attribute, value),
+      (t) => t.replaceAttribute(this.identity, attribute, value),
       options
     );
   }
@@ -81,7 +81,7 @@ export default class Model extends EmberObject {
     options?: object
   ): Promise<void> {
     await this.store.update(
-      t =>
+      (t) =>
         t.replaceRelatedRecord(
           this.identity,
           relationship,
@@ -117,7 +117,8 @@ export default class Model extends EmberObject {
     options?: object
   ): Promise<void> {
     await this.store.update(
-      t => t.addToRelatedRecords(this.identity, relationship, record.identity),
+      (t) =>
+        t.addToRelatedRecords(this.identity, relationship, record.identity),
       options
     );
   }
@@ -128,7 +129,7 @@ export default class Model extends EmberObject {
     options?: object
   ): Promise<void> {
     await this.store.update(
-      t =>
+      (t) =>
         t.removeFromRelatedRecords(
           this.identity,
           relationship,
@@ -145,8 +146,8 @@ export default class Model extends EmberObject {
     const keys = Object.keys(properties);
     await this.store
       .update(
-        t =>
-          keys.map(key =>
+        (t) =>
+          keys.map((key) =>
             t.replaceAttribute(this.identity, key, properties[key])
           ),
         options

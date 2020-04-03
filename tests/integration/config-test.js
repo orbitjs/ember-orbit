@@ -4,11 +4,11 @@ import { module, test } from 'qunit';
 import Controller from '@ember/controller';
 import Route from '@ember/routing/route';
 
-module('Integration - Config', function(hooks) {
+module('Integration - Config', function (hooks) {
   let owner;
   let store;
 
-  hooks.beforeEach(function() {
+  hooks.beforeEach(function () {
     owner = createOwner();
     owner.register(
       'config:environment',
@@ -42,12 +42,12 @@ module('Integration - Config', function(hooks) {
     owner.register('route:application', Route);
   });
 
-  hooks.afterEach(function() {
+  hooks.afterEach(function () {
     store = null;
     owner = null;
   });
 
-  test('registrations respect config', async function(assert) {
+  test('registrations respect config', async function (assert) {
     assert.equal(
       owner.lookup('service:orbit-store'),
       store,

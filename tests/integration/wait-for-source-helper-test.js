@@ -4,19 +4,19 @@ import { Planet } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { waitForSource } from 'ember-orbit/test-support';
 
-module('waitForSource helper', function(hooks) {
+module('waitForSource helper', function (hooks) {
   let store;
 
   setupTest(hooks);
 
-  hooks.beforeEach(function() {
+  hooks.beforeEach(function () {
     store = createStore({ models: { planet: Planet } });
   });
 
-  test('it resolves once all the pending requests to the given source have synced', async function(assert) {
+  test('it resolves once all the pending requests to the given source have synced', async function (assert) {
     const backup = createStore({ models: { planet: Planet } });
 
-    store.on('update', transform => {
+    store.on('update', (transform) => {
       backup.update(transform);
     });
 
@@ -28,12 +28,12 @@ module('waitForSource helper', function(hooks) {
     assert.ok(backup.source.syncQueue.empty);
   });
 
-  test('it looks up data sources by name if a string is provided', async function(assert) {
+  test('it looks up data sources by name if a string is provided', async function (assert) {
     const backup = createStore({ models: { planet: Planet } });
 
     this.owner.register('data-source:backup', backup, { instantiate: false });
 
-    store.on('update', transform => {
+    store.on('update', (transform) => {
       backup.update(transform);
     });
 

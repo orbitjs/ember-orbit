@@ -30,10 +30,10 @@ export default {
       );
     }
 
-    injections.sources = sourceNames.map(name =>
+    injections.sources = sourceNames.map((name) =>
       app.lookup(`${orbitConfig.types.source}:${name}`)
     );
-    injections.strategies = strategyNames.map(name =>
+    injections.strategies = strategyNames.map((name) =>
       app.lookup(`${orbitConfig.types.strategy}:${name}`)
     );
 
