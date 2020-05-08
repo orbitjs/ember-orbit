@@ -4,19 +4,19 @@ import { module, test } from 'qunit';
 
 import normalizeRecordProperties from 'ember-orbit/-private/utils/normalize-record-properties';
 
-module('Integration - normalizeRecordProperties', function(hooks) {
+module('Integration - normalizeRecordProperties', function (hooks) {
   let store;
   const models = { planet: Planet, moon: Moon, star: Star };
 
-  hooks.beforeEach(function() {
+  hooks.beforeEach(function () {
     store = createStore({ models });
   });
 
-  hooks.afterEach(function() {
+  hooks.afterEach(function () {
     store = null;
   });
 
-  test('#normalizeRecordProperties', async function(assert) {
+  test('#normalizeRecordProperties', async function (assert) {
     const callisto = await store.addRecord({
       type: 'moon',
       id: 'callisto',
@@ -51,7 +51,7 @@ module('Integration - normalizeRecordProperties', function(hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - undefined relationships', function(assert) {
+  test('#normalizeRecordProperties - undefined relationships', function (assert) {
     const normalized = normalizeRecordProperties(store.source.schema, {
       type: 'planet',
       id: 'jupiter',
@@ -65,7 +65,7 @@ module('Integration - normalizeRecordProperties', function(hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - nullable relationships', function(assert) {
+  test('#normalizeRecordProperties - nullable relationships', function (assert) {
     const normalized = normalizeRecordProperties(store.source.schema, {
       type: 'planet',
       id: 'jupiter',

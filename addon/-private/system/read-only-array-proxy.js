@@ -28,7 +28,7 @@ export default ArrayProxy.extend({
     });
   },
 
-  content: computed(function() {
+  content: computed(function () {
     return this.getContent();
   }),
 

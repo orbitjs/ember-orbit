@@ -6,11 +6,11 @@ const Router = AddonDocsRouter.extend({
   rootURL: config.rootURL
 });
 
-Router.map(function() {
-  docsRoute(this, function() {
+Router.map(function () {
+  docsRoute(this, function () {
     this.route('configuration');
     this.route('installation');
-    this.route('usage', function() {
+    this.route('usage', function () {
       this.route('activating-coordinator');
       this.route('adding-records');
       this.route('backup-source');

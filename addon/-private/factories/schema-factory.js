@@ -22,7 +22,7 @@ export default {
           orbitConfig.collections.models
         );
 
-      modelNames.forEach(name => {
+      modelNames.forEach((name) => {
         let model = app.factoryFor(`${orbitConfig.types.model}:${name}`).class;
         modelSchemas[name] = {
           keys: model.keys,

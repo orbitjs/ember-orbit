@@ -269,11 +269,11 @@ export default class Cache {
   }
 
   findRecord(type: string, id: string, options?: object): Model {
-    return this.query(q => q.findRecord({ type, id }), options) as Model;
+    return this.query((q) => q.findRecord({ type, id }), options) as Model;
   }
 
   findRecords(type: string, options?: object): Model[] {
-    return this.query(q => q.findRecords(type), options) as Model[];
+    return this.query((q) => q.findRecords(type), options) as Model[];
   }
 
   unload(identity: RecordIdentity): void {
@@ -286,7 +286,7 @@ export default class Cache {
 
   lookup(result: QueryResultData): Model | Model[] | null {
     if (Array.isArray(result)) {
-      return result.map(identity => this.lookup(identity) as Model);
+      return result.map((identity) => this.lookup(identity) as Model);
     } else if (result) {
       let record = this._identityMap.get(result);
 

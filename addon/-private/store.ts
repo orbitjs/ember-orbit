@@ -142,13 +142,13 @@ export default class Store {
    */
   async addRecord(properties = {}, options?: object): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update(t => t.addRecord(record), options);
+    await this.update((t) => t.addRecord(record), options);
     return this.cache.lookup(record) as Model;
   }
 
   async updateRecord(properties = {}, options?: object): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update(t => t.updateRecord(record), options);
+    await this.update((t) => t.updateRecord(record), options);
     return this.cache.lookup(record) as Model;
   }
 
@@ -160,7 +160,7 @@ export default class Store {
    */
   async removeRecord(record: RecordIdentity, options?: object): Promise<void> {
     const identity = cloneRecordIdentity(record);
-    await this.update(t => t.removeRecord(identity), options);
+    await this.update((t) => t.removeRecord(identity), options);
   }
 
   findAll(type: string, options?: object): Promise<Model[]> {
@@ -184,11 +184,11 @@ export default class Store {
   }
 
   findRecord(type: string, id: string, options?: object): Promise<Model> {
-    return this.query(q => q.findRecord({ type, id }), options);
+    return this.query((q) => q.findRecord({ type, id }), options);
   }
 
   findRecords(type: string, options?: object): Promise<Model[]> {
-    return this.query(q => q.findRecords(type), options);
+    return this.query((q) => q.findRecords(type), options);
   }
 
   findRecordByKey(

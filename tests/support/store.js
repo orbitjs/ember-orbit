@@ -24,7 +24,7 @@ export function createStore(options) {
   const { models } = options;
   if (models) {
     let types = [];
-    Object.keys(models).forEach(type => {
+    Object.keys(models).forEach((type) => {
       owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
       types.push(type);
     });
