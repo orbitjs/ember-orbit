@@ -22,14 +22,17 @@ export default {
           orbitConfig.collections.models
         );
 
-      modelNames.forEach((name) => {
-        let model = app.factoryFor(`${orbitConfig.types.model}:${name}`).class;
+      for (const name of modelNames) {
+        const { keys, attributes, relationships } = app.factoryFor(
+          `${orbitConfig.types.model}:${name}`
+        ).class;
+
         modelSchemas[name] = {
-          keys: model.keys,
-          attributes: model.attributes,
-          relationships: model.relationships
+          keys,
+          attributes,
+          relationships
         };
-      });
+      }
 
       injections.models = modelSchemas;
     }

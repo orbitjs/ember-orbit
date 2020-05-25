@@ -1,4 +1,3 @@
-import EmberObject from '@ember/object';
 import { Dict } from '@orbit/utils';
 import {
   Record,
@@ -20,11 +19,23 @@ interface HasManyContract {
   invalidate(): void;
 }
 
-export default class Model extends EmberObject {
-  identity!: RecordIdentity;
+export interface ModelInjections {
+  identity: RecordIdentity;
+  _store: Store;
+}
 
-  private _store?: Store;
-  private _relatedRecords: Dict<HasManyContract> = {};
+export default class Model {
+  static _notifiers: Dict<(instance: Model) => void> = {};
+
+  readonly identity!: RecordIdentity;
+
+  #store?: Store;
+  #relatedRecords: Dict<HasManyContract> = {};
+
+  constructor(identity: RecordIdentity, store: Store) {
+    this.identity = identity;
+    this.#store = store;
+  }
 
   get id(): string {
     return this.identity.id;
@@ -35,7 +46,7 @@ export default class Model extends EmberObject {
   }
 
   get disconnected(): boolean {
-    return !this._store;
+    return !this.#store;
   }
 
   getData(): Record | undefined {
@@ -93,10 +104,10 @@ export default class Model extends EmberObject {
   }
 
   getRelatedRecords(relationship: string) {
-    this._relatedRecords = this._relatedRecords || {};
+    this.#relatedRecords = this.#relatedRecords || {};
 
-    if (!this._relatedRecords[relationship]) {
-      this._relatedRecords[relationship] = HasMany.create({
+    if (!this.#relatedRecords[relationship]) {
+      this.#relatedRecords[relationship] = HasMany.create({
         getContent: () =>
           this.store.cache.peekRelatedRecords(this.identity, relationship),
         addToContent: (record: Model): Promise<void> => {
@@ -107,9 +118,9 @@ export default class Model extends EmberObject {
         }
       });
     }
-    this._relatedRecords[relationship].invalidate();
+    this.#relatedRecords[relationship].invalidate();
 
-    return this._relatedRecords[relationship];
+    return this.#relatedRecords[relationship];
   }
 
   async addToRelatedRecords(
@@ -168,69 +179,58 @@ export default class Model extends EmberObject {
   }
 
   disconnect(): void {
-    this._store = undefined;
+    this.#store = undefined;
   }
 
-  willDestroy(): void {
+  destroy(): void {
     const cache = this.store.cache;
     if (cache) {
       cache.unload(this);
     }
   }
 
+  notifyPropertyChange(key: string) {
+    Reflect.getMetadata('orbit:notifier', this, key)(this);
+  }
+
   private get store(): Store {
-    if (!this._store) {
+    if (!this.#store) {
       throw new Error('record has been removed from Store');
     }
 
-    return this._store;
+    return this.#store;
   }
 
   static get keys(): Dict<KeyDefinition> {
-    const map: Dict<KeyDefinition> = {};
-
-    this.eachComputedProperty((name, meta) => {
-      if (meta.isKey) {
-        meta.name = name;
-        map[name] = {
-          primaryKey: meta.options.primaryKey
-        };
-      }
-    }, {});
-
-    return map;
+    return this.getPropertiesMeta('key');
   }
 
   static get attributes(): Dict<AttributeDefinition> {
-    const map: Dict<AttributeDefinition> = {};
-
-    this.eachComputedProperty((name, meta) => {
-      if (meta.isAttribute) {
-        meta.name = name;
-        map[name] = {
-          type: meta.options.type
-        };
-      }
-    }, {});
-
-    return map;
+    return this.getPropertiesMeta('attribute');
   }
 
   static get relationships(): Dict<RelationshipDefinition> {
-    const map: Dict<RelationshipDefinition> = {};
+    return this.getPropertiesMeta('relationship');
+  }
 
-    this.eachComputedProperty((name, meta) => {
-      if (meta.isRelationship) {
-        meta.name = name;
-        map[name] = {
-          kind: meta.options.kind,
-          type: meta.options.type,
-          inverse: meta.options.inverse,
-          dependent: meta.options.dependent
-        };
+  static getPropertiesMeta(kind: string) {
+    const properties = Object.getOwnPropertyNames(this.prototype);
+    const meta = {};
+    for (let property of properties) {
+      if (Reflect.hasMetadata(`orbit:${kind}`, this.prototype, property)) {
+        meta[property] = Reflect.getMetadata(
+          `orbit:${kind}`,
+          this.prototype,
+          property
+        );
       }
-    }, {});
+    }
+    return meta;
+  }
 
-    return map;
+  static create(injections: ModelInjections) {
+    const { identity, _store, ..._injections } = injections;
+    const record = new this(identity, _store);
+    return Object.assign(record, _injections);
   }
 }
