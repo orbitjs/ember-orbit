@@ -36,11 +36,7 @@ jobs:
 
     # runs tests against each supported Ember version
     - stage: ember version tests
-      name: "Ember LTS 3.8"
-      env: EMBER_TRY_SCENARIO=ember-lts-3.8
-    - name: "Ember LTS 3.12"
-      env: EMBER_TRY_SCENARIO=ember-lts-3.12
-    - name: "Ember LTS 3.16"
+      name: "Ember LTS 3.16"
       env: EMBER_TRY_SCENARIO=ember-lts-3.16
     - name: "Ember Release"
       env: EMBER_TRY_SCENARIO=ember-release
