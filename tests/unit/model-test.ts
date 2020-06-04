@@ -2,7 +2,7 @@ import { key, attr, hasOne, hasMany, Model } from 'ember-orbit';
 import { module, test } from 'qunit';
 
 module('Unit - Model', function (hooks) {
-  let Planet: any, Moon: any, Star: any;
+  let Planet: any, Moon: any, Star: any, SolarSystem: any;
 
   hooks.beforeEach(function () {
     Planet = Model.extend({
@@ -21,12 +21,17 @@ module('Unit - Model', function (hooks) {
       name: attr('string'),
       planets: hasMany('planet')
     });
+
+    SolarSystem = Model.extend({
+      bodies: hasMany(['star', 'planet', 'moon'])
+    });
   });
 
   hooks.afterEach(function () {
     Planet = null;
     Moon = null;
     Star = null;
+    SolarSystem = null;
   });
 
   test('it exists', function (assert) {
@@ -82,5 +87,10 @@ module('Unit - Model', function (hooks) {
     keys = Object.keys(relationships);
     assert.equal(keys.length, 1);
     assert.equal(keys[0], 'planets');
+
+    relationships = SolarSystem.relationships;
+    keys = Object.keys(relationships);
+    assert.equal(keys.length, 1);
+    assert.deepEqual(keys[0], 'bodies');
   });
 });

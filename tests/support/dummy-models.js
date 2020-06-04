@@ -19,3 +19,16 @@ export const Star = Model.extend({
   planets: hasMany('planet'),
   isStable: attr('boolean')
 });
+
+export const BinaryStar = Model.extend({
+  name: attr('string'),
+  starOne: hasOne('star'),
+  starTwo: hasOne('star')
+});
+
+// Example for Polymorphism
+export const PlanetarySystem = Model.extend({
+  name: attr('string'),
+  star: hasOne(['binaryStar', 'star']),
+  bodies: hasMany(['planet', 'moon'])
+});

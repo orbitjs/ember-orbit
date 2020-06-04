@@ -56,7 +56,7 @@ function assignRelationships(
   const relationships = modelDefinition.relationships || {};
   for (let relationship of Object.keys(relationships)) {
     if (properties[relationship] !== undefined) {
-      let relationshipType = relationships[relationship].type as string;
+      let relationshipType = relationships[relationship].type as string | string[];
       let relationshipProperties = properties[relationship] as
         | RecordIdentity
         | RecordIdentity[]
@@ -73,7 +73,7 @@ function assignRelationships(
 }
 
 function normalizeRelationship(
-  type: string,
+  type: string | string[],
   value: RecordIdentity | RecordIdentity[] | string | string[] | null
 ): RecordRelationship {
   const relationship: RecordRelationship = {};
@@ -82,17 +82,17 @@ function normalizeRelationship(
     relationship.data = [];
     for (let identity of value) {
       if (typeof identity === 'string') {
-        relationship.data.push({ type, id: identity });
+        relationship.data.push({ type: `${type}`, id: identity });
       } else {
-        relationship.data.push({ type, id: identity.id });
+        relationship.data.push({ type: identity.type, id: identity.id });
       }
     }
   } else if (value === null) {
     relationship.data = null;
   } else if (typeof value === 'string') {
-    relationship.data = { type, id: value };
+    relationship.data = { type: `${type}`, id: value };
   } else {
-    relationship.data = { type, id: value.id };
+    relationship.data = { type: value.type, id: value.id };
   }
 
   return relationship;
