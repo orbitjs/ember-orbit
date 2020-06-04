@@ -56,7 +56,9 @@ function assignRelationships(
   const relationships = modelDefinition.relationships || {};
   for (let relationship of Object.keys(relationships)) {
     if (properties[relationship] !== undefined) {
-      let relationshipType = relationships[relationship].type as string | string[];
+      let relationshipType = relationships[relationship].type as
+        | string
+        | string[];
       let relationshipProperties = properties[relationship] as
         | RecordIdentity
         | RecordIdentity[]
