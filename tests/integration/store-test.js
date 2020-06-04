@@ -1,11 +1,11 @@
-import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
+import { Planet, Moon, Star, BinaryStar, PlanetarySystem } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
 
 module('Integration - Store', function (hooks) {
   let store;
-  const models = { planet: Planet, moon: Moon, star: Star };
+  const models = { planet: Planet, moon: Moon, star: Star, binaryStar: BinaryStar, planetarySystem: PlanetarySystem };
 
   hooks.beforeEach(function () {
     store = createStore({ models });
@@ -367,6 +367,23 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(records, [io, callisto]);
     assert.strictEqual(records[0], io);
     assert.strictEqual(records[1], callisto);
+  });
+
+  test('#query - findRelatedRecords (polymorphic)', async function (assert) {
+    const luna = await store.addRecord({ type: 'moon', name: 'Luna' });
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home',
+      bodies: [luna, earth]
+    });
+    const records = await store.query(q =>
+      q.findRelatedRecords(solarSystem.identity, 'bodies')
+    );
+
+    assert.deepEqual(records, [luna, earth]);
+    assert.strictEqual(records[0], luna);
+    assert.strictEqual(records[1], earth);
   });
 
   test('#query - filter', async function (assert) {
