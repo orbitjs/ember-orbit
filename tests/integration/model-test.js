@@ -1,5 +1,11 @@
 import EmberObject from '@ember/object';
-import { Planet, Moon, Star, BinaryStar, PlanetarySystem } from 'dummy/tests/support/dummy-models';
+import {
+  Planet,
+  Moon,
+  Star,
+  BinaryStar,
+  PlanetarySystem
+} from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
@@ -9,7 +15,13 @@ module('Integration - Model', function (hooks) {
   let store;
 
   hooks.beforeEach(function () {
-    const models = { planet: Planet, moon: Moon, star: Star, binaryStar: BinaryStar, planetarySystem: PlanetarySystem };
+    const models = {
+      planet: Planet,
+      moon: Moon,
+      star: Star,
+      binaryStar: BinaryStar,
+      planetarySystem: PlanetarySystem
+    };
     store = createStore({ models });
   });
 
@@ -111,12 +123,18 @@ module('Integration - Model', function (hooks) {
   });
 
   test('add to polymorphic hasMany', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
     await solarSystem.bodies.pushObject(callisto);
 
-    assert.ok(solarSystem.bodies.includes(callisto), 'added record to polymorphic hasMany');
+    assert.ok(
+      solarSystem.bodies.includes(callisto),
+      'added record to polymorphic hasMany'
+    );
   });
 
   test('remove from hasMany', async function (assert) {
@@ -131,13 +149,19 @@ module('Integration - Model', function (hooks) {
   });
 
   test('remove from polymorphic hasMany', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
     await solarSystem.bodies.pushObject(callisto);
     await solarSystem.bodies.removeObject(callisto);
 
-    assert.ok(!solarSystem.bodies.includes(callisto), 'removed record to polymorphic hasMany');
+    assert.ok(
+      !solarSystem.bodies.includes(callisto),
+      'removed record to polymorphic hasMany'
+    );
   });
 
   test('update via store: replaceRelatedRecords operation invalidates a relationship on model', async function (assert) {
@@ -156,7 +180,10 @@ module('Integration - Model', function (hooks) {
   });
 
   test('update via store: replaceRelatedRecords operation invalidates a polymorphic relationship on model', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
     assert.deepEqual([...solarSystem.bodies], []); // cache the relationship
@@ -182,19 +209,33 @@ module('Integration - Model', function (hooks) {
   });
 
   test('replace polymorphic hasOne with record', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const sun = await store.addRecord({ type: 'star', name: 'Sun' });
-    const twinSun = await store.addRecord({ type: 'binaryStar', name: 'Twin Sun' });
+    const twinSun = await store.addRecord({
+      type: 'binaryStar',
+      name: 'Twin Sun'
+    });
 
     solarSystem.set('star', twinSun);
     await waitForSource(store);
 
-    assert.equal(solarSystem.star, twinSun, 'replaced polymorphic hasOne with record');
+    assert.equal(
+      solarSystem.star,
+      twinSun,
+      'replaced polymorphic hasOne with record'
+    );
 
     solarSystem.set('star', sun);
     await waitForSource(store);
 
-    assert.equal(solarSystem.star, sun, 'replaced polymorphic hasOne with record of another valid type');
+    assert.equal(
+      solarSystem.star,
+      sun,
+      'replaced polymorphic hasOne with record of another valid type'
+    );
   });
 
   test('update via store: replaceRelatedRecord operation invalidates a relationship on model', async function (assert) {
@@ -209,11 +250,16 @@ module('Integration - Model', function (hooks) {
   });
 
   test('update via store: replaceRelatedRecord operation invalidates a polymorphic relationship on model', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const sun = await store.addRecord({ type: 'star', name: 'Sun' });
 
     assert.equal(solarSystem.star, null); // cache the relationship
-    await store.source.update(t => t.replaceRelatedRecord(solarSystem, 'star', sun));
+    await store.source.update(t =>
+      t.replaceRelatedRecord(solarSystem, 'star', sun)
+    );
     assert.equal(solarSystem.star, sun, 'invalidates the relationship');
   });
 
@@ -390,11 +436,17 @@ module('Integration - Model', function (hooks) {
   });
 
   test('#addToRelatedRecords (polymorphic)', async function (assert) {
-    const solarSystem = await store.addRecord({ type: 'planetarySystem', name: 'Home' });
+    const solarSystem = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'Home'
+    });
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     const luna = await store.addRecord({ type: 'moon', name: 'Luna' });
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, undefined);
+    assert.deepEqual(
+      solarSystem.getRelatedRecords('bodies').content,
+      undefined
+    );
 
     await solarSystem.addToRelatedRecords('bodies', earth);
 
@@ -402,7 +454,10 @@ module('Integration - Model', function (hooks) {
 
     await solarSystem.addToRelatedRecords('bodies', luna);
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [earth, luna]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [
+      earth,
+      luna
+    ]);
   });
 
   test('#removeFromRelatedRecords', async function (assert) {
@@ -434,8 +489,10 @@ module('Integration - Model', function (hooks) {
       bodies: [earth, luna]
     });
 
-
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [earth, luna]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [
+      earth,
+      luna
+    ]);
 
     await solarSystem.removeFromRelatedRecords('bodies', earth);
 

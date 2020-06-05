@@ -1,11 +1,23 @@
-import { Planet, Moon, Star, BinaryStar, PlanetarySystem } from 'dummy/tests/support/dummy-models';
+import {
+  Planet,
+  Moon,
+  Star,
+  BinaryStar,
+  PlanetarySystem
+} from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
 
 module('Integration - Store', function (hooks) {
   let store;
-  const models = { planet: Planet, moon: Moon, star: Star, binaryStar: BinaryStar, planetarySystem: PlanetarySystem };
+  const models = {
+    planet: Planet,
+    moon: Moon,
+    star: Star,
+    binaryStar: BinaryStar,
+    planetarySystem: PlanetarySystem
+  };
 
   hooks.beforeEach(function () {
     store = createStore({ models });

@@ -1,4 +1,4 @@
-import {
+import Orbit, {
   Schema,
   RecordRelationship,
   Record,
@@ -6,6 +6,8 @@ import {
   RecordIdentity
 } from '@orbit/data';
 import { deepSet, Dict } from '@orbit/utils';
+
+const { assert } = Orbit;
 
 export default function normalizeRecordProperties(
   schema: Schema,
@@ -56,7 +58,9 @@ function assignRelationships(
   const relationships = modelDefinition.relationships || {};
   for (let relationship of Object.keys(relationships)) {
     if (properties[relationship] !== undefined) {
-      let relationshipType = relationships[relationship].model as string | string[];
+      let relationshipType = relationships[relationship].model as
+        | string
+        | string[];
       let relationshipProperties = properties[relationship] as
         | RecordIdentity
         | RecordIdentity[]
@@ -78,11 +82,17 @@ function normalizeRelationship(
 ): RecordRelationship {
   const relationship: RecordRelationship = {};
 
+  const isPolymorphic = Array.isArray(type);
+
   if (isHasMany(value)) {
     relationship.data = [];
     for (let identity of value) {
       if (typeof identity === 'string') {
-        relationship.data.push({ type: `${type}`, id: identity });
+        assert(
+          'The hasMany relationship is polymorphic, so string[] will not work as a value. RecordIdentity[] must be provided for type information.',
+          !isPolymorphic
+        );
+        relationship.data.push({ type: type as string, id: identity });
       } else {
         relationship.data.push({ type: identity.type, id: identity.id });
       }
@@ -90,7 +100,11 @@ function normalizeRelationship(
   } else if (value === null) {
     relationship.data = null;
   } else if (typeof value === 'string') {
-    relationship.data = { type: `${type}`, id: value };
+    assert(
+      'The relationship is polymorphic, so string will not work as a value. RecordIdentity must be provided for type information.',
+      !isPolymorphic
+    );
+    relationship.data = { type: type as string, id: value };
   } else {
     relationship.data = { type: value.type, id: value.id };
   }
