@@ -138,4 +138,42 @@ module('Integration - normalizeRecordProperties', function (hooks) {
       'normalized hasMany'
     );
   });
+
+  test('#normalizeRecordProperties - polymorphic relationships require RecordIdentity values', async function (assert) {
+    const luna = await store.addRecord({
+      type: 'moon',
+      id: 'luna',
+      name: 'Luna'
+    });
+    const earth = await store.addRecord({
+      type: 'planet',
+      id: 'earth',
+      name: 'Earth'
+    });
+    const sun = await store.addRecord({
+      type: 'star',
+      id: 'sun',
+      name: 'The Sun'
+    });
+
+    assert.throws(
+      () =>
+        normalizeRecordProperties(store.source.schema, {
+          type: 'planetarySystem',
+          id: 'homeSystem',
+          star: sun.id
+        }),
+      'polymorphic hasOne requires RecordIdentity'
+    );
+
+    assert.throws(
+      () =>
+        normalizeRecordProperties(store.source.schema, {
+          type: 'planetarySystem',
+          id: 'homeSystem',
+          bodies: [luna.id, earth.id]
+        }),
+      'polymorphic haMany requires RecordIdentity[]'
+    );
+  });
 });
