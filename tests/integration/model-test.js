@@ -201,7 +201,7 @@ module('Integration - Model', function (hooks) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    callisto.set('planet', jupiter);
+    callisto.planet = jupiter;
     await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'replaced hasOne with record');
@@ -219,7 +219,7 @@ module('Integration - Model', function (hooks) {
       name: 'Twin Sun'
     });
 
-    solarSystem.set('star', twinSun);
+    solarSystem.star = twinSun;
     await waitForSource(store);
 
     assert.equal(
@@ -228,7 +228,7 @@ module('Integration - Model', function (hooks) {
       'replaced polymorphic hasOne with record'
     );
 
-    solarSystem.set('star', sun);
+    solarSystem.star = sun;
     await waitForSource(store);
 
     assert.equal(
@@ -269,12 +269,12 @@ module('Integration - Model', function (hooks) {
 
     assert.equal(callisto.planet, null, 'hasOne is null');
 
-    callisto.set('planet', jupiter);
+    callisto.planet = jupiter;
     await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'hasOne is jupiter');
 
-    callisto.set('planet', null);
+    callisto.planet = null;
     await waitForSource(store);
 
     assert.equal(callisto.planet, null, 'replaced hasOne with null');
@@ -286,7 +286,7 @@ module('Integration - Model', function (hooks) {
 
   test('replace attribute on model', async function (assert) {
     const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    record.set('name', 'Jupiter2');
+    record.name = 'Jupiter2';
     assert.equal(record.name, 'Jupiter2');
   });
 
@@ -335,7 +335,7 @@ module('Integration - Model', function (hooks) {
       name: 'Jupiter',
       remoteId: 'planet:jupiter'
     });
-    record.set('remoteId', 'planet:joopiter');
+    record.remoteId = 'planet:joopiter';
     await waitForSource(store);
 
     assert.equal(record.remoteId, 'planet:joopiter');
@@ -358,7 +358,7 @@ module('Integration - Model', function (hooks) {
     const cache = store.cache;
 
     const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    const identifier = record.getProperties('type', 'id');
+    const identifier = record.identity;
     record.destroy();
 
     await waitForSource(store);

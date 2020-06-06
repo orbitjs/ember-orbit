@@ -185,7 +185,7 @@ module('Integration - Cache', function (hooks) {
   test('#peekRelatedRecord - existing record + relationship', async function (assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
-    callisto.set('planet', jupiter);
+    callisto.planet = jupiter;
     await waitForSource(store);
     assert.strictEqual(cache.peekRelatedRecord(callisto, 'planet'), jupiter);
   });

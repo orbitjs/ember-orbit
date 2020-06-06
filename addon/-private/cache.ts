@@ -1,4 +1,3 @@
-import { notifyPropertyChange } from '@ember/object';
 import { Listener } from '@orbit/core';
 import { deepGet } from '@orbit/utils';
 import Orbit, {
@@ -334,7 +333,7 @@ export default class Cache {
     const record = this._identityMap.get(identity);
 
     if (record) {
-      notifyPropertyChange(record, property);
+      record.notifyPropertyChange(property);
     }
   }
 

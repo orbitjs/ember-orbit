@@ -1,34 +1,33 @@
 import { Model, attr, key, hasMany, hasOne } from 'ember-orbit';
 
-export const Planet = Model.extend({
-  remoteId: key(),
-  name: attr('string'),
-  atmosphere: attr('boolean'),
-  classification: attr('string'),
-  sun: hasOne('star'),
-  moons: hasMany('moon', { inverse: 'planet' })
-});
+export class Planet extends Model {
+  @key() remoteId;
+  @attr('string') name;
+  @attr('boolean') atmosphere;
+  @attr('string') classification;
+  @hasOne('star') sun;
+  @hasMany('moon', { inverse: 'planet' }) moons;
+}
 
-export const Moon = Model.extend({
-  name: attr('string'),
-  planet: hasOne('planet', { inverse: 'moons' })
-});
+export class Moon extends Model {
+  @attr('string') name;
+  @hasOne('planet', { inverse: 'moons' }) planet;
+}
 
-export const Star = Model.extend({
-  name: attr('string'),
-  planets: hasMany('planet'),
-  isStable: attr('boolean')
-});
+export class Star extends Model {
+  @attr('string') name;
+  @hasMany('planet') planets;
+  @attr('boolean') isStable;
+}
 
-export const BinaryStar = Model.extend({
-  name: attr('string'),
-  starOne: hasOne('star'),
-  starTwo: hasOne('star')
-});
+export class BinaryStar extends Model {
+  @attr('string') name;
+  @hasOne('star') starOne;
+  @hasOne('star') starTwo;
+}
 
-// Example for Polymorphism
-export const PlanetarySystem = Model.extend({
-  name: attr('string'),
-  star: hasOne(['binaryStar', 'star']),
-  bodies: hasMany(['planet', 'moon'])
-});
+export class PlanetarySystem extends Model {
+  @attr('string') name;
+  @hasOne(['binaryStar', 'star']) star;
+  @hasMany(['planet', 'moon']) bodies;
+}
