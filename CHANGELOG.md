@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.16.7 (2020-06-07)
+
+#### :rocket: Enhancement
+
+- [#264](https://github.com/orbitjs/ember-orbit/pull/264) Support Polymorphic Relationships (0.16 backport) ([@derekwsgray](https://github.com/derekwsgray))
+
+#### :house: Internal
+
+- [#255](https://github.com/orbitjs/ember-orbit/pull/255) Prettier2 ([@tchak](https://github.com/tchak))
+
+#### Committers: 2
+
+- Derek W. S. Gray ([@derekwsgray](https://github.com/derekwsgray))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+
 ## v0.16.6 (2020-03-12)
 
 #### :rocket: Enhancement
