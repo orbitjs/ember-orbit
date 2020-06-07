@@ -92,7 +92,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - polymorphic relationships', async function(assert) {
+  test('#normalizeRecordProperties - polymorphic relationships', async function (assert) {
     const luna = await store.addRecord({
       type: 'moon',
       id: 'luna',
@@ -139,7 +139,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - polymorphic relationships require RecordIdentity values', async function(assert) {
+  test('#normalizeRecordProperties - polymorphic relationships require RecordIdentity values', async function (assert) {
     const luna = await store.addRecord({
       type: 'moon',
       id: 'luna',

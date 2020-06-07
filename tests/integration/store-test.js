@@ -389,7 +389,7 @@ module('Integration - Store', function (hooks) {
       name: 'Home',
       bodies: [luna, earth]
     });
-    const records = await store.query(q =>
+    const records = await store.query((q) =>
       q.findRelatedRecords(solarSystem.identity, 'bodies')
     );
 

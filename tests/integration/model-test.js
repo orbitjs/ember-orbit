@@ -187,7 +187,7 @@ module('Integration - Model', function (hooks) {
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
     assert.deepEqual([...solarSystem.bodies], []); // cache the relationship
-    await store.source.update(t =>
+    await store.source.update((t) =>
       t.replaceRelatedRecords(solarSystem, 'bodies', [callisto])
     );
     assert.deepEqual(
@@ -257,7 +257,7 @@ module('Integration - Model', function (hooks) {
     const sun = await store.addRecord({ type: 'star', name: 'Sun' });
 
     assert.equal(solarSystem.star, null); // cache the relationship
-    await store.source.update(t =>
+    await store.source.update((t) =>
       t.replaceRelatedRecord(solarSystem, 'star', sun)
     );
     assert.equal(solarSystem.star, sun, 'invalidates the relationship');
