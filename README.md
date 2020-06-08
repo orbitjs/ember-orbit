@@ -139,6 +139,18 @@ export default class Planet extends Model {
 }
 ```
 
+You can create polymorphic relationships by passing in an array of types:
+
+```js
+import { Model, attr, hasOne, hasMany } from 'ember-orbit';
+
+export default class PlanetarySystem extends Model {
+  @attr('string') name;
+  @hasMany(['moon', 'planet']) bodies;
+  @hasOne(['star', 'binaryStar']) star;
+}
+```
+
 ### Adding records
 
 Records can be added in a couple ways. The easiest is to use the `addRecord`
