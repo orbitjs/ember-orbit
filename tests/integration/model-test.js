@@ -179,6 +179,25 @@ module('Integration - Model', function (hooks) {
     );
   });
 
+  test('update via store: replaceRelatedRecord operation can be followed up by removing the replaced record', async function (assert) {
+    const star1 = await store.addRecord({ type: 'star', name: 'sun' });
+    const star2 = await store.addRecord({ type: 'star', name: 'sun2' });
+
+    const home = await store.addRecord({
+      type: 'planetarySystem',
+      name: 'home',
+      star: star1
+    });
+
+    assert.deepEqual(home.star, star1); // cache the relationship
+    await store.source.update((t) => [
+      t.replaceRelatedRecord(home.identity, 'star', star2.identity),
+      t.removeRecord(star1.identity) // Being no longer referenced, should be removable.
+    ]);
+
+    assert.deepEqual(home.star.id, star2.id, 'invalidates the relationship');
+  });
+
   test('update via store: replaceRelatedRecords operation invalidates a polymorphic relationship on model', async function (assert) {
     const solarSystem = await store.addRecord({
       type: 'planetarySystem',
