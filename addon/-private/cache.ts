@@ -1,4 +1,3 @@
-import { Listener } from '@orbit/core';
 import { deepGet } from '@orbit/utils';
 import Orbit, {
   buildQuery,
@@ -14,6 +13,11 @@ import Orbit, {
 import { QueryResult, QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
+import {
+  registerDestructor,
+  associateDestroyableChild
+} from 'ember-destroyable-polyfill';
+
 import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
@@ -37,18 +41,27 @@ export default class Cache {
     serializer: recordIdentitySerializer
   });
   private _liveQuerySet: Set<LiveQueryContract> = new Set();
-  private _patchListener: Listener;
-  private _resetListener: Listener;
 
   constructor(settings: CacheSettings) {
     this._sourceCache = settings.sourceCache;
     this._modelFactory = settings.modelFactory;
 
-    this._patchListener = this.generatePatchListener();
-    this._resetListener = this.generateResetListener();
+    const patchUnbind = this._sourceCache.on(
+      'patch',
+      this.generatePatchListener()
+    );
+    const resetUnbind = this._sourceCache.on(
+      'reset',
+      this.generateResetListener()
+    );
 
-    this._sourceCache.on('patch', this._patchListener);
-    this._sourceCache.on('reset', this._resetListener);
+    registerDestructor(this, () => {
+      patchUnbind();
+      resetUnbind();
+
+      this._identityMap.clear();
+      this._liveQuerySet.clear();
+    });
   }
 
   get keyMap(): KeyMap | undefined {
@@ -244,9 +257,13 @@ export default class Cache {
     );
 
     const liveQuery = LiveQuery.create({
-      getContent: () => this.query(query),
-      _liveQuerySet: this._liveQuerySet
+      getContent: () => this.query(query)
     });
+
+    associateDestroyableChild(this, liveQuery);
+    registerDestructor(liveQuery, (liveQuery) =>
+      this._liveQuerySet.delete(liveQuery)
+    );
 
     this._liveQuerySet.add(liveQuery);
 
@@ -312,18 +329,6 @@ export default class Cache {
     }
 
     return null;
-  }
-
-  destroy(): void {
-    this._sourceCache.off('patch', this._patchListener);
-    this._sourceCache.off('reset', this._resetListener);
-
-    for (let record of this._identityMap.values()) {
-      record.disconnect();
-    }
-
-    this._identityMap.clear();
-    this._liveQuerySet.clear();
   }
 
   private notifyPropertyChange(

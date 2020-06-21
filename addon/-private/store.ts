@@ -15,6 +15,12 @@ import {
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
+import {
+  destroy,
+  associateDestroyableChild,
+  registerDestructor
+} from 'ember-destroyable-polyfill';
+
 import Cache from './cache';
 import Model from './model';
 import ModelFactory from './model-factory';
@@ -47,12 +53,16 @@ export default class Store {
       sourceCache: this.source.cache,
       modelFactory: new ModelFactory(this)
     });
+
+    registerDestructor(this, () => {
+      delete this._source;
+      delete this._cache;
+    });
+    associateDestroyableChild(this, this._cache);
   }
 
   destroy() {
-    this._cache.destroy();
-    delete this._source;
-    delete this._cache;
+    destroy(this);
   }
 
   get source(): MemorySource {
