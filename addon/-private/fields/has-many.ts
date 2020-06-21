@@ -1,7 +1,11 @@
+import Orbit from '@orbit/core';
 import { RelationshipDefinition } from '@orbit/data';
+import { DEBUG } from '@glimmer/env';
 
 import Model from '../model';
 import { Cache } from '../utils/property-cache';
+
+const { deprecate } = Orbit;
 
 export default function hasMany(
   type: string | string[],
@@ -20,7 +24,13 @@ export default function hasMany(
     function getCache(record: Model): Cache<unknown> {
       let cache = caches.get(record);
       if (!cache) {
-        cache = new Cache(() => record.getRelatedRecords(property));
+        cache = new Cache(() =>
+          addLegacyMutationMethods(
+            record,
+            property,
+            record.getRelatedRecords(property) || []
+          )
+        );
         caches.set(record, cache);
       }
       return cache;
@@ -54,4 +64,39 @@ export default function hasMany(
   options.type = type;
   options.kind = 'hasMany';
   return trackedHasMany;
+}
+
+function addLegacyMutationMethods(
+  owner: Model,
+  relationship: string,
+  records: ReadonlyArray<Model>
+) {
+  if (DEBUG) {
+    records = [...records];
+  }
+
+  Object.defineProperties(records, {
+    pushObject: {
+      value: (record: Model) => {
+        deprecate(
+          'pushObject(record) is deprecated. Use record.addToRelatedRecords(relationship, record)'
+        );
+        owner.addToRelatedRecords(relationship, record);
+      }
+    },
+    removeObject: {
+      value: (record: Model) => {
+        deprecate(
+          'removeObject(record) is deprecated. Use record.removeFromRelatedRecords(relationship, record)'
+        );
+        owner.removeFromRelatedRecords(relationship, record);
+      }
+    }
+  });
+
+  if (DEBUG) {
+    return Object.freeze(records);
+  }
+
+  return records;
 }

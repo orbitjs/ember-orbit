@@ -12,16 +12,12 @@ import {
   associateDestroyableChild,
   registerDestructor
 } from 'ember-destroyable-polyfill';
+import { DEBUG } from '@glimmer/env';
 
-import HasMany from './relationships/has-many';
 import Store from './store';
 
 export interface ModelSettings {
   identity: RecordIdentity;
-}
-
-interface HasManyContract {
-  invalidate(): void;
 }
 
 export interface ModelInjections {
@@ -35,7 +31,6 @@ export default class Model {
   readonly identity!: RecordIdentity;
 
   #store?: Store;
-  #relatedRecords: Dict<HasManyContract> = {};
 
   constructor(identity: RecordIdentity, store: Store) {
     this.identity = identity;
@@ -110,24 +105,17 @@ export default class Model {
     );
   }
 
-  getRelatedRecords(relationship: string) {
-    this.#relatedRecords = this.#relatedRecords || {};
+  getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
+    const records = this.store.cache.peekRelatedRecords(
+      this.identity,
+      relationship
+    );
 
-    if (!this.#relatedRecords[relationship]) {
-      this.#relatedRecords[relationship] = HasMany.create({
-        getContent: () =>
-          this.store.cache.peekRelatedRecords(this.identity, relationship),
-        addToContent: (record: Model): Promise<void> => {
-          return this.addToRelatedRecords(relationship, record);
-        },
-        removeFromContent: (record: Model): Promise<void> => {
-          return this.removeFromRelatedRecords(relationship, record);
-        }
-      });
+    if (DEBUG) {
+      return Object.freeze(records);
     }
-    this.#relatedRecords[relationship].invalidate();
 
-    return this.#relatedRecords[relationship];
+    return records;
   }
 
   async addToRelatedRecords(
