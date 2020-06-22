@@ -24,75 +24,75 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(cache.transformBuilder, store.source.transformBuilder);
   });
 
-  test('liveQuery - adds record that becomes a match', async function (assert) {
-    const liveQuery = cache.liveQuery((q) =>
-      q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
-    );
+  // test('liveQuery - adds record that becomes a match', async function (assert) {
+  //   const liveQuery = cache.liveQuery((q) =>
+  //     q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
+  //   );
 
-    await store.addRecord({
-      id: 'jupiter',
-      type: 'planet',
-      attributes: { name: 'Jupiter' }
-    });
-    assert.equal(liveQuery.length, 0);
+  //   await store.addRecord({
+  //     id: 'jupiter',
+  //     type: 'planet',
+  //     attributes: { name: 'Jupiter' }
+  //   });
+  //   assert.equal(liveQuery.length, 0);
 
-    await store.update((t) =>
-      t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
-    );
-    assert.equal(liveQuery.length, 1);
-  });
+  //   await store.update((t) =>
+  //     t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
+  //   );
+  //   assert.equal(liveQuery.length, 1);
+  // });
 
-  test('liveQuery - updates when matching record is added', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    const jupiter = await store.addRecord({
-      id: 'jupiter',
-      type: 'planet',
-      name: 'Jupiter'
-    });
-    assert.ok(planets.includes(jupiter));
-  });
+  // test('liveQuery - updates when matching record is added', async function (assert) {
+  //   const planets = cache.liveQuery((q) => q.findRecords('planet'));
+  //   const jupiter = await store.addRecord({
+  //     id: 'jupiter',
+  //     type: 'planet',
+  //     name: 'Jupiter'
+  //   });
+  //   assert.ok(planets.includes(jupiter));
+  // });
 
-  test('liveQuery - updates when matching record is removed', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    await store.removeRecord(jupiter);
-    assert.notOk(planets.includes(jupiter));
-  });
+  // test('liveQuery - updates when matching record is removed', async function (assert) {
+  //   const planets = cache.liveQuery((q) => q.findRecords('planet'));
+  //   const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+  //   await store.removeRecord(jupiter);
+  //   assert.notOk(planets.includes(jupiter));
+  // });
 
-  test('liveQuery - ignores non matching record', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
-    assert.notOk(planets.includes(callisto));
-  });
+  // test('liveQuery - ignores non matching record', async function (assert) {
+  //   const planets = cache.liveQuery((q) => q.findRecords('planet'));
+  //   const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
+  //   assert.notOk(planets.includes(callisto));
+  // });
 
-  test('liveQuery - removes record that has been removed', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
+  // test('liveQuery - removes record that has been removed', async function (assert) {
+  //   const planets = cache.liveQuery((q) => q.findRecords('planet'));
 
-    await store.update((t) => [
-      t.addRecord({ type: 'planet', id: 'Jupiter' }),
-      t.addRecord({ type: 'planet', id: 'Earth' })
-    ]);
-    assert.equal(planets.length, 2);
+  //   await store.update((t) => [
+  //     t.addRecord({ type: 'planet', id: 'Jupiter' }),
+  //     t.addRecord({ type: 'planet', id: 'Earth' })
+  //   ]);
+  //   assert.equal(planets.length, 2);
 
-    await store.update((t) =>
-      t.removeRecord({ type: 'planet', id: 'Jupiter' })
-    );
-    assert.equal(planets.length, 1);
-  });
+  //   await store.update((t) =>
+  //     t.removeRecord({ type: 'planet', id: 'Jupiter' })
+  //   );
+  //   assert.equal(planets.length, 1);
+  // });
 
-  test('liveQuery - removes record that no longer matches', async function (assert) {
-    const planets = cache.liveQuery((q) =>
-      q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
-    );
+  // test('liveQuery - removes record that no longer matches', async function (assert) {
+  //   const planets = cache.liveQuery((q) =>
+  //     q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
+  //   );
 
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    assert.equal(planets.length, 1);
-    assert.ok(planets.includes(jupiter));
+  //   const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+  //   assert.equal(planets.length, 1);
+  //   assert.ok(planets.includes(jupiter));
 
-    await store.update((t) => t.replaceAttribute(jupiter, 'name', 'Jupiter2'));
-    assert.equal(planets.length, 0);
-    assert.notOk(planets.includes(jupiter));
-  });
+  //   await store.update((t) => t.replaceAttribute(jupiter, 'name', 'Jupiter2'));
+  //   assert.equal(planets.length, 0);
+  //   assert.notOk(planets.includes(jupiter));
+  // });
 
   test('#peekRecord - existing record', async function (assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
