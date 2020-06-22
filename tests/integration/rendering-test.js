@@ -14,7 +14,7 @@ module('Rendering', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon };
-    store = createStore({ models });
+    store = createStore({ models, owner: this.owner });
     cache = store.cache;
   });
 
@@ -56,5 +56,29 @@ module('Rendering', function (hooks) {
     await europa.remove();
 
     assert.dom('.moons').doesNotIncludeText('New Europa');
+  });
+
+  test('use liveQuery', async function (assert) {
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+
+    await render(hbs`<LiveQuery />`);
+
+    assert.dom('.planets').includesText('Jupiter');
+    assert.dom('.planet').doesNotIncludeText('Jupiter');
+
+    await store.addRecord({ type: 'planet', name: 'Earth' });
+
+    assert.dom('.planets').includesText('Earth');
+
+    this.set('planetId', jupiter.id);
+    await render(hbs`<LiveQuery @id={{this.planetId}} />`);
+
+    assert.dom('.planets').doesNotIncludeText('Jupiter');
+    assert.dom('.planet').includesText('Jupiter');
+
+    jupiter.name = 'New Jupiter';
+    await waitForSource(store);
+
+    assert.dom('.planet').includesText('New Jupiter');
   });
 });

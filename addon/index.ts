@@ -12,5 +12,8 @@ export { default as Cache } from './-private/cache';
 export { default as Model } from './-private/model';
 export { default as Store } from './-private/store';
 export { LiveQuery } from './-private/live-query';
+export { useLiveQuery } from './-private/use-live-query';
+export { use } from './-private/utils/use';
+
 // Provide `belongsTo` as an alias to `hasOne`
 export { default as belongsTo } from './-private/fields/has-one';
