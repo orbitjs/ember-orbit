@@ -1,11 +1,16 @@
 import { tracked } from '@glimmer/tracking';
-import { Dict } from '@orbit/utils';
+import { AttributeDefinition } from '@orbit/data';
 
 import Model from '../model';
 
-export default function attr(type: string, options: Dict<unknown> = {}) {
-  function trackedAttr(target: any, key: string, desc: PropertyDescriptor) {
-    let trackedDesc = tracked(target, key, desc);
+export default function attr(target: Model, key: string);
+export default function attr(type?: string, options?: AttributeDefinition);
+export default function attr(
+  type?: Model | string,
+  options: string | AttributeDefinition = {}
+) {
+  function trackedAttr(target: any, key: string, desc?: PropertyDescriptor) {
+    let trackedDesc = tracked(target, key, desc as PropertyDescriptor);
     let { get: originalGet, set: originalSet } = trackedDesc;
 
     let defaultAssigned = new WeakSet();
@@ -52,11 +57,11 @@ export default function attr(type: string, options: Dict<unknown> = {}) {
     return trackedDesc;
   }
 
-  if (arguments.length === 3) {
+  if (typeof options === 'string') {
     options = {};
     return trackedAttr.apply(null, arguments);
   }
 
-  options.type = type;
+  options.type = type as string;
   return trackedAttr;
 }
