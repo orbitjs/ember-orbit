@@ -9,3 +9,8 @@ declare module '@glimmer/tracking' {
     desc: PropertyDescriptor
   ): PropertyDescriptor;
 }
+
+declare module '@glimmer/tracking/primitives/cache' {
+  export function createCache<T>(cb: () => T): object;
+  export function getValue<T>(cache: object): T;
+}
