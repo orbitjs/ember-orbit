@@ -22,7 +22,7 @@ import {
 } from 'ember-destroyable-polyfill';
 
 import Cache from './cache';
-import Model from './model';
+import Model, { QueryResult } from './model';
 import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
 
@@ -134,7 +134,7 @@ export default class Store {
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ): Promise<any> {
+  ): Promise<QueryResult> {
     const query = buildQuery(
       queryOrExpressions,
       options,
@@ -205,11 +205,13 @@ export default class Store {
     id: string,
     options?: RequestOptions
   ): Promise<Model> {
-    return this.query((q) => q.findRecord({ type, id }), options);
+    return this.query((q) => q.findRecord({ type, id }), options) as Promise<
+      Model
+    >;
   }
 
   findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
-    return this.query((q) => q.findRecords(type), options);
+    return this.query((q) => q.findRecords(type), options) as Promise<Model[]>;
   }
 
   findRecordByKey(

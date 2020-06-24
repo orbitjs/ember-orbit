@@ -29,6 +29,8 @@ export interface ModelInjections {
   _store: Store;
 }
 
+export type QueryResult<T = Model> = T | T[] | null | (T | T[] | null)[];
+
 export default class Model {
   static _notifiers: Dict<(instance: Model) => void> = {};
 

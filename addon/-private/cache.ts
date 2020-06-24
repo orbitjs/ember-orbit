@@ -10,7 +10,7 @@ import Orbit, {
   TransformBuilder,
   RequestOptions
 } from '@orbit/data';
-import { QueryResult, QueryResultData } from '@orbit/record-cache';
+import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
 import {
@@ -19,7 +19,7 @@ import {
 } from 'ember-destroyable-polyfill';
 
 import LiveQuery from './live-query';
-import Model from './model';
+import Model, { QueryResult } from './model';
 import ModelFactory from './model-factory';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
@@ -229,7 +229,7 @@ export default class Cache {
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ): Model | Model[] | null | (Model | Model[] | null)[] {
+  ): QueryResult {
     const query = buildQuery(
       queryOrExpressions,
       options,
@@ -302,7 +302,7 @@ export default class Cache {
   }
 
   lookup(
-    result: QueryResult,
+    result: QueryResult<Record>,
     expressions = 1
   ): Model | Model[] | null | (Model | Model[] | null)[] {
     if (isQueryResultData(result, expressions)) {
@@ -395,7 +395,7 @@ export default class Cache {
 }
 
 function isQueryResultData(
-  _result: QueryResult,
+  _result: QueryResult<Record>,
   expressions: number
 ): _result is QueryResultData[] {
   return expressions > 1;
