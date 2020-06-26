@@ -22,7 +22,7 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem
     };
-    store = createStore({ models });
+    store = createStore({ models }).fork();
   });
 
   hooks.afterEach(function () {

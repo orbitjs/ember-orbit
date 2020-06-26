@@ -9,7 +9,7 @@ module('Integration - Cache', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon, star: Star };
-    store = createStore({ models });
+    store = createStore({ models }).fork();
     cache = store.cache;
   });
 

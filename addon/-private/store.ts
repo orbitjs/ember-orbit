@@ -15,11 +15,7 @@ import {
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
-import {
-  destroy,
-  associateDestroyableChild,
-  registerDestructor
-} from 'ember-destroyable-polyfill';
+import { destroy, associateDestroyableChild } from 'ember-destroyable-polyfill';
 
 import Cache from './cache';
 import Model, { QueryResult } from './model';
@@ -30,14 +26,15 @@ const { deprecate } = Orbit;
 
 export interface StoreSettings {
   source: MemorySource;
+  mutableModels?: boolean;
 }
 
 /**
  * @class Store
  */
 export default class Store {
-  private _source: MemorySource;
-  private _cache: Cache;
+  #source: MemorySource;
+  #cache: Cache;
 
   static create(injections: StoreSettings): Store {
     const owner = getOwner(injections);
@@ -47,18 +44,17 @@ export default class Store {
   }
 
   constructor(settings: StoreSettings) {
-    this._source = settings.source;
+    this.#source = settings.source;
 
-    this._cache = new Cache({
+    this.#cache = new Cache({
       sourceCache: this.source.cache,
-      modelFactory: new ModelFactory(this)
+      modelFactory: new ModelFactory(
+        this,
+        this.forked || settings.mutableModels === true
+      )
     });
 
-    registerDestructor(this, () => {
-      delete this._source;
-      delete this._cache;
-    });
-    associateDestroyableChild(this, this._cache);
+    associateDestroyableChild(this, this.#cache);
   }
 
   destroy() {
@@ -66,11 +62,11 @@ export default class Store {
   }
 
   get source(): MemorySource {
-    return this._source;
+    return this.#source;
   }
 
   get cache(): Cache {
-    return this._cache;
+    return this.#cache;
   }
 
   get keyMap(): KeyMap | undefined {
@@ -95,6 +91,10 @@ export default class Store {
 
   get syncQueue(): TaskQueue {
     return this.source.syncQueue;
+  }
+
+  get forked(): boolean {
+    return !!this.source.base;
   }
 
   fork(): Store {
