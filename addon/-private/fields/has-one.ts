@@ -1,63 +1,55 @@
-import { tracked } from '@glimmer/tracking';
 import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';
+import { Cache } from '../utils/property-cache';
 
 export default function hasOne(
   type: string | string[],
   options: Partial<RelationshipDefinition> = {}
 ) {
-  function trackedHasOne(target: any, key: string, desc: PropertyDescriptor) {
+  function trackedHasOne(target: any, property: string, _: PropertyDescriptor) {
     if (!options.type) {
       throw new TypeError('@hasOne() require `type` argument.');
     }
 
-    let trackedDesc = tracked(target, key, desc);
-    let { get: originalGet, set: originalSet } = trackedDesc;
-
-    let defaultAssigned = new WeakSet();
-
-    function setDefaultValue(record: Model) {
-      let value = record.getRelatedRecord(key);
-      setValue(record, value);
-    }
-
-    function setValue(record: Model, value: any) {
-      defaultAssigned.add(record);
-      return originalSet!.call(record, value);
+    const caches = new WeakMap<Model, Cache<Model | null | undefined>>();
+    function getCache(record: Model): Cache<Model | null | undefined> {
+      let cache = caches.get(record);
+      if (!cache) {
+        cache = new Cache(() => record.getRelatedRecord(property));
+        caches.set(record, cache);
+      }
+      return cache;
     }
 
     function get(this: Model) {
-      if (!defaultAssigned.has(this)) {
-        setDefaultValue(this);
-      }
-      return originalGet!.call(this);
+      return getCache(this).value;
     }
 
     function set(this: Model, value: any) {
-      const oldValue = this.getRelatedRecord(key);
+      const oldValue = this.getRelatedRecord(property);
 
       if (value !== oldValue) {
-        this.replaceRelatedRecord(key, value);
-
-        return setValue(this, value);
+        this.replaceRelatedRecord(property, value).catch(() =>
+          getCache(this).notifyPropertyChange()
+        );
       }
-
-      return value;
     }
 
-    trackedDesc.get = get;
-    trackedDesc.set = set;
-
-    Reflect.defineMetadata('orbit:relationship', options, target, key);
+    Reflect.defineMetadata('orbit:relationship', options, target, property);
     Reflect.defineMetadata(
       'orbit:notifier',
-      (record: Model) => setDefaultValue(record),
+      (record: Model) => {
+        const cache = caches.get(record);
+        if (cache) {
+          cache.notifyPropertyChange();
+        }
+      },
       target,
-      key
+      property
     );
 
-    return trackedDesc;
+    return { get, set };
   }
 
   if (arguments.length === 3) {

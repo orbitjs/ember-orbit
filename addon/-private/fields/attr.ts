@@ -1,7 +1,7 @@
-import { tracked } from '@glimmer/tracking';
 import { AttributeDefinition } from '@orbit/data';
 
 import Model from '../model';
+import { Cache } from '../utils/property-cache';
 
 export default function attr(target: Model, key: string);
 export default function attr(type?: string, options?: AttributeDefinition);
@@ -9,52 +9,46 @@ export default function attr(
   type?: Model | string,
   options: string | AttributeDefinition = {}
 ) {
-  function trackedAttr(target: any, key: string, desc?: PropertyDescriptor) {
-    let trackedDesc = tracked(target, key, desc as PropertyDescriptor);
-    let { get: originalGet, set: originalSet } = trackedDesc;
-
-    let defaultAssigned = new WeakSet();
-
-    function setDefaultValue(record: Model) {
-      let value = record.getAttribute(key);
-      setValue(record, value);
-    }
-
-    function setValue(record: Model, value: any) {
-      defaultAssigned.add(record);
-      return originalSet!.call(record, value);
+  function trackedAttr(target: any, property: string, _: PropertyDescriptor) {
+    const caches = new WeakMap<Model, Cache<unknown>>();
+    function getCache(record: Model): Cache<unknown> {
+      let cache = caches.get(record);
+      if (!cache) {
+        cache = new Cache(() => record.getAttribute(property));
+        caches.set(record, cache);
+      }
+      return cache;
     }
 
     function get(this: Model) {
-      if (!defaultAssigned.has(this)) {
-        setDefaultValue(this);
-      }
-      return originalGet!.call(this);
+      return getCache(this).value;
     }
 
     function set(this: Model, value: any) {
-      const oldValue = this.getAttribute(key);
+      const oldValue = this.getAttribute(property);
 
       if (value !== oldValue) {
-        this.replaceAttribute(key, value);
-        return setValue(this, value);
+        this.replaceAttribute(property, value).catch(() =>
+          getCache(this).notifyPropertyChange()
+        );
+        getCache(this).value = value;
       }
-
-      return value;
     }
 
-    trackedDesc.get = get;
-    trackedDesc.set = set;
-
-    Reflect.defineMetadata('orbit:attribute', options, target, key);
+    Reflect.defineMetadata('orbit:attribute', options, target, property);
     Reflect.defineMetadata(
       'orbit:notifier',
-      (record: Model) => setDefaultValue(record),
+      (record: Model) => {
+        const cache = caches.get(record);
+        if (cache) {
+          cache.notifyPropertyChange();
+        }
+      },
       target,
-      key
+      property
     );
 
-    return trackedDesc;
+    return { get, set };
   }
 
   if (typeof options === 'string') {

@@ -1,51 +1,49 @@
-import { tracked } from '@glimmer/tracking';
 import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';
+import { Cache } from '../utils/property-cache';
 
 export default function hasMany(
   type: string | string[],
   options: Partial<RelationshipDefinition> = {}
 ) {
-  function trackedHasMany(target: any, key: string, desc: PropertyDescriptor) {
+  function trackedHasMany(
+    target: any,
+    property: string,
+    _: PropertyDescriptor
+  ) {
     if (!options.type) {
       throw new TypeError('@hasMany() require `type` argument.');
     }
 
-    let trackedDesc = tracked(target, key, desc);
-    let { get: originalGet, set: originalSet } = trackedDesc;
-
-    let defaultAssigned = new WeakSet();
-
-    function setDefaultValue(record: Model) {
-      let value = record.getRelatedRecords(key);
-      defaultAssigned.add(record);
-      return originalSet!.call(record, value);
+    const caches = new WeakMap<Model, Cache<unknown>>();
+    function getCache(record: Model): Cache<unknown> {
+      let cache = caches.get(record);
+      if (!cache) {
+        cache = new Cache(() => record.getRelatedRecords(property));
+        caches.set(record, cache);
+      }
+      return cache;
     }
 
     function get(this: Model) {
-      if (!defaultAssigned.has(this)) {
-        setDefaultValue(this);
-      }
-      return originalGet!.call(this);
+      return getCache(this).value;
     }
 
-    function set(this: Model, value: any) {
-      return value;
-    }
-
-    trackedDesc.get = get;
-    trackedDesc.set = set;
-
-    Reflect.defineMetadata('orbit:relationship', options, target, key);
+    Reflect.defineMetadata('orbit:relationship', options, target, property);
     Reflect.defineMetadata(
       'orbit:notifier',
-      (record: Model) => setDefaultValue(record),
+      (record: Model) => {
+        const cache = caches.get(record);
+        if (cache) {
+          cache.notifyPropertyChange();
+        }
+      },
       target,
-      key
+      property
     );
 
-    return trackedDesc;
+    return { get };
   }
 
   if (arguments.length === 3) {
