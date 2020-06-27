@@ -121,6 +121,9 @@ export default class Store {
     options?: RequestOptions,
     id?: string
   ): Promise<any> {
+    deprecate(
+      '`Store.liveQuery(query)` is deprecated, use `Store.cache.liveQuery(query)`.'
+    );
     const query = buildQuery(
       queryOrExpressions,
       options,
