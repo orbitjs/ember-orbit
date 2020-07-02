@@ -1,9 +1,11 @@
 import { tracked } from '@glimmer/tracking';
-import { Dict } from '@orbit/utils';
+import { KeyDefinition } from '@orbit/data';
 
 import Model from '../model';
 
-export default function key(options: Dict<unknown> = {}) {
+export default function key(target: Model, key: string);
+export default function key(options?: KeyDefinition);
+export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
   function trackedKey(target: any, key: string, desc: PropertyDescriptor) {
     let trackedDesc = tracked(target, key, desc);
     let { get: originalGet, set: originalSet } = trackedDesc;
