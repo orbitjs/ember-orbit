@@ -1,6 +1,6 @@
 import { camelize } from '@ember/string';
 import { getOwner } from '@ember/application';
-import { Schema } from '@orbit/data';
+import { Schema, SchemaSettings } from '@orbit/data';
 import modulesOfType from '../system/modules-of-type';
 import { singularize, pluralize } from 'ember-inflector';
 
@@ -8,8 +8,10 @@ function getRegisteredModels(prefix, modelsCollection) {
   return modulesOfType(prefix, modelsCollection).map(camelize);
 }
 
+type SchemaInjections = { modelNames?: string[] } & SchemaSettings;
+
 export default {
-  create(injections = {}) {
+  create(injections: SchemaInjections = {}): Schema {
     if (!injections.models) {
       const app = getOwner(injections);
       const modelSchemas = {};
