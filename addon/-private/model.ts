@@ -7,6 +7,11 @@ import {
   RelationshipDefinition,
   RequestOptions
 } from '@orbit/data';
+import {
+  destroy,
+  associateDestroyableChild,
+  registerDestructor
+} from 'ember-destroyable-polyfill';
 
 import HasMany from './relationships/has-many';
 import Store from './store';
@@ -35,6 +40,8 @@ export default class Model {
   constructor(identity: RecordIdentity, store: Store) {
     this.identity = identity;
     this.#store = store;
+    associateDestroyableChild(store, this);
+    registerDestructor(this, (record) => store.cache.unload(record));
   }
 
   get id(): string {
@@ -183,10 +190,7 @@ export default class Model {
   }
 
   destroy(): void {
-    const cache = this.store.cache;
-    if (cache) {
-      cache.unload(this);
-    }
+    destroy(this);
   }
 
   notifyPropertyChange(key: string) {
