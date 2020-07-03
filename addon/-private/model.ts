@@ -29,9 +29,9 @@ export interface ModelInjections {
   _store: Store;
 }
 
-export default class Model {
-  static _notifiers: Dict<(instance: Model) => void> = {};
+export type QueryResult<T = Model> = T | T[] | null | (T | T[] | null)[];
 
+export default class Model {
   readonly identity!: RecordIdentity;
 
   #store?: Store;
@@ -65,18 +65,18 @@ export default class Model {
   }
 
   async replaceKey(
-    field: string,
+    key: string,
     value: string,
     options?: RequestOptions
   ): Promise<void> {
     await this.store.update(
-      (t) => t.replaceKey(this.identity, field, value),
+      (t) => t.replaceKey(this.identity, key, value),
       options
     );
   }
 
-  getAttribute(field: string): any {
-    return this.store.cache.peekAttribute(this.identity, field);
+  getAttribute(attribute: string): any {
+    return this.store.cache.peekAttribute(this.identity, attribute);
   }
 
   async replaceAttribute(
@@ -90,7 +90,7 @@ export default class Model {
     );
   }
 
-  getRelatedRecord(relationship: string): Record | null | undefined {
+  getRelatedRecord(relationship: string): Model | null | undefined {
     return this.store.cache.peekRelatedRecord(this.identity, relationship);
   }
 
