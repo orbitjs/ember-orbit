@@ -1,7 +1,14 @@
 import Ember from 'ember';
 import { initialize as initializeConfig } from 'ember-orbit/initializers/ember-orbit-config';
 import { initialize as initializeServices } from 'ember-orbit/initializers/ember-orbit-services';
+import { registerDeprecationHandler } from '@ember/debug';
 import Owner from './owner';
+
+registerDeprecationHandler((_, options, next) => {
+  if (options.id !== 'meta-destruction-apis') {
+    next();
+  }
+});
 
 export function createOwner() {
   const registry = new Ember.Registry();
