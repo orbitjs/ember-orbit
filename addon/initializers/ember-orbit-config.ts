@@ -1,6 +1,33 @@
 import { deepMerge } from '@orbit/utils';
+import Application from '@ember/application';
 
-export const DEFAULT_ORBIT_CONFIG = {
+export interface OrbitConfig {
+  types: {
+    bucket: string;
+    model: string;
+    source: string;
+    strategy: string;
+  };
+  collections: {
+    buckets: string;
+    models: string;
+    sources: string;
+    strategies: string;
+  };
+  services: {
+    store: string;
+    coordinator: string;
+    schema: string;
+    keyMap: string;
+  };
+  skipStoreService: boolean;
+  skipStoreInjections: boolean;
+  skipCoordinatorService: boolean;
+  skipSchemaService: boolean;
+  skipKeyMapService: boolean;
+}
+
+export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
   types: {
     bucket: 'data-bucket',
     model: 'data-model',
@@ -26,7 +53,11 @@ export const DEFAULT_ORBIT_CONFIG = {
   skipKeyMapService: false
 };
 
-export function initialize(application) {
+interface ApplicationRegistry {
+  __registry__: any;
+}
+
+export function initialize(application: Application & ApplicationRegistry) {
   const envConfig = application.resolveRegistration('config:environment') || {};
   const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit || {});
 

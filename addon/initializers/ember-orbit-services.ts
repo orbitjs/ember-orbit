@@ -1,12 +1,16 @@
+import Application from '@ember/application';
+import { camelize } from '@ember/string';
+
+import { OrbitConfig } from './ember-orbit-config';
 import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
 import MemorySourceFactory from '../-private/factories/memory-source-factory';
-import { camelize } from '@ember/string';
 
-export function initialize(application) {
-  let orbitConfig = application.resolveRegistration('ember-orbit:config') || {};
+export function initialize(application: Application) {
+  let orbitConfig: OrbitConfig =
+    application.resolveRegistration('ember-orbit:config') || {};
 
   if (!orbitConfig.skipKeyMapService) {
     // Register a keyMap service
