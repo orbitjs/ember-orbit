@@ -98,7 +98,9 @@ export default class Store {
   }
 
   fork(): Store {
-    const forkedSource = this.source.fork();
+    const forkedSource = this.source.fork({
+      cacheSettings: { debounceLiveQueries: false } as any
+    });
     const injections = getOwner(this).ownerInjection();
 
     return Store.create({ ...injections, source: forkedSource });

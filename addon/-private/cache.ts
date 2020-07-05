@@ -27,17 +27,12 @@ export interface CacheSettings {
   modelFactory: ModelFactory;
 }
 
-interface LiveQueryContract {
-  invalidate(): void;
-}
-
 export default class Cache {
   private _sourceCache: MemoryCache;
   private _modelFactory: ModelFactory;
   private _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
   });
-  private _liveQuerySet: Set<LiveQueryContract> = new Set();
 
   constructor(settings: CacheSettings) {
     this._sourceCache = settings.sourceCache;
@@ -47,17 +42,10 @@ export default class Cache {
       'patch',
       this.generatePatchListener()
     );
-    const resetUnbind = this._sourceCache.on(
-      'reset',
-      this.generateResetListener()
-    );
 
     registerDestructor(this, () => {
       patchUnbind();
-      resetUnbind();
-
       this._identityMap.clear();
-      this._liveQuerySet.clear();
     });
   }
 
@@ -328,19 +316,11 @@ export default class Cache {
     }
   }
 
-  private notifyLiveQueryChange(): void {
-    for (let liveQuery of this._liveQuerySet) {
-      liveQuery.invalidate();
-    }
-  }
-
   private generatePatchListener(): (operation: RecordOperation) => void {
     return (operation: RecordOperation) => {
       const record = operation.record as Record;
       const { type, id, keys, attributes, relationships } = record;
       const identity = { type, id };
-
-      this.notifyLiveQueryChange();
 
       switch (operation.op) {
         case 'updateRecord':
@@ -373,10 +353,6 @@ export default class Cache {
           break;
       }
     };
-  }
-
-  private generateResetListener(): () => void {
-    return () => this.notifyLiveQueryChange();
   }
 }
 
