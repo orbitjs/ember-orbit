@@ -392,24 +392,6 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(records[0], earth);
   });
 
-  test('liveQuery - adds record that becomes a match', async function (assert) {
-    store.addRecord({
-      id: 'jupiter',
-      type: 'planet',
-      attributes: { name: 'Jupiter2' }
-    });
-
-    let liveQuery = await store.liveQuery((q) =>
-      q.findRecords('planet').filter({ attribute: 'name', value: 'Jupiter' })
-    );
-    assert.equal(liveQuery.length, 0);
-
-    await store.update((t) =>
-      t.replaceAttribute({ type: 'planet', id: 'jupiter' }, 'name', 'Jupiter')
-    );
-    assert.equal(liveQuery.length, 1);
-  });
-
   test('#find - by type', async function (assert) {
     let earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     let jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });

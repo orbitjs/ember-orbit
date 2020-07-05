@@ -57,4 +57,51 @@ module('Rendering', function (hooks) {
 
     assert.dom('.moons').doesNotIncludeText('New Europa');
   });
+
+  test('liveQuery iterator', async function (assert) {
+    const planets = cache.liveQuery((q) => q.findRecords('planet'));
+    this.set('planets', planets);
+
+    await render(hbs`<PlanetsList @planets={{this.planets}} />`);
+
+    assert.dom('.planets').hasNoText();
+
+    await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.dom('.planets').includesText('Jupiter');
+
+    await store.addRecord({ type: 'planet', name: 'Earth' });
+    assert.dom('.planets').includesText('Earth');
+  });
+
+  test('liveQuery records', async function (assert) {
+    const planets = cache.liveQuery((q) => q.findRecords('planet'));
+    this.set('planets', planets);
+
+    await render(hbs`<PlanetsList @planets={{this.planets.value}} />`);
+
+    assert.dom('.planets').hasNoText();
+
+    await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.dom('.planets').includesText('Jupiter');
+
+    await store.addRecord({ type: 'planet', name: 'Earth' });
+    assert.dom('.planets').includesText('Earth');
+  });
+
+  test('liveQuery record', async function (assert) {
+    const planet = cache.liveQuery((q) =>
+      q.findRecord({ type: 'planet', id: '1' })
+    );
+    this.set('planet', planet);
+
+    await render(hbs`<Planet @planet={{this.planet.value}} />`);
+
+    assert.dom('.planet').hasNoText();
+
+    await store.addRecord({ type: 'planet', id: '1', name: 'Jupiter' });
+    assert.dom('.planet').includesText('Jupiter');
+
+    await store.removeRecord({ type: 'planet', id: '1' });
+    assert.dom('.planet').hasNoText('Earth');
+  });
 });

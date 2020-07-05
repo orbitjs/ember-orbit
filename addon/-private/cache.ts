@@ -13,13 +13,10 @@ import Orbit, {
 import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
-import {
-  registerDestructor,
-  associateDestroyableChild
-} from 'ember-destroyable-polyfill';
+import { registerDestructor } from 'ember-destroyable-polyfill';
 
-import LiveQuery from './live-query';
 import Model, { QueryResult } from './model';
+import LiveQuery from './live-query';
 import ModelFactory from './model-factory';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
@@ -248,26 +245,15 @@ export default class Cache {
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ) {
+  ): LiveQuery {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
       this._sourceCache.queryBuilder
     );
-
-    const liveQuery = LiveQuery.create({
-      getContent: () => this.query(query)
-    });
-
-    associateDestroyableChild(this, liveQuery);
-    registerDestructor(liveQuery, (liveQuery) =>
-      this._liveQuerySet.delete(liveQuery)
-    );
-
-    this._liveQuerySet.add(liveQuery);
-
-    return liveQuery;
+    const liveQuery = this._sourceCache.liveQuery(query);
+    return new LiveQuery({ liveQuery, cache: this, query });
   }
 
   find(type: string, id?: string): Model | Model[] {
