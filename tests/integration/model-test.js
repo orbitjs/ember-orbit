@@ -73,7 +73,7 @@ module('Integration - Model', function (hooks) {
     assert.equal(record.name, 'Jupiter', 'assigned specified attribute');
     assert.equal(record.remoteId, 'planet:jupiter', 'assigned secondary key');
     assert.strictEqual(record.sun, theSun, 'assigned hasOne');
-    assert.strictEqual([...record.moons][0], callisto, 'assigned hasMany');
+    assert.strictEqual(record.moons[0], callisto, 'assigned hasMany');
   });
 
   test('models can be removed', async function (assert) {
@@ -103,7 +103,7 @@ module('Integration - Model', function (hooks) {
       sun
     });
     assert.deepEqual(
-      [...jupiter.moons],
+      jupiter.moons,
       [callisto],
       'moons relationship has been added'
     );
@@ -116,7 +116,7 @@ module('Integration - Model', function (hooks) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    await jupiter.moons.pushObject(callisto);
+    await jupiter.addToRelatedRecords('moons', callisto);
 
     assert.ok(jupiter.moons.includes(callisto), 'added record to hasMany');
     assert.equal(callisto.planet, jupiter, 'updated inverse');
@@ -129,7 +129,7 @@ module('Integration - Model', function (hooks) {
     });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    await solarSystem.bodies.pushObject(callisto);
+    await solarSystem.addToRelatedRecords('bodies', callisto);
 
     assert.ok(
       solarSystem.bodies.includes(callisto),
@@ -141,8 +141,8 @@ module('Integration - Model', function (hooks) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    await jupiter.moons.pushObject(callisto);
-    await jupiter.moons.removeObject(callisto);
+    await jupiter.addToRelatedRecords('moons', callisto);
+    await jupiter.removeFromRelatedRecords('moons', callisto);
 
     assert.ok(!jupiter.moons.includes(callisto), 'removed record from hasMany');
     assert.ok(!callisto.planet, 'updated inverse');
@@ -155,8 +155,8 @@ module('Integration - Model', function (hooks) {
     });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    await solarSystem.bodies.pushObject(callisto);
-    await solarSystem.bodies.removeObject(callisto);
+    await solarSystem.addToRelatedRecords('bodies', callisto);
+    await solarSystem.removeFromRelatedRecords('bodies', callisto);
 
     assert.ok(
       !solarSystem.bodies.includes(callisto),
@@ -168,15 +168,11 @@ module('Integration - Model', function (hooks) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    assert.deepEqual([...jupiter.moons], []); // cache the relationship
+    assert.deepEqual(jupiter.moons, []); // cache the relationship
     await store.source.update((t) =>
       t.replaceRelatedRecords(jupiter, 'moons', [callisto])
     );
-    assert.deepEqual(
-      [...jupiter.moons],
-      [callisto],
-      'invalidates the relationship'
-    );
+    assert.deepEqual(jupiter.moons, [callisto], 'invalidates the relationship');
   });
 
   test('update via store: replaceRelatedRecords operation invalidates a polymorphic relationship on model', async function (assert) {
@@ -186,12 +182,12 @@ module('Integration - Model', function (hooks) {
     });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
-    assert.deepEqual([...solarSystem.bodies], []); // cache the relationship
+    assert.deepEqual(solarSystem.bodies, []); // cache the relationship
     await store.source.update((t) =>
       t.replaceRelatedRecords(solarSystem, 'bodies', [callisto])
     );
     assert.deepEqual(
-      [...solarSystem.bodies],
+      solarSystem.bodies,
       [callisto],
       'invalidates the relationship'
     );
@@ -393,46 +389,20 @@ module('Integration - Model', function (hooks) {
     assert.strictEqual(jupiter.getRelatedRecord('sun'), null);
   });
 
-  test('#getRelatedRecords always returns the same LiveQuery', async function (assert) {
-    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
-    const sun = await store.addRecord({ type: 'star', name: 'Sun' });
-    const jupiter = await store.addRecord({
-      type: 'planet',
-      name: 'Jupiter',
-      moons: [callisto],
-      sun
-    });
-    assert.deepEqual(
-      [...jupiter.moons],
-      [callisto],
-      'moons relationship has been added'
-    );
-    assert.strictEqual(
-      jupiter.moons,
-      jupiter.getRelatedRecords('moons'),
-      'getRelatedRecords returns the expected LiveQuery'
-    );
-    assert.strictEqual(
-      jupiter.getRelatedRecords('moons'),
-      jupiter.getRelatedRecords('moons'),
-      'getRelatedRecords does not create additional LiveQueries'
-    );
-  });
-
   test('#addToRelatedRecords', async function (assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const europa = await store.addRecord({ type: 'moon', name: 'Europa' });
     const io = await store.addRecord({ type: 'moon', name: 'Io' });
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, undefined);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), undefined);
 
     await jupiter.addToRelatedRecords('moons', europa);
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, [europa]);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), [europa]);
 
     await jupiter.addToRelatedRecords('moons', io);
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, [europa, io]);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), [europa, io]);
   });
 
   test('#addToRelatedRecords (polymorphic)', async function (assert) {
@@ -443,21 +413,15 @@ module('Integration - Model', function (hooks) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     const luna = await store.addRecord({ type: 'moon', name: 'Luna' });
 
-    assert.deepEqual(
-      solarSystem.getRelatedRecords('bodies').content,
-      undefined
-    );
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), undefined);
 
     await solarSystem.addToRelatedRecords('bodies', earth);
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [earth]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), [earth]);
 
     await solarSystem.addToRelatedRecords('bodies', luna);
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [
-      earth,
-      luna
-    ]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), [earth, luna]);
   });
 
   test('#removeFromRelatedRecords', async function (assert) {
@@ -469,15 +433,15 @@ module('Integration - Model', function (hooks) {
       moons: [europa, io]
     });
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, [europa, io]);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), [europa, io]);
 
     await jupiter.removeFromRelatedRecords('moons', europa);
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, [io]);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), [io]);
 
     await jupiter.removeFromRelatedRecords('moons', io);
 
-    assert.deepEqual(jupiter.getRelatedRecords('moons').content, []);
+    assert.deepEqual(jupiter.getRelatedRecords('moons'), []);
   });
 
   test('#removeFromRelatedRecords (polymorphic)', async function (assert) {
@@ -489,18 +453,15 @@ module('Integration - Model', function (hooks) {
       bodies: [earth, luna]
     });
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [
-      earth,
-      luna
-    ]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), [earth, luna]);
 
     await solarSystem.removeFromRelatedRecords('bodies', earth);
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, [luna]);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), [luna]);
 
     await solarSystem.removeFromRelatedRecords('bodies', luna);
 
-    assert.deepEqual(solarSystem.getRelatedRecords('bodies').content, []);
+    assert.deepEqual(solarSystem.getRelatedRecords('bodies'), []);
   });
 
   test('#update - updates attribute and relationships (with records)', async function (assert) {
@@ -510,7 +471,7 @@ module('Integration - Model', function (hooks) {
 
     assert.equal(jupiter.name, 'Jupiter');
     assert.equal(jupiter.sun, null);
-    assert.deepEqual([...jupiter.moons], []);
+    assert.deepEqual(jupiter.moons, []);
 
     await jupiter.update({
       name: 'Jupiter2',
@@ -521,7 +482,7 @@ module('Integration - Model', function (hooks) {
     assert.equal(jupiter.name, 'Jupiter2');
     assert.equal(jupiter.sun, sun, 'invalidates has one relationship');
     assert.deepEqual(
-      [...jupiter.moons],
+      jupiter.moons,
       [callisto],
       'invalidates has many relationship'
     );
@@ -533,7 +494,7 @@ module('Integration - Model', function (hooks) {
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
 
     assert.equal(jupiter.sun, null);
-    assert.deepEqual([...jupiter.moons], []);
+    assert.deepEqual(jupiter.moons, []);
 
     await jupiter.update({
       sun: sun.id,
@@ -542,7 +503,7 @@ module('Integration - Model', function (hooks) {
 
     assert.equal(jupiter.sun, sun, 'invalidates has one relationship');
     assert.deepEqual(
-      [...jupiter.moons],
+      jupiter.moons,
       [callisto],
       'invalidates has many relationship'
     );
