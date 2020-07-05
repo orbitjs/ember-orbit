@@ -53,6 +53,12 @@ export function initialize(application: Application) {
   if (!orbitConfig.skipStoreService) {
     application.register(`service:${orbitConfig.services.store}`, Store);
 
+    application.register(
+      'ember-orbit:configMutableModels',
+      orbitConfig.mutableModels,
+      { instantiate: false }
+    );
+
     // Store source (which is injected in store service)
     application.register(
       `${orbitConfig.types.source}:store`,
@@ -62,6 +68,11 @@ export function initialize(application: Application) {
       `service:${orbitConfig.services.store}`,
       'source',
       `${orbitConfig.types.source}:store`
+    );
+    application.inject(
+      `service:${orbitConfig.services.store}`,
+      'mutableModels',
+      'ember-orbit:configMutableModels'
     );
 
     if (!orbitConfig.skipStoreInjections) {

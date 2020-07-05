@@ -25,6 +25,7 @@ export interface OrbitConfig {
   skipCoordinatorService: boolean;
   skipSchemaService: boolean;
   skipKeyMapService: boolean;
+  mutableModels: boolean;
 }
 
 export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
@@ -50,7 +51,8 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
   skipStoreInjections: false,
   skipCoordinatorService: false,
   skipSchemaService: false,
-  skipKeyMapService: false
+  skipKeyMapService: false,
+  mutableModels: false
 };
 
 interface ApplicationRegistry {
