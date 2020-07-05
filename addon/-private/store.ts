@@ -19,6 +19,7 @@ import Cache from './cache';
 import Model, { QueryResult } from './model';
 import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
+import { RecordAccessor } from './accessors';
 
 const { deprecate } = Orbit;
 
@@ -160,6 +161,10 @@ export default class Store {
     );
     const result = await this.source.query(query);
     return this.cache.lookup(result, query.expressions.length);
+  }
+
+  record(identity: RecordIdentity): RecordAccessor {
+    return new RecordAccessor(this, identity);
   }
 
   /**
