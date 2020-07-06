@@ -185,13 +185,6 @@ export default class Store {
     await this.update((t) => t.removeRecord(identity), options);
   }
 
-  findAll(type: string, options?: RequestOptions): Promise<Model[]> {
-    deprecate(
-      '`Store.findAll(type)` is deprecated, use `Store.findRecords(type)`.'
-    );
-    return this.findRecords(type, options);
-  }
-
   /**
    * @method find
    * @param {string} type
