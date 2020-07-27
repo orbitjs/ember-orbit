@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.16.8 (2020-07-27)
+
+#### :bug: Bug Fix
+
+- [#285](https://github.com/orbitjs/ember-orbit/pull/285) Bump orbit deps (v0.16) ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.16.7 (2020-06-07)
 
 #### :rocket: Enhancement
