@@ -66,7 +66,7 @@ export default class Model {
     value: string,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.update(
       (t) => t.replaceKey(this.identity, key, value),
       options
@@ -82,7 +82,7 @@ export default class Model {
     value: unknown,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.update(
       (t) => t.replaceAttribute(this.identity, attribute, value),
       options
@@ -98,7 +98,7 @@ export default class Model {
     relatedRecord: Model | null,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.replaceRelatedRecord(
@@ -128,7 +128,7 @@ export default class Model {
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.addToRelatedRecords(this.identity, relationship, record.identity),
@@ -141,7 +141,7 @@ export default class Model {
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.removeFromRelatedRecords(
@@ -157,7 +157,7 @@ export default class Model {
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     const keys = Object.keys(properties);
     await this.store
       .update(
@@ -174,12 +174,12 @@ export default class Model {
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
   }
 
   async remove(options?: RequestOptions): Promise<void> {
-    this.assertMutable();
+    this.assertMutableModel();
     await this.store.removeRecord(this.identity, options);
   }
 
@@ -195,19 +195,19 @@ export default class Model {
     Reflect.getMetadata('orbit:notifier', this, key)(this);
   }
 
+  assertMutableModel(): void {
+    assert(
+      `You tried to change ${this.type}:${this.id} record but it is part of a readonly store. Fork the store to make changes.`,
+      this.#mutable
+    );
+  }
+
   private get store(): Store {
     if (!this.#store) {
       throw new Error('record has been removed from Store');
     }
 
     return this.#store;
-  }
-
-  private assertMutable(): void {
-    assert(
-      `You tried to change ${this.type}:${this.id} record but it is part of a readonly store. Fork the store to make changes.`,
-      this.#mutable
-    );
   }
 
   static get keys(): Dict<KeyDefinition> {

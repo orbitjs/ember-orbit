@@ -508,4 +508,15 @@ module('Integration - Model', function (hooks) {
       'invalidates has many relationship'
     );
   });
+
+  test('#base store', async function (assert) {
+    const jupiter = await store.base.addRecord({
+      type: 'planet',
+      name: 'Jupiter'
+    });
+
+    assert.throws(() => {
+      jupiter.name = 'Jupiter2';
+    }, /is part of a readonly store/);
+  });
 });
