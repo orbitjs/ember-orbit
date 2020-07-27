@@ -27,6 +27,7 @@ const { deprecate } = Orbit;
 export interface StoreSettings {
   source: MemorySource;
   mutableModels?: boolean;
+  base?: Store;
 }
 
 /**
@@ -35,6 +36,7 @@ export interface StoreSettings {
 export default class Store {
   #source: MemorySource;
   #cache: Cache;
+  #base?: Store;
 
   static create(injections: StoreSettings): Store {
     const owner = getOwner(injections);
@@ -45,6 +47,7 @@ export default class Store {
 
   constructor(settings: StoreSettings) {
     this.#source = settings.source;
+    this.#base = settings.base;
 
     this.#cache = new Cache({
       sourceCache: this.source.cache,
@@ -54,6 +57,9 @@ export default class Store {
       )
     });
 
+    if (this.#base) {
+      associateDestroyableChild(this.#base, this);
+    }
     associateDestroyableChild(this, this.#cache);
   }
 
@@ -97,13 +103,21 @@ export default class Store {
     return !!this.source.base;
   }
 
+  get base(): Store | undefined {
+    return this.#base;
+  }
+
   fork(): Store {
     const forkedSource = this.source.fork({
       cacheSettings: { debounceLiveQueries: false } as any
     });
     const injections = getOwner(this).ownerInjection();
 
-    return Store.create({ ...injections, source: forkedSource });
+    return Store.create({
+      ...injections,
+      source: forkedSource,
+      base: this
+    });
   }
 
   merge(forkedStore: Store, options?: MemorySourceMergeOptions): Promise<any> {

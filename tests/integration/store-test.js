@@ -430,6 +430,7 @@ module('Integration - Store', function (hooks) {
       classification: 'gas giant'
     });
 
+    assert.equal(forkedStore.base, store);
     assert.notOk(
       store.cache.includesRecord('planet', jupiter.id),
       'store does not contain record'
