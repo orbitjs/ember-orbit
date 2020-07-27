@@ -2028,21 +2028,21 @@
   resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.16.3.tgz#b85658ccab4b05fee75772efaa84c67e5114d89b"
   integrity sha512-8osDM0MvNxNcylNiNeWBELTG2F2kfQ3AnKgfEDp1jZmBF5KCdeRYNJZ1b+taaHJhaFQGP+Rxd+D1oPF7ubkb3w==
 
-"@orbit/memory@^0.16.5":
-  version "0.16.5"
-  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.16.5.tgz#1ac46597308c8d4f65a251e3d633a26cb35587d5"
-  integrity sha512-P4eSlUIap4Z4X4/elDrt7Mv0++SC+cZTx5vCj6C5d6E0ke75gQNItOYuynRcyNODlVTfjThFch61oUOHz5a4kA==
+"@orbit/memory@^0.16.6":
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.16.6.tgz#a74db30b0ea29e355c111c3b8b7ee710e101eecc"
+  integrity sha512-A3PALNudBQlTjQqWwWbT9tjkLsbIuRegMa2p1KZR+9OdI2fW0j9RTrPtzitUf7Y4ElP30vTK42IImpELvzra3g==
   dependencies:
     "@orbit/core" "^0.16.3"
     "@orbit/data" "^0.16.5"
     "@orbit/immutable" "^0.16.3"
-    "@orbit/record-cache" "^0.16.5"
+    "@orbit/record-cache" "^0.16.6"
     "@orbit/utils" "^0.16.3"
 
-"@orbit/record-cache@^0.16.5":
-  version "0.16.5"
-  resolved "https://registry.yarnpkg.com/@orbit/record-cache/-/record-cache-0.16.5.tgz#7a2360864e7a812697f4b9bbfca713509af4e694"
-  integrity sha512-hM2hzeU3XqQikKb72EaLjYSFTuKUXguJeT48DlALkOsdfLMpDTKYyc0RjnNebSbVCzY+kDdOYb2l+4PchkGacg==
+"@orbit/record-cache@^0.16.6":
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/@orbit/record-cache/-/record-cache-0.16.6.tgz#d04aa5b5c6cccbb69e59370b2c5b01fa2547c573"
+  integrity sha512-M5DQq3IXhgYN5eshg3k1jqIFtBG8QcdnEHxHfvCzAiMJz0M5oMAx1Q2oZi6Acs4MhjkL4bTuDitUCPa41DwNLg==
   dependencies:
     "@orbit/core" "^0.16.3"
     "@orbit/data" "^0.16.5"
