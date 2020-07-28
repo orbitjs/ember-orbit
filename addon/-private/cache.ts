@@ -13,7 +13,7 @@ import Orbit, {
 import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
-import { registerDestructor } from 'ember-destroyable-polyfill';
+import { registerDestructor } from '@ember/destroyable';
 
 import Model, { QueryResult } from './model';
 import LiveQuery from './live-query';

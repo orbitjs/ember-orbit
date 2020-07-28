@@ -12,7 +12,7 @@ import {
   destroy,
   associateDestroyableChild,
   registerDestructor
-} from 'ember-destroyable-polyfill';
+} from '@ember/destroyable';
 import { DEBUG } from '@glimmer/env';
 
 import Store from './store';
