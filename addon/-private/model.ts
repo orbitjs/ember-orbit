@@ -191,10 +191,6 @@ export default class Model {
     destroy(this);
   }
 
-  notifyPropertyChange(key: string) {
-    Reflect.getMetadata('orbit:notifier', this, key)(this);
-  }
-
   private get store(): Store {
     if (!this.#store) {
       throw new Error('record has been removed from Store');

@@ -8,6 +8,7 @@ import {
 import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
+import { waitForSource } from 'ember-orbit/test-support';
 
 module('Integration - Store', function (hooks) {
   let store;
@@ -515,5 +516,53 @@ module('Integration - Store', function (hooks) {
     assert.ok(fork.cache.includesRecord(recordC.type, recordC.id));
     assert.ok(fork.cache.includesRecord(recordD.type, recordD.id));
     assert.ok(fork.cache.includesRecord(recordE.type, recordE.id));
+  });
+
+  test('create model from schema', async function (assert) {
+    store.schema.upgrade({
+      models: {
+        ...store.schema.models,
+        comet: {
+          attributes: {
+            name: { type: 'string' },
+            density: { type: 'number' }
+          },
+          relationships: {
+            planetarySystem: {
+              kind: 'hasOne',
+              type: 'planetarySystem'
+            }
+          }
+        }
+      }
+    });
+
+    await store.addRecord({
+      type: 'comet',
+      name: "Halley's Comet",
+      density: 0.6
+    });
+
+    const comets = store.peekRecords('comet');
+    const comet = comets[0];
+
+    assert.equal(comets.length, 1);
+
+    assert.equal(comet.type, 'comet');
+    assert.equal(comet.name, "Halley's Comet");
+    assert.equal(comet.density, 0.6);
+
+    const forkedStore = store.fork();
+    const forkedComet = forkedStore.peekRecord('comet', comet.id);
+    forkedComet.density = 0.7;
+    await waitForSource(forkedStore);
+    await waitForSource(forkedStore);
+
+    const cometsByDensity = forkedStore.cache.query((q) =>
+      q.findRecords('comet').filter({ attribute: 'density', value: 0.7 })
+    );
+
+    assert.equal(forkedComet.density, 0.7);
+    assert.equal(cometsByDensity.length, 1);
   });
 });

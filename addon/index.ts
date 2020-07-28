@@ -9,6 +9,7 @@ export { default as hasMany } from './-private/fields/has-many';
 export { default as hasOne } from './-private/fields/has-one';
 export { default as key } from './-private/fields/key';
 export { default as Cache } from './-private/cache';
+export { default as IdentityMap } from './-private/identity-map';
 export { default as Model } from './-private/model';
 export { default as Store } from './-private/store';
 export { default as LiveQuery } from './-private/live-query';

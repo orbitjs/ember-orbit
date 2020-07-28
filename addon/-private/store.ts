@@ -19,8 +19,8 @@ import { destroy, associateDestroyableChild } from 'ember-destroyable-polyfill';
 
 import Cache from './cache';
 import Model, { QueryResult } from './model';
-import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
+import IdentityMap from './identity-map';
 
 const { deprecate } = Orbit;
 
@@ -28,6 +28,7 @@ export interface StoreSettings {
   source: MemorySource;
   mutableModels?: boolean;
   base?: Store;
+  createModelsFromSchema?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export interface StoreSettings {
  */
 export default class Store {
   #source: MemorySource;
+  #identityMap: IdentityMap;
   #cache: Cache;
   #base?: Store;
 
@@ -49,22 +51,24 @@ export default class Store {
     this.#source = settings.source;
     this.#base = settings.base;
 
+    this.#identityMap = new IdentityMap(this);
     this.#cache = new Cache({
-      sourceCache: this.source.cache,
-      modelFactory: new ModelFactory(
-        this,
-        this.forked || settings.mutableModels === true
-      )
+      cache: this.#source.cache,
+      identityMap: this.#identityMap
     });
 
     if (this.#base) {
       associateDestroyableChild(this.#base, this);
     }
-    associateDestroyableChild(this, this.#cache);
+    associateDestroyableChild(this, this.#identityMap);
   }
 
   destroy() {
     destroy(this);
+  }
+
+  get identityMap(): IdentityMap {
+    return this.#identityMap;
   }
 
   get source(): MemorySource {
@@ -111,7 +115,7 @@ export default class Store {
     const forkedSource = this.source.fork({
       cacheSettings: { debounceLiveQueries: false } as any
     });
-    const injections = getOwner(this).ownerInjection();
+    const injections = getOwner(this).ownerInjection() as StoreSettings;
 
     return Store.create({
       ...injections,
@@ -161,7 +165,7 @@ export default class Store {
       this.source.queryBuilder
     );
     const result = await this.source.query(query);
-    return this.cache.lookup(result, query.expressions.length);
+    return this.identityMap.lookup(result, query.expressions.length);
   }
 
   /**
@@ -173,7 +177,7 @@ export default class Store {
   async addRecord(properties = {}, options?: RequestOptions): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.addRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    return this.identityMap.lookup(record) as Model;
   }
 
   async updateRecord(
@@ -182,7 +186,7 @@ export default class Store {
   ): Promise<Model> {
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.updateRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    return this.identityMap.lookup(record) as Model;
   }
 
   /**

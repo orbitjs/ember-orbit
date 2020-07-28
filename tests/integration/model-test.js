@@ -351,15 +351,13 @@ module('Integration - Model', function (hooks) {
   });
 
   test('destroy model', async function (assert) {
-    const cache = store.cache;
-
     const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const identifier = record.identity;
     record.destroy();
 
     await waitForSource(store);
 
-    assert.ok(!cache._identityMap.has(identifier), 'removed from identity map');
+    assert.ok(!store.identityMap.has(identifier), 'removed from identity map');
   });
 
   test('#getData returns underlying record data', async function (assert) {

@@ -20,6 +20,7 @@ export function createStore(options) {
   initializeConfig(owner);
   initializeServices(owner);
   let orbitConfig = owner.lookup('ember-orbit:config');
+  orbitConfig.createModelsFromSchema = true;
 
   const { models } = options;
   if (models) {
@@ -29,7 +30,6 @@ export function createStore(options) {
       types.push(type);
     });
 
-    // console.log(types);
     owner.register('ember-orbit-model-names:main', types, {
       instantiate: false
     });

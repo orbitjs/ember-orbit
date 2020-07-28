@@ -3,66 +3,48 @@ import Orbit, {
   buildQuery,
   RecordIdentity,
   QueryOrExpressions,
-  RecordOperation,
   Record,
   KeyMap,
   Schema,
   TransformBuilder,
   RequestOptions
 } from '@orbit/data';
-import { QueryResultData } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
-import IdentityMap from '@orbit/identity-map';
-import { registerDestructor } from 'ember-destroyable-polyfill';
 
 import Model, { QueryResult } from './model';
 import LiveQuery from './live-query';
-import ModelFactory from './model-factory';
-import recordIdentitySerializer from './utils/record-identity-serializer';
+import IdentityMap from './identity-map';
 
 const { assert } = Orbit;
 
 export interface CacheSettings {
-  sourceCache: MemoryCache;
-  modelFactory: ModelFactory;
+  cache: MemoryCache;
+  identityMap: IdentityMap;
 }
 
 export default class Cache {
-  private _sourceCache: MemoryCache;
-  private _modelFactory: ModelFactory;
-  private _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
-    serializer: recordIdentitySerializer
-  });
+  #cache: MemoryCache;
+  #identityMap: IdentityMap;
 
   constructor(settings: CacheSettings) {
-    this._sourceCache = settings.sourceCache;
-    this._modelFactory = settings.modelFactory;
-
-    const patchUnbind = this._sourceCache.on(
-      'patch',
-      this.generatePatchListener()
-    );
-
-    registerDestructor(this, () => {
-      patchUnbind();
-      this._identityMap.clear();
-    });
+    this.#cache = settings.cache;
+    this.#identityMap = settings.identityMap;
   }
 
   get keyMap(): KeyMap | undefined {
-    return this._sourceCache.keyMap;
+    return this.#cache.keyMap;
   }
 
   get schema(): Schema {
-    return this._sourceCache.schema;
+    return this.#cache.schema;
   }
 
   get transformBuilder(): TransformBuilder {
-    return this._sourceCache.transformBuilder;
+    return this.#cache.transformBuilder;
   }
 
   peekRecordData(type: string, id: string): Record | undefined {
-    return this._sourceCache.getRecordSync({ type, id });
+    return this.#cache.getRecordSync({ type, id });
   }
 
   includesRecord(type: string, id: string): boolean {
@@ -71,14 +53,14 @@ export default class Cache {
 
   peekRecord(type: string, id: string): Model | undefined {
     if (this.includesRecord(type, id)) {
-      return this.lookup({ type, id }) as Model;
+      return this.#identityMap.lookup({ type, id }) as Model;
     }
     return undefined;
   }
 
   peekRecords(type: string): Model[] {
-    const identities = this._sourceCache.getRecordsSync(type);
-    return this.lookup(identities) as Model[];
+    const identities = this.#cache.getRecordsSync(type);
+    return this.#identityMap.lookup(identities) as Model[];
   }
 
   peekRecordByKey(
@@ -104,12 +86,12 @@ export default class Cache {
   }
 
   peekKey(identity: RecordIdentity, key: string): string | undefined {
-    const record = this._sourceCache.getRecordSync(identity);
+    const record = this.#cache.getRecordSync(identity);
     return record && deepGet(record, ['keys', key]);
   }
 
   peekAttribute(identity: RecordIdentity, attribute: string): any {
-    const record = this._sourceCache.getRecordSync(identity);
+    const record = this.#cache.getRecordSync(identity);
     return record && deepGet(record, ['attributes', attribute]);
   }
 
@@ -117,12 +99,12 @@ export default class Cache {
     identity: RecordIdentity,
     relationship: string
   ): Model | null | undefined {
-    const relatedRecord = this._sourceCache.getRelatedRecordSync(
+    const relatedRecord = this.#cache.getRelatedRecordSync(
       identity,
       relationship
     );
     if (relatedRecord) {
-      return this.lookup(relatedRecord) as Model;
+      return this.#identityMap.lookup(relatedRecord) as Model;
     } else {
       return relatedRecord;
     }
@@ -132,12 +114,12 @@ export default class Cache {
     identity: RecordIdentity,
     relationship: string
   ): Model[] | undefined {
-    const relatedRecords = this._sourceCache.getRelatedRecordsSync(
+    const relatedRecords = this.#cache.getRelatedRecordsSync(
       identity,
       relationship
     );
     if (relatedRecords) {
-      return this.lookup(relatedRecords) as Model[];
+      return this.#identityMap.lookup(relatedRecords) as Model[];
     } else {
       return undefined;
     }
@@ -152,11 +134,11 @@ export default class Cache {
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#cache.queryBuilder
     );
-    const result = this._sourceCache.query(query);
+    const result = this.#cache.query(query);
     if (result) {
-      return this.lookup(result, query.expressions.length);
+      return this.#identityMap.lookup(result, query.expressions.length);
     } else {
       return result;
     }
@@ -171,10 +153,10 @@ export default class Cache {
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#cache.queryBuilder
     );
-    const liveQuery = this._sourceCache.liveQuery(query);
-    return new LiveQuery({ liveQuery, cache: this, query });
+    const liveQuery = this.#cache.liveQuery(query);
+    return new LiveQuery({ liveQuery, identityMap: this.#identityMap, query });
   }
 
   find(type: string, id?: string): Model | Model[] {
@@ -194,97 +176,6 @@ export default class Cache {
   }
 
   unload(identity: RecordIdentity): void {
-    const record = this._identityMap.get(identity);
-    if (record) {
-      record.disconnect();
-      this._identityMap.delete(identity);
-    }
+    this.#identityMap.unload(identity);
   }
-
-  lookup(
-    result: QueryResult<Record>,
-    expressions = 1
-  ): Model | Model[] | null | (Model | Model[] | null)[] {
-    if (isQueryResultData(result, expressions)) {
-      return (result as QueryResultData[]).map((result) =>
-        this._lookup(result)
-      );
-    } else {
-      return this._lookup(result);
-    }
-  }
-
-  private _lookup(result: QueryResultData): Model | Model[] | null {
-    if (Array.isArray(result)) {
-      return result.map((identity) => this._lookup(identity) as Model);
-    } else if (result) {
-      let record = this._identityMap.get(result);
-
-      if (!record) {
-        record = this._modelFactory.create(result);
-        this._identityMap.set(result, record);
-      }
-
-      return record;
-    }
-
-    return null;
-  }
-
-  private notifyPropertyChange(
-    identity: RecordIdentity,
-    property: string
-  ): void {
-    const record = this._identityMap.get(identity);
-
-    if (record) {
-      record.notifyPropertyChange(property);
-    }
-  }
-
-  private generatePatchListener(): (operation: RecordOperation) => void {
-    return (operation: RecordOperation) => {
-      const record = operation.record as Record;
-      const { type, id, keys, attributes, relationships } = record;
-      const identity = { type, id };
-
-      switch (operation.op) {
-        case 'updateRecord':
-          for (let properties of [attributes, keys, relationships]) {
-            if (properties) {
-              for (let property of Object.keys(properties)) {
-                if (
-                  Object.prototype.hasOwnProperty.call(properties, property)
-                ) {
-                  this.notifyPropertyChange(identity, property);
-                }
-              }
-            }
-          }
-          break;
-        case 'replaceAttribute':
-          this.notifyPropertyChange(identity, operation.attribute);
-          break;
-        case 'replaceKey':
-          this.notifyPropertyChange(identity, operation.key);
-          break;
-        case 'replaceRelatedRecord':
-        case 'replaceRelatedRecords':
-        case 'addToRelatedRecords':
-        case 'removeFromRelatedRecords':
-          this.notifyPropertyChange(identity, operation.relationship);
-          break;
-        case 'removeRecord':
-          this.unload(identity);
-          break;
-      }
-    };
-  }
-}
-
-function isQueryResultData(
-  _result: QueryResult<Record>,
-  expressions: number
-): _result is QueryResultData[] {
-  return expressions > 1;
 }

@@ -13,28 +13,29 @@ import {
 // import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { createCache, getValue } from './utils/glimmer-cache';
 
-import Cache from './cache';
-import { QueryResult } from './model';
-import { Model } from 'ember-orbit';
+import Model, { QueryResult } from './model';
+import IdentityMap from './identity-map';
 
 const { assert, deprecate } = Orbit;
 
 export interface LiveQuerySettings {
   liveQuery: SyncLiveQuery;
+  identityMap: IdentityMap;
   query: Query;
-  cache: Cache;
 }
 
 export default class LiveQuery implements Iterable<Model> {
+  #identityMap: IdentityMap;
+  #liveQuery: SyncLiveQuery;
   #query: Query;
-  #cache: Cache;
 
   #iteratorAccessed = false;
 
   #value = createCache(() => {
     this._invalidate;
     try {
-      return this.#cache.query(this.#query);
+      const result = this.#liveQuery.query();
+      return this.#identityMap.lookup(result, this.#query.expressions.length);
     } catch (e) {
       if (e instanceof RecordNotFoundException) {
         return undefined;
@@ -47,7 +48,8 @@ export default class LiveQuery implements Iterable<Model> {
 
   constructor(settings: LiveQuerySettings) {
     this.#query = settings.query;
-    this.#cache = settings.cache;
+    this.#identityMap = settings.identityMap;
+    this.#liveQuery = settings.liveQuery;
 
     const unsubscribe = settings.liveQuery.subscribe(() => {
       this._invalidate++;
@@ -56,7 +58,7 @@ export default class LiveQuery implements Iterable<Model> {
       }
     });
     registerDestructor(this, unsubscribe);
-    associateDestroyableChild(this.#cache, this);
+    associateDestroyableChild(this.#identityMap, this);
   }
 
   get value(): QueryResult {

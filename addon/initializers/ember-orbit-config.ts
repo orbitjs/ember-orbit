@@ -26,6 +26,7 @@ export interface OrbitConfig {
   skipSchemaService: boolean;
   skipKeyMapService: boolean;
   mutableModels: boolean;
+  createModelsFromSchema: boolean;
 }
 
 export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
@@ -52,7 +53,8 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
   skipCoordinatorService: false,
   skipSchemaService: false,
   skipKeyMapService: false,
-  mutableModels: false
+  mutableModels: false,
+  createModelsFromSchema: false
 };
 
 interface ApplicationRegistry {
