@@ -28,6 +28,7 @@ export default function attr(
       const oldValue = this.getAttribute(property);
 
       if (value !== oldValue) {
+        this.assertMutableModel();
         this.replaceAttribute(property, value).catch(() =>
           getCache(this).notifyPropertyChange()
         );

@@ -30,6 +30,7 @@ export default function hasOne(
       const oldValue = this.getRelatedRecord(property);
 
       if (value !== oldValue) {
+        this.assertMutableModel();
         this.replaceRelatedRecord(property, value).catch(() =>
           getCache(this).notifyPropertyChange()
         );
