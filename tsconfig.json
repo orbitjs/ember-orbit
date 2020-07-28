@@ -27,6 +27,7 @@
       "ember-orbit/*": ["addon/*"],
       "ember-orbit/test-support": ["addon-test-support"],
       "ember-orbit/test-support/*": ["addon-test-support/*"],
+      "@ember/destroyable": ["node_modules/ember-destroyable-polyfill"],
       "*": ["types/*"]
     }
   },

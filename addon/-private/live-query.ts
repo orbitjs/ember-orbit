@@ -8,7 +8,7 @@ import {
   registerDestructor,
   associateDestroyableChild,
   destroy
-} from 'ember-destroyable-polyfill';
+} from '@ember/destroyable';
 
 // import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { createCache, getValue } from './utils/glimmer-cache';

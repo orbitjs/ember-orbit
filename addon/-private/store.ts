@@ -15,7 +15,7 @@ import {
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import Orbit, { Log, TaskQueue, Listener } from '@orbit/core';
-import { destroy, associateDestroyableChild } from 'ember-destroyable-polyfill';
+import { destroy, associateDestroyableChild } from '@ember/destroyable';
 
 import Cache from './cache';
 import Model, { QueryResult } from './model';
