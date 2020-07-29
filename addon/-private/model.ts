@@ -16,7 +16,7 @@ import {
 import { DEBUG } from '@glimmer/env';
 
 import Store from './store';
-import { RelatedRecordAccessor } from './accessors';
+import { RelatedRecordAccessor, RelatedRecordsAccessor } from './accessors';
 
 const { assert } = Orbit;
 
@@ -90,6 +90,10 @@ export default class Model {
 
   relatedRecord(relationship: string): RelatedRecordAccessor<Model> {
     return new RelatedRecordAccessor(this.store, this.identity, relationship);
+  }
+
+  relatedRecords(relationship: string): RelatedRecordsAccessor<Model> {
+    return new RelatedRecordsAccessor(this.store, this.identity, relationship);
   }
 
   getRelatedRecord(relationship: string): Model | null | undefined {
