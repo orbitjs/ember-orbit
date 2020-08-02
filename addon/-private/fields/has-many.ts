@@ -1,4 +1,4 @@
-import Orbit from '@orbit/core';
+import { Orbit } from '@orbit/core';
 import { RelationshipDefinition } from '@orbit/data';
 import { DEBUG } from '@glimmer/env';
 

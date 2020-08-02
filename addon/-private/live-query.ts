@@ -1,7 +1,6 @@
-import Orbit from '@orbit/core';
+import { Orbit } from '@orbit/core';
 import { tracked } from '@glimmer/tracking';
 import { notifyPropertyChange } from '@ember/object';
-
 import { SyncLiveQuery } from '@orbit/record-cache';
 import { Query, RecordNotFoundException } from '@orbit/data';
 import {

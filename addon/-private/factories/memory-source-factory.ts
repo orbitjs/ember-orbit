@@ -1,4 +1,4 @@
-import MemorySource, { MemorySourceSettings } from '@orbit/memory';
+import { MemorySource, MemorySourceSettings } from '@orbit/memory';
 
 export default {
   create(injections: MemorySourceSettings = {}): MemorySource {
