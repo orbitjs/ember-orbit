@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.17.0-beta.1 (2020-08-02)
+
+#### :boom: Breaking Change
+
+- [#280](https://github.com/orbitjs/ember-orbit/pull/280) Remove 0.16 deprecations ([@tchak](https://github.com/tchak))
+- [#274](https://github.com/orbitjs/ember-orbit/pull/274) Make records on non forked stores readonly ([@tchak](https://github.com/tchak))
+
+#### :rocket: Enhancement
+
+- [#287](https://github.com/orbitjs/ember-orbit/pull/287) Fix immutable record exceptions ([@tchak](https://github.com/tchak))
+- [#286](https://github.com/orbitjs/ember-orbit/pull/286) Expose base store on forked stores ([@tchak](https://github.com/tchak))
+- [#274](https://github.com/orbitjs/ember-orbit/pull/274) Make records on non forked stores readonly ([@tchak](https://github.com/tchak))
+- [#277](https://github.com/orbitjs/ember-orbit/pull/277) Migrate initializers to ts ([@tchak](https://github.com/tchak))
+- [#276](https://github.com/orbitjs/ember-orbit/pull/276) Implement liveQuery ([@tchak](https://github.com/tchak))
+- [#271](https://github.com/orbitjs/ember-orbit/pull/271) Refactor has many to be a readonly array ([@tchak](https://github.com/tchak))
+- [#272](https://github.com/orbitjs/ember-orbit/pull/272) Fix decorators for use in typescript ([@tchak](https://github.com/tchak))
+- [#267](https://github.com/orbitjs/ember-orbit/pull/267) Convert factories to typescript ([@tchak](https://github.com/tchak))
+- [#262](https://github.com/orbitjs/ember-orbit/pull/262) Support polymorphic relationships. Issue #257 ([@derekwsgray](https://github.com/derekwsgray))
+- [#259](https://github.com/orbitjs/ember-orbit/pull/259) Remove ember 3.4 support ([@tchak](https://github.com/tchak))
+
+#### :bug: Bug Fix
+
+- [#279](https://github.com/orbitjs/ember-orbit/pull/279) Fix live query ([@tchak](https://github.com/tchak))
+
+#### :memo: Documentation
+
+- [#265](https://github.com/orbitjs/ember-orbit/pull/265) Add doc for polymorphic relationships. ([@derekwsgray](https://github.com/derekwsgray))
+
+#### :house: Internal
+
+- [#293](https://github.com/orbitjs/ember-orbit/pull/293) Fix typing in modules-of-type ([@dgeb](https://github.com/dgeb))
+- [#292](https://github.com/orbitjs/ember-orbit/pull/292) Update orbit and ember-source, as well as imports ([@dgeb](https://github.com/dgeb))
+- [#291](https://github.com/orbitjs/ember-orbit/pull/291) Bump elliptic from 6.5.2 to 6.5.3 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#290](https://github.com/orbitjs/ember-orbit/pull/290) Remove redundant @types/ember-test-helpers ([@tchak](https://github.com/tchak))
+- [#289](https://github.com/orbitjs/ember-orbit/pull/289) Use proper import for destroyable polyfill ([@tchak](https://github.com/tchak))
+- [#288](https://github.com/orbitjs/ember-orbit/pull/288) Update dependencies ([@tchak](https://github.com/tchak))
+- [#284](https://github.com/orbitjs/ember-orbit/pull/284) Bump lodash from 4.17.15 to 4.17.19 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#273](https://github.com/orbitjs/ember-orbit/pull/273) Use glimmer cache API ([@tchak](https://github.com/tchak))
+- [#275](https://github.com/orbitjs/ember-orbit/pull/275) disable deprecations during tests ([@tchak](https://github.com/tchak))
+- [#268](https://github.com/orbitjs/ember-orbit/pull/268) Use new destroyable api ([@tchak](https://github.com/tchak))
+- [#270](https://github.com/orbitjs/ember-orbit/pull/270) Add has many rendering test ([@tchak](https://github.com/tchak))
+- [#263](https://github.com/orbitjs/ember-orbit/pull/263) Bump websocket-extensions from 0.1.3 to 0.1.4 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#255](https://github.com/orbitjs/ember-orbit/pull/255) Prettier2 ([@tchak](https://github.com/tchak))
+
+#### Committers: 3
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+- Derek W. S. Gray ([@derekwsgray](https://github.com/derekwsgray))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+
 ## v0.16.8 (2020-07-27)
 
 #### :bug: Bug Fix
