@@ -1,4 +1,4 @@
-import Orbit from '@orbit/core';
+import { Orbit } from '@orbit/core';
 import { Dict } from '@orbit/utils';
 import {
   Record,

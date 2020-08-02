@@ -1,5 +1,6 @@
 import { deepGet } from '@orbit/utils';
-import Orbit, {
+import { Orbit } from '@orbit/core';
+import {
   buildQuery,
   RecordIdentity,
   QueryOrExpressions,

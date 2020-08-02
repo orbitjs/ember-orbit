@@ -1,4 +1,5 @@
-import Orbit, {
+import { Orbit } from '@orbit/core';
+import {
   Schema,
   RecordRelationship,
   Record,

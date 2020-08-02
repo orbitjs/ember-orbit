@@ -1,5 +1,5 @@
 import { getOwner } from '@ember/application';
-import Coordinator, { CoordinatorOptions } from '@orbit/coordinator';
+import { Coordinator, CoordinatorOptions } from '@orbit/coordinator';
 import modulesOfType from '../system/modules-of-type';
 
 type CoordinatorInjections = {

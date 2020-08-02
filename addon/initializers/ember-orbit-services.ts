@@ -1,6 +1,5 @@
 import Application from '@ember/application';
 import { camelize } from '@ember/string';
-
 import { OrbitConfig } from './ember-orbit-config';
 import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
