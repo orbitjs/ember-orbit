@@ -5780,7 +5780,7 @@ ember-cli-babel@^7.0.0, ember-cli-babel@^7.11.0, ember-cli-babel@^7.12.0, ember-
     rimraf "^3.0.1"
     semver "^5.5.0"
 
-ember-cli-babel@^7.19.0, ember-cli-babel@^7.21.0:
+ember-cli-babel@^7.19.0:
   version "7.21.0"
   resolved "https://registry.yarnpkg.com/ember-cli-babel/-/ember-cli-babel-7.21.0.tgz#c79e888876aee87dfc3260aee7cb580b74264bbc"
   integrity sha512-jHVi9melAibo0DrAG3GAxid+29xEyjBoU53652B4qcu3Xp58feZGTH/JGXovH7TjvbeNn65zgNyoV3bk1onULw==
@@ -6197,13 +6197,12 @@ ember-compatibility-helpers@^1.2.1:
     ember-cli-version-checker "^2.1.1"
     semver "^5.4.1"
 
-ember-destroyable-polyfill@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ember-destroyable-polyfill/-/ember-destroyable-polyfill-1.0.2.tgz#d26aae16f18c454dcf91e53e12b30782d3a861c5"
-  integrity sha512-dT4hEtk8GZqCpk1AjrbLm+NRNbC0ZjwAPpCw0T+q1NREAhahqlumCjOAgHrimV9kmX/HIMKaf9XkiYAgB/bXdQ==
+ember-destroyable-polyfill@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/ember-destroyable-polyfill/-/ember-destroyable-polyfill-2.0.1.tgz#391cd95a99debaf24148ce953054008d00f151a6"
+  integrity sha512-hyK+/GPWOIxM1vxnlVMknNl9E5CAFVbcxi8zPiM0vCRwHiFS8Wuj7PfthZ1/OFitNNv7ITTeU8hxqvOZVsrbnQ==
   dependencies:
-    ember-cli-babel "^7.21.0"
-    ember-cli-typescript "^3.1.4"
+    ember-cli-babel "^7.22.1"
     ember-cli-version-checker "^5.1.1"
     ember-compatibility-helpers "^1.2.1"
 
