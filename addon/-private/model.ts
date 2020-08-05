@@ -22,7 +22,7 @@ const { assert } = Orbit;
 export interface ModelSettings {
   identity: RecordIdentity;
   store: Store;
-  mutable: boolean;
+  mutableFields: boolean;
 }
 
 export type QueryResult<T = Model> = T | T[] | null | (T | T[] | null)[];
@@ -31,12 +31,12 @@ export default class Model {
   readonly identity!: RecordIdentity;
 
   #store?: Store;
-  #mutable: boolean;
+  #mutableFields: boolean;
 
   constructor(settings: ModelSettings) {
     this.identity = settings.identity;
     this.#store = settings.store;
-    this.#mutable = settings.mutable;
+    this.#mutableFields = settings.mutableFields;
     associateDestroyableChild(settings.store, this);
     registerDestructor(this, (record) => settings.store.cache.unload(record));
   }
@@ -66,7 +66,6 @@ export default class Model {
     value: string,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.update(
       (t) => t.replaceKey(this.identity, key, value),
       options
@@ -82,7 +81,6 @@ export default class Model {
     value: unknown,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.update(
       (t) => t.replaceAttribute(this.identity, attribute, value),
       options
@@ -98,7 +96,6 @@ export default class Model {
     relatedRecord: Model | null,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.replaceRelatedRecord(
@@ -128,7 +125,6 @@ export default class Model {
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.addToRelatedRecords(this.identity, relationship, record.identity),
@@ -141,7 +137,6 @@ export default class Model {
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.update(
       (t) =>
         t.removeFromRelatedRecords(
@@ -157,7 +152,6 @@ export default class Model {
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     const keys = Object.keys(properties);
     await this.store
       .update(
@@ -174,12 +168,10 @@ export default class Model {
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    this.assertMutableModel();
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
   }
 
   async remove(options?: RequestOptions): Promise<void> {
-    this.assertMutableModel();
     await this.store.removeRecord(this.identity, options);
   }
 
@@ -195,10 +187,10 @@ export default class Model {
     Reflect.getMetadata('orbit:notifier', this, key)(this);
   }
 
-  assertMutableModel(): void {
+  assertMutableFields(): void {
     assert(
-      `You tried to change ${this.type}:${this.id} record but it is part of a readonly store. Fork the store to make changes.`,
-      this.#mutable
+      `You tried to directly mutate fields on the '${this.type}:${this.id}' record, which is not allowed on a store that is not a fork. Either make this change using an async method like 'update' or 'replaceAttribute' or fork the store if you need to directly mutate fields on a record.`,
+      this.#mutableFields
     );
   }
 
@@ -238,8 +230,8 @@ export default class Model {
   }
 
   static create(injections: ModelSettings) {
-    const { identity, store, mutable, ...otherInjections } = injections;
-    const record = new this({ identity, store, mutable });
+    const { identity, store, mutableFields, ...otherInjections } = injections;
+    const record = new this({ identity, store, mutableFields });
     return Object.assign(record, otherInjections);
   }
 }

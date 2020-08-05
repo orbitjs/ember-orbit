@@ -11,12 +11,12 @@ interface Factory {
 export default class ModelFactory {
   #store: Store;
   #modelFactoryMap: Dict<Factory>;
-  #mutableModels: boolean;
+  #mutableModelFields: boolean;
 
-  constructor(store: Store, mutableModels: boolean) {
+  constructor(store: Store, mutableModelFields: boolean) {
     this.#store = store;
     this.#modelFactoryMap = {};
-    this.#mutableModels = mutableModels;
+    this.#mutableModelFields = mutableModelFields;
   }
 
   create(identity: RecordIdentity): Model {
@@ -24,7 +24,7 @@ export default class ModelFactory {
     return modelFactory.create({
       identity: cloneRecordIdentity(identity),
       store: this.#store,
-      mutable: this.#mutableModels
+      mutableFields: this.#mutableModelFields
     });
   }
 

@@ -24,7 +24,7 @@ const { deprecate } = Orbit;
 
 export interface StoreSettings {
   source: MemorySource;
-  mutableModels?: boolean;
+  mutableModelFields?: boolean;
   base?: Store;
 }
 
@@ -51,7 +51,7 @@ export default class Store {
       sourceCache: this.source.cache,
       modelFactory: new ModelFactory(
         this,
-        this.forked || settings.mutableModels === true
+        this.forked || settings.mutableModelFields === true
       )
     });
 

@@ -517,6 +517,6 @@ module('Integration - Model', function (hooks) {
 
     assert.throws(() => {
       jupiter.name = 'Jupiter2';
-    }, /is part of a readonly store/);
+    }, /is not allowed on a store that is not a fork/);
   });
 });
