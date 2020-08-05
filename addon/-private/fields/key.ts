@@ -25,7 +25,7 @@ export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
       const oldValue = this.getKey(property);
 
       if (value !== oldValue) {
-        this.assertMutableModel();
+        this.assertMutableFields();
         this.replaceKey(property, value).catch(() =>
           getCache(this).notifyPropertyChange()
         );
