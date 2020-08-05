@@ -16,7 +16,7 @@ import Cache from './cache';
 import { QueryResult } from './model';
 import { Model } from 'ember-orbit';
 
-const { assert, deprecate } = Orbit;
+const { assert } = Orbit;
 
 export interface LiveQuerySettings {
   liveQuery: SyncLiveQuery;
@@ -62,13 +62,14 @@ export default class LiveQuery implements Iterable<Model> {
     return getValue(this.#value);
   }
 
+  get length(): number {
+    return (this.value as Model[]).length;
+  }
+
   [Symbol.iterator](): IterableIterator<Model> {
     assert(
-      'LiveQuery result is not a collection. You can access it result as `liveQuery.value`.',
+      'LiveQuery result is not a collection. You can access the result as `liveQuery.value`.',
       Array.isArray(this.value)
-    );
-    deprecate(
-      'Using LiveQuery as an iterable is deprecated. Use `liveQuery.value` instead.'
     );
 
     this.#iteratorAccessed = true;

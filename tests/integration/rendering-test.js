@@ -73,7 +73,7 @@ module('Rendering', function (hooks) {
     assert.dom('.planets').includesText('Earth');
   });
 
-  test('liveQuery records', async function (assert) {
+  test('liveQuery records - accessed via liveQuery.value', async function (assert) {
     const planets = cache.liveQuery((q) => q.findRecords('planet'));
     this.set('planets', planets);
 
@@ -84,8 +84,31 @@ module('Rendering', function (hooks) {
     await store.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.dom('.planets').includesText('Jupiter');
 
+    assert.dom('.planets-count').includesText('1');
+
     await store.addRecord({ type: 'planet', name: 'Earth' });
     assert.dom('.planets').includesText('Earth');
+
+    assert.dom('.planets-count').includesText('2');
+  });
+
+  test('liveQuery records - accessed via liveQuery directly', async function (assert) {
+    const planets = cache.liveQuery((q) => q.findRecords('planet'));
+    this.set('planets', planets);
+
+    await render(hbs`<PlanetsList @planets={{this.planets}} />`);
+
+    assert.dom('.planets').hasNoText();
+
+    await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.dom('.planets').includesText('Jupiter');
+
+    assert.dom('.planets-count').includesText('1');
+
+    await store.addRecord({ type: 'planet', name: 'Earth' });
+    assert.dom('.planets').includesText('Earth');
+
+    assert.dom('.planets-count').includesText('2');
   });
 
   test('liveQuery record', async function (assert) {
