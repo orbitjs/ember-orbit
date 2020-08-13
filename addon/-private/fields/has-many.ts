@@ -28,7 +28,7 @@ export default function hasMany(
           addLegacyMutationMethods(
             record,
             property,
-            record.getRelatedRecords(property) || []
+            record.relatedRecords(property).peek() || []
           )
         );
         caches.set(record, cache);
@@ -79,17 +79,17 @@ function addLegacyMutationMethods(
     pushObject: {
       value: (record: Model) => {
         deprecate(
-          'pushObject(record) is deprecated. Use record.addToRelatedRecords(relationship, record)'
+          'pushObject(record) is deprecated. Use record.relatedRecords(relationship).add(record)'
         );
-        owner.addToRelatedRecords(relationship, record);
+        owner.relatedRecords(relationship).add(record);
       }
     },
     removeObject: {
       value: (record: Model) => {
         deprecate(
-          'removeObject(record) is deprecated. Use record.removeFromRelatedRecords(relationship, record)'
+          'removeObject(record) is deprecated. Use record.relatedRecords(relationship).remove(record)'
         );
-        owner.removeFromRelatedRecords(relationship, record);
+        owner.relatedRecords(relationship).remove(record);
       }
     }
   });

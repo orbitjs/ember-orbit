@@ -29,7 +29,7 @@ export default function attr(
 
       if (value !== oldValue) {
         this.assertMutableFields();
-        this.replaceAttribute(property, value).catch(() =>
+        this.update({ [property]: value }).catch(() =>
           getCache(this).notifyPropertyChange()
         );
         getCache(this).value = value;

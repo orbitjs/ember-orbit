@@ -62,14 +62,23 @@ export default class Cache {
     return this._sourceCache.transformBuilder;
   }
 
+  /**
+   * @deprecated
+   */
   peekRecordData(type: string, id: string): Record | undefined {
     return this._sourceCache.getRecordSync({ type, id });
   }
 
+  /**
+   * @deprecated
+   */
   includesRecord(type: string, id: string): boolean {
     return !!this.peekRecordData(type, id);
   }
 
+  /**
+   * @deprecated
+   */
   peekRecord(type: string, id: string): Model | undefined {
     if (this.includesRecord(type, id)) {
       return this.lookup({ type, id }) as Model;
@@ -77,6 +86,9 @@ export default class Cache {
     return undefined;
   }
 
+  /**
+   * @deprecated
+   */
   peekRecords(type: string): Model[] {
     const identities = this._sourceCache.getRecordsSync(type);
     return this.lookup(identities) as Model[];
@@ -114,6 +126,9 @@ export default class Cache {
     return record && deepGet(record, ['attributes', attribute]);
   }
 
+  /**
+   * @deprecated
+   */
   peekRelatedRecord(
     identity: RecordIdentity,
     relationship: string
@@ -129,6 +144,9 @@ export default class Cache {
     }
   }
 
+  /**
+   * @deprecated
+   */
   peekRelatedRecords(
     identity: RecordIdentity,
     relationship: string
@@ -178,6 +196,9 @@ export default class Cache {
     return new LiveQuery({ liveQuery, cache: this, query });
   }
 
+  /**
+   * @deprecated
+   */
   find(type: string, id?: string): Model | Model[] {
     if (id === undefined) {
       return this.findRecords(type);
@@ -186,10 +207,16 @@ export default class Cache {
     }
   }
 
+  /**
+   * @deprecated
+   */
   findRecord(type: string, id: string, options?: RequestOptions): Model {
     return this.query((q) => q.findRecord({ type, id }), options) as Model;
   }
 
+  /**
+   * @deprecated
+   */
   findRecords(type: string, options?: RequestOptions): Model[] {
     return this.query((q) => q.findRecords(type), options) as Model[];
   }

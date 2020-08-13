@@ -5,7 +5,6 @@ import {
   RecordIdentity,
   Transform,
   TransformOrOperations,
-  cloneRecordIdentity,
   RecordOperation,
   KeyMap,
   Schema,
@@ -18,7 +17,6 @@ import { destroy, associateDestroyableChild } from '@ember/destroyable';
 import Cache from './cache';
 import Model, { QueryResult } from './model';
 import ModelFactory from './model-factory';
-import normalizeRecordProperties from './utils/normalize-record-properties';
 import { RecordAccessor, RecordsAccessor } from './accessors';
 
 const { deprecate } = Orbit;
@@ -131,23 +129,6 @@ export default class Store {
     this.source.rebase();
   }
 
-  liveQuery(
-    queryOrExpressions: QueryOrExpressions,
-    options?: RequestOptions,
-    id?: string
-  ): Promise<any> {
-    deprecate(
-      '`Store.liveQuery(query)` is deprecated, use `Store.cache.liveQuery(query)`.'
-    );
-    const query = buildQuery(
-      queryOrExpressions,
-      options,
-      id,
-      this.source.queryBuilder
-    );
-    return this.source.query(query).then(() => this.cache.liveQuery(query));
-  }
-
   async query(
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
@@ -172,44 +153,49 @@ export default class Store {
   }
 
   /**
-   * Adds a record to the Orbit store
-   * @method addRecord
-   * @param {object} properties
-   * @param {object} options
+   * @deprecated
    */
   async addRecord(properties = {}, options?: RequestOptions): Promise<Model> {
-    let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update((t) => t.addRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    deprecate(
+      '`Store.removeRecord(record)` is deprecated, use `Store.records(type).add()`.'
+    );
+    return this.records((properties as RecordIdentity).type).add(
+      properties,
+      options
+    );
   }
 
+  /**
+   * @deprecated
+   */
   async updateRecord(
     properties = {},
     options?: RequestOptions
   ): Promise<Model> {
-    let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update((t) => t.updateRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    deprecate(
+      '`Store.removeRecord(record)` is deprecated, use `Store.record(record).update()`.'
+    );
+    return this.record(properties as RecordIdentity).update(
+      properties,
+      options
+    );
   }
 
   /**
-   * Removes a record from the Orbit store
-   * @method removeRecord
-   * @param {RecordIdentity} record
-   * @param {object} options
+   * @deprecated
    */
   async removeRecord(
     record: RecordIdentity,
     options?: RequestOptions
   ): Promise<void> {
-    const identity = cloneRecordIdentity(record);
-    await this.update((t) => t.removeRecord(identity), options);
+    deprecate(
+      '`Store.removeRecord(record)` is deprecated, use `Store.record(record).remove()`.'
+    );
+    await this.record(record).remove(options);
   }
 
   /**
-   * @method find
-   * @param {string} type
-   * @param {string} id
+   * @deprecated
    */
   find(type: string, id?: string | undefined): Promise<Model | Model[]> {
     if (id === undefined) {
@@ -219,18 +205,28 @@ export default class Store {
     }
   }
 
+  /**
+   * @deprecated
+   */
   findRecord(
     type: string,
     id: string,
     options?: RequestOptions
   ): Promise<Model> {
-    return this.query((q) => q.findRecord({ type, id }), options) as Promise<
-      Model
-    >;
+    deprecate(
+      '`Store.findRecord(type, id)` is deprecated, use `Store.record({ type, id }).query()`.'
+    );
+    return this.record({ type, id }).query(options);
   }
 
+  /**
+   * @deprecated
+   */
   findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
-    return this.query((q) => q.findRecords(type), options) as Promise<Model[]>;
+    deprecate(
+      '`Store.findRecords(type)` is deprecated, use `Store.records(type).query()`.'
+    );
+    return this.records(type).query(options);
   }
 
   findRecordByKey(
@@ -246,12 +242,24 @@ export default class Store {
     );
   }
 
+  /**
+   * @deprecated
+   */
   peekRecord(type: string, id: string): Model | undefined {
-    return this.cache.peekRecord(type, id);
+    deprecate(
+      '`Store.peekRecord(type, id)` is deprecated, use `Store.record({ type, id }).peek()`.'
+    );
+    return this.record({ type, id }).peek();
   }
 
-  peekRecords(type: string): Model[] {
-    return this.cache.peekRecords(type);
+  /**
+   * @deprecated
+   */
+  peekRecords(type: string): Model[] | undefined {
+    deprecate(
+      '`Store.peekRecords(type)` is deprecated, use `Store.records(type).peek()`.'
+    );
+    return this.records(type).peek();
   }
 
   peekRecordByKey(

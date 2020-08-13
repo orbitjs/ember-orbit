@@ -13,7 +13,6 @@ import {
   associateDestroyableChild,
   registerDestructor
 } from '@ember/destroyable';
-import { DEBUG } from '@glimmer/env';
 
 import Store from './store';
 import { RelatedRecordAccessor, RelatedRecordsAccessor } from './accessors';
@@ -55,7 +54,7 @@ export default class Model {
   }
 
   getData(): Record | undefined {
-    return this.store.cache.peekRecordData(this.type, this.id);
+    return this.store.record(this.identity).raw();
   }
 
   getKey(field: string): string | undefined {
@@ -77,15 +76,15 @@ export default class Model {
     return this.store.cache.peekAttribute(this.identity, attribute);
   }
 
+  /**
+   * @deprecated
+   */
   async replaceAttribute(
     attribute: string,
     value: unknown,
     options?: RequestOptions
   ): Promise<void> {
-    await this.store.update(
-      (t) => t.replaceAttribute(this.identity, attribute, value),
-      options
-    );
+    await this.update({ [attribute]: value }, options);
   }
 
   relatedRecord(relationship: string): RelatedRecordAccessor<Model> {
@@ -96,92 +95,72 @@ export default class Model {
     return new RelatedRecordsAccessor(this.store, this.identity, relationship);
   }
 
+  /**
+   * @deprecated
+   */
   getRelatedRecord(relationship: string): Model | null | undefined {
-    return this.store.cache.peekRelatedRecord(this.identity, relationship);
+    return this.relatedRecord(relationship).peek();
   }
 
+  /**
+   * @deprecated
+   */
   async replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
     options?: RequestOptions
   ): Promise<void> {
-    await this.store.update(
-      (t) =>
-        t.replaceRelatedRecord(
-          this.identity,
-          relationship,
-          relatedRecord ? relatedRecord.identity : null
-        ),
-      options
-    );
+    await this.relatedRecord(relationship).replace(relatedRecord, options);
   }
 
+  /**
+   * @deprecated
+   */
   getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
-    const records = this.store.cache.peekRelatedRecords(
-      this.identity,
-      relationship
-    );
-
-    if (DEBUG) {
-      return Object.freeze(records);
-    }
-
-    return records;
+    return this.relatedRecords(relationship).peek();
   }
 
+  /**
+   * @deprecated
+   */
   async addToRelatedRecords(
     relationship: string,
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    await this.store.update(
-      (t) =>
-        t.addToRelatedRecords(this.identity, relationship, record.identity),
-      options
-    );
+    await this.relatedRecords(relationship).add(record, options);
   }
 
+  /**
+   * @deprecated
+   */
   async removeFromRelatedRecords(
     relationship: string,
     record: Model,
     options?: RequestOptions
   ): Promise<void> {
-    await this.store.update(
-      (t) =>
-        t.removeFromRelatedRecords(
-          this.identity,
-          relationship,
-          record.identity
-        ),
-      options
-    );
+    await this.relatedRecords(relationship).remove(record, options);
   }
 
+  /**
+   * @deprecated
+   */
   async replaceAttributes(
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    const keys = Object.keys(properties);
-    await this.store
-      .update(
-        (t) =>
-          keys.map((key) =>
-            t.replaceAttribute(this.identity, key, properties[key])
-          ),
-        options
-      )
-      .then(() => this);
+    await this.update(properties, options);
   }
 
   async update(
     properties: Dict<unknown> = {},
     options?: RequestOptions
   ): Promise<void> {
-    await this.store.updateRecord({ ...properties, ...this.identity }, options);
+    await this.store.record(this.identity).update(properties, options);
   }
 
   async remove(options?: RequestOptions): Promise<void> {
-    await this.store.removeRecord(this.identity, options);
+    await this.store.record(this.identity).remove(options);
   }
 
   disconnect(): void {

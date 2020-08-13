@@ -16,7 +16,7 @@ export default function hasOne(
     function getCache(record: Model): Cache<Model | null | undefined> {
       let cache = caches.get(record);
       if (!cache) {
-        cache = new Cache(() => record.getRelatedRecord(property));
+        cache = new Cache(() => record.relatedRecord(property).peek());
         caches.set(record, cache);
       }
       return cache;
@@ -27,13 +27,13 @@ export default function hasOne(
     }
 
     function set(this: Model, value: any) {
-      const oldValue = this.getRelatedRecord(property);
+      const oldValue = this.relatedRecord(property).peek();
 
       if (value !== oldValue) {
         this.assertMutableFields();
-        this.replaceRelatedRecord(property, value).catch(() =>
-          getCache(this).notifyPropertyChange()
-        );
+        this.relatedRecord(property)
+          .replace(value)
+          .catch(() => getCache(this).notifyPropertyChange());
       }
     }
 
