@@ -27,7 +27,7 @@ export class RecordsAccessor<T extends Model = Model> extends FindRecordsTerm {
     return this.#store.source.cache.query(this.toQueryExpression()) as Record[];
   }
 
-  live(options?: RequestOptions): LiveQuery {
+  live(options?: RequestOptions): LiveQuery<T> {
     const query = buildQuery(this.toQueryExpression(), options);
     const liveQuery = this.#store.source.cache.liveQuery(query);
 

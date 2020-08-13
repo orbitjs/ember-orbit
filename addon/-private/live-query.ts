@@ -22,7 +22,7 @@ export interface LiveQuerySettings {
   cache: Cache;
 }
 
-export default class LiveQuery implements Iterable<Model> {
+export default class LiveQuery<T extends Model = Model> implements Iterable<T> {
   #query: Query;
   #cache: Cache;
 
@@ -56,7 +56,7 @@ export default class LiveQuery implements Iterable<Model> {
     associateDestroyableChild(this.#cache, this);
   }
 
-  get value(): QueryResult {
+  get value(): QueryResult<T> {
     return getValue(this.#value);
   }
 
@@ -64,14 +64,14 @@ export default class LiveQuery implements Iterable<Model> {
     return (this.value as Model[]).length;
   }
 
-  [Symbol.iterator](): IterableIterator<Model> {
+  [Symbol.iterator](): IterableIterator<T> {
     assert(
       'LiveQuery result is not a collection. You can access the result as `liveQuery.value`.',
       Array.isArray(this.value)
     );
 
     this.#iteratorAccessed = true;
-    return (this.value as Model[])[Symbol.iterator]();
+    return (this.value as T[])[Symbol.iterator]();
   }
 
   destroy() {

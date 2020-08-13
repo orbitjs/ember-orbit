@@ -129,11 +129,11 @@ export default class Store {
     this.source.rebase();
   }
 
-  async query(
+  async query<T extends Model = Model>(
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ): Promise<QueryResult> {
+  ): Promise<QueryResult<T>> {
     const query = buildQuery(
       queryOrExpressions,
       options,
@@ -141,14 +141,14 @@ export default class Store {
       this.source.queryBuilder
     );
     const result = await this.source.query(query);
-    return this.cache.lookup(result, query.expressions.length);
+    return this.cache.lookup<T>(result, query.expressions.length);
   }
 
-  record(identity: RecordIdentity): RecordAccessor {
+  record<T extends Model = Model>(identity: RecordIdentity): RecordAccessor<T> {
     return new RecordAccessor(this, identity);
   }
 
-  records(type: string): RecordsAccessor {
+  records<T extends Model = Model>(type: string): RecordsAccessor<T> {
     return new RecordsAccessor(this, type);
   }
 

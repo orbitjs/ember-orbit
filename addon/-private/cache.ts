@@ -162,11 +162,11 @@ export default class Cache {
     }
   }
 
-  query(
+  query<T extends Model = Model>(
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ): QueryResult {
+  ): QueryResult<T> {
     const query = buildQuery(
       queryOrExpressions,
       options,
@@ -181,11 +181,11 @@ export default class Cache {
     }
   }
 
-  liveQuery(
+  liveQuery<T extends Model = Model>(
     queryOrExpressions: QueryOrExpressions,
     options?: RequestOptions,
     id?: string
-  ): LiveQuery {
+  ): LiveQuery<T> {
     const query = buildQuery(
       queryOrExpressions,
       options,
@@ -229,27 +229,29 @@ export default class Cache {
     }
   }
 
-  lookup(
+  lookup<T extends Model = Model>(
     result: QueryResult<Record>,
     expressions = 1
-  ): Model | Model[] | null | (Model | Model[] | null)[] {
+  ): QueryResult<T> {
     if (isQueryResultData(result, expressions)) {
       return (result as QueryResultData[]).map((result) =>
-        this._lookup(result)
+        this._lookup<T>(result)
       );
     } else {
-      return this._lookup(result);
+      return this._lookup<T>(result);
     }
   }
 
-  private _lookup(result: QueryResultData): Model | Model[] | null {
+  private _lookup<T extends Model = Model>(
+    result: QueryResultData
+  ): T | T[] | null {
     if (Array.isArray(result)) {
-      return result.map((identity) => this._lookup(identity) as Model);
+      return result.map((identity) => this._lookup<T>(identity) as T);
     } else if (result) {
-      let record = this._identityMap.get(result);
+      let record = this._identityMap.get(result) as T;
 
       if (!record) {
-        record = this._modelFactory.create(result);
+        record = this._modelFactory.create(result) as T;
         this._identityMap.set(result, record);
       }
 
