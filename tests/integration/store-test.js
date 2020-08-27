@@ -55,6 +55,15 @@ module('Integration - Store', function (hooks) {
     assert.equal(planet.name, 'Earth');
   });
 
+  test('#addRecord - via store fork then merge', async function (assert) {
+    const fork = store.fork();
+    const newPlanet = await fork.addRecord({ type: 'planet' });
+    await newPlanet.update({ name: 'Earth' });
+    await store.merge(fork);
+    const planet = await store.findRecord('planet', newPlanet.id);
+    assert.equal(planet.name, 'Earth');
+  });
+
   test('#findRecord', async function (assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     const planet = await store.findRecord('planet', earth.id);
