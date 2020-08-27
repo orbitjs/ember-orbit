@@ -61,6 +61,7 @@ module('Integration - Store', function (hooks) {
     const forkedPlanet = await fork.findRecord('planet', planet.id);
     forkedPlanet.set('name', 'Earth');
     await fork.requestQueue.process();
+    await fork.syncQueue.process();
 
     // Calling process() a second time would make this pass, but was not
     // necessary in version 0.15.x
