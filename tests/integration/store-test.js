@@ -55,6 +55,21 @@ module('Integration - Store', function (hooks) {
     assert.equal(planet.name, 'Earth');
   });
 
+  test('using set to update a record prop on a store fork', async function (assert) {
+    const planet = await store.addRecord({ type: 'planet' });
+    const fork = store.fork();
+    const forkedPlanet = await fork.findRecord('planet', planet.id);
+    forkedPlanet.set('name', 'Earth');
+    await fork.requestQueue.process();
+
+    // Calling process() a second time would make this pass, but was not
+    // necessary in version 0.15.x
+    // await fork.requestQueue.process();
+
+    await store.merge(fork);
+    assert.equal(planet.name, 'Earth');
+  });
+
   test('#findRecord', async function (assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     const planet = await store.findRecord('planet', earth.id);
