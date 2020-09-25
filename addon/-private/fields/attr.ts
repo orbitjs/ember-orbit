@@ -2,6 +2,7 @@ import { AttributeDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { Cache } from '../utils/property-cache';
+import { defineAttribute } from '../utils/model-definition';
 
 export default function attr(target: Model, key: string);
 export default function attr(type?: string, options?: AttributeDefinition);
@@ -36,17 +37,16 @@ export default function attr(
       }
     }
 
-    Reflect.defineMetadata('orbit:attribute', options, target, property);
-    Reflect.defineMetadata(
-      'orbit:notifier',
+    defineAttribute(
+      target,
+      property,
+      options as AttributeDefinition,
       (record: Model) => {
         const cache = caches.get(record);
         if (cache) {
           cache.notifyPropertyChange();
         }
-      },
-      target,
-      property
+      }
     );
 
     return { get, set };

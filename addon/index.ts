@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 export { default as CoordinatorFactory } from './-private/factories/coordinator-factory';
 export { default as KeyMapFactory } from './-private/factories/key-map-factory';
 export { default as SchemaFactory } from './-private/factories/schema-factory';

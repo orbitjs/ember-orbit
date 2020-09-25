@@ -1,8 +1,11 @@
 import { Model, attr, key, hasMany, hasOne } from 'ember-orbit';
 
-export class Planet extends Model {
-  @key() remoteId;
+export class NamedModel extends Model {
   @attr('string') name;
+}
+
+export class Planet extends NamedModel {
+  @key() remoteId;
   @attr('boolean') atmosphere;
   @attr('string') classification;
   @hasOne('star') sun;

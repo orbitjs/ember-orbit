@@ -2,6 +2,7 @@ import { KeyDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { Cache } from '../utils/property-cache';
+import { defineKey } from '../utils/model-definition';
 
 export default function key(target: Model, key: string);
 export default function key(options?: KeyDefinition);
@@ -33,18 +34,12 @@ export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
       }
     }
 
-    Reflect.defineMetadata('orbit:key', options, target, property);
-    Reflect.defineMetadata(
-      'orbit:notifier',
-      (record: Model) => {
-        const cache = caches.get(record);
-        if (cache) {
-          cache.notifyPropertyChange();
-        }
-      },
-      target,
-      property
-    );
+    defineKey(target, property, options as KeyDefinition, (record: Model) => {
+      const cache = caches.get(record);
+      if (cache) {
+        cache.notifyPropertyChange();
+      }
+    });
 
     return { get, set };
   }
