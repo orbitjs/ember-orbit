@@ -2,6 +2,7 @@ import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { Cache } from '../utils/property-cache';
+import { defineRelationship } from '../utils/model-definition';
 
 export default function hasOne(
   type: string | string[],
@@ -37,18 +38,12 @@ export default function hasOne(
       }
     }
 
-    Reflect.defineMetadata('orbit:relationship', options, target, property);
-    Reflect.defineMetadata(
-      'orbit:notifier',
-      (record: Model) => {
-        const cache = caches.get(record);
-        if (cache) {
-          cache.notifyPropertyChange();
-        }
-      },
-      target,
-      property
-    );
+    defineRelationship(target, property, options, (record: Model) => {
+      const cache = caches.get(record);
+      if (cache) {
+        cache.notifyPropertyChange();
+      }
+    });
 
     return { get, set };
   }

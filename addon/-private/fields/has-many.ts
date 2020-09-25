@@ -4,6 +4,7 @@ import { DEBUG } from '@glimmer/env';
 
 import Model from '../model';
 import { Cache } from '../utils/property-cache';
+import { defineRelationship } from '../utils/model-definition';
 
 const { deprecate } = Orbit;
 
@@ -40,18 +41,12 @@ export default function hasMany(
       return getCache(this).value;
     }
 
-    Reflect.defineMetadata('orbit:relationship', options, target, property);
-    Reflect.defineMetadata(
-      'orbit:notifier',
-      (record: Model) => {
-        const cache = caches.get(record);
-        if (cache) {
-          cache.notifyPropertyChange();
-        }
-      },
-      target,
-      property
-    );
+    defineRelationship(target, property, options, (record: Model) => {
+      const cache = caches.get(record);
+      if (cache) {
+        cache.notifyPropertyChange();
+      }
+    });
 
     return { get };
   }

@@ -16,6 +16,10 @@ import {
 import { DEBUG } from '@glimmer/env';
 
 import Store from './store';
+import {
+  getModelDefinition,
+  getPropertyNotifiers
+} from './utils/model-definition';
 
 const { assert } = Orbit;
 
@@ -184,7 +188,7 @@ export default class Model {
   }
 
   notifyPropertyChange(key: string) {
-    Reflect.getMetadata('orbit:notifier', this, key)(this);
+    getPropertyNotifiers(Object.getPrototypeOf(this))[key](this);
   }
 
   assertMutableFields(): void {
@@ -203,30 +207,15 @@ export default class Model {
   }
 
   static get keys(): Dict<KeyDefinition> {
-    return this.getPropertiesMeta('key');
+    return getModelDefinition(this.prototype).keys || {};
   }
 
   static get attributes(): Dict<AttributeDefinition> {
-    return this.getPropertiesMeta('attribute');
+    return getModelDefinition(this.prototype).attributes || {};
   }
 
   static get relationships(): Dict<RelationshipDefinition> {
-    return this.getPropertiesMeta('relationship');
-  }
-
-  static getPropertiesMeta(kind: string) {
-    const properties = Object.getOwnPropertyNames(this.prototype);
-    const meta = {};
-    for (let property of properties) {
-      if (Reflect.hasMetadata(`orbit:${kind}`, this.prototype, property)) {
-        meta[property] = Reflect.getMetadata(
-          `orbit:${kind}`,
-          this.prototype,
-          property
-        );
-      }
-    }
-    return meta;
+    return getModelDefinition(this.prototype).relationships || {};
   }
 
   static create(injections: ModelSettings) {
