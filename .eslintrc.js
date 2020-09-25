@@ -58,7 +58,8 @@ module.exports = {
       ],
       parser: '@typescript-eslint/parser',
       rules: {
-        'no-unused-vars': ['off']
+        'no-unused-vars': ['off'],
+        'no-redeclare': ['off']
       }
     }
   ]

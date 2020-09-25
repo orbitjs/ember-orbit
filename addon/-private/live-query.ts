@@ -8,9 +8,7 @@ import {
   associateDestroyableChild,
   destroy
 } from '@ember/destroyable';
-
-// import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
-import { createCache, getValue } from './utils/glimmer-cache';
+import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 
 import Cache from './cache';
 import { QueryResult } from './model';

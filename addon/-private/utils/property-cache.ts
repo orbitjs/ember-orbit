@@ -1,5 +1,5 @@
 import { tracked } from '@glimmer/tracking';
-import { createCache, getValue } from './glimmer-cache';
+import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 
 const values = new WeakMap<Cache<unknown>, unknown>();
 
