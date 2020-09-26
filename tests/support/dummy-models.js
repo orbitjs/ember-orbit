@@ -1,4 +1,5 @@
 import { Model, attr, key, hasMany, hasOne } from 'ember-orbit';
+import { notEmpty } from '@ember/object/computed';
 
 export class NamedModel extends Model {
   @attr('string') name;
@@ -11,6 +12,8 @@ export class Planet extends NamedModel {
   @hasOne('star') sun;
   @hasMany('moon', { inverse: 'planet' }) moons;
   @hasMany('ocean', { inverse: 'planet' }) oceans;
+
+  @notEmpty('name') hasName;
 }
 
 export class Moon extends NamedModel {

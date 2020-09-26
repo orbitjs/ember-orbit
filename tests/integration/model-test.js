@@ -521,4 +521,18 @@ module('Integration - Model', function (hooks) {
       jupiter.name = 'Jupiter2';
     }, /is not allowed on a store that is not a fork/);
   });
+
+  test('triggers updates to properties defined by ember computed macros', async function (assert) {
+    const jupiter = await store.addRecord({ type: 'planet' });
+
+    assert.equal(jupiter.name, undefined);
+    assert.equal(jupiter.hasName, false);
+
+    await jupiter.update({
+      name: 'Jupiter'
+    });
+
+    assert.equal(jupiter.name, 'Jupiter');
+    assert.equal(jupiter.hasName, true);
+  });
 });

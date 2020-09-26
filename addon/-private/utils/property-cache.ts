@@ -2,6 +2,7 @@ import { tracked } from '@glimmer/tracking';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { Orbit } from '@orbit/core';
 import { DEBUG } from '@glimmer/env';
+import { notifyPropertyChange as emberNotifyPropertyChange } from '@ember/object';
 
 import Model from '../model';
 
@@ -45,6 +46,10 @@ export function notifyPropertyChange(record: Model, property: string) {
   const cache = caches.get(record);
   if (cache && cache[property]) {
     cache[property].notifyPropertyChange();
+    // TODO: there is an issue with glimmer cache and ember CP macros
+    // https://github.com/ember-polyfills/ember-cache-primitive-polyfill/issues/78
+    // in order to fix it for now we are calling Ember.notifyPropertyChange();
+    emberNotifyPropertyChange(record, property);
   }
 }
 
