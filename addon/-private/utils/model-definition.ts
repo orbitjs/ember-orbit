@@ -4,63 +4,63 @@ import {
   RelationshipDefinition,
   ModelDefinition
 } from '@orbit/data';
+import { clone, deepMerge } from '@orbit/utils';
 
-import Model from '../model';
-
-const MODEL_DEFINITIONS = Symbol('@orbit:modelDefinitions');
-const PROPERTY_NOTIFIERS = Symbol('@orbit:poropertyNotifiers');
-
-export type Notifier = (record: Model) => void;
+const MODEL_DEFINITION = Symbol('@orbit:modelDefinition');
+const MODEL_DEFINITION_FOR = Symbol('@orbit:modelDefinitionFor');
 
 export function getModelDefinition(proto: object): ModelDefinition {
-  if (proto[MODEL_DEFINITIONS]) {
-    return proto[MODEL_DEFINITIONS] as ModelDefinition;
+  if (proto[MODEL_DEFINITION]) {
+    return proto[MODEL_DEFINITION] as ModelDefinition;
   } else {
-    proto[MODEL_DEFINITIONS] = {};
-    return proto[MODEL_DEFINITIONS];
+    proto[MODEL_DEFINITION] = {};
+    return proto[MODEL_DEFINITION];
   }
 }
 
-export function getPropertyNotifiers(proto: object): Record<string, Notifier> {
-  proto[PROPERTY_NOTIFIERS] = (proto[PROPERTY_NOTIFIERS] || {}) as Record<
-    string,
-    Notifier
-  >;
-  return proto[PROPERTY_NOTIFIERS];
+export function extendModelDefinition(
+  proto: object,
+  modelDefinition: ModelDefinition
+): void {
+  if (proto[MODEL_DEFINITION] && proto[MODEL_DEFINITION_FOR]) {
+    let currentDef = proto[MODEL_DEFINITION];
+    if (proto[MODEL_DEFINITION_FOR] !== proto) {
+      currentDef = clone(currentDef);
+      proto[MODEL_DEFINITION_FOR] = proto;
+    }
+    proto[MODEL_DEFINITION] = deepMerge(currentDef, modelDefinition);
+  } else {
+    proto[MODEL_DEFINITION] = modelDefinition;
+    proto[MODEL_DEFINITION_FOR] = proto;
+  }
 }
 
 export function defineAttribute(
   proto: object,
   name: string,
-  options: AttributeDefinition,
-  notifier: Notifier
+  options: AttributeDefinition
 ): void {
-  const modelDefinition = getModelDefinition(proto);
-  modelDefinition.attributes = modelDefinition.attributes || {};
-  modelDefinition.attributes[name] = options;
-  getPropertyNotifiers(proto)[name] = notifier;
+  extendModelDefinition(proto, {
+    attributes: { [name]: options }
+  });
 }
 
 export function defineKey(
   proto: object,
   name: string,
-  options: KeyDefinition,
-  notifier: Notifier
+  options: KeyDefinition
 ): void {
-  const modelDefinition = getModelDefinition(proto);
-  modelDefinition.keys = modelDefinition.keys || {};
-  modelDefinition.keys[name] = options;
-  getPropertyNotifiers(proto)[name] = notifier;
+  extendModelDefinition(proto, {
+    keys: { [name]: options }
+  });
 }
 
 export function defineRelationship(
   proto: object,
   name: string,
-  options: RelationshipDefinition,
-  notifier: Notifier
+  options: RelationshipDefinition
 ): void {
-  const modelDefinition = getModelDefinition(proto);
-  modelDefinition.relationships = modelDefinition.relationships || {};
-  modelDefinition.relationships[name] = options;
-  getPropertyNotifiers(proto)[name] = notifier;
+  extendModelDefinition(proto, {
+    relationships: { [name]: options }
+  });
 }

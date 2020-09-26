@@ -2,6 +2,7 @@ import {
   Planet,
   Moon,
   Star,
+  Ocean,
   BinaryStar,
   PlanetarySystem
 } from 'dummy/tests/support/dummy-models';
@@ -15,6 +16,7 @@ module('Integration - Store', function (hooks) {
     planet: Planet,
     moon: Moon,
     star: Star,
+    ocean: Ocean,
     binaryStar: BinaryStar,
     planetarySystem: PlanetarySystem
   };
