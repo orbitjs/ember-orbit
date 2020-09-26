@@ -1,7 +1,7 @@
 import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';
-import { Cache } from '../utils/property-cache';
+import { getHasOneCache } from '../utils/property-cache';
 import { defineRelationship } from '../utils/model-definition';
 
 export default function hasOne(
@@ -13,18 +13,8 @@ export default function hasOne(
       throw new TypeError('@hasOne() require `type` argument.');
     }
 
-    const caches = new WeakMap<Model, Cache<Model | null | undefined>>();
-    function getCache(record: Model): Cache<Model | null | undefined> {
-      let cache = caches.get(record);
-      if (!cache) {
-        cache = new Cache(() => record.getRelatedRecord(property));
-        caches.set(record, cache);
-      }
-      return cache;
-    }
-
     function get(this: Model) {
-      return getCache(this).value;
+      return getHasOneCache(this, property).value;
     }
 
     function set(this: Model, value: any) {
@@ -33,17 +23,12 @@ export default function hasOne(
       if (value !== oldValue) {
         this.assertMutableFields();
         this.replaceRelatedRecord(property, value).catch(() =>
-          getCache(this).notifyPropertyChange()
+          getHasOneCache(this, property).notifyPropertyChange()
         );
       }
     }
 
-    defineRelationship(target, property, options, (record: Model) => {
-      const cache = caches.get(record);
-      if (cache) {
-        cache.notifyPropertyChange();
-      }
-    });
+    defineRelationship(target, property, options);
 
     return { get, set };
   }

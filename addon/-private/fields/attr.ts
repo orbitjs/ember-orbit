@@ -1,7 +1,7 @@
 import { AttributeDefinition } from '@orbit/data';
 
 import Model from '../model';
-import { Cache } from '../utils/property-cache';
+import { getAttributeCache } from '../utils/property-cache';
 import { defineAttribute } from '../utils/model-definition';
 
 export default function attr(target: Model, key: string);
@@ -11,18 +11,8 @@ export default function attr(
   options: string | AttributeDefinition = {}
 ) {
   function trackedAttr(target: any, property: string, _: PropertyDescriptor) {
-    const caches = new WeakMap<Model, Cache<unknown>>();
-    function getCache(record: Model): Cache<unknown> {
-      let cache = caches.get(record);
-      if (!cache) {
-        cache = new Cache(() => record.getAttribute(property));
-        caches.set(record, cache);
-      }
-      return cache;
-    }
-
     function get(this: Model) {
-      return getCache(this).value;
+      return getAttributeCache(this, property).value;
     }
 
     function set(this: Model, value: any) {
@@ -31,23 +21,13 @@ export default function attr(
       if (value !== oldValue) {
         this.assertMutableFields();
         this.replaceAttribute(property, value).catch(() =>
-          getCache(this).notifyPropertyChange()
+          getAttributeCache(this, property).notifyPropertyChange()
         );
-        getCache(this).value = value;
+        getAttributeCache(this, property).value = value;
       }
     }
 
-    defineAttribute(
-      target,
-      property,
-      options as AttributeDefinition,
-      (record: Model) => {
-        const cache = caches.get(record);
-        if (cache) {
-          cache.notifyPropertyChange();
-        }
-      }
-    );
+    defineAttribute(target, property, options as AttributeDefinition);
 
     return { get, set };
   }

@@ -16,10 +16,8 @@ import {
 import { DEBUG } from '@glimmer/env';
 
 import Store from './store';
-import {
-  getModelDefinition,
-  getPropertyNotifiers
-} from './utils/model-definition';
+import { getModelDefinition } from './utils/model-definition';
+import { notifyPropertyChange } from './utils/property-cache';
 
 const { assert } = Orbit;
 
@@ -188,7 +186,7 @@ export default class Model {
   }
 
   notifyPropertyChange(key: string) {
-    getPropertyNotifiers(Object.getPrototypeOf(this))[key](this);
+    notifyPropertyChange(this, key);
   }
 
   assertMutableFields(): void {
