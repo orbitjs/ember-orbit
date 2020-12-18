@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   root: true,
   parser: 'babel-eslint',
@@ -8,9 +10,7 @@ module.exports = {
       legacyDecorators: true
     }
   },
-  plugins: [
-    'ember'
-  ],
+  plugins: ['ember'],
   extends: [
     'eslint:recommended',
     'plugin:ember/recommended',
@@ -48,14 +48,10 @@ module.exports = {
         node: true
       },
       plugins: ['node'],
-      rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
-        // add your custom rules and overrides for node files here
-      })
+      extends: ['plugin:node/recommended']
     },
     {
-      files: [
-        '**/*.ts'
-      ],
+      files: ['**/*.ts'],
       parser: '@typescript-eslint/parser',
       rules: {
         'no-unused-vars': ['off'],

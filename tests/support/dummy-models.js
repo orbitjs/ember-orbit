@@ -1,3 +1,4 @@
+/* eslint-disable ember/no-computed-properties-in-native-classes */
 import { Model, attr, key, hasMany, hasOne } from 'ember-orbit';
 import { notEmpty } from '@ember/object/computed';
 

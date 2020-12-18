@@ -7,13 +7,12 @@
 /tmp/
 
 # dependencies
-/node_modules/
 /bower_components/
+/node_modules/
 
 # misc
 /coverage/
 !.*
-.eslintrc.*
 
 # ember-try
 /.node_modules.ember-try/
