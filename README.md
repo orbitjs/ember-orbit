@@ -1,9 +1,19 @@
-# ember-orbit [![Build Status](https://secure.travis-ci.org/orbitjs/ember-orbit.png?branch=master)](http://travis-ci.org/orbitjs/ember-orbit) [![Join the chat at https://gitter.im/orbitjs/orbit.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orbitjs/orbit.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+ember-orbit
+==============================================================================
+
+[![Build Status](https://secure.travis-ci.org/orbitjs/ember-orbit.png?branch=master)](http://travis-ci.org/orbitjs/ember-orbit) [![Join the chat at https://gitter.im/orbitjs/orbit.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orbitjs/orbit.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 `ember-orbit` (or "EO") is a library that integrates
 [orbit.js](https://github.com/orbitjs/orbit) with
 [ember.js](https://github.com/emberjs/ember.js) to provide flexibility and
 control in your application's data layer.
+
+Compatibility
+------------------------------------------------------------------------------
+
+* Ember.js v3.16 or above
+* Ember CLI v2.13 or above
+* Node.js v10 or above
 
 EO features:
 
@@ -54,7 +64,8 @@ dependencies should be accompanied by a minor version bump of EO.
 simple TodoMVC example that uses EO to illustrate a number of possible
 configurations and application patterns.
 
-## Installation
+Installation
+------------------------------------------------------------------------------
 
 As with any Ember addon, you can install EO in your project with:
 
@@ -68,7 +79,8 @@ dependencies, including `@orbit/coordinator` and `@orbit/memory`.
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
-## Using EO
+Usage
+------------------------------------------------------------------------------
 
 EO creates the following directories by default:
 
@@ -550,6 +562,7 @@ for their work.
 It is hoped that, by tracking Ember Data's features and interfaces where
 possible, EO will also be able to contribute back to Ember Data.
 
-## License
+License
+------------------------------------------------------------------------------
 
-Copyright 2014-2019 Cerebris Corporation. MIT License (see LICENSE for details).
+Copyright 2014-2020 Cerebris Corporation. MIT License (see LICENSE for details).
