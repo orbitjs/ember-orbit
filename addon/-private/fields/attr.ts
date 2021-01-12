@@ -12,7 +12,9 @@ export default function attr(
 ) {
   function trackedAttr(target: any, property: string, _: PropertyDescriptor) {
     function get(this: Model) {
-      return getAttributeCache(this, property).value;
+      if (!this.disconnected) {
+        return getAttributeCache(this, property).value;
+      }
     }
 
     function set(this: Model, value: any) {

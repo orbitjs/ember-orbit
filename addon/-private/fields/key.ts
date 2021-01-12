@@ -9,7 +9,9 @@ export default function key(options?: KeyDefinition);
 export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
   function trackedKey(target: any, property: string, _: PropertyDescriptor) {
     function get(this: Model) {
-      return getKeyCache(this, property).value;
+      if (!this.disconnected) {
+        return getKeyCache(this, property).value;
+      }
     }
 
     function set(this: Model, value: any) {
