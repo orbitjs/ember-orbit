@@ -1,8 +1,11 @@
+import { Orbit } from '@orbit/core';
 import { RelationshipDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { getHasOneCache } from '../utils/property-cache';
 import { defineRelationship } from '../utils/model-definition';
+
+const { assert } = Orbit;
 
 export default function hasOne(
   type: string | string[],
@@ -14,9 +17,12 @@ export default function hasOne(
     }
 
     function get(this: Model) {
-      if (!this.disconnected) {
-        return getHasOneCache(this, property).value;
-      }
+      assert(
+        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} hasOne from the cache.`,
+        !this.disconnected
+      );
+
+      return getHasOneCache(this, property).value;
     }
 
     function set(this: Model, value: any) {

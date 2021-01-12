@@ -14,6 +14,7 @@ import {
   registerDestructor
 } from '@ember/destroyable';
 import { DEBUG } from '@glimmer/env';
+import { tracked } from '@glimmer/tracking';
 
 import Store from './store';
 import { getModelDefinition } from './utils/model-definition';
@@ -32,12 +33,12 @@ export type QueryResult<T = Model> = T | T[] | null | (T | T[] | null)[];
 export default class Model {
   readonly identity!: RecordIdentity;
 
-  #store?: Store;
+  @tracked protected _store?: Store;
   #mutableFields: boolean;
 
   constructor(settings: ModelSettings) {
     this.identity = settings.identity;
-    this.#store = settings.store;
+    this._store = settings.store;
     this.#mutableFields = settings.mutableFields;
     associateDestroyableChild(settings.store, this);
     registerDestructor(this, (record) => settings.store.cache.unload(record));
@@ -52,7 +53,7 @@ export default class Model {
   }
 
   get disconnected(): boolean {
-    return !this.#store;
+    return !this._store;
   }
 
   getData(): Record | undefined {
@@ -178,7 +179,7 @@ export default class Model {
   }
 
   disconnect(): void {
-    this.#store = undefined;
+    this._store = undefined;
   }
 
   destroy(): void {
@@ -197,11 +198,11 @@ export default class Model {
   }
 
   private get store(): Store {
-    if (!this.#store) {
+    if (!this._store) {
       throw new Error('record has been removed from Store');
     }
 
-    return this.#store;
+    return this._store;
   }
 
   static get keys(): Dict<KeyDefinition> {
