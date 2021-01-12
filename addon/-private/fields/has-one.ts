@@ -14,7 +14,9 @@ export default function hasOne(
     }
 
     function get(this: Model) {
-      return getHasOneCache(this, property).value;
+      if (!this.disconnected) {
+        return getHasOneCache(this, property).value;
+      }
     }
 
     function set(this: Model, value: any) {

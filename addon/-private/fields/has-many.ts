@@ -18,7 +18,9 @@ export default function hasMany(
     }
 
     function get(this: Model) {
-      return getHasManyCache(this, property).value;
+      if (!this.disconnected) {
+        return getHasManyCache(this, property).value;
+      }
     }
 
     defineRelationship(target, property, options);
