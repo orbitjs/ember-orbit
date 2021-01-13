@@ -197,7 +197,7 @@ export default class Model {
     );
   }
 
-  private get store(): Store {
+  protected get store(): Store {
     if (!this._store) {
       throw new Error('record has been removed from Store');
     }
