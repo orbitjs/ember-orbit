@@ -1,17 +1,23 @@
+import { Orbit } from '@orbit/core';
 import { KeyDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { getKeyCache } from '../utils/property-cache';
 import { defineKey } from '../utils/model-definition';
 
+const { assert } = Orbit;
+
 export default function key(target: Model, key: string);
 export default function key(options?: KeyDefinition);
 export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
   function trackedKey(target: any, property: string, _: PropertyDescriptor) {
     function get(this: Model) {
-      if (!this.disconnected) {
-        return getKeyCache(this, property).value;
-      }
+      assert(
+        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} key from the cache.`,
+        !this.disconnected
+      );
+
+      return getKeyCache(this, property).value;
     }
 
     function set(this: Model, value: any) {
