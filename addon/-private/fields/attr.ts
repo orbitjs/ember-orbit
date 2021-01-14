@@ -1,8 +1,11 @@
+import { Orbit } from '@orbit/core';
 import { AttributeDefinition } from '@orbit/data';
 
 import Model from '../model';
 import { getAttributeCache } from '../utils/property-cache';
 import { defineAttribute } from '../utils/model-definition';
+
+const { assert } = Orbit;
 
 export default function attr(target: Model, key: string);
 export default function attr(type?: string, options?: AttributeDefinition);
@@ -12,6 +15,11 @@ export default function attr(
 ) {
   function trackedAttr(target: any, property: string, _: PropertyDescriptor) {
     function get(this: Model) {
+      assert(
+        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} attr from the cache.`,
+        !this.disconnected
+      );
+
       return getAttributeCache(this, property).value;
     }
 
