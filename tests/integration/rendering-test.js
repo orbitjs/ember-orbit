@@ -92,6 +92,59 @@ module('Rendering', function (hooks) {
     assert.dom('.planets-count').includesText('2');
   });
 
+  test('liveQuery records - accessed via liveQuery.value with relationships and undo and redo', async function (assert) {
+    const planets = cache.liveQuery((q) => q.findRecords('planet'));
+    this.set('planets', planets);
+
+    await render(hbs`<FilteredPlanetsList @planets={{this.planets}} />`);
+
+    assert.dom('.planets').hasNoText();
+
+    await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    assert.dom('.planets').includesText('Jupiter');
+
+    assert.dom('.planets-count').includesText('1');
+
+    await store.addRecord({ type: 'planet', name: 'Earth' });
+    assert.dom('.planets').includesText('Earth');
+
+    await store.update((t) => {
+      const moons = [
+        { type: 'moon', attributes: { name: 'Blue' } },
+        { type: 'moon', attributes: { name: 'New' } }
+      ];
+      const operations = [];
+      operations.push(t.addRecord(moons[0]));
+      operations.push(t.addRecord(moons[1]));
+      operations.push(
+        t.addRecord({ type: 'planet', attributes: { name: 'Pluto' } })
+      );
+      operations.push(
+        t.addRecord({ type: 'planet', attributes: { name: 'Filtered' } })
+      );
+      operations.push(
+        t.replaceRelatedRecords(
+          { type: 'planet', name: 'Pluto' },
+          'moons',
+          moons
+        )
+      );
+      return operations;
+    });
+
+    const transformId = store.transformLog.head;
+    const redoTransform = store.getTransform(transformId).operations;
+    const undoTransform = store.getInverseOperations(transformId);
+
+    await store.update(undoTransform);
+
+    assert.dom('.planets-count').includesText('2');
+
+    await store.update(redoTransform);
+
+    assert.dom('.planets-count').includesText('5');
+  });
+
   test('liveQuery records - accessed via liveQuery directly', async function (assert) {
     const planets = cache.liveQuery((q) => q.findRecords('planet'));
     this.set('planets', planets);

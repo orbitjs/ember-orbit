@@ -1,0 +1,12 @@
+<ul class="planets">
+  {{#each this.filteredPlanets as |planet|}}
+    <li>
+      {{planet.name}}
+    </li>
+
+    <MoonsList @planet={{planet}} />
+  {{/each}}
+</ul>
+<div class="planets-count">
+  {{@planets.length}}
+</div>
