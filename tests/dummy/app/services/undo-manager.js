@@ -1,9 +1,7 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 
-import { Store } from 'ember-orbit/addon/index';
-
-function removeFromTo(array: unknown[], from: number, to: number): number {
+function removeFromTo(array, from, to) {
   array.splice(
     from,
     !to ||
@@ -18,22 +16,17 @@ function removeFromTo(array: unknown[], from: number, to: number): number {
 }
 
 export default class UndoManager extends Service {
-  @service store!: Store;
+  @service store;
 
-  callback?: () => unknown;
-  commands: {
-    undo: () => Promise<void>;
-    redo: () => Promise<void>;
-  }[] = [];
+  commands = [];
   index = -1;
   isExecuting = false;
   limit = 0;
-  undoListener?: (e: KeyboardEvent) => unknown;
 
   constructor() {
     super(...arguments);
 
-    this.undoListener = async (e: KeyboardEvent) => {
+    this.undoListener = async (e) => {
       {
         const key = e.which || e.keyCode;
         // testing for CMD or CTRL
@@ -49,7 +42,7 @@ export default class UndoManager extends Service {
     document.addEventListener('keydown', this.undoListener, true);
   }
 
-  willDestroy(): void {
+  willDestroy() {
     super.willDestroy();
 
     if (this.undoListener) {
@@ -63,7 +56,7 @@ export default class UndoManager extends Service {
    * @param isUndo true if operation is 'undo'
    * @private
    */
-  async _doUndoRedo(isRedo: boolean, isUndo: boolean): Promise<void> {
+  async _doUndoRedo(isRedo, isUndo) {
     if (isRedo) {
       if (!this.isExecuting && this.hasRedo()) {
         await this.redo();
@@ -75,10 +68,7 @@ export default class UndoManager extends Service {
     }
   }
 
-  async execute(
-    command: { undo: () => Promise<void>; redo: () => Promise<void> },
-    action: 'undo' | 'redo'
-  ): Promise<UndoManager | unknown> {
+  async execute(command, action) {
     if (!command || typeof command[action] !== 'function') {
       return this;
     }
@@ -93,10 +83,7 @@ export default class UndoManager extends Service {
   /**
    * Add a command to the queue.
    */
-  async add(command: {
-    undo: () => Promise<void>;
-    redo: () => Promise<void>;
-  }): Promise<UndoManager> {
+  async add(command) {
     if (this.isExecuting) {
       return this;
     }
@@ -122,14 +109,14 @@ export default class UndoManager extends Service {
   /**
    * Pass a function to be called on undo and redo actions.
    */
-  setCallback(callbackFunc: () => unknown): void {
+  setCallback(callbackFunc) {
     this.callback = callbackFunc;
   }
 
   /**
    * Perform undo: call the undo function at the current index and decrease the index by 1.
    */
-  async undo(): Promise<UndoManager | unknown> {
+  async undo() {
     const command = this.commands[this.index];
     if (!command) {
       return this;
@@ -145,7 +132,7 @@ export default class UndoManager extends Service {
   /**
    * Perform redo: call the redo function at the next index and increase the index by 1.
    */
-  async redo(): Promise<UndoManager | unknown> {
+  async redo() {
     const command = this.commands[this.index + 1];
     if (!command) {
       return this;
@@ -161,7 +148,7 @@ export default class UndoManager extends Service {
   /**
    * Clears the memory, losing all stored states. Reset the index.
    */
-  clear(): void {
+  clear() {
     const prev_size = this.commands.length;
 
     this.commands = [];
@@ -172,27 +159,27 @@ export default class UndoManager extends Service {
     }
   }
 
-  hasUndo(): boolean {
+  hasUndo() {
     return this.index !== -1;
   }
 
-  hasRedo(): boolean {
+  hasRedo() {
     return this.index < this.commands.length - 1;
   }
 
-  getCommands(): { undo: () => Promise<void>; redo: () => Promise<void> }[] {
+  getCommands() {
     return this.commands;
   }
 
-  getIndex(): number {
+  getIndex() {
     return this.index;
   }
 
-  setLimit(l: number): void {
+  setLimit(l) {
     this.limit = l;
   }
 
-  setupUndoRedo(): void {
+  setupUndoRedo() {
     const transformId = this.store.transformLog.head;
     const redoTransform = this.store.getTransform(transformId).operations;
     const undoTransform = this.store.getInverseOperations(transformId);
