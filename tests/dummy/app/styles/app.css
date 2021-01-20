@@ -1,0 +1,26 @@
+.planets {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.planet-row {
+  background-color: lightgray;
+  margin-bottom: 0.5rem;
+  padding: 1rem;
+}
+
+.moons {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.moons li {
+  background-color: lightcyan;
+  border-radius: 6px;
+  margin: 0.25rem;
+  padding: 0.5rem;
+  width: auto;
+}
