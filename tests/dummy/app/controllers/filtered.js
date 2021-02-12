@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
 import { clone } from '@orbit/utils';
 
 export default class FilteredController extends Controller {
+  @service store;
   @service dataSchema;
   @service undoManager;
 

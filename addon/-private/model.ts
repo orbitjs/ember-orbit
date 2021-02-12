@@ -1,13 +1,13 @@
 import { Orbit } from '@orbit/core';
 import { Dict } from '@orbit/utils';
+import { DefaultRequestOptions, RequestOptions } from '@orbit/data';
 import {
   Record,
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
-  RelationshipDefinition,
-  RequestOptions
-} from '@orbit/data';
+  RelationshipDefinition
+} from '@orbit/records';
 import {
   destroy,
   associateDestroyableChild,
@@ -27,9 +27,6 @@ export interface ModelSettings {
   store: Store;
   mutableFields: boolean;
 }
-
-export type QueryResult<T = Model> = T | T[] | null | (T | T[] | null)[];
-
 export default class Model {
   readonly identity!: RecordIdentity;
 
@@ -67,7 +64,7 @@ export default class Model {
   async replaceKey(
     key: string,
     value: string,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.update(
       (t) => t.replaceKey(this.identity, key, value),
@@ -82,7 +79,7 @@ export default class Model {
   async replaceAttribute(
     attribute: string,
     value: unknown,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.update(
       (t) => t.replaceAttribute(this.identity, attribute, value),
@@ -97,7 +94,7 @@ export default class Model {
   async replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -126,7 +123,7 @@ export default class Model {
   async addToRelatedRecords(
     relationship: string,
     record: Model,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -138,7 +135,7 @@ export default class Model {
   async removeFromRelatedRecords(
     relationship: string,
     record: Model,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.update(
       (t) =>
@@ -153,7 +150,7 @@ export default class Model {
 
   async replaceAttributes(
     properties: Dict<unknown> = {},
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     const keys = Object.keys(properties);
     await this.store
@@ -169,12 +166,12 @@ export default class Model {
 
   async update(
     properties: Dict<unknown> = {},
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
   }
 
-  async remove(options?: RequestOptions): Promise<void> {
+  async remove(options?: DefaultRequestOptions<RequestOptions>): Promise<void> {
     await this.store.removeRecord(this.identity, options);
   }
 

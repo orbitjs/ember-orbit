@@ -21,7 +21,6 @@ export interface OrbitConfig {
     keyMap: string;
   };
   skipStoreService: boolean;
-  skipStoreInjections: boolean;
   skipCoordinatorService: boolean;
   skipSchemaService: boolean;
   skipKeyMapService: boolean;
@@ -48,7 +47,6 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     keyMap: 'data-key-map'
   },
   skipStoreService: false,
-  skipStoreInjections: false,
   skipCoordinatorService: false,
   skipSchemaService: false,
   skipKeyMapService: false,

@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { KeyDefinition } from '@orbit/data';
+import { KeyDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getKeyCache } from '../utils/property-cache';

@@ -1,17 +1,17 @@
 import { Orbit } from '@orbit/core';
 import {
-  Schema,
+  RecordSchema,
   RecordRelationship,
   Record,
   ModelDefinition,
   RecordIdentity
-} from '@orbit/data';
+} from '@orbit/records';
 import { deepSet, Dict } from '@orbit/utils';
 
 const { assert } = Orbit;
 
 export default function normalizeRecordProperties(
-  schema: Schema,
+  schema: RecordSchema,
   properties: Dict<unknown>
 ) {
   const { id, type } = properties;

@@ -1,8 +1,6 @@
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createOwner, createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
-import Controller from '@ember/controller';
-import Route from '@ember/routing/route';
 
 module('Integration - Config', function (hooks) {
   let owner;
@@ -38,8 +36,6 @@ module('Integration - Config', function (hooks) {
     );
     const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models, owner });
-    owner.register('controller:application', Controller);
-    owner.register('route:application', Route);
   });
 
   hooks.afterEach(function () {
@@ -68,16 +64,6 @@ module('Integration - Config', function (hooks) {
     assert.ok(
       owner.lookup('service:data-schema'),
       'unconfigured lookup type falls back to default configuration'
-    );
-    assert.equal(
-      owner.lookup('controller:application').orbitStore,
-      store,
-      'configured store name is camelized for controller and route injection'
-    );
-    assert.equal(
-      owner.lookup('route:application').orbitStore,
-      store,
-      'configured store name is camelized for controller and route injection'
     );
   });
 });

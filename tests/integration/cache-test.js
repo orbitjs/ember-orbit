@@ -21,6 +21,7 @@ module('Integration - Cache', function (hooks) {
   test('exposes properties from underlying MemoryCache', function (assert) {
     assert.strictEqual(cache.keyMap, store.source.keyMap);
     assert.strictEqual(cache.schema, store.source.schema);
+    assert.strictEqual(cache.queryBuilder, store.source.queryBuilder);
     assert.strictEqual(cache.transformBuilder, store.source.transformBuilder);
   });
 
@@ -219,6 +220,14 @@ module('Integration - Cache', function (hooks) {
   });
 
   test('#query - missing record', function (assert) {
+    const foundRecord = cache.query((q) =>
+      q.findRecord({ type: 'planet', id: 'fake' })
+    );
+    assert.strictEqual(foundRecord, undefined);
+  });
+
+  test('#query - missing record (raises exception)', function (assert) {
+    cache.defaultQueryOptions = { raiseNotFoundExceptions: true };
     assert.throws(
       () => cache.query((q) => q.findRecord({ type: 'planet', id: 'fake' })),
       'Record not found: planet:fake'
@@ -232,6 +241,23 @@ module('Integration - Cache', function (hooks) {
     assert.equal(foundRecords.length, 2, 'two records found');
     assert.ok(foundRecords.includes(earth), 'earth is included');
     assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
+  });
+
+  test('#query - records - multiple expressions', async function (assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    const io = await store.addRecord({ type: 'moon', name: 'Io' });
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
+    const [planets, moons] = cache.query((q) => [
+      q.findRecords('planet'),
+      q.findRecords('moon')
+    ]);
+    assert.equal(planets.length, 2, 'two records found');
+    assert.ok(planets.includes(earth), 'earth is included');
+    assert.ok(planets.includes(jupiter), 'jupiter is included');
+    assert.equal(moons.length, 2, 'two records found');
+    assert.ok(moons.includes(io), 'io is included');
+    assert.ok(moons.includes(callisto), 'callisto is included');
   });
 
   test('#query - filter', async function (assert) {

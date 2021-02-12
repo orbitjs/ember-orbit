@@ -1,22 +1,32 @@
 import { getOwner, setOwner } from '@ember/application';
 import {
   buildQuery,
-  QueryOrExpressions,
-  RecordIdentity,
-  Transform,
-  TransformOrOperations,
-  cloneRecordIdentity,
-  RecordOperation,
-  KeyMap,
-  Schema,
-  TransformBuilder,
+  buildTransform,
+  DefaultRequestOptions,
+  FullRequestOptions,
+  FullResponse,
   RequestOptions
 } from '@orbit/data';
+import {
+  cloneRecordIdentity,
+  RecordIdentity,
+  RecordKeyMap,
+  RecordOperation,
+  RecordQueryBuilder,
+  RecordQueryOrExpressions,
+  RecordQueryResult,
+  RecordSchema,
+  RecordTransform,
+  RecordTransformBuilder,
+  RecordTransformOrOperations,
+  RecordTransformResult
+} from '@orbit/records';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
+import { RecordCacheQueryOptions } from '@orbit/record-cache';
 import { Orbit, Log, TaskQueue, Listener } from '@orbit/core';
 import { destroy, associateDestroyableChild } from '@ember/destroyable';
 import Cache from './cache';
-import Model, { QueryResult } from './model';
+import Model from './model';
 import ModelFactory from './model-factory';
 import normalizeRecordProperties from './utils/normalize-record-properties';
 
@@ -73,16 +83,44 @@ export default class Store {
     return this.#cache;
   }
 
-  get keyMap(): KeyMap | undefined {
+  get keyMap(): RecordKeyMap | undefined {
     return this.source.keyMap;
   }
 
-  get schema(): Schema {
+  get schema(): RecordSchema {
     return this.source.schema;
   }
 
-  get transformBuilder(): TransformBuilder {
+  get queryBuilder(): RecordQueryBuilder {
+    return this.source.queryBuilder;
+  }
+
+  get transformBuilder(): RecordTransformBuilder {
     return this.source.transformBuilder;
+  }
+
+  get defaultQueryOptions():
+    | DefaultRequestOptions<RecordCacheQueryOptions>
+    | undefined {
+    return this.source.defaultQueryOptions;
+  }
+
+  set defaultQueryOptions(
+    options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
+  ) {
+    this.source.defaultQueryOptions = options;
+  }
+
+  get defaultTransformOptions():
+    | DefaultRequestOptions<RequestOptions>
+    | undefined {
+    return this.source.defaultTransformOptions;
+  }
+
+  set defaultTransformOptions(
+    options: DefaultRequestOptions<RequestOptions> | undefined
+  ) {
+    this.source.defaultTransformOptions = options;
   }
 
   get transformLog(): Log {
@@ -107,7 +145,8 @@ export default class Store {
 
   fork(): Store {
     const forkedSource = this.source.fork({
-      cacheSettings: { debounceLiveQueries: false } as any
+      schema: this.schema,
+      cacheSettings: { debounceLiveQueries: false }
     });
     const injections = getOwner(this).ownerInjection();
 
@@ -131,7 +170,7 @@ export default class Store {
   }
 
   liveQuery(
-    queryOrExpressions: QueryOrExpressions,
+    queryOrExpressions: RecordQueryOrExpressions,
     options?: RequestOptions,
     id?: string
   ): Promise<any> {
@@ -147,66 +186,100 @@ export default class Store {
     return this.source.query(query).then(() => this.cache.liveQuery(query));
   }
 
-  async query(
-    queryOrExpressions: QueryOrExpressions,
-    options?: RequestOptions,
+  async query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
-  ): Promise<QueryResult> {
+  ): Promise<RequestData>;
+  async query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options: FullRequestOptions<RecordCacheQueryOptions>,
+    id?: string
+  ): Promise<FullResponse<RequestData, undefined, RecordOperation>>;
+  async query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options?: RecordCacheQueryOptions,
+    id?: string
+  ): Promise<
+    RequestData | FullResponse<RequestData, undefined, RecordOperation>
+  > {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
       this.source.queryBuilder
     );
-    const result = await this.source.query(query);
-    return this.cache.lookup(result, query.expressions.length);
+    if (options?.fullResponse) {
+      const response = await this.source.query(query, { fullResponse: true });
+      return {
+        ...response,
+        data: this.cache.lookupQueryResult(query, response.data)
+      } as FullResponse<RequestData, undefined, RecordOperation>;
+    } else {
+      const data = await this.source.query(query);
+      return this.cache.lookupQueryResult(query, data) as RequestData;
+    }
   }
 
   /**
-   * Adds a record to the Orbit store
-   * @method addRecord
-   * @param {object} properties
-   * @param {object} options
+   * Adds a record
    */
-  async addRecord(properties = {}, options?: RequestOptions): Promise<Model> {
+  async addRecord(
+    properties = {},
+    options?: DefaultRequestOptions<RequestOptions>
+  ): Promise<Model> {
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.addRecord(record), options);
     return this.cache.lookup(record) as Model;
   }
 
+  /**
+   * Updates a record
+   */
   async updateRecord(
     properties = {},
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<Model> {
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
     let record = normalizeRecordProperties(this.source.schema, properties);
     await this.update((t) => t.updateRecord(record), options);
     return this.cache.lookup(record) as Model;
   }
 
   /**
-   * Removes a record from the Orbit store
-   * @method removeRecord
-   * @param {RecordIdentity} record
-   * @param {object} options
+   * Removes a record
    */
   async removeRecord(
     record: RecordIdentity,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
     const identity = cloneRecordIdentity(record);
     await this.update((t) => t.removeRecord(identity), options);
   }
 
-  /**
-   * @method find
-   * @param {string} type
-   * @param {string} id
-   */
-  find(type: string, id?: string | undefined): Promise<Model | Model[]> {
+  find(
+    type: string,
+    id?: string | undefined,
+    options?: RequestOptions
+  ): Promise<Model | Model[]> {
     if (id === undefined) {
-      return this.findRecords(type);
+      return this.findRecords(type, options);
     } else {
-      return this.findRecord(type, id);
+      return this.findRecord(type, id, options);
     }
   }
 
@@ -215,13 +288,23 @@ export default class Store {
     id: string,
     options?: RequestOptions
   ): Promise<Model> {
-    return this.query((q) => q.findRecord({ type, id }), options) as Promise<
-      Model
-    >;
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
+    return this.query(
+      (q) => q.findRecord({ type, id }),
+      options as DefaultRequestOptions<RequestOptions>
+    ) as Promise<Model>;
   }
 
   findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
-    return this.query((q) => q.findRecords(type), options) as Promise<Model[]>;
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
+    return this.query(
+      (q) => q.findRecords(type),
+      options as DefaultRequestOptions<RequestOptions>
+    ) as Promise<Model[]>;
   }
 
   findRecordByKey(
@@ -230,6 +313,9 @@ export default class Store {
     keyValue: string,
     options?: RequestOptions
   ): Promise<Model> {
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
     return this.findRecord(
       type,
       this.cache.recordIdFromKey(type, keyName, keyValue),
@@ -265,27 +351,64 @@ export default class Store {
     this.source.one(event, listener);
   }
 
-  sync(transformOrTransforms: Transform | Transform[]): Promise<void> {
-    return this.source.sync(transformOrTransforms);
+  async sync(
+    transformOrTransforms: RecordTransform | RecordTransform[]
+  ): Promise<void> {
+    await this.source.sync(transformOrTransforms);
   }
 
-  update(
-    transformOrTransforms: TransformOrOperations,
+  update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: RecordTransformOrOperations,
+    options?: DefaultRequestOptions<RequestOptions>,
+    id?: string
+  ): Promise<RequestData>;
+  update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: RecordTransformOrOperations,
+    options: FullRequestOptions<RequestOptions>,
+    id?: string
+  ): Promise<FullResponse<RequestData, unknown, RecordOperation>>;
+  async update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: RecordTransformOrOperations,
     options?: RequestOptions,
     id?: string
-  ): Promise<any> {
-    return this.source.update(transformOrTransforms, options, id);
+  ): Promise<
+    RequestData | FullResponse<RequestData, unknown, RecordOperation>
+  > {
+    const transform = buildTransform(
+      transformOrOperations,
+      options,
+      id,
+      this.source.transformBuilder
+    );
+    if (options?.fullResponse) {
+      const response = await this.source.update(transform, {
+        fullResponse: true
+      });
+      return {
+        ...response,
+        data: this.cache.lookupTransformResult(transform, response.data)
+      } as FullResponse<RequestData, undefined, RecordOperation>;
+    } else {
+      const data = await this.source.update(transform);
+      return this.cache.lookupTransformResult(transform, data) as RequestData;
+    }
   }
 
-  transformsSince(transformId: string): Transform[] {
+  transformsSince(transformId: string): RecordTransform[] {
     return this.source.transformsSince(transformId);
   }
 
-  allTransforms(): Transform[] {
+  allTransforms(): RecordTransform[] {
     return this.source.allTransforms();
   }
 
-  getTransform(transformId: string): Transform {
+  getTransform(transformId: string): RecordTransform {
     return this.source.getTransform(transformId);
   }
 

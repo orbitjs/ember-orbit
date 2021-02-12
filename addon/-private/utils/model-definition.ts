@@ -3,7 +3,7 @@ import {
   AttributeDefinition,
   RelationshipDefinition,
   ModelDefinition
-} from '@orbit/data';
+} from '@orbit/records';
 import { clone, deepMerge } from '@orbit/utils';
 
 const MODEL_DEFINITION = Symbol('@orbit:modelDefinition');

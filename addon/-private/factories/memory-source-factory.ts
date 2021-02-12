@@ -1,9 +1,9 @@
 import { MemorySource, MemorySourceSettings } from '@orbit/memory';
 
 export default {
-  create(injections: MemorySourceSettings = {}): MemorySource {
+  create(injections: MemorySourceSettings): MemorySource {
     injections.name = injections.name || 'store';
-    injections.cacheSettings = { debounceLiveQueries: false } as any;
+    injections.cacheSettings = { debounceLiveQueries: false };
     return new MemorySource(injections);
   }
 };
