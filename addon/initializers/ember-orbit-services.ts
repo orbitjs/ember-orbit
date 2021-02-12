@@ -1,11 +1,13 @@
+import { Orbit } from '@orbit/core';
 import Application from '@ember/application';
-import { camelize } from '@ember/string';
 import { OrbitConfig } from './ember-orbit-config';
 import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
 import MemorySourceFactory from '../-private/factories/memory-source-factory';
+
+const { deprecate } = Orbit;
 
 export function initialize(application: Application) {
   let orbitConfig: OrbitConfig =
@@ -74,17 +76,9 @@ export function initialize(application: Application) {
       'ember-orbit:configMutableModels'
     );
 
-    if (!orbitConfig.skipStoreInjections) {
-      // Inject store to all routes and controllers
-      application.inject(
-        'route',
-        camelize(orbitConfig.services.store),
-        `service:${orbitConfig.services.store}`
-      );
-      application.inject(
-        'controller',
-        camelize(orbitConfig.services.store),
-        `service:${orbitConfig.services.store}`
+    if ((orbitConfig as any).skipStoreInjections !== undefined) {
+      deprecate(
+        'The `skipStoreInjections` configuration option in ember-orbit is deprecated because implicit injection is now deprecated in Ember itself. Please inject the orbit store into routes and controllers using the `@service` decorator as needed.'
       );
     }
   }

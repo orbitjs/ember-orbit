@@ -23,7 +23,6 @@ module.exports = function (environment) {
     },
     orbit: {
       skipStoreService: true,
-      skipStoreInjections: true,
       skipCoordinatorService: true,
       skipSchemaService: true,
       skipKeyMapService: true

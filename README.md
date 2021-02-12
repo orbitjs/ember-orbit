@@ -529,7 +529,6 @@ module.exports = function(environment) {
         keyMap: 'data-key-map'
       },
       skipStoreService: false,
-      skipStoreInjections: false,
       skipCoordinatorService: false,
       skipSchemaService: false,
       skipKeyMapService: false
