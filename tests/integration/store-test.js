@@ -448,6 +448,63 @@ module('Integration - Store', function (hooks) {
     }
   });
 
+  test('#query - records - multiple expressions', async function (assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    const io = await store.addRecord({ type: 'moon', name: 'Io' });
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
+    const [planets, moons] = await store.query((q) => [
+      q.findRecords('planet'),
+      q.findRecords('moon')
+    ]);
+    assert.equal(planets.length, 2, 'two records found');
+    assert.ok(planets.includes(earth), 'earth is included');
+    assert.ok(planets.includes(jupiter), 'jupiter is included');
+    assert.equal(moons.length, 2, 'two records found');
+    assert.ok(moons.includes(io), 'io is included');
+    assert.ok(moons.includes(callisto), 'callisto is included');
+  });
+
+  test('#query - records - fullResponse', async function (assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    const { data: planets, transforms } = await store.query(
+      (q) => q.findRecords('planet'),
+      { fullResponse: true }
+    );
+    assert.equal(planets.length, 2, 'two records found');
+    assert.ok(planets.includes(earth), 'earth is included');
+    assert.ok(planets.includes(jupiter), 'jupiter is included');
+    assert.strictEqual(transforms, undefined, 'no transforms');
+  });
+
+  test('#update - single operation', async function (assert) {
+    const earth = await store.update((o) =>
+      o.addRecord({ type: 'planet', attributes: { name: 'Earth' } })
+    );
+    assert.equal(earth.name, 'Earth');
+  });
+
+  test('#update - single operation - fullResponse', async function (assert) {
+    const { data: earth, transforms } = await store.update(
+      (o) => [o.addRecord({ type: 'planet', attributes: { name: 'Earth' } })],
+      {
+        fullResponse: true
+      }
+    );
+    assert.equal(earth.name, 'Earth');
+    assert.strictEqual(transforms?.length, 1, 'one transform');
+  });
+
+  test('#update - multiple operations', async function (assert) {
+    const [earth, jupiter] = await store.update((o) => [
+      o.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
+      o.addRecord({ type: 'planet', attributes: { name: 'Jupiter' } })
+    ]);
+    assert.equal(earth.name, 'Earth');
+    assert.equal(jupiter.name, 'Jupiter');
+  });
+
   test('#fork - creates a clone of a base store', async function (assert) {
     const forkedStore = store.fork();
     const jupiter = await forkedStore.addRecord({

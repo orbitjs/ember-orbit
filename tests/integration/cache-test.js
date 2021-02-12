@@ -243,6 +243,23 @@ module('Integration - Cache', function (hooks) {
     assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
   });
 
+  test('#query - records - multiple expressions', async function (assert) {
+    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
+    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+    const io = await store.addRecord({ type: 'moon', name: 'Io' });
+    const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
+    const [planets, moons] = cache.query((q) => [
+      q.findRecords('planet'),
+      q.findRecords('moon')
+    ]);
+    assert.equal(planets.length, 2, 'two records found');
+    assert.ok(planets.includes(earth), 'earth is included');
+    assert.ok(planets.includes(jupiter), 'jupiter is included');
+    assert.equal(moons.length, 2, 'two records found');
+    assert.ok(moons.includes(io), 'io is included');
+    assert.ok(moons.includes(callisto), 'callisto is included');
+  });
+
   test('#query - filter', async function (assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     await store.addRecord({ type: 'planet', name: 'Jupiter' });
