@@ -1,7 +1,7 @@
-import { KeyMap } from '@orbit/data';
+import { RecordKeyMap } from '@orbit/records';
 
 export default {
-  create(): KeyMap {
-    return new KeyMap();
+  create(): RecordKeyMap {
+    return new RecordKeyMap();
   }
 };

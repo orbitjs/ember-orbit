@@ -2,7 +2,7 @@ import { Orbit } from '@orbit/core';
 import { tracked } from '@glimmer/tracking';
 import { notifyPropertyChange } from '@ember/object';
 import { SyncLiveQuery } from '@orbit/record-cache';
-import { Query, RecordNotFoundException } from '@orbit/data';
+import { RecordQuery, RecordQueryResult } from '@orbit/records';
 import {
   registerDestructor,
   associateDestroyableChild,
@@ -11,33 +11,25 @@ import {
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 
 import Cache from './cache';
-import { QueryResult } from './model';
 import { Model } from 'ember-orbit';
 
 const { assert } = Orbit;
 
 export interface LiveQuerySettings {
   liveQuery: SyncLiveQuery;
-  query: Query;
+  query: RecordQuery;
   cache: Cache;
 }
 
 export default class LiveQuery implements Iterable<Model> {
-  #query: Query;
+  #query: RecordQuery;
   #cache: Cache;
 
   #iteratorAccessed = false;
 
   #value = createCache(() => {
     this._invalidate;
-    try {
-      return this.#cache.query(this.#query);
-    } catch (e) {
-      if (e instanceof RecordNotFoundException) {
-        return undefined;
-      }
-      throw e;
-    }
+    return this.#cache.query(this.#query);
   });
 
   @tracked _invalidate = 0;
@@ -56,7 +48,7 @@ export default class LiveQuery implements Iterable<Model> {
     associateDestroyableChild(this.#cache, this);
   }
 
-  get value(): QueryResult {
+  get value(): RecordQueryResult<Model> {
     return getValue(this.#value);
   }
 

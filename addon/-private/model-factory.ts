@@ -1,6 +1,6 @@
 import { getOwner } from '@ember/application';
 import { Dict } from '@orbit/utils';
-import { RecordIdentity, cloneRecordIdentity } from '@orbit/data';
+import { RecordIdentity, cloneRecordIdentity } from '@orbit/records';
 import Store from './store';
 import Model, { ModelSettings } from './model';
 

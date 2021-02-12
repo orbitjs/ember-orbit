@@ -21,6 +21,7 @@ module('Integration - Cache', function (hooks) {
   test('exposes properties from underlying MemoryCache', function (assert) {
     assert.strictEqual(cache.keyMap, store.source.keyMap);
     assert.strictEqual(cache.schema, store.source.schema);
+    assert.strictEqual(cache.queryBuilder, store.source.queryBuilder);
     assert.strictEqual(cache.transformBuilder, store.source.transformBuilder);
   });
 
@@ -219,6 +220,14 @@ module('Integration - Cache', function (hooks) {
   });
 
   test('#query - missing record', function (assert) {
+    const foundRecord = cache.query((q) =>
+      q.findRecord({ type: 'planet', id: 'fake' })
+    );
+    assert.strictEqual(foundRecord, undefined);
+  });
+
+  test('#query - missing record (raises exception)', function (assert) {
+    cache.defaultQueryOptions = { raiseNotFoundExceptions: true };
     assert.throws(
       () => cache.query((q) => q.findRecord({ type: 'planet', id: 'fake' })),
       'Record not found: planet:fake'

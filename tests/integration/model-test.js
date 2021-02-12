@@ -170,10 +170,9 @@ module('Integration - Model', function (hooks) {
   test('update via store: replaceRelatedRecords operation invalidates a relationship on model', async function (assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     const callisto = await store.addRecord({ type: 'moon', name: 'Callisto' });
-
     assert.deepEqual(jupiter.moons, []); // cache the relationship
     await store.source.update((t) =>
-      t.replaceRelatedRecords(jupiter, 'moons', [callisto])
+      t.replaceRelatedRecords(jupiter.identity, 'moons', [callisto.identity])
     );
     assert.deepEqual(jupiter.moons, [callisto], 'invalidates the relationship');
   });
@@ -187,7 +186,9 @@ module('Integration - Model', function (hooks) {
 
     assert.deepEqual(solarSystem.bodies, []); // cache the relationship
     await store.source.update((t) =>
-      t.replaceRelatedRecords(solarSystem, 'bodies', [callisto])
+      t.replaceRelatedRecords(solarSystem.identity, 'bodies', [
+        callisto.identity
+      ])
     );
     assert.deepEqual(
       solarSystem.bodies,
@@ -243,7 +244,7 @@ module('Integration - Model', function (hooks) {
 
     assert.equal(jupiter.sun, null); // cache the relationship
     await store.source.update((t) =>
-      t.replaceRelatedRecord(jupiter, 'sun', sun)
+      t.replaceRelatedRecord(jupiter.identity, 'sun', sun.identity)
     );
     assert.equal(jupiter.sun, sun, 'invalidates the relationship');
   });
@@ -257,7 +258,7 @@ module('Integration - Model', function (hooks) {
 
     assert.equal(solarSystem.star, null); // cache the relationship
     await store.source.update((t) =>
-      t.replaceRelatedRecord(solarSystem, 'star', sun)
+      t.replaceRelatedRecord(solarSystem.identity, 'star', sun.identity)
     );
     assert.equal(solarSystem.star, sun, 'invalidates the relationship');
   });
@@ -292,7 +293,9 @@ module('Integration - Model', function (hooks) {
   test('update via store: replaceAttribute operation invalidates attribute on model', async function (assert) {
     const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.equal(record.name, 'Jupiter'); // cache the name
-    await store.update((t) => t.replaceAttribute(record, 'name', 'Jupiter2'));
+    await store.update((t) =>
+      t.replaceAttribute(record.identity, 'name', 'Jupiter2')
+    );
     assert.equal(record.name, 'Jupiter2');
   });
 

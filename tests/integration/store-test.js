@@ -32,10 +32,33 @@ module('Integration - Store', function (hooks) {
   test('exposes properties from source', function (assert) {
     assert.strictEqual(store.keyMap, store.source.keyMap);
     assert.strictEqual(store.schema, store.source.schema);
+    assert.strictEqual(store.queryBuilder, store.queryBuilder);
     assert.strictEqual(store.transformBuilder, store.transformBuilder);
     assert.strictEqual(store.transformLog, store.source.transformLog);
     assert.strictEqual(store.requestQueue, store.source.requestQueue);
     assert.strictEqual(store.syncQueue, store.source.syncQueue);
+  });
+
+  test('`defaultQueryOptions` and `defaultTransformOptions` can be modified', function (assert) {
+    const defaultQueryOptions = {
+      maxRequests: 3
+    };
+
+    const defaultTransformOptions = {
+      maxRequests: 1
+    };
+
+    store.defaultQueryOptions = defaultQueryOptions;
+    store.defaultTransformOptions = defaultTransformOptions;
+
+    assert.deepEqual(store.defaultQueryOptions, defaultQueryOptions);
+    assert.deepEqual(store.cache.defaultQueryOptions, defaultQueryOptions);
+
+    assert.deepEqual(store.defaultTransformOptions, defaultTransformOptions);
+    assert.deepEqual(
+      store.cache.defaultTransformOptions,
+      defaultTransformOptions
+    );
   });
 
   test('#addRecord', async function (assert) {
@@ -65,7 +88,9 @@ module('Integration - Store', function (hooks) {
 
   test('#findRecord - missing record', async function (assert) {
     try {
-      await store.findRecord('planet', 'jupiter');
+      await store.findRecord('planet', 'jupiter', {
+        raiseNotFoundExceptions: true
+      });
     } catch (e) {
       assert.equal(e.message, 'Record not found: planet:jupiter');
     }
@@ -86,16 +111,14 @@ module('Integration - Store', function (hooks) {
     const prevFn = schema.generateId;
     schema.generateId = () => 'abc';
 
-    try {
-      await store.findRecordByKey('planet', 'remoteId', 'p01');
-    } catch (e) {
-      assert.equal(
-        store.source.keyMap.keyToId('planet', 'remoteId', 'p01'),
-        'abc'
-      );
-      assert.equal(e.message, 'Record not found: planet:abc');
-      schema.generateId = prevFn;
-    }
+    let result = await store.findRecordByKey('planet', 'remoteId', 'p01');
+    assert.strictEqual(result, undefined);
+
+    assert.equal(
+      store.source.keyMap.keyToId('planet', 'remoteId', 'p01'),
+      'abc'
+    );
+    schema.generateId = prevFn;
   });
 
   test('#peekRecord - existing record', async function (assert) {
@@ -172,11 +195,7 @@ module('Integration - Store', function (hooks) {
 
     await store.removeRecord(record);
 
-    try {
-      await store.findRecord('planet', record.id);
-    } catch (error) {
-      assert.ok(error.message.match(/Record not found/));
-    }
+    assert.strictEqual(await store.findRecord('planet', record.id), undefined);
   });
 
   test('#removeRecord - when passed an identity', async function (assert) {
@@ -199,11 +218,7 @@ module('Integration - Store', function (hooks) {
 
     await store.removeRecord({ type: 'planet', id: record.id });
 
-    try {
-      await store.findRecord('planet', record.id);
-    } catch (error) {
-      assert.ok(error.message.match(/Record not found/));
-    }
+    assert.strictEqual(await store.findRecord('planet', record.id), undefined);
   });
 
   test('#getTransform - returns a particular transform given an id', async function (assert) {
@@ -413,8 +428,17 @@ module('Integration - Store', function (hooks) {
   });
 
   test('#find - missing record', async function (assert) {
+    const record = await store.find('planet', 'jupiter');
+    assert.equal(
+      record,
+      undefined,
+      'undefined returned when record cannot be found'
+    );
+  });
+
+  test('#find - missing record (raises exception)', async function (assert) {
     try {
-      await store.find('planet', 'jupiter');
+      await store.find('planet', 'jupiter', { raiseNotFoundExceptions: true });
     } catch (e) {
       assert.equal(
         e.message,

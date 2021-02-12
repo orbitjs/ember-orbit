@@ -2,21 +2,32 @@ import { deepGet } from '@orbit/utils';
 import { Orbit } from '@orbit/core';
 import {
   buildQuery,
-  RecordIdentity,
-  QueryOrExpressions,
-  RecordOperation,
-  Record,
-  KeyMap,
-  Schema,
-  TransformBuilder,
+  DefaultRequestOptions,
+  FullRequestOptions,
+  FullResponse,
   RequestOptions
 } from '@orbit/data';
-import { QueryResultData } from '@orbit/record-cache';
+import {
+  RecordIdentity,
+  RecordOperation,
+  Record,
+  RecordKeyMap,
+  RecordQueryOrExpressions,
+  RecordSchema,
+  RecordTransformBuilder,
+  RecordQuery,
+  RecordTransform,
+  RecordQueryResult,
+  RecordQueryExpressionResult,
+  RecordTransformResult,
+  RecordOperationResult,
+  RecordQueryBuilder
+} from '@orbit/records';
+import { RecordCacheQueryOptions } from '@orbit/record-cache';
 import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
 import { registerDestructor } from '@ember/destroyable';
-
-import Model, { QueryResult } from './model';
+import Model from './model';
 import LiveQuery from './live-query';
 import ModelFactory from './model-factory';
 import recordIdentitySerializer from './utils/record-identity-serializer';
@@ -50,16 +61,44 @@ export default class Cache {
     });
   }
 
-  get keyMap(): KeyMap | undefined {
+  get keyMap(): RecordKeyMap | undefined {
     return this._sourceCache.keyMap;
   }
 
-  get schema(): Schema {
+  get schema(): RecordSchema {
     return this._sourceCache.schema;
   }
 
-  get transformBuilder(): TransformBuilder {
+  get queryBuilder(): RecordQueryBuilder {
+    return this._sourceCache.queryBuilder;
+  }
+
+  get transformBuilder(): RecordTransformBuilder {
     return this._sourceCache.transformBuilder;
+  }
+
+  get defaultQueryOptions():
+    | DefaultRequestOptions<RecordCacheQueryOptions>
+    | undefined {
+    return this._sourceCache.defaultQueryOptions;
+  }
+
+  set defaultQueryOptions(
+    options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
+  ) {
+    this._sourceCache.defaultQueryOptions = options;
+  }
+
+  get defaultTransformOptions():
+    | DefaultRequestOptions<RequestOptions>
+    | undefined {
+    return this._sourceCache.defaultTransformOptions;
+  }
+
+  set defaultTransformOptions(
+    options: DefaultRequestOptions<RequestOptions> | undefined
+  ) {
+    this._sourceCache.defaultTransformOptions = options;
   }
 
   peekRecordData(type: string, id: string): Record | undefined {
@@ -79,7 +118,7 @@ export default class Cache {
 
   peekRecords(type: string): Model[] {
     const identities = this._sourceCache.getRecordsSync(type);
-    return this.lookup(identities) as Model[];
+    return identities.map((i) => this.lookup(i) as Model);
   }
 
   peekRecordByKey(
@@ -91,7 +130,7 @@ export default class Cache {
   }
 
   recordIdFromKey(type: string, keyName: string, keyValue: string): string {
-    let keyMap = this.keyMap as KeyMap;
+    let keyMap = this.keyMap as RecordKeyMap;
     assert(
       'No `keyMap` has been assigned to the Cache, so `recordIdFromKey` can not work.',
       !!keyMap
@@ -138,33 +177,54 @@ export default class Cache {
       relationship
     );
     if (relatedRecords) {
-      return this.lookup(relatedRecords) as Model[];
+      return relatedRecords.map((r) => this.lookup(r) as Model);
     } else {
       return undefined;
     }
   }
 
-  query(
-    queryOrExpressions: QueryOrExpressions,
-    options?: RequestOptions,
+  query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
-  ): QueryResult {
+  ): RequestData;
+  query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options: FullRequestOptions<RecordCacheQueryOptions>,
+    id?: string
+  ): FullResponse<RequestData, undefined, RecordOperation>;
+  query<
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+  >(
+    queryOrExpressions: RecordQueryOrExpressions,
+    options?: RecordCacheQueryOptions,
+    id?: string
+  ): RequestData | FullResponse<RequestData, undefined, RecordOperation> {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
       this._sourceCache.queryBuilder
     );
-    const result = this._sourceCache.query(query);
-    if (result) {
-      return this.lookup(result, query.expressions.length);
+
+    if (options?.fullResponse) {
+      const response = this._sourceCache.query(query, { fullResponse: true });
+      return {
+        ...response,
+        data: this.lookupQueryResult(query, response.data)
+      } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
-      return result;
+      const data = this._sourceCache.query(query);
+      return this.lookupQueryResult(query, data) as RequestData;
     }
   }
 
   liveQuery(
-    queryOrExpressions: QueryOrExpressions,
+    queryOrExpressions: RecordQueryOrExpressions,
     options?: RequestOptions,
     id?: string
   ): LiveQuery {
@@ -186,11 +246,18 @@ export default class Cache {
     }
   }
 
-  findRecord(type: string, id: string, options?: RequestOptions): Model {
+  findRecord(
+    type: string,
+    id: string,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Model {
     return this.query((q) => q.findRecord({ type, id }), options) as Model;
   }
 
-  findRecords(type: string, options?: RequestOptions): Model[] {
+  findRecords(
+    type: string,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Model[] {
     return this.query((q) => q.findRecords(type), options) as Model[];
   }
 
@@ -202,34 +269,63 @@ export default class Cache {
     }
   }
 
-  lookup(
-    result: QueryResult<Record>,
-    expressions = 1
-  ): Model | Model[] | null | (Model | Model[] | null)[] {
-    if (isQueryResultData(result, expressions)) {
-      return (result as QueryResultData[]).map((result) =>
-        this._lookup(result)
+  lookup(record: Record): Model {
+    let model = this._identityMap.get(record);
+
+    if (!model) {
+      model = this._modelFactory.create(record);
+      this._identityMap.set(record, model);
+    }
+
+    return model;
+  }
+
+  lookupQueryResult(
+    query: RecordQuery,
+    result: RecordQueryResult<Record>
+  ): RecordQueryResult<Model> {
+    if (
+      isQueryExpressionResultArray<Record>(result, query.expressions.length)
+    ) {
+      return (result as RecordQueryExpressionResult<Record>[]).map((i) =>
+        this.lookupQueryExpressionResult(i)
       );
     } else {
-      return this._lookup(result);
+      return this.lookupQueryExpressionResult(result);
     }
   }
 
-  private _lookup(result: QueryResultData): Model | Model[] | null {
-    if (Array.isArray(result)) {
-      return result.map((identity) => this._lookup(identity) as Model);
-    } else if (result) {
-      let record = this._identityMap.get(result);
-
-      if (!record) {
-        record = this._modelFactory.create(result);
-        this._identityMap.set(result, record);
-      }
-
-      return record;
+  lookupTransformResult(
+    transform: RecordTransform,
+    result: RecordTransformResult<Record>
+  ): RecordTransformResult<Model> {
+    if (isOperationResultArray<Record>(result, transform.operations.length)) {
+      return result.map((i) => this.lookupOperationResult(i));
+    } else {
+      return this.lookupOperationResult(result);
     }
+  }
 
-    return null;
+  private lookupQueryExpressionResult(
+    result: RecordQueryExpressionResult<Record>
+  ): RecordQueryExpressionResult<Model> {
+    if (Array.isArray(result)) {
+      return result.map((i) => (i ? this.lookup(i) : i));
+    } else if (result) {
+      return this.lookup(result);
+    } else {
+      return result;
+    }
+  }
+
+  private lookupOperationResult(
+    result: RecordOperationResult<Record>
+  ): RecordOperationResult<Model> {
+    if (result) {
+      return this.lookup(result);
+    } else {
+      return result;
+    }
   }
 
   private notifyPropertyChange(
@@ -283,9 +379,16 @@ export default class Cache {
   }
 }
 
-function isQueryResultData(
-  _result: QueryResult<Record>,
+function isQueryExpressionResultArray<T>(
+  _result: RecordQueryResult<T>,
   expressions: number
-): _result is QueryResultData[] {
+): _result is RecordQueryExpressionResult<T>[] {
   return expressions > 1;
+}
+
+function isOperationResultArray<T>(
+  _result: RecordTransformResult<T>,
+  operations: number
+): _result is RecordOperationResult<T>[] {
+  return operations > 1;
 }
