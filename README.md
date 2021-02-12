@@ -1,5 +1,4 @@
-ember-orbit
-==============================================================================
+# ember-orbit
 
 [![Build Status](https://secure.travis-ci.org/orbitjs/ember-orbit.png?branch=master)](http://travis-ci.org/orbitjs/ember-orbit) [![Join the chat at https://gitter.im/orbitjs/orbit.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orbitjs/orbit.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -8,12 +7,11 @@ ember-orbit
 [ember.js](https://github.com/emberjs/ember.js) to provide flexibility and
 control in your application's data layer.
 
-Compatibility
-------------------------------------------------------------------------------
+## Compatibility
 
-* Ember.js v3.16 or above
-* Ember CLI v2.13 or above
-* Node.js v10 or above
+- Ember.js v3.16 or above
+- Ember CLI v2.13 or above
+- Node.js v10 or above
 
 EO features:
 
@@ -64,8 +62,7 @@ dependencies should be accompanied by a minor version bump of EO.
 simple TodoMVC example that uses EO to illustrate a number of possible
 configurations and application patterns.
 
-Installation
-------------------------------------------------------------------------------
+## Installation
 
 As with any Ember addon, you can install EO in your project with:
 
@@ -79,8 +76,7 @@ dependencies, including `@orbit/coordinator` and `@orbit/memory`.
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
-Usage
-------------------------------------------------------------------------------
+## Usage
 
 EO creates the following directories by default:
 
@@ -111,9 +107,6 @@ EO installs the following services by default:
 - `dataKeyMap` - An `@orbit/data` `KeyMap` that manages a mapping between keys
   and local IDs for scenarios in which a server does not accept client-generated
   IDs.
-
-By default, the `store` service is injected into every route and controller by
-default. The `dataSchema` and `dataKeyMap` will be injected into every `Source`.
 
 All the directories and services configured by EO can be customized for your
 app, as described in the "Customizing EO" section below.
@@ -178,7 +171,7 @@ build up a single `Transform` with any number of operations:
 
 ```javascript
 // planets added in a single `Transform`
-let planets = await store.update(t => [
+let planets = await store.update((t) => [
   t.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
   t.addRecord({ type: 'planet', attributes: { name: 'Venus' } })
 ]);
@@ -209,7 +202,7 @@ to a live resultset that will stay updated with the "terrestrial" planets in
 the store:
 
 ```javascript
-let planets = await store.liveQuery(qb =>
+let planets = await store.liveQuery((qb) =>
   qb
     .findRecords('planet')
     .filter({ attribute: 'classification', value: 'terrestrial' })
@@ -223,26 +216,25 @@ versions of their associated `Model` class.
 The attributes and relationships of records will be kept in sync with the
 backing store.
 
-Note that the EO `Store` also supports the `find` method for
-compatibility with Ember's default expectations in routes. The following
-queries are async and call `store.query` internally:
+Note that the EO `Store` also supports the `find` method for compatibility with
+Ember Data. The following queries are async and call `store.query` internally:
 
 ```javascript
 // find all records of a type
-store.find('planet');
+let planets = await store.find('planet');
 
 // find a specific record by type and id
-store.find('planet', 'abc123');
+let planet = await store.find('planet', 'abc123');
 ```
 
 The following queries are synchronous and call `store.cache.query` internally:
 
 ```javascript
 // find all records of a type
-store.cache.find('planet');
+let planets = store.cache.find('planet');
 
 // find a specific record by type and id
-store.cache.find('planet', 'abc123');
+let planet = store.cache.find('planet', 'abc123');
 ```
 
 ### Updating records
@@ -468,11 +460,12 @@ import { inject as service } from '@ember/service';
 
 export default class ApplicationRoute extends Route {
   @service dataCoordinator;
+  @service store;
 
   async beforeModel() {
     // Populate the store from backup prior to activating the coordinator
     const backup = this.dataCoordinator.getSource('backup');
-    const transform = await backup.pull(q => q.findRecords());
+    const transform = await backup.pull((q) => q.findRecords());
     await this.store.sync(transform);
 
     await this.dataCoordinator.activate();
@@ -504,7 +497,7 @@ The types, collections, and services used by EO can all be customized for
 your application via settings under the `orbit` key in `config/environment`:
 
 ```js
-module.exports = function(environment) {
+module.exports = function (environment) {
   let ENV = {
     // ... other settings here
 
@@ -561,7 +554,6 @@ for their work.
 It is hoped that, by tracking Ember Data's features and interfaces where
 possible, EO will also be able to contribute back to Ember Data.
 
-License
-------------------------------------------------------------------------------
+## License
 
-Copyright 2014-2020 Cerebris Corporation. MIT License (see LICENSE for details).
+Copyright 2014-2021 Cerebris Corporation. MIT License (see LICENSE for details).
