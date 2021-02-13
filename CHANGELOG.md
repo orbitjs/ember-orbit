@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.17.0-beta.6 (2021-02-12)
+
+#### :boom: Breaking Change
+
+- [#325](https://github.com/orbitjs/ember-orbit/pull/325) Update to orbit v0.17.0-beta.11 ([@dgeb](https://github.com/dgeb))
+- [#317](https://github.com/orbitjs/ember-orbit/pull/317) Remove ember-inflector singularize/pluralize ([@rwwagner90](https://github.com/rwwagner90))
+
+#### :rocket: Enhancement
+
+- [#325](https://github.com/orbitjs/ember-orbit/pull/325) Update to orbit v0.17.0-beta.11 ([@dgeb](https://github.com/dgeb))
+
+#### :bug: Bug Fix
+
+- [#306](https://github.com/orbitjs/ember-orbit/pull/306) Hotfix for using ember computed macros based on model attributes ([@chbonser](https://github.com/chbonser))
+- [#310](https://github.com/orbitjs/ember-orbit/pull/310) Fix prototype leakage on inheritance ([@tchak](https://github.com/tchak))
+- [#309](https://github.com/orbitjs/ember-orbit/pull/309) Store schema information on prototype to fix model inheritance ([@tchak](https://github.com/tchak))
+
+#### :house: Internal
+
+- [#318](https://github.com/orbitjs/ember-orbit/pull/318) Upgrade Ember 3.23 ([@rwwagner90](https://github.com/rwwagner90))
+- [#308](https://github.com/orbitjs/ember-orbit/pull/308) Update dependencies ([@tchak](https://github.com/tchak))
+
+#### Committers: 4
+
+- Chris Bonser ([@chbonser](https://github.com/chbonser))
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+- Paul Chavard ([@tchak](https://github.com/tchak))
+- Robert Wagner ([@rwwagner90](https://github.com/rwwagner90))
+
 ## v0.17.0-beta.1 (2020-08-02)
 
 #### :boom: Breaking Change
