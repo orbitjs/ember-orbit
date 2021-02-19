@@ -2,42 +2,30 @@ import { key, attr, hasOne, hasMany, Model } from 'ember-orbit';
 import { module, test } from 'qunit';
 
 module('Unit - Model', function (hooks) {
-  let Planet: any, Moon: any, Star: any, SolarSystem: any;
+  class Planet extends Model {
+    @attr('string') name?: string;
+    @attr('string') classification?: string;
+    @hasOne('star') sun!: Star | null;
+    @hasMany('moon') moons!: Moon[];
+  }
 
-  hooks.beforeEach(function () {
-    class PlanetClass extends Model {
-      @attr('string') name;
-      @attr('string') classification;
-      @hasOne('star') sun;
-      @hasMany('moon') moons;
-    }
+  class Moon extends Model {
+    @attr('string') name?: string;
+    @hasOne('planet') planet!: Planet | null;
+  }
 
-    class MoonClass extends Model {
-      @attr('string') name;
-      @hasOne('planet') planet;
-    }
+  class Star extends Model {
+    @attr('string') name?: string;
+    @hasMany('planet') planets!: Planet[];
+  }
 
-    class StarClass extends Model {
-      @attr('string') name;
-      @hasMany('planet') planets;
-    }
+  class SolarSystem extends Model {
+    @hasMany(['star', 'planet', 'moon']) bodies!: (Star | Planet | Moon)[];
+  }
 
-    class SolarSystemClass extends Model {
-      @hasMany(['star', 'planet', 'moon']) bodies;
-    }
+  hooks.beforeEach(function () {});
 
-    Planet = PlanetClass;
-    Moon = MoonClass;
-    Star = StarClass;
-    SolarSystem = SolarSystemClass;
-  });
-
-  hooks.afterEach(function () {
-    Planet = null;
-    Moon = null;
-    Star = null;
-    SolarSystem = null;
-  });
+  hooks.afterEach(function () {});
 
   test('it exists', function (assert) {
     assert.ok(Planet);
@@ -54,13 +42,11 @@ module('Unit - Model', function (hooks) {
   test('#keys returns defined custom secondary keys', function (assert) {
     var keys, names;
 
-    class PlanetClass extends Planet {
-      @key() remoteId;
+    class Planet2 extends Planet {
+      @key() remoteId?: string;
     }
 
-    Planet = PlanetClass;
-
-    keys = Planet.keys;
+    keys = Planet2.keys;
     names = Object.keys(keys);
     assert.equal(names.length, 1);
     assert.equal(names[0], 'remoteId');

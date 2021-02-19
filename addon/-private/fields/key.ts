@@ -7,20 +7,32 @@ import { defineKey } from '../utils/model-definition';
 
 const { assert } = Orbit;
 
-export default function key(target: Model, key: string);
-export default function key(options?: KeyDefinition);
-export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
-  function trackedKey(target: any, property: string, _: PropertyDescriptor) {
-    function get(this: Model) {
+export interface TrackedKey {
+  get(this: Model): string;
+  set(this: Model, value: string): void;
+}
+
+export default function key(target: Model, key: string): any;
+export default function key(options?: KeyDefinition): any;
+export default function key(
+  options: Model | KeyDefinition = {},
+  _?: unknown
+): any {
+  function trackedKey(
+    target: Model,
+    property: string,
+    _: PropertyDescriptor
+  ): TrackedKey {
+    function get(this: Model): string {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} key from the cache.`,
         !this.disconnected
       );
 
-      return getKeyCache(this, property).value;
+      return getKeyCache(this, property).value as string;
     }
 
-    function set(this: Model, value: any) {
+    function set(this: Model, value: string) {
       const oldValue = this.getKey(property);
 
       if (value !== oldValue) {
@@ -39,7 +51,7 @@ export default function key(options: Model | KeyDefinition = {}, _?: unknown) {
 
   if (arguments.length === 3) {
     options = {};
-    return trackedKey.apply(null, arguments);
+    return trackedKey.apply(null, arguments as any);
   }
 
   return trackedKey;
