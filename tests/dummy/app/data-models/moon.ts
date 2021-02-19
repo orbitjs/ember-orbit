@@ -1,9 +1,8 @@
 import { Model, attr, hasOne } from 'ember-orbit';
 
-import PlanetModel from 'dummy/data-models/planet';
+import Planet from 'dummy/data-models/planet';
 
-export default class MoonModel extends Model {
-  @attr('string') name!: string;
-  @hasOne('planet', { inverse: 'moons' })
-  planet!: PlanetModel[];
+export default class Moon extends Model {
+  @attr('string') name?: string;
+  @hasOne('planet', { inverse: 'moons' }) planet!: Planet[];
 }

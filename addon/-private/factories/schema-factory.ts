@@ -1,9 +1,17 @@
 import { camelize } from '@ember/string';
 import { getOwner } from '@ember/application';
-import { RecordSchema, RecordSchemaSettings } from '@orbit/records';
+import {
+  ModelDefinition,
+  RecordSchema,
+  RecordSchemaSettings
+} from '@orbit/records';
 import modulesOfType from '../system/modules-of-type';
+import { Dict } from '@orbit/utils';
 
-function getRegisteredModels(prefix, modelsCollection) {
+function getRegisteredModels(
+  prefix: string,
+  modelsCollection: string
+): string[] {
   return modulesOfType(prefix, modelsCollection).map(camelize);
 }
 
@@ -13,7 +21,7 @@ export default {
   create(injections: SchemaInjections = {}): RecordSchema {
     if (!injections.models) {
       const app = getOwner(injections);
-      const modelSchemas = {};
+      const modelSchemas: Dict<ModelDefinition> = {};
 
       let orbitConfig = app.lookup('ember-orbit:config');
       let modelNames =

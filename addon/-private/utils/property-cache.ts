@@ -8,30 +8,31 @@ import Model from '../model';
 
 const { deprecate } = Orbit;
 
-const values = new WeakMap<Cache<unknown>, unknown>();
-const caches = new WeakMap<Model, Record<string, Cache<unknown>>>();
+const values = new WeakMap<PropertyCache<unknown>, unknown>();
+const caches = new WeakMap<Model, Record<string, PropertyCache<unknown>>>();
 
-export class Cache<T> {
+export class PropertyCache<T> {
   @tracked invalidate = 0;
 
-  #value = createCache(() => {
-    this.invalidate;
-    if (values.has(this)) {
-      return values.get(this);
-    }
-    return this.#getter();
-  });
+  #value: object;
   #getter: () => T;
 
   constructor(getter: () => T) {
     this.#getter = getter;
+    this.#value = createCache<T>(() => {
+      this.invalidate;
+      if (values.has(this)) {
+        return values.get(this) as T;
+      }
+      return this.#getter();
+    });
   }
 
-  get value(): T {
+  get value(): T | undefined {
     return getValue(this.#value);
   }
 
-  set value(value: T) {
+  set value(value: T | undefined) {
     values.set(this, value);
     this.invalidate++;
   }
@@ -53,7 +54,10 @@ export function notifyPropertyChange(record: Model, property: string) {
   }
 }
 
-export function getKeyCache(record: Model, property: string): Cache<unknown> {
+export function getKeyCache(
+  record: Model,
+  property: string
+): PropertyCache<unknown> {
   let cache = caches.get(record);
 
   if (!cache) {
@@ -61,7 +65,7 @@ export function getKeyCache(record: Model, property: string): Cache<unknown> {
     caches.set(record, cache);
   }
   if (!cache[property]) {
-    cache[property] = new Cache(() => record.getKey(property));
+    cache[property] = new PropertyCache(() => record.getKey(property));
   }
 
   return cache[property];
@@ -70,7 +74,7 @@ export function getKeyCache(record: Model, property: string): Cache<unknown> {
 export function getAttributeCache(
   record: Model,
   property: string
-): Cache<unknown> {
+): PropertyCache<unknown> {
   let cache = caches.get(record);
 
   if (!cache) {
@@ -78,7 +82,7 @@ export function getAttributeCache(
     caches.set(record, cache);
   }
   if (!cache[property]) {
-    cache[property] = new Cache(() => record.getAttribute(property));
+    cache[property] = new PropertyCache(() => record.getAttribute(property));
   }
 
   return cache[property];
@@ -87,7 +91,7 @@ export function getAttributeCache(
 export function getHasOneCache(
   record: Model,
   property: string
-): Cache<unknown> {
+): PropertyCache<unknown> {
   let cache = caches.get(record);
 
   if (!cache) {
@@ -95,7 +99,9 @@ export function getHasOneCache(
     caches.set(record, cache);
   }
   if (!cache[property]) {
-    cache[property] = new Cache(() => record.getRelatedRecord(property));
+    cache[property] = new PropertyCache(() =>
+      record.getRelatedRecord(property)
+    );
   }
 
   return cache[property];
@@ -104,7 +110,7 @@ export function getHasOneCache(
 export function getHasManyCache(
   record: Model,
   property: string
-): Cache<unknown> {
+): PropertyCache<unknown> {
   let cache = caches.get(record);
 
   if (!cache) {
@@ -112,7 +118,7 @@ export function getHasManyCache(
     caches.set(record, cache);
   }
   if (!cache[property]) {
-    cache[property] = new Cache(() =>
+    cache[property] = new PropertyCache(() =>
       addLegacyMutationMethods(
         record,
         property,

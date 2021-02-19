@@ -9,7 +9,7 @@ import { clone, deepMerge } from '@orbit/utils';
 const MODEL_DEFINITION = Symbol('@orbit:modelDefinition');
 const MODEL_DEFINITION_FOR = Symbol('@orbit:modelDefinitionFor');
 
-export function getModelDefinition(proto: object): ModelDefinition {
+export function getModelDefinition(proto: any): ModelDefinition {
   if (proto[MODEL_DEFINITION]) {
     return proto[MODEL_DEFINITION] as ModelDefinition;
   } else {
@@ -19,7 +19,7 @@ export function getModelDefinition(proto: object): ModelDefinition {
 }
 
 export function extendModelDefinition(
-  proto: object,
+  proto: any,
   modelDefinition: ModelDefinition
 ): void {
   if (proto[MODEL_DEFINITION] && proto[MODEL_DEFINITION_FOR]) {
