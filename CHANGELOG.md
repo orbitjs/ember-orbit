@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.17.0-beta.7 (2021-02-19)
+
+#### :rocket: Enhancement
+
+- [#327](https://github.com/orbitjs/ember-orbit/pull/327) Strict typings ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#326](https://github.com/orbitjs/ember-orbit/pull/326) Update orbit v0.17.0-beta.12 and ember-cli v3.25.0 ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.6 (2021-02-12)
 
 #### :boom: Breaking Change
