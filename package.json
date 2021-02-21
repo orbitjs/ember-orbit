@@ -103,7 +103,7 @@
     "configPath": "tests/dummy/config"
   },
   "peerDependencies": {
-    "ember-source": "~3.16.0"
+    "ember-source": "^3.16.0"
   },
   "volta": {
     "node": "10.23.0",
