@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.17.0-beta.9 (2021-02-21)
+
+#### :bug: Bug Fix
+
+- [#329](https://github.com/orbitjs/ember-orbit/pull/329) Use js instead of ts within app dir ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#330](https://github.com/orbitjs/ember-orbit/pull/330) Don't include app/\*_/_ in tsconfig ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.8 (2021-02-21)
 
 #### :rocket: Enhancement
