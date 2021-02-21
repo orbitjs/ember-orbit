@@ -1,9 +1,12 @@
 import { getContext } from '@ember/test-helpers';
+import { Source } from '@orbit/data';
 
-export async function waitForSource(sourceOrSourceName) {
+export async function waitForSource(
+  sourceOrSourceName: Source | string
+): Promise<void> {
   let source;
   if (typeof sourceOrSourceName === 'string') {
-    let { owner } = getContext();
+    let { owner } = getContext() as any;
     source = owner.lookup(`data-source:${sourceOrSourceName}`);
     if (!source) {
       throw new Error(

@@ -15,7 +15,7 @@ export default function (prefix: string, type: string): string[] {
     const matches = regex.exec(moduleName);
     if (matches && matches.length === 1) {
       const matchedName = moduleName.match(/[^\/]+\/?$/);
-      if (matchedName) {
+      if (matchedName?.[0]) {
         found.push(matchedName[0]);
       }
     }

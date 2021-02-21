@@ -4,7 +4,8 @@ import {
   RecordRelationship,
   Record,
   ModelDefinition,
-  RecordIdentity
+  RecordIdentity,
+  RelationshipDefinition
 } from '@orbit/records';
 import { deepSet, Dict } from '@orbit/utils';
 
@@ -30,10 +31,12 @@ function assignKeys(
   record: Record,
   properties: Dict<unknown>
 ) {
-  const keys = modelDefinition.keys || {};
-  for (let key of Object.keys(keys)) {
-    if (properties[key] !== undefined) {
-      deepSet(record, ['keys', key], properties[key]);
+  const keyDefs = modelDefinition.keys;
+  if (keyDefs) {
+    for (let key of Object.keys(keyDefs)) {
+      if (properties[key] !== undefined) {
+        deepSet(record, ['keys', key], properties[key]);
+      }
     }
   }
 }
@@ -43,10 +46,12 @@ function assignAttributes(
   record: Record,
   properties: Dict<unknown>
 ) {
-  const attributes = modelDefinition.attributes || {};
-  for (let attribute of Object.keys(attributes)) {
-    if (properties[attribute] !== undefined) {
-      deepSet(record, ['attributes', attribute], properties[attribute]);
+  const attributeDefs = modelDefinition.attributes;
+  if (attributeDefs) {
+    for (let attribute of Object.keys(attributeDefs)) {
+      if (properties[attribute] !== undefined) {
+        deepSet(record, ['attributes', attribute], properties[attribute]);
+      }
     }
   }
 }
@@ -56,23 +61,26 @@ function assignRelationships(
   record: Record,
   properties: Dict<unknown>
 ) {
-  const relationships = modelDefinition.relationships || {};
-  for (let relationship of Object.keys(relationships)) {
-    if (properties[relationship] !== undefined) {
-      let relationshipType = relationships[relationship].type as
-        | string
-        | string[];
-      let relationshipProperties = properties[relationship] as
-        | RecordIdentity
-        | RecordIdentity[]
-        | string
-        | string[]
-        | null;
-      deepSet(
-        record,
-        ['relationships', relationship],
-        normalizeRelationship(relationshipType, relationshipProperties)
-      );
+  const relationshipDefs = modelDefinition.relationships;
+  if (relationshipDefs) {
+    for (let relationship of Object.keys(relationshipDefs)) {
+      if (properties[relationship] !== undefined) {
+        let relationshipDef = relationshipDefs[
+          relationship
+        ] as RelationshipDefinition;
+        let relationshipType = relationshipDef.type as string | string[];
+        let relationshipProperties = properties[relationship] as
+          | RecordIdentity
+          | RecordIdentity[]
+          | string
+          | string[]
+          | null;
+        deepSet(
+          record,
+          ['relationships', relationship],
+          normalizeRelationship(relationshipType, relationshipProperties)
+        );
+      }
     }
   }
 }
