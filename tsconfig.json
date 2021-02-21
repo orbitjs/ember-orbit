@@ -27,7 +27,6 @@
     }
   },
   "include": [
-    "app/**/*",
     "addon/**/*",
     "tests/**/*.ts",
     "types/**/*",
