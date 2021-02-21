@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0-beta.8 (2021-02-21)
+
+#### :rocket: Enhancement
+
+- [#328](https://github.com/orbitjs/ember-orbit/pull/328) Improve typings and fix ember-source peer dependency ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.7 (2021-02-19)
 
 #### :rocket: Enhancement
