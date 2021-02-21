@@ -1388,7 +1388,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/ember-qunit@^3.4.11":
+"@types/ember-qunit@^3.4.13":
   version "3.4.13"
   resolved "https://registry.yarnpkg.com/@types/ember-qunit/-/ember-qunit-3.4.13.tgz#58d359b62a6f6e7039d546f4c08b83ad269f7498"
   integrity sha512-T7Lq8ppyxueneQgXeo8VsV4OGMeVTMYuzFOc5yUAGZIkUDSi907CdVkCCO4zUqRGl9FkkgCQUxwPiZv+reerGQ==
@@ -1404,14 +1404,6 @@
   dependencies:
     "@types/ember" "*"
     "@types/htmlbars-inline-precompile" "*"
-    "@types/jquery" "*"
-    "@types/rsvp" "*"
-
-"@types/ember-testing-helpers@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@types/ember-testing-helpers/-/ember-testing-helpers-0.0.4.tgz#d305b418d477c6f84fcd4dcb851a3efadbc4a2bd"
-  integrity sha512-6EEY+kk4+HsKMzLkzZp0UU7TzUG1EB2mPyORrQXcudjJ0M7k67Z9cCBDn7kupDcu4NVgtG7HNRZTZgBljOjxoA==
-  dependencies:
     "@types/jquery" "*"
     "@types/rsvp" "*"
 
@@ -1546,7 +1538,17 @@
   resolved "https://registry.yarnpkg.com/@types/ember__template/-/ember__template-3.16.1.tgz#30d7f50a49b190934db0f5a56dd76ad86c21efc6"
   integrity sha512-APQINizzizl2LHWGMFBCanRjKZQsdzqn7b+us17zbNhnx/R0IZAJq901x/i7eozCRwxsDKmGzNABSCIu6uc1Tg==
 
-"@types/ember__test@*":
+"@types/ember__test-helpers@^1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@types/ember__test-helpers/-/ember__test-helpers-1.7.3.tgz#a3553f5c3318032dcdf03b7b511254b9edf930eb"
+  integrity sha512-5LGWJHkdbKYrrA/l4QFeu2WNE0iaz5lBjc980VLzOqyfy2/r4CbZbuHtg+oL5jYQDnB2Udpz9b3EwwM3lg7hsA==
+  dependencies:
+    "@types/ember" "*"
+    "@types/ember__application" "*"
+    "@types/ember__error" "*"
+    "@types/htmlbars-inline-precompile" "*"
+
+"@types/ember__test@*", "@types/ember__test@^3.16.1":
   version "3.16.1"
   resolved "https://registry.yarnpkg.com/@types/ember__test/-/ember__test-3.16.1.tgz#8407e42b9835a13ef0c6ef7a7ce3aa3d7ebcb7ed"
   integrity sha512-0ICnkM4BDwOKhqmLQRpfvNuZlb6QOqE+FhP5fPaWXWy7bgcL9CY7kMRc7N+wZQbTvbSKqgEdfbvjd0bJsIrz5w==
@@ -1636,7 +1638,7 @@
   resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.5.tgz#434711bdd49eb5ee69d90c1d67c354a9a8ecb18b"
   integrity sha512-/JHkVHtx/REVG0VVToGRGH2+23hsYLHdyG+GrvoUGlGAd0ErauXDyvHtRI/7H7mzLm+tBCKA7pfcpkQ1lf58iQ==
 
-"@types/qunit@*", "@types/qunit@^2.9.4":
+"@types/qunit@*", "@types/qunit@^2.11.1":
   version "2.11.1"
   resolved "https://registry.yarnpkg.com/@types/qunit/-/qunit-2.11.1.tgz#3496d430d2bb0fa4761f00a27511f46020c6b410"
   integrity sha512-vcM5+9O8LZuu5DYseaV4J7ehkYrhkv+aMIuxnF/OqMYlVEdv+odpCH1/5OVztiqxbCqTpQKWuELkMvG7OPycUQ==
@@ -11167,10 +11169,10 @@ typescript-memoize@^1.0.0-alpha.3:
   resolved "https://registry.yarnpkg.com/typescript-memoize/-/typescript-memoize-1.0.0-alpha.4.tgz#fd97ab63807c3392af5d0ac5f4754254a4fcd634"
   integrity sha512-woA2UUWSvx8ugkEjPN8DMuNjukBp8NQeLmz+LRXbEsQIvhLR8LSlD+8Qxdk7NmgE8xeJabJdU8zSrO4ozijGjg==
 
-typescript@^3.9.7:
-  version "3.9.9"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.9.tgz#e69905c54bc0681d0518bd4d587cc6f2d0b1a674"
-  integrity sha512-kdMjTiekY+z/ubJCATUPlRDl39vXYiMV9iyeMuEuXZh2we6zz80uovNN2WlAxmmdE/Z/YQe+EbOEXB5RHEED3w==
+typescript@^4.1.5:
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.5.tgz#123a3b214aaff3be32926f0d8f1f6e704eb89a72"
+  integrity sha512-6OSu9PTIzmn9TCDiovULTnET6BgXtDYL4Gg4szY+cGsc3JP1dQL8qvE8kShTRx1NIw4Q9IBHlwODjkjWEtMUyA==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"

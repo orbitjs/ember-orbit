@@ -8,6 +8,12 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "strict": true,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
       "dummy/tests/*": ["tests/*"],
@@ -23,7 +29,7 @@
   "include": [
     "app/**/*",
     "addon/**/*",
-    "tests/**/*",
+    "tests/**/*.ts",
     "types/**/*",
     "test-support/**/*",
     "addon-test-support/**/*"

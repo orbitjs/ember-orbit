@@ -44,90 +44,104 @@ export class PropertyCache<T> {
 }
 
 export function notifyPropertyChange(record: Model, property: string) {
-  const cache = caches.get(record);
-  if (cache && cache[property]) {
-    cache[property].notifyPropertyChange();
-    // TODO: there is an issue with glimmer cache and ember CP macros
-    // https://github.com/ember-polyfills/ember-cache-primitive-polyfill/issues/78
-    // in order to fix it for now we are calling Ember.notifyPropertyChange();
-    emberNotifyPropertyChange(record, property);
-  }
+  caches.get(record)?.[property]?.notifyPropertyChange();
+
+  // TODO: there is an issue with glimmer cache and ember CP macros
+  // https://github.com/ember-polyfills/ember-cache-primitive-polyfill/issues/78
+  // in order to fix it for now we are calling Ember.notifyPropertyChange();
+  emberNotifyPropertyChange(record, property);
 }
 
 export function getKeyCache(
   record: Model,
   property: string
 ): PropertyCache<unknown> {
-  let cache = caches.get(record);
+  let recordCaches = caches.get(record);
 
-  if (!cache) {
-    cache = {};
-    caches.set(record, cache);
-  }
-  if (!cache[property]) {
-    cache[property] = new PropertyCache(() => record.getKey(property));
+  if (recordCaches === undefined) {
+    recordCaches = {};
+    caches.set(record, recordCaches);
   }
 
-  return cache[property];
+  let propertyCache = recordCaches[property];
+
+  if (propertyCache === undefined) {
+    propertyCache = recordCaches[property] = new PropertyCache(() =>
+      record.getKey(property)
+    );
+  }
+
+  return propertyCache;
 }
 
 export function getAttributeCache(
   record: Model,
   property: string
 ): PropertyCache<unknown> {
-  let cache = caches.get(record);
+  let recordCaches = caches.get(record);
 
-  if (!cache) {
-    cache = {};
-    caches.set(record, cache);
-  }
-  if (!cache[property]) {
-    cache[property] = new PropertyCache(() => record.getAttribute(property));
+  if (recordCaches === undefined) {
+    recordCaches = {};
+    caches.set(record, recordCaches);
   }
 
-  return cache[property];
+  let propertyCache = recordCaches[property];
+
+  if (propertyCache === undefined) {
+    propertyCache = recordCaches[property] = new PropertyCache(() =>
+      record.getAttribute(property)
+    );
+  }
+
+  return propertyCache;
 }
 
 export function getHasOneCache(
   record: Model,
   property: string
 ): PropertyCache<unknown> {
-  let cache = caches.get(record);
+  let recordCaches = caches.get(record);
 
-  if (!cache) {
-    cache = {};
-    caches.set(record, cache);
+  if (recordCaches === undefined) {
+    recordCaches = {};
+    caches.set(record, recordCaches);
   }
-  if (!cache[property]) {
-    cache[property] = new PropertyCache(() =>
+
+  let propertyCache = recordCaches[property];
+
+  if (propertyCache === undefined) {
+    propertyCache = recordCaches[property] = new PropertyCache(() =>
       record.getRelatedRecord(property)
     );
   }
 
-  return cache[property];
+  return propertyCache;
 }
 
 export function getHasManyCache(
   record: Model,
   property: string
 ): PropertyCache<unknown> {
-  let cache = caches.get(record);
+  let recordCaches = caches.get(record);
 
-  if (!cache) {
-    cache = {};
-    caches.set(record, cache);
+  if (recordCaches === undefined) {
+    recordCaches = {};
+    caches.set(record, recordCaches);
   }
-  if (!cache[property]) {
-    cache[property] = new PropertyCache(() =>
+
+  let propertyCache = recordCaches[property];
+
+  if (propertyCache === undefined) {
+    propertyCache = recordCaches[property] = new PropertyCache(() =>
       addLegacyMutationMethods(
         record,
         property,
-        record.getRelatedRecords(property) || []
+        record.getRelatedRecords(property) ?? []
       )
     );
   }
 
-  return cache[property];
+  return propertyCache;
 }
 
 function addLegacyMutationMethods(
