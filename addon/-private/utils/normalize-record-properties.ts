@@ -2,7 +2,7 @@ import { Orbit } from '@orbit/core';
 import {
   RecordSchema,
   RecordRelationship,
-  Record,
+  InitializedRecord,
   ModelDefinition,
   RecordIdentity,
   RelationshipDefinition
@@ -17,7 +17,7 @@ export default function normalizeRecordProperties(
 ) {
   const { id, type } = properties;
   const modelDefinition = schema.getModel(type as string);
-  const record = { id, type } as Record;
+  const record = { id, type } as InitializedRecord;
 
   assignKeys(modelDefinition, record, properties);
   assignAttributes(modelDefinition, record, properties);
@@ -28,7 +28,7 @@ export default function normalizeRecordProperties(
 
 function assignKeys(
   modelDefinition: ModelDefinition,
-  record: Record,
+  record: InitializedRecord,
   properties: Dict<unknown>
 ) {
   const keyDefs = modelDefinition.keys;
@@ -43,7 +43,7 @@ function assignKeys(
 
 function assignAttributes(
   modelDefinition: ModelDefinition,
-  record: Record,
+  record: InitializedRecord,
   properties: Dict<unknown>
 ) {
   const attributeDefs = modelDefinition.attributes;
@@ -58,7 +58,7 @@ function assignAttributes(
 
 function assignRelationships(
   modelDefinition: ModelDefinition,
-  record: Record,
+  record: InitializedRecord,
   properties: Dict<unknown>
 ) {
   const relationshipDefs = modelDefinition.relationships;

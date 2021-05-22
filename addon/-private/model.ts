@@ -2,11 +2,11 @@ import { Orbit } from '@orbit/core';
 import { Dict } from '@orbit/utils';
 import { DefaultRequestOptions, RequestOptions } from '@orbit/data';
 import {
-  Record,
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
-  RelationshipDefinition
+  RelationshipDefinition,
+  InitializedRecord
 } from '@orbit/records';
 import {
   destroy,
@@ -53,7 +53,7 @@ export default class Model {
     return !this._store;
   }
 
-  getData(): Record | undefined {
+  getData(): InitializedRecord | undefined {
     return this.store.cache.peekRecordData(this.type, this.id);
   }
 

@@ -10,7 +10,7 @@ import {
 import {
   RecordIdentity,
   RecordOperation,
-  Record,
+  InitializedRecord,
   RecordKeyMap,
   RecordQueryOrExpressions,
   RecordSchema,
@@ -101,7 +101,7 @@ export default class Cache {
     this._sourceCache.defaultTransformOptions = options;
   }
 
-  peekRecordData(type: string, id: string): Record | undefined {
+  peekRecordData(type: string, id: string): InitializedRecord | undefined {
     return this._sourceCache.getRecordSync({ type, id });
   }
 
@@ -269,7 +269,7 @@ export default class Cache {
     }
   }
 
-  lookup(record: Record): Model {
+  lookup(record: InitializedRecord): Model {
     let model = this._identityMap.get(record);
 
     if (!model) {
@@ -282,12 +282,12 @@ export default class Cache {
 
   lookupQueryResult(
     query: RecordQuery,
-    result: RecordQueryResult<Record>
+    result: RecordQueryResult<InitializedRecord>
   ): RecordQueryResult<Model> {
     if (
-      isQueryExpressionResultArray<Record>(result, query.expressions.length)
+      isQueryExpressionResultArray<InitializedRecord>(result, query.expressions.length)
     ) {
-      return (result as RecordQueryExpressionResult<Record>[]).map((i) =>
+      return (result as RecordQueryExpressionResult<InitializedRecord>[]).map((i) =>
         this.lookupQueryExpressionResult(i)
       );
     } else {
@@ -297,9 +297,9 @@ export default class Cache {
 
   lookupTransformResult(
     transform: RecordTransform,
-    result: RecordTransformResult<Record>
+    result: RecordTransformResult<InitializedRecord>
   ): RecordTransformResult<Model> {
-    if (isOperationResultArray<Record>(result, transform.operations.length)) {
+    if (isOperationResultArray<InitializedRecord>(result, transform.operations.length)) {
       return result.map((i) => this.lookupOperationResult(i));
     } else {
       return this.lookupOperationResult(result);
@@ -307,7 +307,7 @@ export default class Cache {
   }
 
   private lookupQueryExpressionResult(
-    result: RecordQueryExpressionResult<Record>
+    result: RecordQueryExpressionResult<InitializedRecord>
   ): RecordQueryExpressionResult<Model> {
     if (Array.isArray(result)) {
       return result.map((i) => (i ? this.lookup(i) : i));
@@ -319,7 +319,7 @@ export default class Cache {
   }
 
   private lookupOperationResult(
-    result: RecordOperationResult<Record>
+    result: RecordOperationResult<InitializedRecord>
   ): RecordOperationResult<Model> {
     if (result) {
       return this.lookup(result);
@@ -341,7 +341,7 @@ export default class Cache {
 
   private generatePatchListener(): (operation: RecordOperation) => void {
     return (operation: RecordOperation) => {
-      const record = operation.record as Record;
+      const record = operation.record as InitializedRecord;
       const { type, id, keys, attributes, relationships } = record;
       const identity = { type, id };
 
