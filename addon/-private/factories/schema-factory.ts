@@ -25,7 +25,7 @@ export default {
 
       let orbitConfig = app.lookup('ember-orbit:config');
       let modelNames =
-        injections.modelNames ||
+        injections.modelNames ??
         getRegisteredModels(
           app.base.modulePrefix,
           orbitConfig.collections.models

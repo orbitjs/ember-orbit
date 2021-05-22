@@ -11,7 +11,7 @@ const { deprecate } = Orbit;
 
 export function initialize(application: Application) {
   let orbitConfig: OrbitConfig =
-    application.resolveRegistration('ember-orbit:config') || {};
+    application.resolveRegistration('ember-orbit:config') ?? {};
 
   if (!orbitConfig.skipKeyMapService) {
     // Register a keyMap service

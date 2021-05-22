@@ -203,15 +203,15 @@ export default class Model {
   }
 
   static get keys(): Dict<KeyDefinition> {
-    return getModelDefinition(this.prototype).keys || {};
+    return getModelDefinition(this.prototype).keys ?? {};
   }
 
   static get attributes(): Dict<AttributeDefinition> {
-    return getModelDefinition(this.prototype).attributes || {};
+    return getModelDefinition(this.prototype).attributes ?? {};
   }
 
   static get relationships(): Dict<RelationshipDefinition> {
-    return getModelDefinition(this.prototype).relationships || {};
+    return getModelDefinition(this.prototype).relationships ?? {};
   }
 
   static create(injections: ModelSettings) {
