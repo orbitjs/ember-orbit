@@ -1,4 +1,4 @@
-import { deepGet } from '@orbit/utils';
+import { registerDestructor } from '@ember/destroyable';
 import { Orbit } from '@orbit/core';
 import {
   buildQuery,
@@ -7,29 +7,34 @@ import {
   FullResponse,
   RequestOptions
 } from '@orbit/data';
-import {
-  RecordIdentity,
-  RecordOperation,
-  InitializedRecord,
-  RecordKeyMap,
-  RecordQueryOrExpressions,
-  RecordSchema,
-  RecordTransformBuilder,
-  RecordQuery,
-  RecordTransform,
-  RecordQueryResult,
-  RecordQueryExpressionResult,
-  RecordTransformResult,
-  RecordOperationResult,
-  RecordQueryBuilder
-} from '@orbit/records';
-import { RecordCacheQueryOptions } from '@orbit/record-cache';
-import { MemoryCache } from '@orbit/memory';
 import IdentityMap from '@orbit/identity-map';
-import { registerDestructor } from '@ember/destroyable';
-import Model from './model';
+import { MemoryCache } from '@orbit/memory';
+import {
+  RecordCacheQueryOptions,
+  RecordCacheTransformOptions
+} from '@orbit/record-cache';
+import {
+  InitializedRecord,
+  RecordIdentity,
+  RecordKeyMap,
+  RecordOperation,
+  RecordOperationResult,
+  RecordQuery,
+  RecordQueryExpressionResult,
+  RecordQueryResult,
+  RecordSchema,
+  RecordTransform,
+  RecordTransformResult
+} from '@orbit/records';
+import { deepGet } from '@orbit/utils';
 import LiveQuery from './live-query';
+import Model from './model';
 import ModelFactory from './model-factory';
+import {
+  ModelAwareQueryBuilder,
+  ModelAwareQueryOrExpressions,
+  ModelAwareTransformBuilder
+} from './utils/model-aware-types';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
 const { assert } = Orbit;
@@ -40,7 +45,12 @@ export interface CacheSettings {
 }
 
 export default class Cache {
-  private _sourceCache: MemoryCache;
+  private _sourceCache: MemoryCache<
+    RecordCacheQueryOptions,
+    RecordCacheTransformOptions,
+    ModelAwareQueryBuilder,
+    ModelAwareTransformBuilder
+  >;
   private _modelFactory: ModelFactory;
   private _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
@@ -69,11 +79,11 @@ export default class Cache {
     return this._sourceCache.schema;
   }
 
-  get queryBuilder(): RecordQueryBuilder {
+  get queryBuilder(): ModelAwareQueryBuilder {
     return this._sourceCache.queryBuilder;
   }
 
-  get transformBuilder(): RecordTransformBuilder {
+  get transformBuilder(): ModelAwareTransformBuilder {
     return this._sourceCache.transformBuilder;
   }
 
@@ -90,13 +100,13 @@ export default class Cache {
   }
 
   get defaultTransformOptions():
-    | DefaultRequestOptions<RequestOptions>
+    | DefaultRequestOptions<RecordCacheTransformOptions>
     | undefined {
     return this._sourceCache.defaultTransformOptions;
   }
 
   set defaultTransformOptions(
-    options: DefaultRequestOptions<RequestOptions> | undefined
+    options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined
   ) {
     this._sourceCache.defaultTransformOptions = options;
   }
@@ -186,21 +196,21 @@ export default class Cache {
   query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): RequestData;
   query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options: FullRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): FullResponse<RequestData, undefined, RecordOperation>;
   query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: RecordCacheQueryOptions,
     id?: string
   ): RequestData | FullResponse<RequestData, undefined, RecordOperation> {
@@ -224,7 +234,7 @@ export default class Cache {
   }
 
   liveQuery(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: RequestOptions,
     id?: string
   ): LiveQuery {
@@ -285,10 +295,13 @@ export default class Cache {
     result: RecordQueryResult<InitializedRecord>
   ): RecordQueryResult<Model> {
     if (
-      isQueryExpressionResultArray<InitializedRecord>(result, query.expressions.length)
+      isQueryExpressionResultArray<InitializedRecord>(
+        result,
+        query.expressions.length
+      )
     ) {
-      return (result as RecordQueryExpressionResult<InitializedRecord>[]).map((i) =>
-        this.lookupQueryExpressionResult(i)
+      return (result as RecordQueryExpressionResult<InitializedRecord>[]).map(
+        (i) => this.lookupQueryExpressionResult(i)
       );
     } else {
       return this.lookupQueryExpressionResult(result);
@@ -299,7 +312,12 @@ export default class Cache {
     transform: RecordTransform,
     result: RecordTransformResult<InitializedRecord>
   ): RecordTransformResult<Model> {
-    if (isOperationResultArray<InitializedRecord>(result, transform.operations.length)) {
+    if (
+      isOperationResultArray<InitializedRecord>(
+        result,
+        transform.operations.length
+      )
+    ) {
       return result.map((i) => this.lookupOperationResult(i));
     } else {
       return this.lookupOperationResult(result);

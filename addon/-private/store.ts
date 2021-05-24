@@ -1,34 +1,39 @@
 import { getOwner, setOwner } from '@ember/application';
+import { associateDestroyableChild, destroy } from '@ember/destroyable';
+import { Listener, Log, Orbit, TaskQueue } from '@orbit/core';
 import {
   buildQuery,
   buildTransform,
   DefaultRequestOptions,
   FullRequestOptions,
   FullResponse,
+  QueryOrExpressions,
   RequestOptions
 } from '@orbit/data';
+import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
+import { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
-  cloneRecordIdentity,
   RecordIdentity,
   RecordKeyMap,
   RecordOperation,
   RecordQueryBuilder,
-  RecordQueryOrExpressions,
+  RecordQueryExpression,
   RecordQueryResult,
   RecordSchema,
+  RecordSourceQueryOptions,
   RecordTransform,
-  RecordTransformBuilder,
-  RecordTransformOrOperations,
   RecordTransformResult
 } from '@orbit/records';
-import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
-import { RecordCacheQueryOptions } from '@orbit/record-cache';
-import { Orbit, Log, TaskQueue, Listener } from '@orbit/core';
-import { destroy, associateDestroyableChild } from '@ember/destroyable';
 import Cache from './cache';
 import Model from './model';
 import ModelFactory from './model-factory';
-import normalizeRecordProperties from './utils/normalize-record-properties';
+import {
+  ModelAwareQueryBuilder,
+  ModelAwareQueryOrExpressions,
+  ModelAwareTransformBuilder,
+  ModelAwareTransformOrOperations
+} from './utils/model-aware-types';
+import { ModelFields } from './utils/model-fields';
 
 const { deprecate } = Orbit;
 
@@ -91,22 +96,22 @@ export default class Store {
     return this.source.schema;
   }
 
-  get queryBuilder(): RecordQueryBuilder {
+  get queryBuilder(): ModelAwareQueryBuilder {
     return this.source.queryBuilder;
   }
 
-  get transformBuilder(): RecordTransformBuilder {
+  get transformBuilder(): ModelAwareTransformBuilder {
     return this.source.transformBuilder;
   }
 
   get defaultQueryOptions():
-    | DefaultRequestOptions<RecordCacheQueryOptions>
+    | DefaultRequestOptions<RecordSourceQueryOptions>
     | undefined {
     return this.source.defaultQueryOptions;
   }
 
   set defaultQueryOptions(
-    options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
+    options: DefaultRequestOptions<RecordSourceQueryOptions> | undefined
   ) {
     this.source.defaultQueryOptions = options;
   }
@@ -170,7 +175,10 @@ export default class Store {
   }
 
   liveQuery(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: QueryOrExpressions<
+      RecordQueryExpression,
+      RecordQueryBuilder
+    >,
     options?: RequestOptions,
     id?: string
   ): Promise<any> {
@@ -189,21 +197,21 @@ export default class Store {
   async query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): Promise<RequestData>;
   async query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options: FullRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): Promise<FullResponse<RequestData, undefined, RecordOperation>>;
   async query<
     RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
   >(
-    queryOrExpressions: RecordQueryOrExpressions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: RecordCacheQueryOptions,
     id?: string
   ): Promise<
@@ -231,30 +239,26 @@ export default class Store {
    * Adds a record
    */
   async addRecord(
-    properties = {},
+    properties: ModelFields,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update((t) => t.addRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    return await this.update((t) => t.addRecord(properties), options);
   }
 
   /**
    * Updates a record
    */
   async updateRecord(
-    properties = {},
+    properties: ModelFields,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    let record = normalizeRecordProperties(this.source.schema, properties);
-    await this.update((t) => t.updateRecord(record), options);
-    return this.cache.lookup(record) as Model;
+    return await this.update((t) => t.updateRecord(properties), options);
   }
 
   /**
@@ -267,8 +271,7 @@ export default class Store {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    const identity = cloneRecordIdentity(record);
-    await this.update((t) => t.removeRecord(identity), options);
+    await this.update((t) => t.removeRecord(record), options);
   }
 
   find(
@@ -283,7 +286,7 @@ export default class Store {
     }
   }
 
-  findRecord(
+  async findRecord(
     type: string,
     id: string,
     options?: RequestOptions
@@ -291,23 +294,23 @@ export default class Store {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return this.query(
+    return await this.query(
       (q) => q.findRecord({ type, id }),
       options as DefaultRequestOptions<RequestOptions>
-    ) as Promise<Model>;
+    );
   }
 
-  findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
+  async findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return this.query(
+    return await this.query(
       (q) => q.findRecords(type),
       options as DefaultRequestOptions<RequestOptions>
-    ) as Promise<Model[]>;
+    );
   }
 
-  findRecordByKey(
+  async findRecordByKey(
     type: string,
     keyName: string,
     keyValue: string,
@@ -316,7 +319,7 @@ export default class Store {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return this.findRecord(
+    return await this.findRecord(
       type,
       this.cache.recordIdFromKey(type, keyName, keyValue),
       options
@@ -360,21 +363,21 @@ export default class Store {
   update<
     RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
   >(
-    transformOrOperations: RecordTransformOrOperations,
+    transformOrOperations: ModelAwareTransformOrOperations,
     options?: DefaultRequestOptions<RequestOptions>,
     id?: string
   ): Promise<RequestData>;
   update<
     RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
   >(
-    transformOrOperations: RecordTransformOrOperations,
+    transformOrOperations: ModelAwareTransformOrOperations,
     options: FullRequestOptions<RequestOptions>,
     id?: string
   ): Promise<FullResponse<RequestData, unknown, RecordOperation>>;
   async update<
     RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
   >(
-    transformOrOperations: RecordTransformOrOperations,
+    transformOrOperations: ModelAwareTransformOrOperations,
     options?: RequestOptions,
     id?: string
   ): Promise<

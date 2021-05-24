@@ -149,23 +149,21 @@ export default class Model {
   }
 
   async replaceAttributes(
-    properties: Dict<unknown> = {},
+    properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
-    const keys = Object.keys(properties);
-    await this.store
-      .update(
-        (t) =>
-          keys.map((key) =>
-            t.replaceAttribute(this.identity, key, properties[key])
-          ),
-        options
-      )
-      .then(() => this);
+    const propertyNames = Object.keys(properties);
+    await this.store.update(
+      (t) =>
+        propertyNames.map((name) =>
+          t.replaceAttribute(this.identity, name, properties[name])
+        ),
+      options
+    );
   }
 
   async update(
-    properties: Dict<unknown> = {},
+    properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
