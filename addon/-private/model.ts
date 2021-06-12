@@ -6,7 +6,8 @@ import {
   KeyDefinition,
   AttributeDefinition,
   RelationshipDefinition,
-  InitializedRecord
+  InitializedRecord,
+  ModelDefinition
 } from '@orbit/records';
 import {
   destroy,
@@ -198,6 +199,10 @@ export default class Model {
     }
 
     return this._store;
+  }
+
+  static get definition(): ModelDefinition {
+    return getModelDefinition(this.prototype);
   }
 
   static get keys(): Dict<KeyDefinition> {
