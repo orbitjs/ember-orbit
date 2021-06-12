@@ -19,11 +19,15 @@ export interface OrbitConfig {
     coordinator: string;
     schema: string;
     keyMap: string;
+    normalizer: string;
+    validator: string;
   };
   skipStoreService: boolean;
   skipCoordinatorService: boolean;
   skipSchemaService: boolean;
   skipKeyMapService: boolean;
+  skipNormalizerService: boolean;
+  skipValidatorService: boolean;
   mutableModels: boolean;
 }
 
@@ -44,12 +48,16 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     store: 'store',
     coordinator: 'data-coordinator',
     schema: 'data-schema',
-    keyMap: 'data-key-map'
+    keyMap: 'data-key-map',
+    normalizer: 'data-normalizer',
+    validator: 'data-validator'
   },
   skipStoreService: false,
   skipCoordinatorService: false,
   skipSchemaService: false,
   skipKeyMapService: false,
+  skipNormalizerService: false,
+  skipValidatorService: false,
   mutableModels: false
 };
 
@@ -62,19 +70,12 @@ export function initialize(application: Application & ApplicationRegistry) {
   const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit ?? {});
 
   // Customize pluralization rules
-  if (
-    application.__registry__ &&
-    application.__registry__.resolver &&
-    application.__registry__.resolver.pluralizedTypes
-  ) {
-    application.__registry__.resolver.pluralizedTypes[config.types.bucket] =
-      config.collections.buckets;
-    application.__registry__.resolver.pluralizedTypes[config.types.model] =
-      config.collections.models;
-    application.__registry__.resolver.pluralizedTypes[config.types.source] =
-      config.collections.sources;
-    application.__registry__.resolver.pluralizedTypes[config.types.strategy] =
-      config.collections.strategies;
+  const pluralizedTypes = application.__registry__?.resolver?.pluralizedTypes;
+  if (pluralizedTypes) {
+    pluralizedTypes[config.types.bucket] = config.collections.buckets;
+    pluralizedTypes[config.types.model] = config.collections.models;
+    pluralizedTypes[config.types.source] = config.collections.sources;
+    pluralizedTypes[config.types.strategy] = config.collections.strategies;
   }
 
   application.register('ember-orbit:config', config, {

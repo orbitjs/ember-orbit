@@ -28,7 +28,9 @@ module('Integration - Config', function (hooks) {
             store: 'orbit-store',
             coordinator: 'orbit-coordinator',
             schema: 'data-schema',
-            keyMap: 'orbit-key-map'
+            keyMap: 'orbit-key-map',
+            normalizer: 'orbit-normalizer',
+            validator: 'orbit-validator'
           }
         }
       },
@@ -44,6 +46,11 @@ module('Integration - Config', function (hooks) {
   });
 
   test('registrations respect config', async function (assert) {
+    const schema = owner.lookup('service:data-schema');
+    const keyMap = owner.lookup('service:orbit-key-map');
+    const normalizer = owner.lookup('service:orbit-normalizer');
+    const validatorFor = owner.lookup('service:orbit-validator');
+
     assert.equal(
       owner.lookup('service:orbit-store'),
       store,
@@ -53,13 +60,45 @@ module('Integration - Config', function (hooks) {
       owner.resolveRegistration('orbit-model:planet'),
       'model factory registration is named from configuration'
     );
-    assert.ok(
+    assert.strictEqual(
       owner.lookup('orbit-source:store'),
+      store.source,
       'source registation is named from configuration'
     );
-    assert.ok(
+    assert.strictEqual(
       owner.lookup('orbit-source:store').schema,
-      'schema is injected successfully on sources'
+      schema,
+      'schema is injected into sources'
+    );
+    assert.strictEqual(
+      owner.lookup('orbit-source:store').keyMap,
+      keyMap,
+      'keyMap is injected into sources'
+    );
+    assert.strictEqual(
+      owner.lookup('orbit-source:store').validatorFor,
+      validatorFor,
+      'validatorFor is injected into sources'
+    );
+    assert.strictEqual(
+      normalizer.schema,
+      schema,
+      'schema is injected into normalizer'
+    );
+    assert.strictEqual(
+      normalizer.keyMap,
+      keyMap,
+      'keyMap is injected into normalizer'
+    );
+    assert.strictEqual(
+      owner.lookup('orbit-source:store').queryBuilder.$normalizer,
+      normalizer,
+      'normalizer is injected into sources and assigned to query builders'
+    );
+    assert.strictEqual(
+      owner.lookup('orbit-source:store').transformBuilder.$normalizer,
+      normalizer,
+      'normalizer is injected into sources and assigned to transform builders'
     );
     assert.ok(
       owner.lookup('service:data-schema'),

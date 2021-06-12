@@ -1,8 +1,10 @@
 import {
   InitializedRecord,
   RecordIdentity,
+  RecordKeyMap,
   RecordKeyValue,
   RecordNormalizer,
+  RecordSchema,
   StandardRecordNormalizer,
   StandardRecordNormalizerSettings,
   UninitializedRecord
@@ -33,6 +35,14 @@ export class ModelAwareNormalizer
 
   constructor(settings: ModelRecordNormalizerSettings) {
     this._normalizer = new StandardRecordNormalizer(settings);
+  }
+
+  get keyMap(): RecordKeyMap | undefined {
+    return this._normalizer.keyMap;
+  }
+
+  get schema(): RecordSchema {
+    return this._normalizer.schema;
   }
 
   normalizeRecordType(type: string): string {
