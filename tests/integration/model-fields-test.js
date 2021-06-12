@@ -8,9 +8,9 @@ import {
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 
-import normalizeRecordProperties from 'ember-orbit/-private/utils/normalize-record-properties';
+import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
 
-module('Integration - normalizeRecordProperties', function (hooks) {
+module('Integration - normalizeModelFields', function (hooks) {
   let store;
   const models = {
     planet: Planet,
@@ -28,7 +28,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     store = null;
   });
 
-  test('#normalizeRecordProperties', async function (assert) {
+  test('#normalizeModelFields', async function (assert) {
     const callisto = await store.addRecord({
       type: 'moon',
       id: 'callisto',
@@ -39,7 +39,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
       id: 'sun',
       name: 'The Sun'
     });
-    const normalized = normalizeRecordProperties(store.source.schema, {
+    const normalized = normalizeModelFields(store.source.schema, {
       type: 'planet',
       id: 'jupiter',
       name: 'Jupiter',
@@ -63,8 +63,8 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - undefined relationships', function (assert) {
-    const normalized = normalizeRecordProperties(store.source.schema, {
+  test('#normalizeModelFields - undefined relationships', function (assert) {
+    const normalized = normalizeModelFields(store.source.schema, {
       type: 'planet',
       id: 'jupiter',
       name: 'Jupiter'
@@ -77,8 +77,8 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - nullable relationships', function (assert) {
-    const normalized = normalizeRecordProperties(store.source.schema, {
+  test('#normalizeModelFields - nullable relationships', function (assert) {
+    const normalized = normalizeModelFields(store.source.schema, {
       type: 'planet',
       id: 'jupiter',
       name: 'Jupiter',
@@ -92,7 +92,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - polymorphic relationships', async function (assert) {
+  test('#normalizeModelFields - polymorphic relationships', async function (assert) {
     const luna = await store.addRecord({
       type: 'moon',
       id: 'luna',
@@ -110,7 +110,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     });
 
     const expectedName = 'Our Solar System';
-    const normalized = normalizeRecordProperties(store.source.schema, {
+    const normalized = normalizeModelFields(store.source.schema, {
       type: 'planetarySystem',
       id: 'homeSystem',
       name: expectedName,
@@ -139,7 +139,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
     );
   });
 
-  test('#normalizeRecordProperties - polymorphic relationships require RecordIdentity values', async function (assert) {
+  test('#normalizeModelFields - polymorphic relationships require RecordIdentity values', async function (assert) {
     const luna = await store.addRecord({
       type: 'moon',
       id: 'luna',
@@ -158,7 +158,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
 
     assert.throws(
       () =>
-        normalizeRecordProperties(store.source.schema, {
+        normalizeModelFields(store.source.schema, {
           type: 'planetarySystem',
           id: 'homeSystem',
           star: sun.id
@@ -168,7 +168,7 @@ module('Integration - normalizeRecordProperties', function (hooks) {
 
     assert.throws(
       () =>
-        normalizeRecordProperties(store.source.schema, {
+        normalizeModelFields(store.source.schema, {
           type: 'planetarySystem',
           id: 'homeSystem',
           bodies: [luna.id, earth.id]

@@ -6,30 +6,37 @@ export default class FilteredRoute extends Route {
 
   async beforeModel() {
     await this.store.update((t) => {
-      const moons = [
-        { type: 'moon', attributes: { name: 'Blue' } },
-        { type: 'moon', attributes: { name: 'New' } }
-      ];
-      const operations = [];
-      operations.push(t.addRecord(moons[0]));
-      operations.push(t.addRecord(moons[1]));
+      const blueMoonId = this.store.schema.generateId('moon');
+      const newMoonId = this.store.schema.generateId('moon');
+      const plutoId = this.store.schema.generateId('planet');
 
-      const plutoOperation = t.addRecord({
-        type: 'planet',
-        attributes: { name: 'Pluto' }
-      });
-      const plutoId = plutoOperation.operation.record.id;
-      operations.push(plutoOperation);
-      operations.push(
-        t.addRecord({ type: 'planet', attributes: { name: 'Mars' } })
-      );
-      operations.push(
-        t.addRecord({ type: 'planet', attributes: { name: 'Filtered' } })
-      );
-      operations.push(
-        t.replaceRelatedRecords({ type: 'planet', id: plutoId }, 'moons', moons)
-      );
-      return operations;
+      return [
+        t.addRecord({
+          type: 'moon',
+          id: blueMoonId,
+          attributes: { name: 'Blue' }
+        }),
+        t.addRecord({
+          type: 'moon',
+          id: newMoonId,
+          attributes: { name: 'New' }
+        }),
+        t.addRecord({ type: 'planet', attributes: { name: 'Mars' } }),
+        t.addRecord({ type: 'planet', attributes: { name: 'Filtered' } }),
+        t.addRecord({
+          type: 'planet',
+          id: plutoId,
+          attributes: { name: 'Pluto' },
+          relationships: {
+            moons: {
+              data: [
+                { type: 'moon', id: blueMoonId },
+                { type: 'moon', id: newMoonId }
+              ]
+            }
+          }
+        })
+      ];
     });
   }
 

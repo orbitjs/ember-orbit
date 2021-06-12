@@ -58,8 +58,8 @@ interface ApplicationRegistry {
 }
 
 export function initialize(application: Application & ApplicationRegistry) {
-  const envConfig = application.resolveRegistration('config:environment') || {};
-  const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit || {});
+  const envConfig = application.resolveRegistration('config:environment') ?? {};
+  const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit ?? {});
 
   // Customize pluralization rules
   if (

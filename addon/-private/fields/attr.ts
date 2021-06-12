@@ -12,17 +12,27 @@ export interface TrackedAttr {
   set(this: Model, value: unknown): void;
 }
 
-export default function attr(target: Model, key: string): any;
-export default function attr(type?: string, options?: AttributeDefinition): any;
+export default function attr(type: string): any;
+export default function attr(def: AttributeDefinition): any;
 export default function attr(
-  type?: Model | string,
-  options: string | AttributeDefinition = {}
+  typeOrDef?: string | AttributeDefinition,
+  def?: AttributeDefinition
 ): any {
-  function trackedAttr(
-    target: Model,
-    property: string,
-    _: PropertyDescriptor
-  ): TrackedAttr {
+  let attrDef: AttributeDefinition;
+
+  if (typeof typeOrDef === 'string') {
+    attrDef = def ?? {};
+    attrDef.type = typeOrDef;
+  } else {
+    attrDef = typeOrDef ?? {};
+
+    assert(
+      '@attr can be defined with a `type` and `definition` object but not two `definition` objects',
+      def === undefined
+    );
+  }
+
+  return (target: Model, property: string): TrackedAttr => {
     function get(this: Model): unknown {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} attr from the cache.`,
@@ -44,16 +54,8 @@ export default function attr(
       }
     }
 
-    defineAttribute(target, property, options as AttributeDefinition);
+    defineAttribute(target, property, attrDef);
 
     return { get, set };
-  }
-
-  if (typeof options === 'string') {
-    options = {};
-    return trackedAttr.apply(null, arguments as any);
-  }
-
-  options.type = type as string;
-  return trackedAttr;
+  };
 }

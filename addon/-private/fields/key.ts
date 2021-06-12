@@ -12,17 +12,8 @@ export interface TrackedKey {
   set(this: Model, value: string): void;
 }
 
-export default function key(target: Model, key: string): any;
-export default function key(options?: KeyDefinition): any;
-export default function key(
-  options: Model | KeyDefinition = {},
-  _?: unknown
-): any {
-  function trackedKey(
-    target: Model,
-    property: string,
-    _: PropertyDescriptor
-  ): TrackedKey {
+export default function key(options: KeyDefinition = {}): any {
+  return (target: Model, property: string): TrackedKey => {
     function get(this: Model): string {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} key from the cache.`,
@@ -47,12 +38,5 @@ export default function key(
     defineKey(target, property, options as KeyDefinition);
 
     return { get, set };
-  }
-
-  if (arguments.length === 3) {
-    options = {};
-    return trackedKey.apply(null, arguments as any);
-  }
-
-  return trackedKey;
+  };
 }

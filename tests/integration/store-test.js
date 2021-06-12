@@ -69,12 +69,14 @@ module('Integration - Store', function (hooks) {
     assert.equal(planet.name, 'Earth');
   });
 
-  test('#addRecord - with blocking sync updates', async function (assert) {
-    store.source.on('beforeUpdate', (transform) => {
-      return store.source.sync(transform);
+  test('#addRecord - with blocking sync updates that return hints', async function (assert) {
+    store.source.on('beforeUpdate', async (transform, hints) => {
+      await store.sync(transform);
+      hints.data = transform.operations[0].record;
     });
 
     const planet = await store.addRecord({ type: 'planet', name: 'Earth' });
+
     assert.ok(planet instanceof Planet);
     assert.ok(planet.id, 'assigned id');
     assert.equal(planet.name, 'Earth');

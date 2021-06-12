@@ -2,11 +2,12 @@ import { Orbit } from '@orbit/core';
 import { Dict } from '@orbit/utils';
 import { DefaultRequestOptions, RequestOptions } from '@orbit/data';
 import {
-  Record,
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
-  RelationshipDefinition
+  RelationshipDefinition,
+  InitializedRecord,
+  ModelDefinition
 } from '@orbit/records';
 import {
   destroy,
@@ -53,7 +54,7 @@ export default class Model {
     return !this._store;
   }
 
-  getData(): Record | undefined {
+  getData(): InitializedRecord | undefined {
     return this.store.cache.peekRecordData(this.type, this.id);
   }
 
@@ -149,23 +150,21 @@ export default class Model {
   }
 
   async replaceAttributes(
-    properties: Dict<unknown> = {},
+    properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
-    const keys = Object.keys(properties);
-    await this.store
-      .update(
-        (t) =>
-          keys.map((key) =>
-            t.replaceAttribute(this.identity, key, properties[key])
-          ),
-        options
-      )
-      .then(() => this);
+    const propertyNames = Object.keys(properties);
+    await this.store.update(
+      (t) =>
+        propertyNames.map((name) =>
+          t.replaceAttribute(this.identity, name, properties[name])
+        ),
+      options
+    );
   }
 
   async update(
-    properties: Dict<unknown> = {},
+    properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
   ): Promise<void> {
     await this.store.updateRecord({ ...properties, ...this.identity }, options);
@@ -202,16 +201,20 @@ export default class Model {
     return this._store;
   }
 
+  static get definition(): ModelDefinition {
+    return getModelDefinition(this.prototype);
+  }
+
   static get keys(): Dict<KeyDefinition> {
-    return getModelDefinition(this.prototype).keys || {};
+    return getModelDefinition(this.prototype).keys ?? {};
   }
 
   static get attributes(): Dict<AttributeDefinition> {
-    return getModelDefinition(this.prototype).attributes || {};
+    return getModelDefinition(this.prototype).attributes ?? {};
   }
 
   static get relationships(): Dict<RelationshipDefinition> {
-    return getModelDefinition(this.prototype).relationships || {};
+    return getModelDefinition(this.prototype).relationships ?? {};
   }
 
   static create(injections: ModelSettings) {
