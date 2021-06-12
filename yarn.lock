@@ -1291,7 +1291,7 @@
     "@orbit/data" "^0.17.0-beta.17"
     "@orbit/utils" "^0.17.0-beta.16"
 
-"@orbit/core@^0.17.0-beta.16", "@orbit/core@^0.17.0-beta.17":
+"@orbit/core@^0.17.0-beta.16":
   version "0.17.0-beta.16"
   resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.17.0-beta.16.tgz#db5f69a9864a6949c2fa4db561a23db009305725"
   integrity sha512-ex1I+9tEYBUgs0RV1Hg5+kOUzpSwUrh2BoqbJfBfNBbmt8/NYXsGVmUtFkEkv7csIuOESuxb6R+TGGzCv67EMg==
@@ -1347,12 +1347,12 @@
     "@orbit/utils" "^0.17.0-beta.16"
     "@orbit/validators" "^0.17.0-beta.16"
 
-"@orbit/utils@^0.17.0-beta.16", "@orbit/utils@^0.17.0-beta.17":
+"@orbit/utils@^0.17.0-beta.16":
   version "0.17.0-beta.16"
   resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.17.0-beta.16.tgz#0eea9b2dccb6b9d7db1e3af002351ea0f282387d"
   integrity sha512-UtlrG/3hKW3laUhcQfbYnjUQ3eDjaVoc2myQSzRObqrHoWX3HFCO5eTPzbB0EDkinhCLBMXoBSqQFO2blYsj6g==
 
-"@orbit/validators@^0.17.0-beta.16", "@orbit/validators@^0.17.0-beta.17":
+"@orbit/validators@^0.17.0-beta.16":
   version "0.17.0-beta.16"
   resolved "https://registry.yarnpkg.com/@orbit/validators/-/validators-0.17.0-beta.16.tgz#d1af4530d1688b9f8dfd48ccf596df9a5e1f5cf2"
   integrity sha512-kY9JzCyL1UxJbsDCi4B0vDkj49ZmEKzW4NFfofoeoXRWBCh8A2uo/BCnCZ0hXc7fBsEBM+1fA7QMwkmNHGXpqA==
@@ -11701,9 +11701,9 @@ write-file-atomic@^3.0.0:
     typedarray-to-buffer "^3.1.5"
 
 ws@^7.2.3, ws@~7.4.2:
-  version "7.4.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.3.tgz#1f9643de34a543b8edb124bdcbc457ae55a6e5cd"
-  integrity sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==
+  version "7.4.6"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"
+  integrity sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"
