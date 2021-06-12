@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.17.0-beta.10 (2021-06-12)
+
+#### :rocket: Enhancement
+
+- [#339](https://github.com/orbitjs/ember-orbit/pull/339) Inject singleton `normalizer` and `validatorFor` instances into sources ([@dgeb](https://github.com/dgeb))
+- [#337](https://github.com/orbitjs/ember-orbit/pull/337) Update orbit to v0.17.0-beta.16 and introduce model-aware normalizers and builders ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#333](https://github.com/orbitjs/ember-orbit/pull/333) Bump handlebars from 4.7.6 to 4.7.7 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#334](https://github.com/orbitjs/ember-orbit/pull/334) Bump underscore from 1.12.0 to 1.13.1 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#335](https://github.com/orbitjs/ember-orbit/pull/335) Bump lodash from 4.17.20 to 4.17.21 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#336](https://github.com/orbitjs/ember-orbit/pull/336) Bump hosted-git-info from 2.8.8 to 2.8.9 ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.9 (2021-02-21)
 
 #### :bug: Bug Fix
