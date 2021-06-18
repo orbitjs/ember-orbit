@@ -22,8 +22,10 @@ import {
   RecordSchema,
   RecordSourceQueryOptions,
   RecordTransform,
-  RecordTransformResult
+  RecordTransformResult,
+  StandardRecordValidator
 } from '@orbit/records';
+import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import Cache from './cache';
 import Model from './model';
 import ModelFactory from './model-factory';
@@ -102,6 +104,12 @@ export default class Store {
 
   get transformBuilder(): ModelAwareTransformBuilder {
     return this.source.transformBuilder;
+  }
+
+  get validatorFor():
+    | ValidatorForFn<StandardValidator | StandardRecordValidator>
+    | undefined {
+    return this.#source.validatorFor;
   }
 
   get defaultQueryOptions():

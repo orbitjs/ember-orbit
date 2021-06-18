@@ -37,6 +37,7 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(store.transformLog, store.source.transformLog);
     assert.strictEqual(store.requestQueue, store.source.requestQueue);
     assert.strictEqual(store.syncQueue, store.source.syncQueue);
+    assert.strictEqual(store.validatorFor, store.source.validatorFor);
   });
 
   test('`defaultQueryOptions` and `defaultTransformOptions` can be modified', function (assert) {

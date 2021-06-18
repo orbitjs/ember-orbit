@@ -24,6 +24,7 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(cache.schema, store.source.schema);
     assert.strictEqual(cache.queryBuilder, store.source.queryBuilder);
     assert.strictEqual(cache.transformBuilder, store.source.transformBuilder);
+    assert.strictEqual(cache.validatorFor, store.source.validatorFor);
   });
 
   test('#peekRecord - existing record', async function (assert) {
