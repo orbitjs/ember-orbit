@@ -378,7 +378,7 @@ module('Integration - Store', function (hooks) {
       sun
     });
     const record = await store.query((q) =>
-      q.findRelatedRecord(jupiter.identity, 'sun')
+      q.findRelatedRecord(jupiter.$identity, 'sun')
     );
     assert.strictEqual(record, sun);
   });
@@ -392,7 +392,7 @@ module('Integration - Store', function (hooks) {
       moons: [io, callisto]
     });
     const records = await store.query((q) =>
-      q.findRelatedRecords(jupiter.identity, 'moons')
+      q.findRelatedRecords(jupiter.$identity, 'moons')
     );
 
     assert.deepEqual(records, [io, callisto]);

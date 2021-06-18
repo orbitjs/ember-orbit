@@ -44,18 +44,18 @@ export default function hasOne(
     function get(this: Model): Model | null {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} hasOne from the cache.`,
-        !this.disconnected
+        !this.$disconnected
       );
 
       return getHasOneCache(this, property).value as Model | null;
     }
 
     function set(this: Model, value: Model | null) {
-      const oldValue = this.getRelatedRecord(property);
+      const oldValue = this.$getRelatedRecord(property);
 
       if (value !== oldValue) {
-        this.assertMutableFields();
-        this.replaceRelatedRecord(property, value).catch(() =>
+        this.$assertMutableFields();
+        this.$replaceRelatedRecord(property, value).catch(() =>
           getHasOneCache(this, property).notifyPropertyChange()
         );
       }

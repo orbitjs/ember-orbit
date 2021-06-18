@@ -36,18 +36,18 @@ export default function attr(
     function get(this: Model): unknown {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} attr from the cache.`,
-        !this.disconnected
+        !this.$disconnected
       );
 
       return getAttributeCache(this, property).value;
     }
 
     function set(this: Model, value: unknown) {
-      const oldValue = this.getAttribute(property);
+      const oldValue = this.$getAttribute(property);
 
       if (value !== oldValue) {
-        this.assertMutableFields();
-        this.replaceAttribute(property, value).catch(() =>
+        this.$assertMutableFields();
+        this.$replaceAttribute(property, value).catch(() =>
           getAttributeCache(this, property).notifyPropertyChange()
         );
         getAttributeCache(this, property).value = value;

@@ -53,7 +53,7 @@ export class ModelAwareNormalizer
     identity: RecordIdentity | RecordKeyValue | Model
   ): RecordIdentity {
     if (identity instanceof Model) {
-      return identity.identity;
+      return identity.$identity;
     } else {
       return this._normalizer.normalizeRecordIdentity(identity);
     }
@@ -61,7 +61,7 @@ export class ModelAwareNormalizer
 
   normalizeRecord(record: RecordFieldsOrModel): InitializedRecord {
     if (record instanceof Model) {
-      let data = record.getData();
+      let data = record.$getData();
       if (data === undefined) {
         throw new Error('Model is no longer in the cache');
       } else {

@@ -274,7 +274,7 @@ export default class Cache {
   unload(identity: RecordIdentity): void {
     const record = this._identityMap.get(identity);
     if (record) {
-      record.disconnect();
+      record.$disconnect();
       this._identityMap.delete(identity);
     }
   }
@@ -351,10 +351,7 @@ export default class Cache {
     property: string
   ): void {
     const record = this._identityMap.get(identity);
-
-    if (record) {
-      record.notifyPropertyChange(property);
-    }
+    record?.$notifyPropertyChange(property);
   }
 
   private generatePatchListener(): (operation: RecordOperation) => void {
