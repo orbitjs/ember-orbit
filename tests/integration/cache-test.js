@@ -19,6 +19,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   test('exposes properties from underlying MemoryCache', function (assert) {
+    assert.strictEqual(cache.sourceCache, store.source.cache);
     assert.strictEqual(cache.keyMap, store.source.keyMap);
     assert.strictEqual(cache.schema, store.source.schema);
     assert.strictEqual(cache.queryBuilder, store.source.queryBuilder);

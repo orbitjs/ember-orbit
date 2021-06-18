@@ -71,6 +71,10 @@ export default class Cache {
     });
   }
 
+  get sourceCache(): MemoryCache {
+    return this._sourceCache;
+  }
+
   get keyMap(): RecordKeyMap | undefined {
     return this._sourceCache.keyMap;
   }
