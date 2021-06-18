@@ -45,7 +45,7 @@ export default function hasMany(
     function get(this: Model): Model[] {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} hasMany from the cache.`,
-        !this.disconnected
+        !this.$disconnected
       );
 
       return getHasManyCache(this, property).value as Model[];

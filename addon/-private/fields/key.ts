@@ -17,18 +17,18 @@ export default function key(options: KeyDefinition = {}): any {
     function get(this: Model): string {
       assert(
         `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} key from the cache.`,
-        !this.disconnected
+        !this.$disconnected
       );
 
       return getKeyCache(this, property).value as string;
     }
 
     function set(this: Model, value: string) {
-      const oldValue = this.getKey(property);
+      const oldValue = this.$getKey(property);
 
       if (value !== oldValue) {
-        this.assertMutableFields();
-        this.replaceKey(property, value).catch(() =>
+        this.$assertMutableFields();
+        this.$replaceKey(property, value).catch(() =>
           getKeyCache(this, property).notifyPropertyChange()
         );
         getKeyCache(this, property).value = value;

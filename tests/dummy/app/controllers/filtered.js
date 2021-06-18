@@ -27,7 +27,7 @@ export default class FilteredController extends Controller {
 
   @action
   async duplicatePlanet(planet) {
-    const planetCopy = clone(planet.getData());
+    const planetCopy = clone(planet.$getData());
     planetCopy.id = this.dataSchema.generateId('planet');
     delete planetCopy.relationships;
     await this.store.update((t) => {
@@ -36,7 +36,7 @@ export default class FilteredController extends Controller {
       const operations = [addPlanetOperation];
 
       planet.moons.forEach((moon) => {
-        const moonCopy = clone(moon.getData());
+        const moonCopy = clone(moon.$getData());
         moonCopy.id = this.dataSchema.generateId('moon');
         delete moonCopy.relationships;
         const addMoonOperation = t.addRecord(moonCopy);

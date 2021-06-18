@@ -67,7 +67,7 @@ export function getKeyCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.getKey(property)
+      record.$getKey(property)
     );
   }
 
@@ -89,7 +89,7 @@ export function getAttributeCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.getAttribute(property)
+      record.$getAttribute(property)
     );
   }
 
@@ -111,7 +111,7 @@ export function getHasOneCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.getRelatedRecord(property)
+      record.$getRelatedRecord(property)
     );
   }
 
@@ -136,7 +136,7 @@ export function getHasManyCache(
       addLegacyMutationMethods(
         record,
         property,
-        record.getRelatedRecords(property) ?? []
+        record.$getRelatedRecords(property) ?? []
       )
     );
   }
@@ -159,7 +159,7 @@ function addLegacyMutationMethods(
         deprecate(
           'pushObject(record) is deprecated. Use record.addToRelatedRecords(relationship, record)'
         );
-        owner.addToRelatedRecords(relationship, record);
+        owner.$addToRelatedRecords(relationship, record);
       }
     },
     removeObject: {
@@ -167,7 +167,7 @@ function addLegacyMutationMethods(
         deprecate(
           'removeObject(record) is deprecated. Use record.removeFromRelatedRecords(relationship, record)'
         );
-        owner.removeFromRelatedRecords(relationship, record);
+        owner.$removeFromRelatedRecords(relationship, record);
       }
     }
   });

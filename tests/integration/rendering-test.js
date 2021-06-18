@@ -53,7 +53,7 @@ module('Rendering', function (hooks) {
 
     assert.dom('.moons').includesText('New Europa');
 
-    await europa.remove();
+    await europa.$remove();
 
     assert.dom('.moons').doesNotIncludeText('New Europa');
   });
