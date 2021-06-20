@@ -47,22 +47,22 @@ export interface CacheSettings {
 }
 
 export default class Cache {
-  private _sourceCache: MemoryCache<
+  #sourceCache: MemoryCache<
     RecordCacheQueryOptions,
     RecordCacheTransformOptions,
     ModelAwareQueryBuilder,
     ModelAwareTransformBuilder
   >;
-  private _modelFactory: ModelFactory;
-  private _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
+  #modelFactory: ModelFactory;
+  protected _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
   });
 
   constructor(settings: CacheSettings) {
-    this._sourceCache = settings.sourceCache;
-    this._modelFactory = settings.modelFactory;
+    this.#sourceCache = settings.sourceCache;
+    this.#modelFactory = settings.modelFactory;
 
-    const patchUnbind = this._sourceCache.on(
+    const patchUnbind = this.#sourceCache.on(
       'patch',
       this.generatePatchListener()
     );
@@ -74,57 +74,57 @@ export default class Cache {
   }
 
   get sourceCache(): MemoryCache {
-    return this._sourceCache;
+    return this.#sourceCache;
   }
 
   get keyMap(): RecordKeyMap | undefined {
-    return this._sourceCache.keyMap;
+    return this.#sourceCache.keyMap;
   }
 
   get schema(): RecordSchema {
-    return this._sourceCache.schema;
+    return this.#sourceCache.schema;
   }
 
   get queryBuilder(): ModelAwareQueryBuilder {
-    return this._sourceCache.queryBuilder;
+    return this.#sourceCache.queryBuilder;
   }
 
   get transformBuilder(): ModelAwareTransformBuilder {
-    return this._sourceCache.transformBuilder;
+    return this.#sourceCache.transformBuilder;
   }
 
   get validatorFor():
     | ValidatorForFn<StandardValidator | StandardRecordValidator>
     | undefined {
-    return this._sourceCache.validatorFor;
+    return this.#sourceCache.validatorFor;
   }
 
   get defaultQueryOptions():
     | DefaultRequestOptions<RecordCacheQueryOptions>
     | undefined {
-    return this._sourceCache.defaultQueryOptions;
+    return this.#sourceCache.defaultQueryOptions;
   }
 
   set defaultQueryOptions(
     options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
   ) {
-    this._sourceCache.defaultQueryOptions = options;
+    this.#sourceCache.defaultQueryOptions = options;
   }
 
   get defaultTransformOptions():
     | DefaultRequestOptions<RecordCacheTransformOptions>
     | undefined {
-    return this._sourceCache.defaultTransformOptions;
+    return this.#sourceCache.defaultTransformOptions;
   }
 
   set defaultTransformOptions(
     options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined
   ) {
-    this._sourceCache.defaultTransformOptions = options;
+    this.#sourceCache.defaultTransformOptions = options;
   }
 
   peekRecordData(type: string, id: string): InitializedRecord | undefined {
-    return this._sourceCache.getRecordSync({ type, id });
+    return this.#sourceCache.getRecordSync({ type, id });
   }
 
   includesRecord(type: string, id: string): boolean {
@@ -139,7 +139,7 @@ export default class Cache {
   }
 
   peekRecords(type: string): Model[] {
-    const identities = this._sourceCache.getRecordsSync(type);
+    const identities = this.#sourceCache.getRecordsSync(type);
     return identities.map((i) => this.lookup(i) as Model);
   }
 
@@ -166,12 +166,12 @@ export default class Cache {
   }
 
   peekKey(identity: RecordIdentity, key: string): string | undefined {
-    const record = this._sourceCache.getRecordSync(identity);
+    const record = this.#sourceCache.getRecordSync(identity);
     return record && deepGet(record, ['keys', key]);
   }
 
   peekAttribute(identity: RecordIdentity, attribute: string): any {
-    const record = this._sourceCache.getRecordSync(identity);
+    const record = this.#sourceCache.getRecordSync(identity);
     return record && deepGet(record, ['attributes', attribute]);
   }
 
@@ -179,7 +179,7 @@ export default class Cache {
     identity: RecordIdentity,
     relationship: string
   ): Model | null | undefined {
-    const relatedRecord = this._sourceCache.getRelatedRecordSync(
+    const relatedRecord = this.#sourceCache.getRelatedRecordSync(
       identity,
       relationship
     );
@@ -194,7 +194,7 @@ export default class Cache {
     identity: RecordIdentity,
     relationship: string
   ): Model[] | undefined {
-    const relatedRecords = this._sourceCache.getRelatedRecordsSync(
+    const relatedRecords = this.#sourceCache.getRelatedRecordsSync(
       identity,
       relationship
     );
@@ -230,17 +230,17 @@ export default class Cache {
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder
     );
 
     if (options?.fullResponse) {
-      const response = this._sourceCache.query(query, { fullResponse: true });
+      const response = this.#sourceCache.query(query, { fullResponse: true });
       return {
         ...response,
         data: this.lookupQueryResult(query, response.data)
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
-      const data = this._sourceCache.query(query);
+      const data = this.#sourceCache.query(query);
       return this.lookupQueryResult(query, data) as RequestData;
     }
   }
@@ -254,9 +254,9 @@ export default class Cache {
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder
     );
-    const liveQuery = this._sourceCache.liveQuery(query);
+    const liveQuery = this.#sourceCache.liveQuery(query);
     return new LiveQuery({ liveQuery, cache: this, query });
   }
 
@@ -295,7 +295,7 @@ export default class Cache {
     let model = this._identityMap.get(record);
 
     if (!model) {
-      model = this._modelFactory.create(record);
+      model = this.#modelFactory.create(record);
       this._identityMap.set(record, model);
     }
 
