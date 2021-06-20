@@ -27,7 +27,6 @@ import {
   RecordTransformResult,
   StandardRecordValidator
 } from '@orbit/records';
-import { deepGet } from '@orbit/utils';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import LiveQuery from './live-query';
 import Model from './model';
@@ -167,12 +166,12 @@ export default class Cache {
 
   peekKey(identity: RecordIdentity, key: string): string | undefined {
     const record = this.#sourceCache.getRecordSync(identity);
-    return record && deepGet(record, ['keys', key]);
+    return record?.keys?.[key];
   }
 
   peekAttribute(identity: RecordIdentity, attribute: string): any {
     const record = this.#sourceCache.getRecordSync(identity);
-    return record && deepGet(record, ['attributes', attribute]);
+    return record?.attributes?.[attribute];
   }
 
   peekRelatedRecord(
