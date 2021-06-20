@@ -296,15 +296,15 @@ export default class Cache {
     }
   }
 
-  lookup(record: InitializedRecord): Model {
-    let model = this._identityMap.get(record);
+  lookup(identity: RecordIdentity): Model {
+    let record = this._identityMap.get(identity);
 
-    if (!model) {
-      model = this.#modelFactory.create(record);
-      this._identityMap.set(record, model);
+    if (!record) {
+      record = this.#modelFactory.create(identity);
+      this._identityMap.set(identity, record);
     }
 
-    return model;
+    return record;
   }
 
   lookupQueryResult(
