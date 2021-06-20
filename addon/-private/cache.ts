@@ -39,7 +39,7 @@ import {
 } from './utils/model-aware-types';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
-const { assert } = Orbit;
+const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
@@ -260,7 +260,13 @@ export default class Cache {
     return new LiveQuery({ liveQuery, cache: this, query });
   }
 
+  /**
+   * @deprecated
+   */
   find(type: string, id?: string): Model | Model[] {
+    deprecate(
+      '`Cache.find(type, id?)` is deprecated, use `Cache.findRecords(type)`, `Cache.findRecord(type, id)`, or `Cache.query(...)` instead.'
+    );
     if (id === undefined) {
       return this.findRecords(type);
     } else {

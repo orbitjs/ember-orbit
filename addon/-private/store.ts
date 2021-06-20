@@ -182,6 +182,9 @@ export default class Store {
     this.source.rebase();
   }
 
+  /**
+   * @deprecated
+   */
   liveQuery(
     queryOrExpressions: QueryOrExpressions<
       RecordQueryExpression,
@@ -282,11 +285,17 @@ export default class Store {
     await this.update((t) => t.removeRecord(record), options);
   }
 
+  /**
+   * @deprecated
+   */
   find(
     type: string,
     id?: string | undefined,
     options?: RequestOptions
   ): Promise<Model | Model[]> {
+    deprecate(
+      '`Store.find(type, id?)` is deprecated, use `Store.findRecords(type)`, `Store.findRecord(type, id)`, or `Store.query(...)` instead.'
+    );
     if (id === undefined) {
       return this.findRecords(type, options);
     } else {
