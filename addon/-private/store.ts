@@ -7,23 +7,21 @@ import {
   DefaultRequestOptions,
   FullRequestOptions,
   FullResponse,
-  QueryOrExpressions,
   RequestOptions
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
-  RecordIdentity,
+  InitializedRecord,
   RecordKeyMap,
   RecordOperation,
-  RecordQueryBuilder,
-  RecordQueryExpression,
   RecordQueryResult,
   RecordSchema,
   RecordSourceQueryOptions,
   RecordTransform,
   RecordTransformResult,
-  StandardRecordValidator
+  StandardRecordValidator,
+  UninitializedRecord
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import Cache from './cache';
@@ -33,14 +31,20 @@ import {
   ModelAwareQueryBuilder,
   ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
-  ModelAwareTransformOrOperations
+  ModelAwareTransformOrOperations,
+  RecordIdentityOrModel
 } from './utils/model-aware-types';
 import { ModelFields } from './utils/model-fields';
 
 const { deprecate } = Orbit;
 
 export interface StoreSettings {
-  source: MemorySource;
+  source: MemorySource<
+    RecordSourceQueryOptions,
+    RequestOptions,
+    ModelAwareQueryBuilder,
+    ModelAwareTransformBuilder
+  >;
   mutableModelFields?: boolean;
   base?: Store;
 }
@@ -49,7 +53,12 @@ export interface StoreSettings {
  * @class Store
  */
 export default class Store {
-  #source: MemorySource;
+  #source: MemorySource<
+    RecordSourceQueryOptions,
+    RequestOptions,
+    ModelAwareQueryBuilder,
+    ModelAwareTransformBuilder
+  >;
   #cache: Cache;
   #base?: Store;
 
@@ -82,7 +91,12 @@ export default class Store {
     destroy(this);
   }
 
-  get source(): MemorySource {
+  get source(): MemorySource<
+    RecordSourceQueryOptions,
+    RequestOptions,
+    ModelAwareQueryBuilder,
+    ModelAwareTransformBuilder
+  > {
     return this.#source;
   }
 
@@ -170,8 +184,14 @@ export default class Store {
     });
   }
 
-  merge(forkedStore: Store, options?: MemorySourceMergeOptions): Promise<any> {
-    return this.source.merge(forkedStore.source, options);
+  merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedStore: Store,
+    options?: MemorySourceMergeOptions
+  ): Promise<RequestData> {
+    // TODO - remove type coercion after typing is fixed in next orbit v0.17 beta
+    return this.source.merge(forkedStore.source as MemorySource, options);
   }
 
   rollback(transformId: string, relativePosition?: number): Promise<void> {
@@ -186,11 +206,8 @@ export default class Store {
    * @deprecated
    */
   liveQuery(
-    queryOrExpressions: QueryOrExpressions<
-      RecordQueryExpression,
-      RecordQueryBuilder
-    >,
-    options?: RequestOptions,
+    queryOrExpressions: ModelAwareQueryOrExpressions,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): Promise<any> {
     deprecate(
@@ -250,8 +267,8 @@ export default class Store {
    * Adds a record
    */
   async addRecord(
-    properties: ModelFields,
-    options?: DefaultRequestOptions<RequestOptions>
+    properties: UninitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
@@ -263,8 +280,8 @@ export default class Store {
    * Updates a record
    */
   async updateRecord(
-    properties: ModelFields,
-    options?: DefaultRequestOptions<RequestOptions>
+    properties: InitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
@@ -276,13 +293,13 @@ export default class Store {
    * Removes a record
    */
   async removeRecord(
-    record: RecordIdentity,
-    options?: DefaultRequestOptions<RequestOptions>
+    identity: RecordIdentityOrModel,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<void> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    await this.update((t) => t.removeRecord(record), options);
+    await this.update((t) => t.removeRecord(identity), options);
   }
 
   /**
@@ -291,7 +308,7 @@ export default class Store {
   find(
     type: string,
     id?: string | undefined,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model | Model[]> {
     deprecate(
       '`Store.find(type, id?)` is deprecated, use `Store.findRecords(type)`, `Store.findRecord(type, id)`, or `Store.query(...)` instead.'
@@ -306,7 +323,7 @@ export default class Store {
   async findRecord(
     type: string,
     id: string,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
@@ -317,7 +334,10 @@ export default class Store {
     );
   }
 
-  async findRecords(type: string, options?: RequestOptions): Promise<Model[]> {
+  async findRecords(
+    type: string,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Promise<Model[]> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
@@ -331,7 +351,7 @@ export default class Store {
     type: string,
     keyName: string,
     keyValue: string,
-    options?: RequestOptions
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model> {
     if (options?.fullResponse) {
       delete options.fullResponse;
