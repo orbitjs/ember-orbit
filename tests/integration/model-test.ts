@@ -241,7 +241,7 @@ module('Integration - Model', function (hooks) {
     ]);
 
     callisto.planet = jupiter;
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'replaced hasOne with record');
     assert.ok(jupiter.moons.includes(callisto), 'updated inverse');
@@ -259,7 +259,7 @@ module('Integration - Model', function (hooks) {
     });
 
     solarSystem.star = twinSun;
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(
       solarSystem.star,
@@ -268,7 +268,7 @@ module('Integration - Model', function (hooks) {
     );
 
     solarSystem.star = sun;
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(
       solarSystem.star,
@@ -318,12 +318,12 @@ module('Integration - Model', function (hooks) {
     assert.equal(callisto.planet, null, 'hasOne is null');
 
     callisto.planet = jupiter;
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'hasOne is jupiter');
 
     callisto.planet = null;
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(callisto.planet, null, 'replaced hasOne with null');
     assert.ok(
@@ -381,7 +381,7 @@ module('Integration - Model', function (hooks) {
       remoteId: 'planet:jupiter'
     });
     record.remoteId = 'planet:joopiter';
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.equal(record.remoteId, 'planet:joopiter');
   });
@@ -406,7 +406,7 @@ module('Integration - Model', function (hooks) {
     const identifier = record.$identity;
     record.$destroy();
 
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.ok(
       !(cache as any)._identityMap.has(identifier),

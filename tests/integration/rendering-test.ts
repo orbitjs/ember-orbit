@@ -45,7 +45,7 @@ module('Rendering', function (hooks) {
 
     europa.name = 'New Europa';
 
-    await waitForSource(store.source);
+    await waitForSource(store);
 
     assert.dom('.moons').includesText('New Europa');
 
