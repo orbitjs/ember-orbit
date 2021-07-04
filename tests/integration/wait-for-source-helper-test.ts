@@ -1,3 +1,4 @@
+import { Store } from 'ember-orbit';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { Planet } from 'dummy/tests/support/dummy-models';
@@ -5,7 +6,7 @@ import { createStore } from 'dummy/tests/support/store';
 import { waitForSource } from 'ember-orbit/test-support';
 
 module('waitForSource helper', function (hooks) {
-  let store;
+  let store: Store;
 
   setupTest(hooks);
 

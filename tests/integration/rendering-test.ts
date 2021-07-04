@@ -1,3 +1,4 @@
+import { Store, Cache } from 'ember-orbit';
 import { Planet, Moon } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
@@ -7,8 +8,8 @@ import { hbs } from 'ember-cli-htmlbars';
 import { waitForSource } from 'ember-orbit/test-support';
 
 module('Rendering', function (hooks) {
-  let store;
-  let cache;
+  let store: Store;
+  let cache: Cache;
 
   setupRenderingTest(hooks);
 
@@ -18,14 +19,9 @@ module('Rendering', function (hooks) {
     cache = store.cache;
   });
 
-  hooks.afterEach(function () {
-    store = null;
-    cache = null;
-  });
-
   test('update has many', async function (assert) {
     const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    this.set('planet', cache.peekRecord('planet', jupiter.id));
+    this.set('planet', jupiter);
 
     await render(hbs`<MoonsList @planet={{this.planet}} />`);
 
@@ -39,7 +35,7 @@ module('Rendering', function (hooks) {
 
     assert.dom('.moons').includesText('Callisto');
 
-    const europa = await store.addRecord({
+    const europa = await store.addRecord<Moon>({
       type: 'moon',
       name: 'Europa',
       planet: jupiter
@@ -49,7 +45,7 @@ module('Rendering', function (hooks) {
 
     europa.name = 'New Europa';
 
-    await waitForSource(store);
+    await waitForSource(store.source);
 
     assert.dom('.moons').includesText('New Europa');
 

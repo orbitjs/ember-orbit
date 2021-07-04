@@ -1,3 +1,4 @@
+import { Store } from 'ember-orbit';
 import {
   Planet,
   Moon,
@@ -11,7 +12,7 @@ import { module, test } from 'qunit';
 import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
 
 module('Integration - normalizeModelFields', function (hooks) {
-  let store;
+  let store: Store;
   const models = {
     planet: Planet,
     moon: Moon,
@@ -22,10 +23,6 @@ module('Integration - normalizeModelFields', function (hooks) {
 
   hooks.beforeEach(function () {
     store = createStore({ models });
-  });
-
-  hooks.afterEach(function () {
-    store = null;
   });
 
   test('#normalizeModelFields', async function (assert) {
@@ -52,12 +49,12 @@ module('Integration - normalizeModelFields', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
     assert.deepEqual(
-      normalized.relationships.moons,
+      normalized.relationships?.moons,
       { data: [{ type: 'moon', id: 'callisto' }] },
       'normalized hasMany'
     );
     assert.deepEqual(
-      normalized.relationships.sun,
+      normalized.relationships?.sun,
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
@@ -86,7 +83,7 @@ module('Integration - normalizeModelFields', function (hooks) {
     });
 
     assert.deepEqual(
-      normalized.relationships.sun,
+      normalized.relationships?.sun,
       { data: null },
       'normalized nullable hasOne'
     );
@@ -123,12 +120,12 @@ module('Integration - normalizeModelFields', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: expectedName });
     assert.deepEqual(
-      normalized.relationships.star,
+      normalized.relationships?.star,
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
     assert.deepEqual(
-      normalized.relationships.bodies,
+      normalized.relationships?.bodies,
       {
         data: [
           { type: 'moon', id: 'luna' },
