@@ -14,7 +14,6 @@ import {
   associateDestroyableChild,
   registerDestructor
 } from '@ember/destroyable';
-import { DEBUG } from '@glimmer/env';
 import { tracked } from '@glimmer/tracking';
 
 import Store from './store';
@@ -82,7 +81,7 @@ export default class Model {
   }
 
   $getData(): InitializedRecord | undefined {
-    return this._store!.cache.peekRecordData(this.type, this.id);
+    return this._store!.cache.getRecordData(this.type, this.id);
   }
 
   /**
@@ -96,7 +95,7 @@ export default class Model {
   }
 
   $getKey(field: string): string | undefined {
-    return this._store!.cache.peekKey(this.#identity, field);
+    return this.$getData()?.keys?.[field];
   }
 
   /**
@@ -135,7 +134,7 @@ export default class Model {
   }
 
   $getAttribute(attribute: string): unknown {
-    return this._store!.cache.peekAttribute(this.#identity, attribute);
+    return this.$getData()?.attributes?.[attribute];
   }
 
   /**
@@ -174,7 +173,16 @@ export default class Model {
   }
 
   $getRelatedRecord(relationship: string): Model | null | undefined {
-    return this._store!.cache.peekRelatedRecord(this.#identity, relationship);
+    const cache = this._store!.cache;
+    const relatedRecord = cache.sourceCache.getRelatedRecordSync(
+      this.#identity,
+      relationship
+    );
+    if (relatedRecord) {
+      return cache.lookup(relatedRecord) as Model;
+    } else {
+      return relatedRecord;
+    }
   }
 
   /**
@@ -218,16 +226,17 @@ export default class Model {
   }
 
   $getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
-    const records = this._store!.cache.peekRelatedRecords(
+    const cache = this._store!.cache;
+    const relatedRecords = cache.sourceCache.getRelatedRecordsSync(
       this.#identity,
       relationship
     );
 
-    if (DEBUG) {
-      return Object.freeze(records);
+    if (relatedRecords) {
+      return relatedRecords.map((r) => cache.lookup(r));
+    } else {
+      return undefined;
     }
-
-    return records;
   }
 
   /**
