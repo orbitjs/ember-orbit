@@ -1,6 +1,6 @@
 import { getOwner, setOwner } from '@ember/application';
 import { associateDestroyableChild, destroy } from '@ember/destroyable';
-import { Listener, Log, Orbit, TaskQueue } from '@orbit/core';
+import { Assertion, Listener, Log, Orbit, TaskQueue } from '@orbit/core';
 import {
   buildQuery,
   buildTransform,
@@ -25,6 +25,7 @@ import {
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import Cache from './cache';
+import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
 import {
@@ -36,7 +37,7 @@ import {
 } from './utils/model-aware-types';
 import { ModelFields } from './utils/model-fields';
 
-const { deprecate } = Orbit;
+const { assert, deprecate } = Orbit;
 
 export interface StoreSettings {
   source: MemorySource<
@@ -188,10 +189,51 @@ export default class Store {
     RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
   >(
     forkedStore: Store,
-    options?: MemorySourceMergeOptions
-  ): Promise<RequestData> {
-    // TODO - remove type coercion after typing is fixed in next orbit v0.17 beta
-    return this.source.merge(forkedStore.source as MemorySource, options);
+    options?: DefaultRequestOptions<RequestOptions> & MemorySourceMergeOptions
+  ): Promise<RequestData>;
+  merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedStore: Store,
+    options: FullRequestOptions<RequestOptions> & MemorySourceMergeOptions
+  ): Promise<FullResponse<RequestData, unknown, RecordOperation>>;
+  async merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedStore: Store,
+    options?: RequestOptions & MemorySourceMergeOptions
+  ): Promise<
+    RequestData | FullResponse<RequestData, unknown, RecordOperation>
+  > {
+    if (options?.fullResponse) {
+      const response = (await this.source.merge(
+        forkedStore.source,
+        options as FullRequestOptions<RequestOptions> & MemorySourceMergeOptions
+      )) as FullResponse<
+        RecordTransformResult<InitializedRecord>,
+        unknown,
+        RecordOperation
+      >;
+      const data = this.cache._lookupTransformResult(
+        response.data,
+        true // merge results should ALWAYS be an array
+      );
+      return {
+        ...response,
+        data
+      } as FullResponse<RequestData, undefined, RecordOperation>;
+    } else {
+      const response = (await this.source.merge(
+        forkedStore.source,
+        options as DefaultRequestOptions<RequestOptions> &
+          MemorySourceMergeOptions
+      )) as RecordTransformResult<InitializedRecord>;
+      const data = this.cache._lookupTransformResult(
+        response,
+        true // merge results should ALWAYS be an array
+      );
+      return data as RequestData;
+    }
   }
 
   rollback(transformId: string, relativePosition?: number): Promise<void> {
@@ -205,13 +247,13 @@ export default class Store {
   /**
    * @deprecated
    */
-  liveQuery(
+  async liveQuery(
     queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
-  ): Promise<any> {
+  ): Promise<LiveQuery> {
     deprecate(
-      '`Store.liveQuery(query)` is deprecated, use `Store.cache.liveQuery(query)`.'
+      'Store#liveQuery is deprecated. Call `let lq = store.cache.liveQuery(query)` instead. If you want to await the same query on the store, call `await store.query(lq.query);'
     );
     const query = buildQuery(
       queryOrExpressions,
@@ -219,7 +261,8 @@ export default class Store {
       id,
       this.source.queryBuilder
     );
-    return this.source.query(query).then(() => this.cache.liveQuery(query));
+    await this.source.query(query);
+    return this.cache.liveQuery(query);
   }
 
   async query<
@@ -255,37 +298,46 @@ export default class Store {
       const response = await this.source.query(query, { fullResponse: true });
       return {
         ...response,
-        data: this.cache.lookupQueryResult(query, response.data)
+        data: this.cache._lookupQueryResult(
+          response.data,
+          Array.isArray(query.expressions)
+        )
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
-      const data = await this.source.query(query);
-      return this.cache.lookupQueryResult(query, data) as RequestData;
+      const response = await this.source.query(query);
+      const data = this.cache._lookupQueryResult(
+        response,
+        Array.isArray(query.expressions)
+      );
+      return data as RequestData;
     }
   }
 
   /**
    * Adds a record
    */
-  async addRecord(
+  async addRecord<RequestData extends RecordTransformResult<Model> = Model>(
     properties: UninitializedRecord | ModelFields,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model> {
-    if (options?.fullResponse) {
-      delete options.fullResponse;
-    }
+  ): Promise<RequestData> {
+    assert(
+      'Store#addRecord does not support the `fullResponse` option. Call `store.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
     return await this.update((t) => t.addRecord(properties), options);
   }
 
   /**
    * Updates a record
    */
-  async updateRecord(
+  async updateRecord<RequestData extends RecordTransformResult<Model> = Model>(
     properties: InitializedRecord | ModelFields,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model> {
-    if (options?.fullResponse) {
-      delete options.fullResponse;
-    }
+  ): Promise<RequestData> {
+    assert(
+      'Store#updateRecord does not support the `fullResponse` option. Call `store.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
     return await this.update((t) => t.updateRecord(properties), options);
   }
 
@@ -296,9 +348,10 @@ export default class Store {
     identity: RecordIdentityOrModel,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<void> {
-    if (options?.fullResponse) {
-      delete options.fullResponse;
-    }
+    assert(
+      'Store#removeRecord does not support the `fullResponse` option. Call `store.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
     await this.update((t) => t.removeRecord(identity), options);
   }
 
@@ -309,9 +362,9 @@ export default class Store {
     type: string,
     id?: string | undefined,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model | Model[]> {
+  ): Promise<Model | Model[] | undefined> {
     deprecate(
-      '`Store.find(type, id?)` is deprecated, use `Store.findRecords(type)`, `Store.findRecord(type, id)`, or `Store.query(...)` instead.'
+      'Store#find is deprecated. Call `store.findRecords(type)`, `store.findRecord(type, id)`, or `store.query(...)` instead.'
     );
     if (id === undefined) {
       return this.findRecords(type, options);
@@ -320,63 +373,99 @@ export default class Store {
     }
   }
 
-  async findRecord(
+  findRecord<RequestData extends RecordQueryResult<Model> = Model | undefined>(
     type: string,
     id: string,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model> {
+  ): Promise<Model | undefined>;
+  findRecord<RequestData extends RecordQueryResult<Model> = Model | undefined>(
+    identity: RecordIdentityOrModel,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Promise<Model | undefined>;
+  async findRecord<
+    RequestData extends RecordQueryResult<Model> = Model | undefined
+  >(
+    typeOrIdentity: string | RecordIdentityOrModel,
+    idOrOptions?: string | DefaultRequestOptions<RecordCacheQueryOptions>,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Promise<RequestData> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return await this.query(
-      (q) => q.findRecord({ type, id }),
-      options as DefaultRequestOptions<RequestOptions>
-    );
+    let identity: RecordIdentityOrModel;
+    let queryOptions: DefaultRequestOptions<RequestOptions> | undefined;
+    if (typeof typeOrIdentity === 'string') {
+      if (typeof idOrOptions === 'string') {
+        identity = { type: typeOrIdentity, id: idOrOptions };
+        queryOptions = options;
+      } else {
+        throw new Assertion(
+          'Store#findRecord may be called with either `type` and `id` strings OR a single `identity` object.'
+        );
+      }
+    } else {
+      identity = typeOrIdentity;
+      queryOptions = idOrOptions as DefaultRequestOptions<RequestOptions>;
+    }
+    return await this.query((q) => q.findRecord(identity), queryOptions);
   }
 
-  async findRecords(
-    type: string,
+  async findRecords<RequestData extends RecordQueryResult<Model> = Model[]>(
+    typeOrIdentities: string | RecordIdentityOrModel[],
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model[]> {
+  ): Promise<RequestData> {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return await this.query(
-      (q) => q.findRecords(type),
-      options as DefaultRequestOptions<RequestOptions>
-    );
-  }
-
-  async findRecordByKey(
-    type: string,
-    keyName: string,
-    keyValue: string,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Promise<Model> {
-    if (options?.fullResponse) {
-      delete options.fullResponse;
-    }
-    return await this.findRecord(
-      type,
-      this.cache.recordIdFromKey(type, keyName, keyValue),
+    return await this.query<RequestData>(
+      (q) => q.findRecords(typeOrIdentities),
       options
     );
   }
 
-  peekRecord(type: string, id: string): Model | undefined {
-    return this.cache.peekRecord(type, id);
-  }
-
-  peekRecords(type: string): Model[] {
-    return this.cache.peekRecords(type);
-  }
-
-  peekRecordByKey(
+  /**
+   * @deprecated
+   */
+  async findRecordByKey(
     type: string,
-    keyName: string,
-    keyValue: string
-  ): Model | undefined {
-    return this.cache.peekRecordByKey(type, keyName, keyValue);
+    key: string,
+    value: string,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Promise<Model | undefined> {
+    deprecate(
+      'Store#findRecordByKey is deprecated. Instead of `store.findRecordByKey(type, key, value)`, call `store.findRecord({ type, key, value })` or `store.query(...)`.'
+    );
+    return this.findRecord({ type, key, value }, options);
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecord(type: string, id: string): Model | undefined {
+    deprecate(
+      'Store#peekRecord is deprecated. Instead of `store.peekRecord(type, id)`, call `store.cache.findRecord(type, id)` or `store.cache.query(...)`.'
+    );
+    return this.cache.findRecord(type, id);
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecords(type: string): Model[] {
+    deprecate(
+      'Store#peekRecords is deprecated. Instead of `store.peekRecords(type)`, call `store.cache.findRecords(type)` or `store.cache.query(...)`.'
+    );
+    return this.cache.findRecords(type);
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecordByKey(type: string, key: string, value: string): Model | undefined {
+    deprecate(
+      'Store#peekRecordByKey is deprecated. Instead of `store.peekRecordByKey(type, key, value)`, call `store.cache.findRecord({ type, key, value })` or `store.cache.query(...)`.'
+    );
+    return this.cache.findRecord({ type, key, value });
   }
 
   on(event: string, listener: Listener): void {
@@ -430,13 +519,21 @@ export default class Store {
       const response = await this.source.update(transform, {
         fullResponse: true
       });
+      const data = this.cache._lookupTransformResult(
+        response.data,
+        Array.isArray(transform.operations)
+      );
       return {
         ...response,
-        data: this.cache.lookupTransformResult(transform, response.data)
+        data
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
-      const data = await this.source.update(transform);
-      return this.cache.lookupTransformResult(transform, data) as RequestData;
+      const response = await this.source.update(transform);
+      const data = this.cache._lookupTransformResult(
+        response,
+        Array.isArray(transform.operations)
+      );
+      return data as RequestData;
     }
   }
 
