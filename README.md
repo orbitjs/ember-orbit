@@ -171,15 +171,11 @@ build up a single `Transform` with any number of operations:
 
 ```javascript
 // planets added in a single `Transform`
-let planets = await store.update((t) => [
-  t.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
-  t.addRecord({ type: 'planet', attributes: { name: 'Venus' } })
+let [earth, venus] = await store.update((t) => [
+  t.addRecord({ type: 'planet', name: 'Earth' }),
+  t.addRecord({ type: 'planet', name: 'Venus' })
 ]);
 ```
-
-> Note: calling `update` is a direct passthrough to the underlying Orbit store,
-> so it's important to specify records in their full normalized form
-> (see [the Orbit guides](http://orbitjs.com/v0.15/guide/modeling-data.html#Records)).
 
 ### Querying records
 
@@ -216,50 +212,68 @@ versions of their associated `Model` class.
 The attributes and relationships of records will be kept in sync with the
 backing store.
 
-Note that the EO `Store` also supports the `find` method for compatibility with
-Ember Data. The following queries are async and call `store.query` internally:
+Note that the EO `Store` also supports `findRecord` and `findRecords` methods
+for compatibility with Ember Data. The following queries are async and call
+`store.query` internally:
 
 ```javascript
 // find all records of a type
-let planets = await store.find('planet');
+let planets = await store.findRecords('planet');
 
 // find a specific record by type and id
-let planet = await store.find('planet', 'abc123');
+let planet = await store.findRecord('planet', 'abc123');
 ```
 
 The following queries are synchronous and call `store.cache.query` internally:
 
 ```javascript
 // find all records of a type
-let planets = store.cache.find('planet');
+let planets = store.cache.findRecords('planet');
 
 // find a specific record by type and id
-let planet = store.cache.find('planet', 'abc123');
+let planet = store.cache.findRecord('planet', 'abc123');
 ```
 
 ### Updating records
 
 Any records retrieved from a store or its cache will stay sync'd with the
-contents of that cache. Each attribute and relationship is a computed property
-that has getters and setters which pass through to the underlying store.
+contents of that cache.
 
 Let's say that you find a couple records directly in the store's cache and
 want to edit them:
 
 ```javascript
-let jupiter = store.cache.find('planet', 'jupiter');
-let io = store.cache.find('moon', 'io');
-let europa = store.cache.find('moon', 'europa');
-let sun = store.cache.find('star', 'theSun');
+let jupiter = store.cache.findRecord('planet', 'jupiter');
+let io = store.cache.findRecord('moon', 'io');
+let europa = store.cache.findRecord('moon', 'europa');
+let sun = store.cache.findRecord('star', 'theSun');
 
-jupiter.set('name', 'JUPITER!');
-jupiter.get('moons').pushObject(io);
-jupiter.get('moons').removeObject(europa);
-jupiter.set('sun', sun);
+await jupiter.$replaceAttribute('name', 'JUPITER!');
+await jupiter.$addToRelatedRecords('moons', io);
+await jupiter.$removeFromRelatedRecords('moons', europa);
+await jupiter.$replaceRelatedRecord('sun', sun);
+
+console.log(jupiter.name); // 'JUPITER!'
+console.log(jupiter.moons.includes(io)); // true
+console.log(jupiter.moons.includes(europa)); // false
+console.log(jupiter.sun.id); // 'theSun'
 ```
 
+Note that the `$` prefix is used on built-in model methods to avoid conflicts
+with user-specified fields, such as `jupiter.name`.
+
 Behind the scenes, these changes each result in a call to `store.update`. Of
-course, this method could also be called directly.
+course, this method could also be called directly instead of issuing updates
+through the model:
+
+```javascript
+await store.update((t) => [
+  t.replaceAttribute(jupiter, 'name', 'JUPITER!');
+  t.addToRelatedRecords(jupiter, 'moons', io);
+  t.removeFromRelatedRecords(jupiter, 'moons', europa);
+  t.replaceRelatedRecord(jupiter, 'sun', sun);
+]);
+```
 
 ### Forking and merging stores
 
@@ -465,8 +479,8 @@ export default class ApplicationRoute extends Route {
   async beforeModel() {
     // Populate the store from backup prior to activating the coordinator
     const backup = this.dataCoordinator.getSource('backup');
-    const transform = await backup.pull((q) => q.findRecords());
-    await this.store.sync(transform);
+    const records = await backup.query((q) => q.findRecords());
+    await this.store.sync((t) => records.map((r) => t.addRecord(r)));
 
     await this.dataCoordinator.activate();
   }
