@@ -35,7 +35,7 @@ export default function hasOne(
       def === undefined
     );
 
-    assert('@hasOne() requires a `type` argument.', relDef.type !== undefined);
+    assert('@hasOne() requires a `type` argument.', relDef?.type !== undefined);
   }
 
   relDef.kind = 'hasOne';
