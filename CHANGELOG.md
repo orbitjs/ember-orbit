@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0-beta.12 (2021-07-05)
+
+#### :bug: Bug Fix
+
+- [#346](https://github.com/orbitjs/ember-orbit/pull/346) Fix assertion that validates hasMany / hasOne args ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.11 (2021-07-05)
 
 #### :rocket: Enhancement
