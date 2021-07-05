@@ -36,7 +36,10 @@ export default function hasMany(
       def === undefined
     );
 
-    assert('@hasMany() requires a `type` argument.', relDef.type !== undefined);
+    assert(
+      '@hasMany() requires a `type` argument.',
+      relDef?.type !== undefined
+    );
   }
 
   relDef.kind = 'hasMany';
