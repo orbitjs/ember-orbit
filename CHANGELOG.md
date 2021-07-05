@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.17.0-beta.11 (2021-07-05)
+
+#### :rocket: Enhancement
+
+- [#344](https://github.com/orbitjs/ember-orbit/pull/344) Upgrade interfaces ([@dgeb](https://github.com/dgeb))
+- [#342](https://github.com/orbitjs/ember-orbit/pull/342) Prefix all standard methods and properties on Model class with `$` ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#345](https://github.com/orbitjs/ember-orbit/pull/345) Improve typings for testing ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.10 (2021-06-12)
 
 #### :rocket: Enhancement
