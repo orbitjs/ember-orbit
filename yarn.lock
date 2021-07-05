@@ -1405,6 +1405,13 @@
     "@types/ember-test-helpers" "*"
     "@types/qunit" "*"
 
+"@types/ember-resolver@^5.0.10":
+  version "5.0.10"
+  resolved "https://registry.yarnpkg.com/@types/ember-resolver/-/ember-resolver-5.0.10.tgz#bb265571a9cea9c4e6b095c8318df4e7f7837d5f"
+  integrity sha512-NTN4blgVUXi0wE6XTsuUjks15cI6em4sdTcgDlE8FvL8gkrxQFLSByyKDTBofHCncM6LwZcHz/eVVm13rwfC2w==
+  dependencies:
+    "@types/ember" "*"
+
 "@types/ember-test-helpers@*":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@types/ember-test-helpers/-/ember-test-helpers-1.0.9.tgz#4279c5f3b390f25fbfb3f9f210785d36a336b8a7"
