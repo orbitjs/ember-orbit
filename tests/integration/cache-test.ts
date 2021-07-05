@@ -2,15 +2,21 @@ import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { Cache, Store } from 'ember-orbit';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 import { waitForSource } from 'ember-orbit/test-support';
 
 module('Integration - Cache', function (hooks) {
+  setupTest(hooks);
+
   let store: Store;
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    const models = { planet: Planet, moon: Moon, star: Star };
-    store = createStore({ models }).fork();
+    store = createStore(this.owner, {
+      planet: Planet,
+      moon: Moon,
+      star: Star
+    }).fork();
     cache = store.cache;
   });
 

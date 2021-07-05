@@ -10,19 +10,21 @@ import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 
 import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
+import { setupTest } from 'ember-qunit';
 
 module('Integration - normalizeModelFields', function (hooks) {
+  setupTest(hooks);
+
   let store: Store;
-  const models = {
-    planet: Planet,
-    moon: Moon,
-    star: Star,
-    binaryStar: BinaryStar,
-    planetarySystem: PlanetarySystem
-  };
 
   hooks.beforeEach(function () {
-    store = createStore({ models });
+    store = createStore(this.owner, {
+      planet: Planet,
+      moon: Moon,
+      star: Star,
+      binaryStar: BinaryStar,
+      planetarySystem: PlanetarySystem
+    });
   });
 
   test('#normalizeModelFields', async function (assert) {

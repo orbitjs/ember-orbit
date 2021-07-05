@@ -10,20 +10,22 @@ import {
 import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
 module('Integration - Store', function (hooks) {
+  setupTest(hooks);
+
   let store: Store;
-  const models = {
-    planet: Planet,
-    moon: Moon,
-    star: Star,
-    ocean: Ocean,
-    binaryStar: BinaryStar,
-    planetarySystem: PlanetarySystem
-  };
 
   hooks.beforeEach(function () {
-    store = createStore({ models });
+    store = createStore(this.owner, {
+      planet: Planet,
+      moon: Moon,
+      star: Star,
+      ocean: Ocean,
+      binaryStar: BinaryStar,
+      planetarySystem: PlanetarySystem
+    });
   });
 
   test('exposes properties from source', function (assert) {

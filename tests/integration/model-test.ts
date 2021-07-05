@@ -14,8 +14,11 @@ import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
 import { waitForSource } from 'ember-orbit/test-support';
 import { InitializedRecord } from '@orbit/records';
+import { setupTest } from 'ember-qunit';
 
 module('Integration - Model', function (hooks) {
+  setupTest(hooks);
+
   let store: Store;
 
   hooks.beforeEach(function () {
@@ -27,7 +30,7 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem
     };
-    store = createStore({ models }).fork();
+    store = createStore(this.owner, models).fork();
   });
 
   test('models are assigned the same owner as the store', async function (assert) {
