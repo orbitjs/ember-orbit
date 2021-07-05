@@ -48,6 +48,10 @@ export default class LiveQuery implements Iterable<Model> {
     associateDestroyableChild(this.#cache, this);
   }
 
+  get query(): RecordQuery {
+    return this.#query;
+  }
+
   get value(): RecordQueryResult<Model> {
     return getValue(this.#value);
   }

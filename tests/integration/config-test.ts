@@ -1,10 +1,11 @@
+import { Store } from 'ember-orbit';
 import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createOwner, createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 
 module('Integration - Config', function (hooks) {
-  let owner;
-  let store;
+  let owner: any;
+  let store: Store;
 
   hooks.beforeEach(function () {
     owner = createOwner();
@@ -38,11 +39,6 @@ module('Integration - Config', function (hooks) {
     );
     const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore({ models, owner });
-  });
-
-  hooks.afterEach(function () {
-    store = null;
-    owner = null;
   });
 
   test('registrations respect config', async function (assert) {

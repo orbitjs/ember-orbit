@@ -75,7 +75,7 @@ export default {
       /**
        * The action to perform on the target.
        *
-       * Can be specified as a string (e.g. `pull`) or a function which will be
+       * Can be specified as a string (e.g. `query`) or a function which will be
        * invoked in the context of this strategy (and thus will have access to
        * both `this.source` and `this.target`).
        */

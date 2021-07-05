@@ -1,5 +1,5 @@
 import { registerDestructor } from '@ember/destroyable';
-import { Orbit } from '@orbit/core';
+import { Assertion, Orbit } from '@orbit/core';
 import {
   buildQuery,
   DefaultRequestOptions,
@@ -19,25 +19,25 @@ import {
   RecordKeyMap,
   RecordOperation,
   RecordOperationResult,
-  RecordQuery,
   RecordQueryExpressionResult,
   RecordQueryResult,
   RecordSchema,
-  RecordTransform,
-  RecordTransformResult
+  RecordTransformResult,
+  StandardRecordValidator
 } from '@orbit/records';
-import { deepGet } from '@orbit/utils';
+import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
 import {
   ModelAwareQueryBuilder,
   ModelAwareQueryOrExpressions,
-  ModelAwareTransformBuilder
+  ModelAwareTransformBuilder,
+  RecordIdentityOrModel
 } from './utils/model-aware-types';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
-const { assert } = Orbit;
+const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
@@ -45,22 +45,22 @@ export interface CacheSettings {
 }
 
 export default class Cache {
-  private _sourceCache: MemoryCache<
+  #sourceCache: MemoryCache<
     RecordCacheQueryOptions,
     RecordCacheTransformOptions,
     ModelAwareQueryBuilder,
     ModelAwareTransformBuilder
   >;
-  private _modelFactory: ModelFactory;
-  private _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
+  #modelFactory: ModelFactory;
+  protected _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
   });
 
   constructor(settings: CacheSettings) {
-    this._sourceCache = settings.sourceCache;
-    this._modelFactory = settings.modelFactory;
+    this.#sourceCache = settings.sourceCache;
+    this.#modelFactory = settings.modelFactory;
 
-    const patchUnbind = this._sourceCache.on(
+    const patchUnbind = this.#sourceCache.on(
       'patch',
       this.generatePatchListener()
     );
@@ -71,72 +71,62 @@ export default class Cache {
     });
   }
 
+  get sourceCache(): MemoryCache {
+    return this.#sourceCache;
+  }
+
   get keyMap(): RecordKeyMap | undefined {
-    return this._sourceCache.keyMap;
+    return this.#sourceCache.keyMap;
   }
 
   get schema(): RecordSchema {
-    return this._sourceCache.schema;
+    return this.#sourceCache.schema;
   }
 
   get queryBuilder(): ModelAwareQueryBuilder {
-    return this._sourceCache.queryBuilder;
+    return this.#sourceCache.queryBuilder;
   }
 
   get transformBuilder(): ModelAwareTransformBuilder {
-    return this._sourceCache.transformBuilder;
+    return this.#sourceCache.transformBuilder;
+  }
+
+  get validatorFor():
+    | ValidatorForFn<StandardValidator | StandardRecordValidator>
+    | undefined {
+    return this.#sourceCache.validatorFor;
   }
 
   get defaultQueryOptions():
     | DefaultRequestOptions<RecordCacheQueryOptions>
     | undefined {
-    return this._sourceCache.defaultQueryOptions;
+    return this.#sourceCache.defaultQueryOptions;
   }
 
   set defaultQueryOptions(
     options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
   ) {
-    this._sourceCache.defaultQueryOptions = options;
+    this.#sourceCache.defaultQueryOptions = options;
   }
 
   get defaultTransformOptions():
     | DefaultRequestOptions<RecordCacheTransformOptions>
     | undefined {
-    return this._sourceCache.defaultTransformOptions;
+    return this.#sourceCache.defaultTransformOptions;
   }
 
   set defaultTransformOptions(
     options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined
   ) {
-    this._sourceCache.defaultTransformOptions = options;
+    this.#sourceCache.defaultTransformOptions = options;
   }
 
-  peekRecordData(type: string, id: string): InitializedRecord | undefined {
-    return this._sourceCache.getRecordSync({ type, id });
+  getRecordData(type: string, id: string): InitializedRecord | undefined {
+    return this.#sourceCache.getRecordSync({ type, id });
   }
 
   includesRecord(type: string, id: string): boolean {
-    return !!this.peekRecordData(type, id);
-  }
-
-  peekRecord(type: string, id: string): Model | undefined {
-    if (this.includesRecord(type, id)) {
-      return this.lookup({ type, id }) as Model;
-    }
-    return undefined;
-  }
-
-  peekRecords(type: string): Model[] {
-    const identities = this._sourceCache.getRecordsSync(type);
-    return identities.map((i) => this.lookup(i) as Model);
-  }
-
-  peekRecordByKey(
-    type: string,
-    keyName: string,
-    keyValue: string
-  ): Model | undefined {
-    return this.peekRecord(type, this.recordIdFromKey(type, keyName, keyValue));
+    return !!this.getRecordData(type, id);
   }
 
   recordIdFromKey(type: string, keyName: string, keyValue: string): string {
@@ -153,21 +143,75 @@ export default class Cache {
     return id;
   }
 
+  /**
+   * @deprecated
+   */
+  peekRecordData(type: string, id: string): InitializedRecord | undefined {
+    deprecate(
+      'Cache#peekRecordData is deprecated. Call `getRecordData` instead.'
+    );
+    return this.#sourceCache.getRecordSync({ type, id });
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecord(type: string, id: string): Model | undefined {
+    deprecate('Cache#peekRecord is deprecated. Call `findRecord` instead.');
+    return this.findRecord(type, id);
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecords(type: string): Model[] {
+    deprecate('Cache#peekRecords is deprecated. Call `findRecords` instead.');
+    return this.findRecords(type);
+  }
+
+  /**
+   * @deprecated
+   */
+  peekRecordByKey(type: string, key: string, value: string): Model | undefined {
+    deprecate(
+      'Cache#peekRecordByKey is deprecated. Instead of `cache.peekRecordByKey(type, key, value)`, call `cache.findRecord({ type, key, value })` or `cache.query(...)`.'
+    );
+    return this.findRecord({ type, key, value });
+  }
+
+  /**
+   * @deprecated
+   */
   peekKey(identity: RecordIdentity, key: string): string | undefined {
-    const record = this._sourceCache.getRecordSync(identity);
-    return record && deepGet(record, ['keys', key]);
+    deprecate(
+      "Cache#peekKey is deprecated. Instead of `cache.peekKey({ type, id }, value)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+    );
+    const record = this.#sourceCache.getRecordSync(identity);
+    return record?.keys?.[key];
   }
 
+  /**
+   * @deprecated
+   */
   peekAttribute(identity: RecordIdentity, attribute: string): any {
-    const record = this._sourceCache.getRecordSync(identity);
-    return record && deepGet(record, ['attributes', attribute]);
+    deprecate(
+      "Cache#peekAttribute is deprecated. Instead of `cache.peekAttribute({ type, id }, attribute)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+    );
+    const record = this.#sourceCache.getRecordSync(identity);
+    return record?.attributes?.[attribute];
   }
 
+  /**
+   * @deprecated
+   */
   peekRelatedRecord(
     identity: RecordIdentity,
     relationship: string
   ): Model | null | undefined {
-    const relatedRecord = this._sourceCache.getRelatedRecordSync(
+    deprecate(
+      "Cache#peekRelatedRecord is deprecated. Instead of `cache.peekRelatedRecord({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+    );
+    const relatedRecord = this.#sourceCache.getRelatedRecordSync(
       identity,
       relationship
     );
@@ -178,11 +222,17 @@ export default class Cache {
     }
   }
 
+  /**
+   * @deprecated
+   */
   peekRelatedRecords(
     identity: RecordIdentity,
     relationship: string
   ): Model[] | undefined {
-    const relatedRecords = this._sourceCache.getRelatedRecordsSync(
+    deprecate(
+      "Cache#peekRelatedRecords is deprecated. Instead of `cache.peekRelatedRecords({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+    );
+    const relatedRecords = this.#sourceCache.getRelatedRecordsSync(
       identity,
       relationship
     );
@@ -218,37 +268,51 @@ export default class Cache {
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder
     );
 
     if (options?.fullResponse) {
-      const response = this._sourceCache.query(query, { fullResponse: true });
+      const response = this.#sourceCache.query(query, { fullResponse: true });
+      const data = this._lookupQueryResult(
+        response.data,
+        Array.isArray(query.expressions)
+      );
       return {
         ...response,
-        data: this.lookupQueryResult(query, response.data)
+        data
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
-      const data = this._sourceCache.query(query);
-      return this.lookupQueryResult(query, data) as RequestData;
+      const response = this.#sourceCache.query(query);
+      const data = this._lookupQueryResult(
+        response,
+        Array.isArray(query.expressions)
+      );
+      return data as RequestData;
     }
   }
 
   liveQuery(
     queryOrExpressions: ModelAwareQueryOrExpressions,
-    options?: RequestOptions,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
     id?: string
   ): LiveQuery {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
-      this._sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder
     );
-    const liveQuery = this._sourceCache.liveQuery(query);
+    const liveQuery = this.#sourceCache.liveQuery(query);
     return new LiveQuery({ liveQuery, cache: this, query });
   }
 
-  find(type: string, id?: string): Model | Model[] {
+  /**
+   * @deprecated
+   */
+  find(type: string, id?: string): Model | Model[] | undefined {
+    deprecate(
+      '`Cache#find` is deprecated. Call `cache.findRecords(type)`, `cache.findRecord(type, id)`, or `cache.query(...)` instead.'
+    );
     if (id === undefined) {
       return this.findRecords(type);
     } else {
@@ -260,15 +324,48 @@ export default class Cache {
     type: string,
     id: string,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
-  ): Model {
-    return this.query((q) => q.findRecord({ type, id }), options) as Model;
+  ): Model | undefined;
+  findRecord(
+    identity: RecordIdentityOrModel,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Model | undefined;
+  findRecord(
+    typeOrIdentity: string | RecordIdentityOrModel,
+    idOrOptions?: string | DefaultRequestOptions<RecordCacheQueryOptions>,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Model | undefined {
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
+    let identity: RecordIdentityOrModel;
+    let queryOptions: DefaultRequestOptions<RequestOptions> | undefined;
+    if (typeof typeOrIdentity === 'string') {
+      if (typeof idOrOptions === 'string') {
+        identity = { type: typeOrIdentity, id: idOrOptions };
+        queryOptions = options;
+      } else {
+        throw new Assertion(
+          '`Cache#findRecord` may be called with either `type` and `id` strings OR a single `identity` object.'
+        );
+      }
+    } else {
+      identity = typeOrIdentity;
+      queryOptions = idOrOptions as DefaultRequestOptions<RequestOptions>;
+    }
+    return this.query((q) => q.findRecord(identity), queryOptions);
   }
 
   findRecords(
-    type: string,
+    typeOrIdentities: string | RecordIdentityOrModel[],
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Model[] {
-    return this.query((q) => q.findRecords(type), options) as Model[];
+    if (options?.fullResponse) {
+      delete options.fullResponse;
+    }
+    return this.query(
+      (q) => q.findRecords(typeOrIdentities),
+      options
+    ) as Model[];
   }
 
   unload(identity: RecordIdentity): void {
@@ -279,48 +376,60 @@ export default class Cache {
     }
   }
 
-  lookup(record: InitializedRecord): Model {
-    let model = this._identityMap.get(record);
+  lookup(identity: RecordIdentity): Model {
+    let record = this._identityMap.get(identity);
 
-    if (!model) {
-      model = this._modelFactory.create(record);
-      this._identityMap.set(record, model);
+    if (!record) {
+      record = this.#modelFactory.create(identity);
+      this._identityMap.set(identity, record);
     }
 
-    return model;
+    return record;
   }
 
-  lookupQueryResult(
-    query: RecordQuery,
-    result: RecordQueryResult<InitializedRecord>
+  _lookupQueryResult(
+    result: RecordQueryResult<InitializedRecord>,
+    isArray: boolean
   ): RecordQueryResult<Model> {
-    if (
-      isQueryExpressionResultArray<InitializedRecord>(
-        result,
-        query.expressions.length
-      )
-    ) {
-      return (result as RecordQueryExpressionResult<InitializedRecord>[]).map(
-        (i) => this.lookupQueryExpressionResult(i)
-      );
+    if (isArray) {
+      if (Array.isArray(result)) {
+        return (result as RecordQueryExpressionResult[]).map((i) =>
+          this.lookupQueryExpressionResult(i)
+        );
+      } else {
+        throw new Assertion(
+          'A resultset for a query with an array of `expressions` should also be an array.'
+        );
+      }
     } else {
-      return this.lookupQueryExpressionResult(result);
+      return this.lookupQueryExpressionResult(
+        result as RecordQueryExpressionResult<InitializedRecord>
+      );
     }
   }
 
-  lookupTransformResult(
-    transform: RecordTransform,
-    result: RecordTransformResult<InitializedRecord>
+  _lookupTransformResult(
+    result: RecordTransformResult<InitializedRecord>,
+    isArray: boolean
   ): RecordTransformResult<Model> {
-    if (
-      isOperationResultArray<InitializedRecord>(
-        result,
-        transform.operations.length
-      )
-    ) {
-      return result.map((i) => this.lookupOperationResult(i));
+    if (isArray) {
+      if (Array.isArray(result)) {
+        return (result as RecordOperationResult[]).map((i) =>
+          this.lookupOperationResult(i)
+        );
+      } else {
+        throw new Assertion(
+          'A resultset for a transform with an array of `operations` should also be an array.'
+        );
+      }
     } else {
-      return this.lookupOperationResult(result);
+      if (Array.isArray(result)) {
+        throw new Assertion(
+          'A resultset for a transform with singular (i.e. non-array) `operations` should not be an array.'
+        );
+      } else {
+        return this.lookupOperationResult(result);
+      }
     }
   }
 
@@ -392,18 +501,4 @@ export default class Cache {
       }
     };
   }
-}
-
-function isQueryExpressionResultArray<T>(
-  _result: RecordQueryResult<T>,
-  expressions: number
-): _result is RecordQueryExpressionResult<T>[] {
-  return expressions > 1;
-}
-
-function isOperationResultArray<T>(
-  _result: RecordTransformResult<T>,
-  operations: number
-): _result is RecordOperationResult<T>[] {
-  return operations > 1;
 }

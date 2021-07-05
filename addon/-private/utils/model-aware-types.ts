@@ -33,5 +33,5 @@ export type ModelAwareQueryOrExpressions = QueryOrExpressions<
 
 export type ModelAwareTransformOrOperations = TransformOrOperations<
   RecordOperation,
-  RecordTransformBuilder
+  ModelAwareTransformBuilder
 >;
