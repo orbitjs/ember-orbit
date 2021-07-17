@@ -11,6 +11,7 @@ import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import { RecordTransform } from '@orbit/records';
 
 module('Integration - Store', function (hooks) {
   setupTest(hooks);
@@ -458,16 +459,24 @@ module('Integration - Store', function (hooks) {
   });
 
   test('#merge - merges a forked store back into a base store', async function (assert) {
+    const storeTransforms: RecordTransform[] = [];
     const forkedStore = store.fork();
-    const jupiter = await forkedStore.addRecord({
-      type: 'planet',
-      name: 'Jupiter',
-      classification: 'gas giant'
-    });
-    const result = await store.merge<[Planet]>(forkedStore);
+    const jupiter = await forkedStore.update<Planet>((t) =>
+      t.addRecord({
+        type: 'planet',
+        name: 'Jupiter',
+        classification: 'gas giant'
+      })
+    );
+    const storeTransformed = (t: RecordTransform) => {
+      storeTransforms.push(t);
+    };
+    store.on('transform', storeTransformed);
+
+    const [jupiterInStore] = await store.merge<[Planet]>(forkedStore);
 
     assert.deepEqual(
-      result[0].$identity,
+      jupiterInStore.$identity,
       jupiter.$identity,
       'result matches expectations'
     );
@@ -480,6 +489,15 @@ module('Integration - Store', function (hooks) {
       forkedStore.cache.includesRecord('planet', jupiter.id),
       'fork includes record'
     );
+
+    assert.equal(storeTransforms.length, 1);
+    assert.deepEqual(storeTransforms[0]?.operations, [
+      {
+        op: 'addRecord',
+        record: jupiterInStore.$getData()
+      }
+    ]);
+    store.off('transform', storeTransformed);
   });
 
   test('#merge - can respond with a fullResponse', async function (assert) {
