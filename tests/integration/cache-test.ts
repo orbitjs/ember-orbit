@@ -70,6 +70,33 @@ module('Integration - Cache', function (hooks) {
     assert.equal(id, '123');
   });
 
+  test('#update - addRecord', async function (assert) {
+    const earth = cache.update<Planet>((t) =>
+      t.addRecord({ type: 'planet', name: 'Earth' })
+    );
+    assert.strictEqual(cache.lookup(earth), earth);
+    assert.strictEqual(earth.name, 'Earth');
+  });
+
+  test('#update - [addRecord]', async function (assert) {
+    const [earth] = cache.update<[Planet]>((t) => [
+      t.addRecord({ type: 'planet', name: 'Earth' })
+    ]);
+    assert.strictEqual(cache.lookup(earth), earth);
+    assert.strictEqual(earth.name, 'Earth');
+  });
+
+  test('#update - [addRecord, addRecord]', async function (assert) {
+    const [earth, jupiter] = cache.update<[Planet, Planet]>((t) => [
+      t.addRecord({ type: 'planet', name: 'Earth' }),
+      t.addRecord({ type: 'planet', name: 'Jupiter' })
+    ]);
+    assert.strictEqual(cache.lookup(earth), earth);
+    assert.strictEqual(earth.name, 'Earth');
+    assert.strictEqual(cache.lookup(jupiter), jupiter);
+    assert.strictEqual(jupiter.name, 'Jupiter');
+  });
+
   test('#query - record', async function (assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     await store.addRecord({ type: 'planet', name: 'Jupiter' });
