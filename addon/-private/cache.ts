@@ -2,6 +2,7 @@ import { registerDestructor } from '@ember/destroyable';
 import { Assertion, Orbit } from '@orbit/core';
 import {
   buildQuery,
+  buildTransform,
   DefaultRequestOptions,
   FullRequestOptions,
   FullResponse,
@@ -33,6 +34,7 @@ import {
   ModelAwareQueryBuilder,
   ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
+  ModelAwareTransformOrOperations,
   RecordIdentityOrModel
 } from './utils/model-aware-types';
 import recordIdentitySerializer from './utils/record-identity-serializer';
@@ -240,6 +242,56 @@ export default class Cache {
       return relatedRecords.map((r) => this.lookup(r) as Model);
     } else {
       return undefined;
+    }
+  }
+
+  update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: ModelAwareTransformOrOperations,
+    options?: DefaultRequestOptions<RequestOptions>,
+    id?: string
+  ): RequestData;
+  update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: ModelAwareTransformOrOperations,
+    options: FullRequestOptions<RequestOptions>,
+    id?: string
+  ): FullResponse<RequestData, unknown, RecordOperation>;
+  update<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    transformOrOperations: ModelAwareTransformOrOperations,
+    options?: RequestOptions,
+    id?: string
+  ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
+    const transform = buildTransform(
+      transformOrOperations,
+      options,
+      id,
+      this.#sourceCache.transformBuilder
+    );
+
+    if (options?.fullResponse) {
+      const response = this.#sourceCache.update(transform, {
+        fullResponse: true
+      });
+      const data = this._lookupTransformResult(
+        response.data,
+        Array.isArray(transform.operations)
+      );
+      return {
+        ...response,
+        data
+      } as FullResponse<RequestData, unknown, RecordOperation>;
+    } else {
+      const response = this.#sourceCache.update(transform);
+      const data = this._lookupTransformResult(
+        response,
+        Array.isArray(transform.operations)
+      );
+      return data as RequestData;
     }
   }
 
