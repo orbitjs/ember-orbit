@@ -7,7 +7,8 @@ import {
   DefaultRequestOptions,
   FullRequestOptions,
   FullResponse,
-  RequestOptions
+  RequestOptions,
+  TransformBuilderFunc
 } from '@orbit/data';
 import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
 import { RecordCacheQueryOptions } from '@orbit/record-cache';
@@ -481,7 +482,10 @@ export default class Store {
   }
 
   async sync(
-    transformOrTransforms: RecordTransform | RecordTransform[]
+    transformOrTransforms:
+      | RecordTransform
+      | RecordTransform[]
+      | TransformBuilderFunc<RecordOperation, ModelAwareTransformBuilder>
   ): Promise<void> {
     await this.source.sync(transformOrTransforms);
   }
