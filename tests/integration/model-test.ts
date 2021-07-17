@@ -13,8 +13,8 @@ import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
 import { waitForSource } from 'ember-orbit/test-support';
-import { InitializedRecord } from '@orbit/records';
 import { setupTest } from 'ember-qunit';
+import { Assertion } from '@orbit/core';
 
 module('Integration - Model', function (hooks) {
   setupTest(hooks);
@@ -422,11 +422,24 @@ module('Integration - Model', function (hooks) {
       type: 'planet',
       name: 'Jupiter'
     });
-    let recordData = record.$getData() as InitializedRecord;
+    let recordData = record.$getData();
     assert.equal(
       recordData.attributes?.name,
       'Jupiter',
       'returns record data (resource)'
+    );
+  });
+
+  test('$getData fails when record has been removed from its store', async function (assert) {
+    const record = await store.addRecord<Planet>({
+      type: 'planet',
+      name: 'Jupiter'
+    });
+    await record.$remove();
+    assert.throws(
+      () => record.$getData(),
+      Assertion,
+      'Error: Assertion failed: Model must be connected to a store in order to call `$getData`'
     );
   });
 
