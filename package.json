@@ -34,19 +34,19 @@
     "test:ember-compatibility": "ember try:each"
   },
   "dependencies": {
-    "@glimmer/tracking": "^1.0.3",
+    "@glimmer/tracking": "^1.0.4",
     "@orbit/coordinator": "^0.17.0-beta.20",
     "@orbit/core": "^0.17.0-beta.20",
     "@orbit/data": "^0.17.0-beta.20",
-    "@orbit/identity-map": "^0.17.0-beta.20",
-    "@orbit/memory": "^0.17.0-beta.20",
-    "@orbit/records": "^0.17.0-beta.20",
+    "@orbit/identity-map": "^0.17.0-beta.22",
+    "@orbit/memory": "^0.17.0-beta.22",
+    "@orbit/records": "^0.17.0-beta.22",
     "@orbit/utils": "^0.17.0-beta.19",
-    "@orbit/validators": "^0.17.0-beta.19",
-    "ember-auto-import": "^1.10.1",
+    "@orbit/validators": "^0.17.0-beta.22",
+    "ember-auto-import": "^1.11.3",
     "ember-cache-primitive-polyfill": "^1.0.1",
     "ember-cli-babel": "^7.23.1",
-    "ember-cli-typescript": "^4.1.0",
+    "ember-cli-typescript": "^4.2.1",
     "ember-destroyable-polyfill": "^2.0.3"
   },
   "devDependencies": {
