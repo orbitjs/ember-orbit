@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.17.0-beta.13 (2021-07-19)
+
+#### :rocket: Enhancement
+
+- [#350](https://github.com/orbitjs/ember-orbit/pull/350) Model#$getData should never successfully return undefined ([@dgeb](https://github.com/dgeb))
+- [#349](https://github.com/orbitjs/ember-orbit/pull/349) Introduce Cache#update method ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#352](https://github.com/orbitjs/ember-orbit/pull/352) Update @orbit/memory@^0.17.0-beta.23 ([@dgeb](https://github.com/dgeb))
+- [#351](https://github.com/orbitjs/ember-orbit/pull/351) Improve Store#merge test ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.12 (2021-07-05)
 
 #### :bug: Bug Fix
