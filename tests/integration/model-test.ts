@@ -424,10 +424,19 @@ module('Integration - Model', function (hooks) {
     });
     let recordData = record.$getData();
     assert.equal(
-      recordData.attributes?.name,
+      recordData?.attributes?.name,
       'Jupiter',
       'returns record data (resource)'
     );
+  });
+
+  test('$getData returns undefined if record is not present in cache', async function (assert) {
+    const record = store.cache.lookup({
+      type: 'planet',
+      id: 'jupiter'
+    });
+    let recordData = record.$getData();
+    assert.strictEqual(recordData, undefined, 'returns undefined');
   });
 
   test('$getData fails when record has been removed from its store', async function (assert) {

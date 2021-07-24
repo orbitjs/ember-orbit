@@ -11,7 +11,7 @@ import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { RecordTransform } from '@orbit/records';
+import { InitializedRecord, RecordTransform } from '@orbit/records';
 
 module('Integration - Store', function (hooks) {
   setupTest(hooks);
@@ -553,7 +553,7 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(storeTransforms[0]?.operations, [
       {
         op: 'addRecord',
-        record: jupiterInStore.$getData()
+        record: jupiterInStore.$getData() as InitializedRecord
       }
     ]);
     store.off('transform', storeTransformed);
