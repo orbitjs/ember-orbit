@@ -274,24 +274,29 @@ export default class Cache {
     );
 
     if (options?.fullResponse) {
-      const response = this.#sourceCache.update(transform, {
+      let response = this.#sourceCache.update(transform, {
         fullResponse: true
       });
-      const data = this._lookupTransformResult(
-        response.data,
-        Array.isArray(transform.operations)
-      );
-      return {
-        ...response,
-        data
-      } as FullResponse<RequestData, unknown, RecordOperation>;
+      if (response.data !== undefined) {
+        const data = this._lookupTransformResult(
+          response.data,
+          Array.isArray(transform.operations)
+        );
+        response = {
+          ...response,
+          data
+        };
+      }
+      return response as FullResponse<RequestData, unknown, RecordOperation>;
     } else {
-      const response = this.#sourceCache.update(transform);
-      const data = this._lookupTransformResult(
-        response,
-        Array.isArray(transform.operations)
-      );
-      return data as RequestData;
+      let response = this.#sourceCache.update(transform);
+      if (response !== undefined) {
+        response = this._lookupTransformResult(
+          response,
+          Array.isArray(transform.operations)
+        );
+      }
+      return response as RequestData;
     }
   }
 
