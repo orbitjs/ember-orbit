@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.17.0-beta.14 (2021-07-24)
+
+#### :bug: Bug Fix
+
+- [#355](https://github.com/orbitjs/ember-orbit/pull/355) Allow Model#$getData to return undefined ([@dgeb](https://github.com/dgeb))
+- [#354](https://github.com/orbitjs/ember-orbit/pull/354) Allow undefined responses from update / merge ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.13 (2021-07-19)
 
 #### :rocket: Enhancement
