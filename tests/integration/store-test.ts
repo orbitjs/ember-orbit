@@ -439,6 +439,65 @@ module('Integration - Store', function (hooks) {
     assert.equal(jupiter.name, 'Jupiter');
   });
 
+  test('#update - when transform is applied pessimistically via sync without hints', async function (assert) {
+    // Sync transform to store before store applies update
+    const beforeUpdate = (t: RecordTransform) => {
+      return store.sync(t);
+    };
+    store.on('beforeUpdate', beforeUpdate);
+
+    const response = await store.update((o) => [
+      o.addRecord({
+        id: 'earth',
+        type: 'planet',
+        attributes: { name: 'Earth' }
+      })
+    ]);
+
+    // Response will be `undefined` because transform was applied `beforeUpdate` via `sync`
+    assert.strictEqual(response, undefined, 'undefined returned from update');
+
+    assert.ok(
+      store.cache.includesRecord('planet', 'earth'),
+      'store includes record'
+    );
+
+    store.off('beforeUpdate', beforeUpdate);
+  });
+
+  test('#update - when transform is applied pessimistically via sync without hints (fullResponse)', async function (assert) {
+    // Sync transform to store before store applies update
+    const beforeUpdate = (t: RecordTransform) => {
+      return store.sync(t);
+    };
+    store.on('beforeUpdate', beforeUpdate);
+
+    const response = await store.update(
+      (o) => [
+        o.addRecord({
+          id: 'earth',
+          type: 'planet',
+          attributes: { name: 'Earth' }
+        })
+      ],
+      { fullResponse: true }
+    );
+
+    // Response will be undefined because transform was applied `beforeUpdate` via `sync`
+    assert.strictEqual(
+      response.data,
+      undefined,
+      'undefined returned from update'
+    );
+
+    assert.ok(
+      store.cache.includesRecord('planet', 'earth'),
+      'store includes record'
+    );
+
+    store.off('beforeUpdate', beforeUpdate);
+  });
+
   test('#fork - creates a clone of a base store', async function (assert) {
     const forkedStore = store.fork();
     const jupiter = await forkedStore.addRecord({
@@ -498,6 +557,76 @@ module('Integration - Store', function (hooks) {
       }
     ]);
     store.off('transform', storeTransformed);
+  });
+
+  test('#merge - when transform is applied pessimistically via sync without hints', async function (assert) {
+    const forkedStore = store.fork();
+    const jupiter = await forkedStore.update<Planet>((t) =>
+      t.addRecord({
+        type: 'planet',
+        name: 'Jupiter',
+        classification: 'gas giant'
+      })
+    );
+
+    // Sync transform to store before store applies update
+    const beforeUpdate = (t: RecordTransform) => {
+      return store.sync(t);
+    };
+    store.on('beforeUpdate', beforeUpdate);
+
+    const response = await store.merge(forkedStore);
+
+    // Response will be `undefined` because transform was applied `beforeUpdate` via `sync`
+    assert.strictEqual(response, undefined, 'undefined returned from merge');
+
+    assert.ok(
+      store.cache.includesRecord('planet', jupiter.id),
+      'store includes record'
+    );
+    assert.ok(
+      forkedStore.cache.includesRecord('planet', jupiter.id),
+      'fork includes record'
+    );
+
+    store.off('beforeUpdate', beforeUpdate);
+  });
+
+  test('#merge - when transform is applied pessimistically via sync without hints (fullResponse)', async function (assert) {
+    const forkedStore = store.fork();
+    const jupiter = await forkedStore.update<Planet>((t) =>
+      t.addRecord({
+        type: 'planet',
+        name: 'Jupiter',
+        classification: 'gas giant'
+      })
+    );
+
+    // Sync transform to store before store applies update
+    const beforeUpdate = (t: RecordTransform) => {
+      return store.sync(t);
+    };
+    store.on('beforeUpdate', beforeUpdate);
+
+    const response = await store.merge(forkedStore, { fullResponse: true });
+
+    // Response will be `undefined` because transform was applied `beforeUpdate` via `sync`
+    assert.strictEqual(
+      response.data,
+      undefined,
+      'undefined data returned from merge'
+    );
+
+    assert.ok(
+      store.cache.includesRecord('planet', jupiter.id),
+      'store includes record'
+    );
+    assert.ok(
+      forkedStore.cache.includesRecord('planet', jupiter.id),
+      'fork includes record'
+    );
+
+    store.off('beforeUpdate', beforeUpdate);
   });
 
   test('#merge - can respond with a fullResponse', async function (assert) {

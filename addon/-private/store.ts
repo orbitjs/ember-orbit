@@ -207,7 +207,7 @@ export default class Store {
     RequestData | FullResponse<RequestData, unknown, RecordOperation>
   > {
     if (options?.fullResponse) {
-      const response = (await this.source.merge(
+      let response = (await this.source.merge(
         forkedStore.source,
         options as FullRequestOptions<RequestOptions> & MemorySourceMergeOptions
       )) as FullResponse<
@@ -215,25 +215,30 @@ export default class Store {
         unknown,
         RecordOperation
       >;
-      const data = this.cache._lookupTransformResult(
-        response.data,
-        true // merge results should ALWAYS be an array
-      );
-      return {
-        ...response,
-        data
-      } as FullResponse<RequestData, undefined, RecordOperation>;
+      if (response.data !== undefined) {
+        const data = this.cache._lookupTransformResult(
+          response.data,
+          true // merge results should ALWAYS be an array
+        );
+        response = {
+          ...response,
+          data
+        };
+      }
+      return response as FullResponse<RequestData, unknown, RecordOperation>;
     } else {
-      const response = (await this.source.merge(
+      let response = (await this.source.merge(
         forkedStore.source,
         options as DefaultRequestOptions<RequestOptions> &
           MemorySourceMergeOptions
       )) as RecordTransformResult<InitializedRecord>;
-      const data = this.cache._lookupTransformResult(
-        response,
-        true // merge results should ALWAYS be an array
-      );
-      return data as RequestData;
+      if (response !== undefined) {
+        response = this.cache._lookupTransformResult(
+          response,
+          true // merge results should ALWAYS be an array
+        );
+      }
+      return response as RequestData;
     }
   }
 
@@ -520,24 +525,29 @@ export default class Store {
       this.source.transformBuilder
     );
     if (options?.fullResponse) {
-      const response = await this.source.update(transform, {
+      let response = await this.source.update(transform, {
         fullResponse: true
       });
-      const data = this.cache._lookupTransformResult(
-        response.data,
-        Array.isArray(transform.operations)
-      );
-      return {
-        ...response,
-        data
-      } as FullResponse<RequestData, undefined, RecordOperation>;
+      if (response.data !== undefined) {
+        const data = this.cache._lookupTransformResult(
+          response.data,
+          Array.isArray(transform.operations)
+        );
+        response = {
+          ...response,
+          data
+        };
+      }
+      return response as FullResponse<RequestData, unknown, RecordOperation>;
     } else {
-      const response = await this.source.update(transform);
-      const data = this.cache._lookupTransformResult(
-        response,
-        Array.isArray(transform.operations)
-      );
-      return data as RequestData;
+      let response = await this.source.update(transform);
+      if (response !== undefined) {
+        response = this.cache._lookupTransformResult(
+          response,
+          Array.isArray(transform.operations)
+        );
+      }
+      return response as RequestData;
     }
   }
 
