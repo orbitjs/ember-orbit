@@ -73,24 +73,19 @@ export default class Model {
   /**
    * @deprecated
    */
-  getData(): InitializedRecord {
+  getData(): InitializedRecord | undefined {
     deprecate(
       '`Model#getData` is deprecated to avoid potential conflicts with field names. Call `$getData` instead.'
     );
     return this.$getData();
   }
 
-  $getData(): InitializedRecord {
+  $getData(): InitializedRecord | undefined {
     assert(
       'Model must be connected to a store in order to call `$getData`',
       this._store !== undefined
     );
-    const data = this._store!.cache.getRecordData(this.type, this.id);
-    assert(
-      "`$getData` can not succeed because the record associated with the model no longer exists in its store's cache.",
-      data !== undefined
-    );
-    return data as InitializedRecord;
+    return this._store!.cache.getRecordData(this.type, this.id);
   }
 
   /**
