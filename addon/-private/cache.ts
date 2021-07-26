@@ -24,7 +24,8 @@ import {
   RecordQueryResult,
   RecordSchema,
   RecordTransformResult,
-  StandardRecordValidator
+  StandardRecordValidator,
+  UninitializedRecord
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import LiveQuery from './live-query';
@@ -37,6 +38,7 @@ import {
   ModelAwareTransformOrOperations,
   RecordIdentityOrModel
 } from './utils/model-aware-types';
+import { ModelFields } from './utils/model-fields';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
 const { assert, deprecate } = Orbit;
@@ -423,6 +425,48 @@ export default class Cache {
       (q) => q.findRecords(typeOrIdentities),
       options
     ) as Model[];
+  }
+
+  /**
+   * Adds a record
+   */
+  addRecord<RequestData extends RecordTransformResult<Model> = Model>(
+    properties: UninitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): RequestData {
+    assert(
+      'Cache#addRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    return this.update((t) => t.addRecord(properties), options);
+  }
+
+  /**
+   * Updates a record
+   */
+  updateRecord<RequestData extends RecordTransformResult<Model> = Model>(
+    properties: InitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): RequestData {
+    assert(
+      'Cache#updateRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    return this.update((t) => t.updateRecord(properties), options);
+  }
+
+  /**
+   * Removes a record
+   */
+  removeRecord(
+    identity: RecordIdentityOrModel,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): void {
+    assert(
+      'Cache#removeRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    this.update((t) => t.removeRecord(identity), options);
   }
 
   unload(identity: RecordIdentity): void {
