@@ -2,7 +2,7 @@ import Orbit from '@orbit/core';
 import { getOwner } from '@ember/application';
 import { Dict } from '@orbit/utils';
 import { RecordIdentity, cloneRecordIdentity } from '@orbit/records';
-import Store from './store';
+import Cache from './cache';
 import Model, { ModelSettings } from './model';
 
 const { assert } = Orbit;
@@ -12,22 +12,20 @@ interface Factory {
 }
 
 export default class ModelFactory {
-  #store: Store;
+  #cache: Cache;
   #modelFactoryMap: Dict<Factory>;
-  #mutableModelFields: boolean;
 
-  constructor(store: Store, mutableModelFields: boolean) {
-    this.#store = store;
+  constructor(cache: Cache) {
+    this.#cache = cache;
     this.#modelFactoryMap = {};
-    this.#mutableModelFields = mutableModelFields;
   }
 
   create(identity: RecordIdentity): Model {
     const modelFactory = this.modelFactoryFor(identity.type);
+
     return modelFactory.create({
       identity: cloneRecordIdentity(identity),
-      store: this.#store,
-      mutableFields: this.#mutableModelFields
+      cache: this.#cache
     });
   }
 
@@ -35,7 +33,7 @@ export default class ModelFactory {
     let modelFactory = this.#modelFactoryMap[type];
 
     if (!modelFactory) {
-      let owner = getOwner(this.#store);
+      let owner = getOwner(this.#cache);
       let orbitConfig = owner.lookup('ember-orbit:config');
 
       modelFactory = owner.factoryFor(

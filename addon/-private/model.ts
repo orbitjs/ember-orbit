@@ -16,28 +16,25 @@ import {
 } from '@ember/destroyable';
 import { tracked } from '@glimmer/tracking';
 
-import Store from './store';
+import Cache from './cache';
 import { getModelDefinition } from './utils/model-definition';
 import { notifyPropertyChange } from './utils/property-cache';
 
 const { assert, deprecate } = Orbit;
 
 export interface ModelSettings {
-  store: Store;
+  cache: Cache;
   identity: RecordIdentity;
-  mutableFields: boolean;
 }
 export default class Model {
-  @tracked protected _store?: Store;
+  @tracked protected _cache?: Cache;
   #identity: RecordIdentity;
-  #mutableFields: boolean;
 
   constructor(settings: ModelSettings) {
-    this._store = settings.store;
+    this._cache = settings.cache;
     this.#identity = settings.identity;
-    this.#mutableFields = settings.mutableFields;
-    associateDestroyableChild(settings.store, this);
-    registerDestructor(this, (record) => settings.store.cache.unload(record));
+    associateDestroyableChild(settings.cache, this);
+    registerDestructor(this, (record) => settings.cache.unload(record));
   }
 
   get identity(): RecordIdentity {
@@ -61,13 +58,13 @@ export default class Model {
 
   get disconnected(): boolean {
     deprecate(
-      '`Model#disconnected` is deprecated to avoid potential conflicts with field names. Access `$disconnected` instead.'
+      '`Model#disconnected` is deprecated to avoid potential conflicts with field names. Access `$isDisconnected` instead.'
     );
-    return this.$disconnected;
+    return this.$isDisconnected;
   }
 
-  get $disconnected(): boolean {
-    return !this._store;
+  get $isDisconnected(): boolean {
+    return !this._cache;
   }
 
   /**
@@ -82,10 +79,10 @@ export default class Model {
 
   $getData(): InitializedRecord | undefined {
     assert(
-      'Model must be connected to a store in order to call `$getData`',
-      this._store !== undefined
+      'Model must be connected to a cache in order to call `$getData`',
+      this._cache !== undefined
     );
-    return this._store!.cache.getRecordData(this.type, this.id);
+    return this._cache!.getRecordData(this.type, this.id);
   }
 
   /**
@@ -105,23 +102,23 @@ export default class Model {
   /**
    * @deprecated
    */
-  async replaceKey(
+  replaceKey(
     key: string,
     value: string,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#replaceKey` is deprecated to avoid potential conflicts with field names. Call `$replaceKey` instead.'
     );
-    await this.$replaceKey(key, value, options);
+    this.$replaceKey(key, value, options);
   }
 
-  async $replaceKey(
+  $replaceKey(
     key: string,
     value: string,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) => t.replaceKey(this.#identity, key, value),
       options
     );
@@ -144,23 +141,23 @@ export default class Model {
   /**
    * @deprecated
    */
-  async replaceAttribute(
+  replaceAttribute(
     attribute: string,
     value: unknown,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#replaceAttribute` is deprecated to avoid potential conflicts with field names. Call `$replaceAttribute` instead.'
     );
-    await this.$replaceAttribute(attribute, value, options);
+    this.$replaceAttribute(attribute, value, options);
   }
 
-  async $replaceAttribute(
+  $replaceAttribute(
     attribute: string,
     value: unknown,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) => t.replaceAttribute(this.#identity, attribute, value),
       options
     );
@@ -177,7 +174,7 @@ export default class Model {
   }
 
   $getRelatedRecord(relationship: string): Model | null | undefined {
-    const cache = this._store!.cache;
+    const cache = this._cache!;
     const relatedRecord = cache.sourceCache.getRelatedRecordSync(
       this.#identity,
       relationship
@@ -192,23 +189,23 @@ export default class Model {
   /**
    * @deprecated
    */
-  async replaceRelatedRecord(
+  replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#replaceRelatedRecord` is deprecated to avoid potential conflicts with field names. Call `$replaceRelatedRecord` instead.'
     );
-    await this.$replaceRelatedRecord(relationship, relatedRecord, options);
+    this.$replaceRelatedRecord(relationship, relatedRecord, options);
   }
 
-  async $replaceRelatedRecord(
+  $replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) =>
         t.replaceRelatedRecord(
           this.#identity,
@@ -230,7 +227,7 @@ export default class Model {
   }
 
   $getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
-    const cache = this._store!.cache;
+    const cache = this._cache!;
     const relatedRecords = cache.sourceCache.getRelatedRecordsSync(
       this.#identity,
       relationship
@@ -246,23 +243,23 @@ export default class Model {
   /**
    * @deprecated
    */
-  async addToRelatedRecords(
+  addToRelatedRecords(
     relationship: string,
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#addToRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$addToRelatedRecords` instead.'
     );
-    await this.$addToRelatedRecords(relationship, record, options);
+    this.$addToRelatedRecords(relationship, record, options);
   }
 
-  async $addToRelatedRecords(
+  $addToRelatedRecords(
     relationship: string,
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) =>
         t.addToRelatedRecords(this.#identity, relationship, record.$identity),
       options
@@ -272,23 +269,23 @@ export default class Model {
   /**
    * @deprecated
    */
-  async removeFromRelatedRecords(
+  removeFromRelatedRecords(
     relationship: string,
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#removeFromRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$removeFromRelatedRecords` instead.'
     );
-    await this.$removeFromRelatedRecords(relationship, record, options);
+    this.$removeFromRelatedRecords(relationship, record, options);
   }
 
-  async $removeFromRelatedRecords(
+  $removeFromRelatedRecords(
     relationship: string,
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) =>
         t.removeFromRelatedRecords(
           this.#identity,
@@ -302,34 +299,34 @@ export default class Model {
   /**
    * @deprecated
    */
-  async replaceAttributes(
+  replaceAttributes(
     properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#replaceAttributes` is deprecated. Call `$update` instead (with the same arguments).'
     );
-    await this.$update(properties, options);
+    this.$update(properties, options);
   }
 
   /**
    * @deprecated
    */
-  async update(
+  update(
     properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
+  ): void {
     deprecate(
       '`Model#update` is deprecated to avoid potential conflicts with field names. Call `$update` instead.'
     );
-    await this.$update(properties, options);
+    this.$update(properties, options);
   }
 
-  async $update(
+  $update(
     properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update(
+  ): void {
+    this._cache!.update(
       (t) =>
         t.updateRecord({
           ...properties,
@@ -342,17 +339,15 @@ export default class Model {
   /**
    * @deprecated
    */
-  async remove(options?: DefaultRequestOptions<RequestOptions>): Promise<void> {
+  remove(options?: DefaultRequestOptions<RequestOptions>): void {
     deprecate(
       '`Model#remove` is deprecated to avoid potential conflicts with field names. Call `$remove` instead.'
     );
-    await this.$remove(options);
+    this.$remove(options);
   }
 
-  async $remove(
-    options?: DefaultRequestOptions<RequestOptions>
-  ): Promise<void> {
-    await this._store!.update((t) => t.removeRecord(this.#identity), options);
+  $remove(options?: DefaultRequestOptions<RequestOptions>): void {
+    this._cache!.update((t) => t.removeRecord(this.#identity), options);
   }
 
   /**
@@ -366,7 +361,7 @@ export default class Model {
   }
 
   $disconnect(): void {
-    this._store = undefined;
+    this._cache = undefined;
   }
 
   /**
@@ -397,36 +392,12 @@ export default class Model {
     notifyPropertyChange(this, key);
   }
 
-  /**
-   * @deprecated
-   */
-  assertMutableFields(): void {
-    deprecate(
-      '`Model#assertMutableFields` is deprecated to avoid potential conflicts with field names. Call `$assertMutableFields` instead.'
-    );
-    this.$assertMutableFields();
-  }
-
-  $assertMutableFields(): void {
-    assert(
-      `You tried to directly mutate fields on the '${this.type}:${this.id}' record, which is not allowed on a store that is not a fork. Either make this change using an async method like 'update' or 'replaceAttribute' or fork the store if you need to directly mutate fields on a record.`,
-      this.#mutableFields
-    );
-  }
-
-  get store(): Store {
-    deprecate(
-      '`Model#store` is deprecated to avoid potential conflicts with field names. Access `$store` instead.'
-    );
-    return this.$store;
-  }
-
-  get $store(): Store {
-    if (!this._store) {
-      throw new Error('record has been removed its store');
+  get $cache(): Cache {
+    if (!this._cache) {
+      throw new Error('record has been removed its cache');
     }
 
-    return this._store;
+    return this._cache;
   }
 
   static get definition(): ModelDefinition {
@@ -446,8 +417,8 @@ export default class Model {
   }
 
   static create(injections: ModelSettings) {
-    const { identity, store, mutableFields, ...otherInjections } = injections;
-    const record = new this({ identity, store, mutableFields });
+    const { identity, cache, ...otherInjections } = injections;
+    const record = new this({ identity, cache });
     return Object.assign(record, otherInjections);
   }
 }

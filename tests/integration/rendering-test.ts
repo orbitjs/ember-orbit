@@ -3,9 +3,8 @@ import { Planet, Moon } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import { waitForSource } from 'ember-orbit/test-support';
 
 module('Rendering', function (hooks) {
   let store: Store;
@@ -19,38 +18,40 @@ module('Rendering', function (hooks) {
     cache = store.cache;
   });
 
-  test('update has many', async function (assert) {
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+  test('update relationship synchronously via cache', async function (assert) {
+    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
 
     await render(hbs`<MoonsList @planet={{this.planet}} />`);
 
     assert.dom('.moons li').doesNotExist();
 
-    await store.addRecord({
+    cache.addRecord({
       type: 'moon',
       name: 'Callisto',
       planet: jupiter
     });
 
+    await settled();
     assert.dom('.moons').includesText('Callisto');
 
-    const europa = await store.addRecord<Moon>({
+    const europa = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Europa',
       planet: jupiter
     });
 
+    await settled();
     assert.dom('.moons').includesText('Europa');
 
     europa.name = 'New Europa';
 
-    await waitForSource(store);
-
+    await settled();
     assert.dom('.moons').includesText('New Europa');
 
-    await europa.$remove();
+    europa.$remove();
 
+    await settled();
     assert.dom('.moons').doesNotIncludeText('New Europa');
   });
 

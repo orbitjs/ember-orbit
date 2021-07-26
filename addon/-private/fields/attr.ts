@@ -35,8 +35,8 @@ export default function attr(
   return (target: Model, property: string): TrackedAttr => {
     function get(this: Model): unknown {
       assert(
-        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} attr from the cache.`,
-        !this.$disconnected
+        `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} attribute.`,
+        !this.$isDisconnected
       );
 
       return getAttributeCache(this, property).value;
@@ -46,10 +46,7 @@ export default function attr(
       const oldValue = this.$getAttribute(property);
 
       if (value !== oldValue) {
-        this.$assertMutableFields();
-        this.$replaceAttribute(property, value).catch(() =>
-          getAttributeCache(this, property).notifyPropertyChange()
-        );
+        this.$replaceAttribute(property, value);
         getAttributeCache(this, property).value = value;
       }
     }

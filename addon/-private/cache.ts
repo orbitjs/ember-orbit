@@ -1,3 +1,4 @@
+import { getOwner, setOwner } from '@ember/application';
 import { registerDestructor } from '@ember/destroyable';
 import { Assertion, Orbit } from '@orbit/core';
 import {
@@ -45,7 +46,6 @@ const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
-  modelFactory: ModelFactory;
 }
 
 export default class Cache {
@@ -56,13 +56,19 @@ export default class Cache {
     ModelAwareTransformBuilder
   >;
   #modelFactory: ModelFactory;
+  allowUpdates: boolean;
+
   protected _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
   });
 
   constructor(settings: CacheSettings) {
+    const owner = getOwner(settings);
+    setOwner(this, owner);
+
     this.#sourceCache = settings.sourceCache;
-    this.#modelFactory = settings.modelFactory;
+    this.#modelFactory = new ModelFactory(this);
+    this.allowUpdates = this.#sourceCache.base !== undefined;
 
     const patchUnbind = this.#sourceCache.on(
       'patch',
@@ -268,6 +274,11 @@ export default class Cache {
     options?: RequestOptions,
     id?: string
   ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
+    assert(
+      `You tried to update a cache that is not a fork, which is not allowed by default. Either fork the store/cache before making updates directly to the cache or, if the update you are making is ephemeral, set 'cache.allowUpdates = true' to override this assertion.`,
+      this.allowUpdates
+    );
+
     const transform = buildTransform(
       transformOrOperations,
       options,
