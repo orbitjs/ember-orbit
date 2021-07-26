@@ -552,11 +552,25 @@ export default class Store {
   }
 
   transformsSince(transformId: string): RecordTransform[] {
-    return this.source.transformsSince(transformId);
+    deprecate(
+      '`Store#transformsSince` is deprecated. Call `getTransformsSince` instead.'
+    );
+    return this.getTransformsSince(transformId);
+  }
+
+  getTransformsSince(transformId: string): RecordTransform[] {
+    return this.source.getTransformsSince(transformId);
   }
 
   allTransforms(): RecordTransform[] {
-    return this.source.allTransforms();
+    deprecate(
+      '`Store#allTransforms` is deprecated. Call `getAllTransforms` instead.'
+    );
+    return this.getAllTransforms();
+  }
+
+  getAllTransforms(): RecordTransform[] {
+    return this.source.getAllTransforms();
   }
 
   getTransform(transformId: string): RecordTransform {
