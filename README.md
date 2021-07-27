@@ -1,17 +1,13 @@
 # ember-orbit
 
-[![Build Status](https://secure.travis-ci.org/orbitjs/ember-orbit.png?branch=master)](http://travis-ci.org/orbitjs/ember-orbit) [![Join the chat at https://gitter.im/orbitjs/orbit.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orbitjs/orbit.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/orbitjs/orbit.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orbitjs/orbit.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 `ember-orbit` (or "EO") is a library that integrates
 [orbit.js](https://github.com/orbitjs/orbit) with
 [ember.js](https://github.com/emberjs/ember.js) to provide flexibility and
 control in your application's data layer.
 
-## Compatibility
-
-- Ember.js v3.16 or above
-- Ember CLI v2.13 or above
-- Node.js v10 or above
+## Highlights
 
 EO features:
 
@@ -20,11 +16,11 @@ EO features:
 
 - A data schema that's declared through simple model definitions.
 
-- Stores that wrap Orbit stores and provide access to their underlying data as
+- Stores that wrap Orbit sources and provide access to their underlying data as
   easy to use records and record arrays. These stores can be forked, edited in
   isolation, and merged back to the original as a coalesced changeset.
 
-- Live-updating filtered record arrays and model relationships.
+- Live-updating filtered query results and model relationships.
 
 - The full power of Orbit's composable query expressions.
 
@@ -40,14 +36,13 @@ EO provides a thin "Emberified" layer over the top of some core
 primitives from Orbit, including `Store`, `Cache`, and `Model` classes. Most
 common developer interactions with Orbit will be through these classes.
 
-However, EO does not attempt to wrap _every_ base class from Orbit.
-For instance, you'll need to use Orbit's `Coordinator` and coordination
-strategies to define relationships between Orbit sources. In this way, you can
-install any Orbit `Source` or `Bucket` library and wire them together in your
-EO application.
+EO does not attempt to wrap _every_ base class from Orbit. For instance, you'll
+need to use Orbit's `Coordinator` and coordination strategies to define
+relationships between Orbit sources. In this way, you can install any Orbit
+`Source` or `Bucket` library and wire them together in your EO application.
 
 > **Important**: It's strongly recommended that you read the Orbit guides at
-> [orbitjs.com](http://orbitjs.com) before using EO, since an understanding of
+> [orbitjs.com](https://orbitjs.com) before using EO, since an understanding of
 > Orbit is vital to making the most of EO.
 
 ## Status
@@ -64,14 +59,11 @@ configurations and application patterns.
 
 ## Installation
 
-As with any Ember addon, you can install EO in your project with:
+Install EO in your project with:
 
 ```
 ember install ember-orbit
 ```
-
-EO depends on `ember-auto-import` to automatically import external
-dependencies, including `@orbit/coordinator` and `@orbit/memory`.
 
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
@@ -118,7 +110,7 @@ They provide a proxy to get and set attributes and relationships. In addition,
 models are used to define the schema that's shared by the sources in your
 Orbit application.
 
-The easiest way to create a `Model` is with the `data-model` generator:
+The easiest way to create a `Model` class is with the `data-model` generator:
 
 ```
 ember g data-model planet
@@ -138,6 +130,7 @@ You can then extend your model to include keys, attributes, and relationships:
 import { Model, attr, hasOne, hasMany, key } from 'ember-orbit';
 
 export default class Planet extends Model {
+  @key() remoteId;
   @attr('string') name;
   @hasMany('moon', { inverse: 'planet' }) moons;
   @hasOne('star') sun;
@@ -156,65 +149,60 @@ export default class PlanetarySystem extends Model {
 }
 ```
 
-### Adding records
+### Stores and Caches
 
-Records can be added in a couple ways. The easiest is to use the `addRecord`
-method on the store:
+EO's `Store` class is a thin wrapper around Orbit's
+[`MemorySource`](https://orbitjs.com/docs/next/api/memory/classes/MemorySource),
+while EO's `Cache` class wraps Orbit's
+[`MemoryCache`](https://orbitjs.com/docs/next/api/memory/classes/MemoryCache).
+The difference between memory sources and caches is [explained extensively in
+Orbit's docs](https://orbitjs.com/docs/next/memory-sources).
 
-```javascript
-let planet = await store.addRecord({ type: 'planet', name: 'Earth' });
-console.log(planet.name); // Earth
-```
+The essential difference between EO's `Store` and `Cache` and the underlying
+Orbit classes is that EO is model-aware. Unlike plain Orbit, in which results
+are returned as static POJOS, every query and update result in EO is translated
+into `Model` instances, or simply "records". When changes occur to the
+underlying Orbit sources and caches, they will be reflected immediately in EO's
+records.
 
-Alternatively, you can call `store.update()` and use the transform builder to
-build up a single `Transform` with any number of operations:
+Every EO record is connected to a cache, which in turn belongs to a store. When
+stores or caches provide results in the form of records, they are always
+instantiated by, and belong to, a `Cache`. For a given identity (`type` / `id`
+pair), there is only ever one record instance per cache. These are maintained in
+what is fittingly called an ["identity
+map"](https://orbitjs.com/docs/next/api/identity-map).
 
-```javascript
-// planets added in a single `Transform`
-let [earth, venus] = await store.update((t) => [
-  t.addRecord({ type: 'planet', name: 'Earth' }),
-  t.addRecord({ type: 'planet', name: 'Venus' })
-]);
-```
+Records, including all their attributes and relationships, will stay in sync
+with the underlying data in their associated cache.
 
-### Querying records
+### Querying Data
 
-There are three unique methods used to query records:
+There are three primary methods available to query records:
 
 - `store.query()` - returns a promise that resolves to a static recordset.
 
-- `store.liveQuery()` - returns a promise that resolves to a live recordset that
-  will be refreshed whenever the store's data changes.
-
 - `store.cache.query()` - returns a static set of in-memory results immediately.
 
-All of these query methods take the same arguments as any other queryable
-Orbit source - see
-[the Orbit guides](http://orbitjs.com/v0.15/guide/querying-data.html) for
+- `store.cache.liveQuery()` - returns a live recordset that will be refreshed
+  whenever the data changes in the cache.
+
+All of these query methods take the same arguments as any other queryable Orbit
+source - see [the Orbit guides](https://orbitjs.com/docs/next/querying-data) for
 details.
 
-For example, the following `liveQuery` should return a promise that resolves
-to a live resultset that will stay updated with the "terrestrial" planets in
-the store:
+The following `liveQuery` immediately returns a live resultset that will stay
+updated with the "terrestrial" planets in the store:
 
 ```javascript
-let planets = await store.liveQuery((qb) =>
+let planets = store.cache.liveQuery((qb) =>
   qb
     .findRecords('planet')
     .filter({ attribute: 'classification', value: 'terrestrial' })
 );
 ```
 
-Unlike the Orbit `Store`, in which results are returned as static POJOs,
-results from EO queries are returned as records, i.e. instantiated
-versions of their associated `Model` class.
-
-The attributes and relationships of records will be kept in sync with the
-backing store.
-
-Note that the EO `Store` also supports `findRecord` and `findRecords` methods
-for compatibility with Ember Data. The following queries are async and call
-`store.query` internally:
+The EO `Store` also supports `findRecord` and `findRecords` methods. These
+methods are async and call `query` internally:
 
 ```javascript
 // find all records of a type
@@ -224,7 +212,7 @@ let planets = await store.findRecords('planet');
 let planet = await store.findRecord('planet', 'abc123');
 ```
 
-The following queries are synchronous and call `store.cache.query` internally:
+These methods are also available on the EO `Cache`, but are synchronous:
 
 ```javascript
 // find all records of a type
@@ -233,25 +221,176 @@ let planets = store.cache.findRecords('planet');
 // find a specific record by type and id
 let planet = store.cache.findRecord('planet', 'abc123');
 ```
+### Updating Data
 
-### Updating records
+There are two primary approaches to update data in EO:
 
-Any records retrieved from a store or its cache will stay sync'd with the
-contents of that cache.
+* Directly via async methods on the main `Store`. Direct updates flow
+  immediately into Orbit's [request
+  flow](https://orbitjs.com/docs/next/data-flows), where they can trigger side
+  effects, such as remote server requests.
 
-Let's say that you find a couple records directly in the store's cache and
-want to edit them:
+* In an isolated "forked" `Store`, usually via sync methods on its associated
+  `Cache` and/or `Model` instances. These changes remain in this fork until they
+  are merged back to a base store.
+
+#### Direct Updates to the Store
+
+The `Store` exposes several async methods to update data:
+
+* `addRecord` - adds a single record.
+* `updateRecord` - updates the fields of a single record.
+* `removeRecord` - removes a single record.
+* `update` - the most flexible and powerful method, which can perform one or
+  more operations in a single request.
+
+Here are some examples of each:
 
 ```javascript
-let jupiter = store.cache.findRecord('planet', 'jupiter');
-let io = store.cache.findRecord('moon', 'io');
-let europa = store.cache.findRecord('moon', 'europa');
-let sun = store.cache.findRecord('star', 'theSun');
+// add a new record (returned as a Model instance)
+let planet = await store.addRecord({ type: 'planet', id: '1', name: 'Earth' });
+console.log(planet.name); // Earth
 
-await jupiter.$replaceAttribute('name', 'JUPITER!');
-await jupiter.$addToRelatedRecords('moons', io);
-await jupiter.$removeFromRelatedRecords('moons', europa);
-await jupiter.$replaceRelatedRecord('sun', sun);
+// update one or more fields of the record
+await store.updateRecord({ type: 'planet', id: '1', name: 'Mother Earth' });
+console.log(planet.name); // Mother Earth
+
+// remove the record
+await store.removeRecord({ type: 'planet', id: '1' });
+// or alternatively: await store.removeRecord(planet);
+
+// add more planets in a single `Transform`
+let [mars, venus] = await store.update((t) => [
+  t.addRecord({ type: 'planet', name: 'Mars' }),
+  t.addRecord({ type: 'planet', name: 'Venus' })
+]);
+```
+
+#### Updates via Forking / Merging
+
+EO stores can be forked and merged, just as described in the [Orbit
+guides](https://orbitjs.com/docs/next/memory-sources#forking-memory-sources).
+
+Once you have forked a store, you can proceed to make synchronous changes to the
+fork's associated `Cache` and/or `Model` instances. These changes will be
+tracked and can then be merged back to the base store.
+
+Here's an example:
+
+```javascript
+  // (async) start by adding two planets and a moon to the store
+  await store.update(t => [
+    t.addRecord(earth),
+    t.addRecord(venus),
+    t.addRecord(theMoon)
+  ]);
+
+  // (async) query the planets in the store
+  let planets = await store.query(q => q.findRecords('planet').sort('name')));
+  console.log('original planets', planets);
+
+  // (sync) fork the store
+  forkedStore = store.fork();
+  let forkedCache = forkedStore.cache;
+
+  // (sync) add a planet and moons to the fork's cache
+  forkedCache.update(t => [
+    t.addRecord(jupiter),
+    t.addRecord(io),
+    t.addRecord(europa)
+  ]);
+
+  // (sync) query the planets in the forked cache
+  planets = forkedCache.query(q => q.findRecords('planet').sort('name')));
+  console.log('planets in fork', planets);
+
+  // (async) merge the forked store back into the original store
+  await store.merge(forkedStore);
+
+  // (async) query the planets in the original store
+  planets = await store.query(q => q.findRecords('planet').sort('name')));
+  console.log('merged planets', planets);
+```
+
+Some notes about forking / merging:
+
+- Once a store has been forked, the original and forked stores’ data can diverge
+  independently.
+
+- Merging a fork will coalesce any changes made to the forked cache into a
+  single new transform, and then update the original store.
+
+- A store fork can simply be abandoned without cost. Just remember to free any
+  references to the JS objects themselves.
+
+> **Important** - One additional concern to be aware of is that EO will generate
+> new records for each store. Care should be taken to not mix records between
+> stores, since the underlying data in each store can diverge. If you need to
+> access a record in a store's fork, just query the forked store or cache for
+> that record.
+
+#### Sync Updates via the Cache
+
+The `Cache` exposes sync versions of the `Store`'s async update methods:
+
+* `addRecord` - for adding a single record.
+* `updateRecord` - for updating the fields of a single record.
+* `removeRecord` - for removing a single record.
+* `update` - the most flexible and powerful method, which can perform one or
+  more operations in a single request.
+
+By default, only forked caches are able to be updated directly. This provides
+protection against data loss, since changes to caches do not participate in
+Orbit's [data flows](https://orbitjs.com/docs/next/data-flows). An exception is
+made for forks because the changes are tracked and applied back to stores via
+`merge`.
+
+If you want to override these protections and update a non-forked cache, just
+set `cache.allowUpdates = true`.
+
+#### Sync Updates via Model instances
+
+Each `Model` exposes all of its fields, including attributes and relationships,
+as properties that stay updated.
+
+Attributes and has-one relationships are also directly editable. For instance:
+
+```javascript
+let jupiter = forkedCache.findRecord('planet', 'jupiter');
+let sun = forkedCache.findRecord('star', 'theSun');
+
+console.log(jupiter.name); // 'Jupiter'
+
+// update attribute
+jupiter.name = 'Jupiter!';
+console.log(jupiter.name); // 'Jupiter!'
+
+// update has-one relationship
+jupiter.sun = theSun;
+```
+
+In order to not conflict with user-defined fields, all standard methods on
+`Model` are prefixed with a `$`. The following synchronous methods are
+available:
+
+* `$replaceAttribute`
+* `$replaceRelatedRecord`
+* `$replaceRelatedRecords`
+* `$addToRelatedRecords`
+* `$removeFromRelatedRecords`
+* `$update`
+* `$remove`
+
+```javascript
+let jupiter = forkedCache.findRecord('planet', 'jupiter');
+let io = forkedCache.findRecord('moon', 'io');
+let europa = forkedCache.findRecord('moon', 'europa');
+let sun = forkedCache.findRecord('star', 'theSun');
+
+jupiter.$replaceAttribute('name', 'JUPITER!');
+jupiter.$addToRelatedRecords('moons', io);
+jupiter.$removeFromRelatedRecords('moons', europa);
+jupiter.$replaceRelatedRecord('sun', sun);
 
 console.log(jupiter.name); // 'JUPITER!'
 console.log(jupiter.moons.includes(io)); // true
@@ -259,83 +398,18 @@ console.log(jupiter.moons.includes(europa)); // false
 console.log(jupiter.sun.id); // 'theSun'
 ```
 
-Note that the `$` prefix is used on built-in model methods to avoid conflicts
-with user-specified fields, such as `jupiter.name`.
-
-Behind the scenes, these changes each result in a call to `store.update`. Of
-course, this method could also be called directly instead of issuing updates
+Behind the scenes, these changes each result in a call to `forkedCache.update`.
+Of course, this method could also be called directly instead of issuing updates
 through the model:
 
 ```javascript
-await store.update((t) => [
+forkedCache.update((t) => [
   t.replaceAttribute(jupiter, 'name', 'JUPITER!');
   t.addToRelatedRecords(jupiter, 'moons', io);
   t.removeFromRelatedRecords(jupiter, 'moons', europa);
   t.replaceRelatedRecord(jupiter, 'sun', sun);
 ]);
 ```
-
-### Forking and merging stores
-
-Because EO stores and caches are just thin wrappers over their
-underlying Orbit equivalents, they share the same basic capabilities.
-Thus, EO stores can be forked and merged, just as described in the
-[Orbit guides](http://orbitjs.com/v0.15/guide/data-stores.html#Forking-stores).
-
-The same example can be followed:
-
-```javascript
-  // start by adding two planets and a moon to the store
-  await store.update(t => [
-    t.addRecord(earth),
-    t.addRecord(venus),
-    t.addRecord(theMoon)
-  ]);
-
-  let planets = await store.query(q => q.findRecords('planet').sort('name')));
-  console.log('original planets');
-  console.log(planets);
-
-  // fork the store
-  forkedStore = store.fork();
-
-  // add a planet and moons to the fork
-  await forkedStore.update(t => [
-    t.addRecord(jupiter),
-    t.addRecord(io),
-    t.addRecord(europa)
-  ]);
-
-  // query the planets in the forked store
-  planets = await forkedStore.query(q => q.findRecords('planet').sort('name')));
-  console.log('planets in fork');
-  console.log(planets);
-
-  // merge the forked store back into the original store
-  await store.merge(forkedStore);
-
-  // query the planets in the original store
-  planets = await store.query(q => q.findRecords('planet').sort('name')));
-  console.log('merged planets');
-  console.log(planets);
-```
-
-And the same notes apply:
-
-- Once a store has been forked, the original and forked stores’ data can diverge
-  independently.
-
-- A store fork can simply be abandoned without cost.
-
-- Merging a fork will gather the transforms applied since the fork point,
-  coalesce the operations in those transforms into a single new transform, and
-  then update the original store.
-
-> **Important** - One additional concern to be aware of is that EO will
-> generate new records for each store. Care should be taken to not mix records
-> between stores, since the underlying data in each store can diverge. If you need
-> to access a record in a store's fork, just query the forked store or cache for
-> that record.
 
 ### Adding a "backup" source
 
@@ -494,8 +568,11 @@ the restore is complete.
 
 ### Defining a data bucket
 
-Data buckets are used by sources and key maps to load and persist state. To
-create a new bucket, run the generator:
+Data buckets are used by sources and key maps to load and persist state. You
+will probably want to use a bucket if you plan to support any offline or
+optimistic UX.
+
+To create a new bucket, run the generator:
 
 ```
 ember g data-bucket main
