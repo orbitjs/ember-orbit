@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.17.0-beta.15 (2021-07-27)
+
+#### :boom: Breaking Change
+
+- [#356](https://github.com/orbitjs/ember-orbit/pull/356) Enable fully synchronous updates to models and forked caches ([@dgeb](https://github.com/dgeb))
+
+#### :rocket: Enhancement
+
+- [#356](https://github.com/orbitjs/ember-orbit/pull/356) Enable fully synchronous updates to models and forked caches ([@dgeb](https://github.com/dgeb))
+
+#### :memo: Documentation
+
+- [#357](https://github.com/orbitjs/ember-orbit/pull/357) Update README ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.14 (2021-07-24)
 
 #### :bug: Bug Fix
