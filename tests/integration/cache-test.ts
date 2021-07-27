@@ -97,6 +97,33 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(jupiter.name, 'Jupiter');
   });
 
+  test('#addRecord', async function (assert) {
+    const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
+    assert.strictEqual(cache.lookup(earth), earth);
+    assert.strictEqual(earth.name, 'Earth');
+  });
+
+  test('#updateRecord', async function (assert) {
+    const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
+    cache.updateRecord({
+      type: 'planet',
+      id: earth.id,
+      name: 'Mother Earth'
+    });
+    assert.strictEqual(cache.lookup(earth), earth);
+    assert.strictEqual(earth.name, 'Mother Earth');
+  });
+
+  test('#removeRecord', async function (assert) {
+    const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
+    cache.removeRecord(earth);
+    assert.ok(earth.$isDisconnected, 'model is disconnected');
+    assert.notOk(
+      cache.includesRecord('planet', earth.id),
+      'cache does not include record'
+    );
+  });
+
   test('#query - record', async function (assert) {
     const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
     await store.addRecord({ type: 'planet', name: 'Jupiter' });

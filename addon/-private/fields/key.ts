@@ -16,8 +16,8 @@ export default function key(options: KeyDefinition = {}): any {
   return (target: Model, property: string): TrackedKey => {
     function get(this: Model): string {
       assert(
-        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} key from the cache.`,
-        !this.$disconnected
+        `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} key.`,
+        !this.$isDisconnected
       );
 
       return getKeyCache(this, property).value as string;
@@ -27,10 +27,7 @@ export default function key(options: KeyDefinition = {}): any {
       const oldValue = this.$getKey(property);
 
       if (value !== oldValue) {
-        this.$assertMutableFields();
-        this.$replaceKey(property, value).catch(() =>
-          getKeyCache(this, property).notifyPropertyChange()
-        );
+        this.$replaceKey(property, value);
         getKeyCache(this, property).value = value;
       }
     }

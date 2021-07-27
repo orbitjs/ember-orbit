@@ -25,10 +25,9 @@ import {
   UninitializedRecord
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import Cache from './cache';
+import Cache, { CacheSettings } from './cache';
 import LiveQuery from './live-query';
 import Model from './model';
-import ModelFactory from './model-factory';
 import {
   ModelAwareQueryBuilder,
   ModelAwareQueryOrExpressions,
@@ -75,13 +74,12 @@ export default class Store {
     this.#source = settings.source;
     this.#base = settings.base;
 
-    this.#cache = new Cache({
-      sourceCache: this.source.cache,
-      modelFactory: new ModelFactory(
-        this,
-        this.forked || settings.mutableModelFields === true
-      )
-    });
+    const owner = getOwner(settings);
+    const cacheSettings: CacheSettings = {
+      sourceCache: this.source.cache
+    };
+    setOwner(cacheSettings, owner);
+    this.#cache = new Cache(cacheSettings);
 
     if (this.#base) {
       associateDestroyableChild(this.#base, this);
@@ -552,11 +550,25 @@ export default class Store {
   }
 
   transformsSince(transformId: string): RecordTransform[] {
-    return this.source.transformsSince(transformId);
+    deprecate(
+      '`Store#transformsSince` is deprecated. Call `getTransformsSince` instead.'
+    );
+    return this.getTransformsSince(transformId);
+  }
+
+  getTransformsSince(transformId: string): RecordTransform[] {
+    return this.source.getTransformsSince(transformId);
   }
 
   allTransforms(): RecordTransform[] {
-    return this.source.allTransforms();
+    deprecate(
+      '`Store#allTransforms` is deprecated. Call `getAllTransforms` instead.'
+    );
+    return this.getAllTransforms();
+  }
+
+  getAllTransforms(): RecordTransform[] {
+    return this.source.getAllTransforms();
   }
 
   getTransform(transformId: string): RecordTransform {

@@ -47,8 +47,8 @@ export default function hasMany(
   return (target: Model, property: string): TrackedHasMany => {
     function get(this: Model): Model[] {
       assert(
-        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} hasMany from the cache.`,
-        !this.$disconnected
+        `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} hasMany relationship.`,
+        !this.$isDisconnected
       );
 
       return getHasManyCache(this, property).value as Model[];

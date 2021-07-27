@@ -202,7 +202,7 @@ module('Integration - Store', function (hooks) {
     ]);
   });
 
-  test('#transformsSince - returns all transforms since a specified transformId', async function (assert) {
+  test('#getTransformsSince - returns all transforms since a specified transformId', async function (assert) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
@@ -229,13 +229,13 @@ module('Integration - Store', function (hooks) {
     await store.sync(addRecordCTransform);
 
     assert.deepEqual(
-      store.transformsSince(addRecordATransform.id),
+      store.getTransformsSince(addRecordATransform.id),
       [addRecordBTransform, addRecordCTransform],
       'returns transforms since the specified transform'
     );
   });
 
-  test('#allTransforms - returns all tracked transforms', async function (assert) {
+  test('#getAllTransforms - returns all tracked transforms', async function (assert) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
@@ -262,7 +262,7 @@ module('Integration - Store', function (hooks) {
     await store.sync(addRecordCTransform);
 
     assert.deepEqual(
-      store.allTransforms(),
+      store.getAllTransforms(),
       [addRecordATransform, addRecordBTransform, addRecordCTransform],
       'tracks transforms in correct order'
     );
@@ -703,7 +703,7 @@ module('Integration - Store', function (hooks) {
 
     fork.rebase();
 
-    assert.deepEqual(fork.allTransforms(), [addRecordD, addRecordE]);
+    assert.deepEqual(fork.getAllTransforms(), [addRecordD, addRecordE]);
 
     assert.deepEqual(fork.cache.findRecords('planet').length, 5);
     assert.ok(fork.cache.includesRecord(recordA.type, recordA.id));

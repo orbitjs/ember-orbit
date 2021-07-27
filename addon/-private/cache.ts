@@ -1,3 +1,4 @@
+import { getOwner, setOwner } from '@ember/application';
 import { registerDestructor } from '@ember/destroyable';
 import { Assertion, Orbit } from '@orbit/core';
 import {
@@ -24,7 +25,8 @@ import {
   RecordQueryResult,
   RecordSchema,
   RecordTransformResult,
-  StandardRecordValidator
+  StandardRecordValidator,
+  UninitializedRecord
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import LiveQuery from './live-query';
@@ -37,13 +39,13 @@ import {
   ModelAwareTransformOrOperations,
   RecordIdentityOrModel
 } from './utils/model-aware-types';
+import { ModelFields } from './utils/model-fields';
 import recordIdentitySerializer from './utils/record-identity-serializer';
 
 const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
-  modelFactory: ModelFactory;
 }
 
 export default class Cache {
@@ -54,13 +56,19 @@ export default class Cache {
     ModelAwareTransformBuilder
   >;
   #modelFactory: ModelFactory;
+  allowUpdates: boolean;
+
   protected _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
     serializer: recordIdentitySerializer
   });
 
   constructor(settings: CacheSettings) {
+    const owner = getOwner(settings);
+    setOwner(this, owner);
+
     this.#sourceCache = settings.sourceCache;
-    this.#modelFactory = settings.modelFactory;
+    this.#modelFactory = new ModelFactory(this);
+    this.allowUpdates = this.#sourceCache.base !== undefined;
 
     const patchUnbind = this.#sourceCache.on(
       'patch',
@@ -266,6 +274,11 @@ export default class Cache {
     options?: RequestOptions,
     id?: string
   ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
+    assert(
+      `You tried to update a cache that is not a fork, which is not allowed by default. Either fork the store/cache before making updates directly to the cache or, if the update you are making is ephemeral, set 'cache.allowUpdates = true' to override this assertion.`,
+      this.allowUpdates
+    );
+
     const transform = buildTransform(
       transformOrOperations,
       options,
@@ -423,6 +436,48 @@ export default class Cache {
       (q) => q.findRecords(typeOrIdentities),
       options
     ) as Model[];
+  }
+
+  /**
+   * Adds a record
+   */
+  addRecord<RequestData extends RecordTransformResult<Model> = Model>(
+    properties: UninitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): RequestData {
+    assert(
+      'Cache#addRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    return this.update((t) => t.addRecord(properties), options);
+  }
+
+  /**
+   * Updates a record
+   */
+  updateRecord<RequestData extends RecordTransformResult<Model> = Model>(
+    properties: InitializedRecord | ModelFields,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): RequestData {
+    assert(
+      'Cache#updateRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    return this.update((t) => t.updateRecord(properties), options);
+  }
+
+  /**
+   * Removes a record
+   */
+  removeRecord(
+    identity: RecordIdentityOrModel,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): void {
+    assert(
+      'Cache#removeRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    this.update((t) => t.removeRecord(identity), options);
   }
 
   unload(identity: RecordIdentity): void {

@@ -1,5 +1,5 @@
 /* eslint-disable ember/no-classic-classes */
-import { Store } from 'ember-orbit';
+import { Store, Cache } from 'ember-orbit';
 import EmberObject from '@ember/object';
 import {
   Planet,
@@ -12,14 +12,15 @@ import {
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
-import { waitForSource } from 'ember-orbit/test-support';
 import { setupTest } from 'ember-qunit';
 import { Assertion } from '@orbit/core';
+import { settled } from '@ember/test-helpers';
 
 module('Integration - Model', function (hooks) {
   setupTest(hooks);
 
   let store: Store;
+  let cache: Cache;
 
   hooks.beforeEach(function () {
     const models = {
@@ -31,15 +32,21 @@ module('Integration - Model', function (hooks) {
       planetarySystem: PlanetarySystem
     };
     store = createStore(this.owner, models).fork();
+    cache = store.cache;
   });
 
-  test('models are assigned the same owner as the store', async function (assert) {
+  test('models are assigned the same owner as the store and cache', async function (assert) {
     const model = await store.addRecord({ type: 'star', name: 'The Sun' });
     assert.ok(getOwner(model), 'model has an owner');
     assert.strictEqual(
       getOwner(model),
       getOwner(store),
       'model has same owner as store'
+    );
+    assert.strictEqual(
+      getOwner(model),
+      getOwner(cache),
+      'model has same owner as cache'
     );
   });
 
@@ -52,12 +59,21 @@ module('Integration - Model', function (hooks) {
     app.register('service:foo', Foo);
     app.inject('data-model:star', 'foo', 'service:foo');
 
+    // Add record to store
     const model = await store.addRecord<Star>({
       type: 'star',
       name: 'The Sun'
     });
     assert.ok((model as any).foo, 'service has been injected');
     assert.equal((model as any).foo.bar, 'bar', 'service is correct');
+
+    // Add record to cache
+    const model2 = store.cache.addRecord<Star>({
+      type: 'star',
+      name: 'The Sun'
+    });
+    assert.ok((model2 as any).foo, 'service has been injected');
+    assert.equal((model2 as any).foo.bar, 'bar', 'service is correct');
   });
 
   test('models can be added to the store', async function (assert) {
@@ -89,23 +105,56 @@ module('Integration - Model', function (hooks) {
     assert.strictEqual(record.moons[0], callisto, 'assigned hasMany');
   });
 
+  test('models can be added to a forked cache', function (assert) {
+    const theSun = cache.addRecord<Star>({
+      type: 'star',
+      name: 'The Sun'
+    });
+    const callisto = cache.addRecord<Moon>({
+      type: 'moon',
+      name: 'Callisto'
+    });
+    const record = cache.addRecord<Planet>({
+      type: 'planet',
+      remoteId: 'planet:jupiter',
+      name: 'Jupiter',
+      sun: theSun,
+      moons: [callisto]
+    });
+
+    assert.ok(record.id, 'assigned id');
+    assert.deepEqual(
+      record.$identity,
+      { id: record.id, type: 'planet' },
+      'assigned identity that includes type and id'
+    );
+    assert.equal(record.name, 'Jupiter', 'assigned specified attribute');
+    assert.equal(record.remoteId, 'planet:jupiter', 'assigned secondary key');
+    assert.strictEqual(record.sun, theSun, 'assigned hasOne');
+    assert.strictEqual(record.moons[0], callisto, 'assigned hasMany');
+  });
+
   test('models can be removed', async function (assert) {
     const cache = store.cache;
     const record = await store.addRecord<Star>({
       type: 'star',
       name: 'The Sun'
     });
-    await record.$remove();
+
+    record.$remove();
 
     assert.notOk(
       cache.includesRecord('star', record.id),
       'record does not exist in cache'
     );
-    assert.ok(record.$disconnected, 'record has been disconnected from store');
+    assert.ok(
+      record.$isDisconnected,
+      'record has been disconnected from cache'
+    );
     assert.throws(
       () => record.name,
       Error,
-      'record has been removed from Store'
+      'record has been removed from cache'
     );
   });
 
@@ -128,7 +177,7 @@ module('Integration - Model', function (hooks) {
     );
     assert.strictEqual(jupiter.sun, sun, 'sun relationship has been added');
 
-    await jupiter.$remove();
+    jupiter.$remove();
   });
 
   test('add to hasMany', async function (assert) {
@@ -141,7 +190,7 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    await jupiter.$addToRelatedRecords('moons', callisto);
+    jupiter.$addToRelatedRecords('moons', callisto);
 
     assert.ok(jupiter.moons.includes(callisto), 'added record to hasMany');
     assert.equal(callisto.planet, jupiter, 'updated inverse');
@@ -157,7 +206,7 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    await solarSystem.$addToRelatedRecords('bodies', callisto);
+    solarSystem.$addToRelatedRecords('bodies', callisto);
 
     assert.ok(
       solarSystem.bodies.includes(callisto),
@@ -175,8 +224,8 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    await jupiter.$addToRelatedRecords('moons', callisto);
-    await jupiter.$removeFromRelatedRecords('moons', callisto);
+    jupiter.$addToRelatedRecords('moons', callisto);
+    jupiter.$removeFromRelatedRecords('moons', callisto);
 
     assert.ok(!jupiter.moons.includes(callisto), 'removed record from hasMany');
     assert.ok(!callisto.planet, 'updated inverse');
@@ -192,8 +241,8 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    await solarSystem.$addToRelatedRecords('bodies', callisto);
-    await solarSystem.$removeFromRelatedRecords('bodies', callisto);
+    solarSystem.$addToRelatedRecords('bodies', callisto);
+    solarSystem.$removeFromRelatedRecords('bodies', callisto);
 
     assert.ok(
       !solarSystem.bodies.includes(callisto),
@@ -201,7 +250,7 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('update via store: replaceRelatedRecords operation invalidates a relationship on model', async function (assert) {
+  test('update via source: replaceRelatedRecords operation invalidates a relationship on model', async function (assert) {
     const jupiter = await store.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
@@ -217,7 +266,7 @@ module('Integration - Model', function (hooks) {
     assert.deepEqual(jupiter.moons, [callisto], 'invalidates the relationship');
   });
 
-  test('update via store: replaceRelatedRecords operation invalidates a polymorphic relationship on model', async function (assert) {
+  test('update via source: replaceRelatedRecords operation invalidates a polymorphic relationship on model', async function (assert) {
     const solarSystem = await store.addRecord<PlanetarySystem>({
       type: 'planetarySystem',
       name: 'Home'
@@ -244,25 +293,23 @@ module('Integration - Model', function (hooks) {
     ]);
 
     callisto.planet = jupiter;
-    await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'replaced hasOne with record');
     assert.ok(jupiter.moons.includes(callisto), 'updated inverse');
   });
 
-  test('replace polymorphic hasOne with record', async function (assert) {
-    const solarSystem = await store.addRecord<PlanetarySystem>({
+  test('replace polymorphic hasOne with record', function (assert) {
+    const solarSystem = cache.addRecord<PlanetarySystem>({
       type: 'planetarySystem',
       name: 'Home'
     });
-    const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
-    const twinSun = await store.addRecord<Star>({
+    const sun = cache.addRecord<Star>({ type: 'star', name: 'Sun' });
+    const twinSun = cache.addRecord<Star>({
       type: 'binaryStar',
       name: 'Twin Sun'
     });
 
     solarSystem.star = twinSun;
-    await waitForSource(store);
 
     assert.equal(
       solarSystem.star,
@@ -271,7 +318,6 @@ module('Integration - Model', function (hooks) {
     );
 
     solarSystem.star = sun;
-    await waitForSource(store);
 
     assert.equal(
       solarSystem.star,
@@ -308,12 +354,12 @@ module('Integration - Model', function (hooks) {
     assert.equal(solarSystem.star, sun, 'invalidates the relationship');
   });
 
-  test('replace hasOne with null', async function (assert) {
-    const jupiter = await store.addRecord<Planet>({
+  test('replace hasOne with null', function (assert) {
+    const jupiter = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    const callisto = await store.addRecord<Moon>({
+    const callisto = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Callisto'
     });
@@ -321,12 +367,10 @@ module('Integration - Model', function (hooks) {
     assert.equal(callisto.planet, null, 'hasOne is null');
 
     callisto.planet = jupiter;
-    await waitForSource(store);
 
     assert.equal(callisto.planet, jupiter, 'hasOne is jupiter');
 
     callisto.planet = null;
-    await waitForSource(store);
 
     assert.equal(callisto.planet, null, 'replaced hasOne with null');
     assert.ok(
@@ -335,8 +379,8 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('replace attribute on model', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('replace attribute on model', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
@@ -356,35 +400,34 @@ module('Integration - Model', function (hooks) {
     assert.equal(record.name, 'Jupiter2');
   });
 
-  test('$getAttribute', async function (assert) {
-    const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
+  test('$getAttribute', function (assert) {
+    const record = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     assert.equal(record.$getAttribute('name'), 'Jupiter');
   });
 
-  test('$replaceAttribute', async function (assert) {
-    const record = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    await record.$replaceAttribute('name', 'Jupiter2');
+  test('$replaceAttribute', function (assert) {
+    const record = cache.addRecord({ type: 'planet', name: 'Jupiter' });
+    record.$replaceAttribute('name', 'Jupiter2');
     assert.equal(record.$getAttribute('name'), 'Jupiter2');
   });
 
-  test('$replaceKey', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('$replaceKey', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter',
       remoteId: 'planet:jupiter'
     });
-    await record.$replaceKey('remoteId', 'planet:joopiter');
+    record.$replaceKey('remoteId', 'planet:joopiter');
     assert.equal(record.remoteId, 'planet:joopiter');
   });
 
-  test('replace key via setter', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('replace key via setter', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter',
       remoteId: 'planet:jupiter'
     });
     record.remoteId = 'planet:joopiter';
-    await waitForSource(store);
 
     assert.equal(record.remoteId, 'planet:joopiter');
   });
@@ -409,7 +452,7 @@ module('Integration - Model', function (hooks) {
     const identifier = record.$identity;
     record.$destroy();
 
-    await waitForSource(store);
+    await settled();
 
     assert.ok(
       !(cache as any)._identityMap.has(identifier),
@@ -417,8 +460,8 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('$getData returns underlying record data', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('$getData returns underlying record data', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
@@ -430,7 +473,7 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('$getData returns undefined if record is not present in cache', async function (assert) {
+  test('$getData returns undefined if record is not present in cache', function (assert) {
     const record = store.cache.lookup({
       type: 'planet',
       id: 'jupiter'
@@ -439,12 +482,12 @@ module('Integration - Model', function (hooks) {
     assert.strictEqual(recordData, undefined, 'returns undefined');
   });
 
-  test('$getData fails when record has been removed from its store', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('$getData fails when record has been removed from its cache', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    await record.$remove();
+    record.$remove();
     assert.throws(
       () => record.$getData(),
       Assertion,
@@ -452,65 +495,65 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('$getRelatedRecord / $replaceRelatedRecord', async function (assert) {
-    const jupiter = await store.addRecord<Planet>({
+  test('$getRelatedRecord / $replaceRelatedRecord', function (assert) {
+    const jupiter = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
+    const sun = cache.addRecord<Star>({ type: 'star', name: 'Sun' });
 
     assert.strictEqual(jupiter.sun, undefined);
     assert.strictEqual(jupiter.$getRelatedRecord('sun'), undefined);
 
-    await jupiter.$replaceRelatedRecord('sun', sun);
+    jupiter.$replaceRelatedRecord('sun', sun);
 
     assert.strictEqual(jupiter.sun, sun);
     assert.strictEqual(jupiter.$getRelatedRecord('sun'), sun);
 
-    await jupiter.$replaceRelatedRecord('sun', null);
+    jupiter.$replaceRelatedRecord('sun', null);
     assert.strictEqual(jupiter.sun, null);
     assert.strictEqual(jupiter.$getRelatedRecord('sun'), null);
   });
 
-  test('$addToRelatedRecords', async function (assert) {
-    const jupiter = await store.addRecord({ type: 'planet', name: 'Jupiter' });
-    const europa = await store.addRecord({ type: 'moon', name: 'Europa' });
-    const io = await store.addRecord({ type: 'moon', name: 'Io' });
+  test('$addToRelatedRecords', function (assert) {
+    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
+    const europa = cache.addRecord({ type: 'moon', name: 'Europa' });
+    const io = cache.addRecord({ type: 'moon', name: 'Io' });
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), undefined);
 
-    await jupiter.$addToRelatedRecords('moons', europa);
+    jupiter.$addToRelatedRecords('moons', europa);
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), [europa]);
 
-    await jupiter.$addToRelatedRecords('moons', io);
+    jupiter.$addToRelatedRecords('moons', io);
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), [europa, io]);
   });
 
-  test('$addToRelatedRecords (polymorphic)', async function (assert) {
-    const solarSystem = await store.addRecord({
+  test('$addToRelatedRecords (polymorphic)', function (assert) {
+    const solarSystem = cache.addRecord({
       type: 'planetarySystem',
       name: 'Home'
     });
-    const earth = await store.addRecord({ type: 'planet', name: 'Earth' });
-    const luna = await store.addRecord({ type: 'moon', name: 'Luna' });
+    const earth = cache.addRecord({ type: 'planet', name: 'Earth' });
+    const luna = cache.addRecord({ type: 'moon', name: 'Luna' });
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), undefined);
 
-    await solarSystem.$addToRelatedRecords('bodies', earth);
+    solarSystem.$addToRelatedRecords('bodies', earth);
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), [earth]);
 
-    await solarSystem.$addToRelatedRecords('bodies', luna);
+    solarSystem.$addToRelatedRecords('bodies', luna);
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), [earth, luna]);
   });
 
-  test('$removeFromRelatedRecords', async function (assert) {
-    const europa = await store.addRecord({ type: 'moon', name: 'Europa' });
-    const io = await store.addRecord({ type: 'moon', name: 'Io' });
-    const jupiter = await store.addRecord({
+  test('$removeFromRelatedRecords', function (assert) {
+    const europa = cache.addRecord({ type: 'moon', name: 'Europa' });
+    const io = cache.addRecord({ type: 'moon', name: 'Io' });
+    const jupiter = cache.addRecord({
       type: 'planet',
       name: 'Jupiter',
       moons: [europa, io]
@@ -518,22 +561,22 @@ module('Integration - Model', function (hooks) {
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), [europa, io]);
 
-    await jupiter.$removeFromRelatedRecords('moons', europa);
+    jupiter.$removeFromRelatedRecords('moons', europa);
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), [io]);
 
-    await jupiter.$removeFromRelatedRecords('moons', io);
+    jupiter.$removeFromRelatedRecords('moons', io);
 
     assert.deepEqual(jupiter.$getRelatedRecords('moons'), []);
   });
 
-  test('$removeFromRelatedRecords (polymorphic)', async function (assert) {
-    const earth = await store.addRecord<Planet>({
+  test('$removeFromRelatedRecords (polymorphic)', function (assert) {
+    const earth = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Earth'
     });
-    const luna = await store.addRecord<Moon>({ type: 'moon', name: 'Luna' });
-    const solarSystem = await store.addRecord<PlanetarySystem>({
+    const luna = cache.addRecord<Moon>({ type: 'moon', name: 'Luna' });
+    const solarSystem = cache.addRecord<PlanetarySystem>({
       type: 'planetarySystem',
       name: 'Home',
       bodies: [earth, luna]
@@ -541,21 +584,22 @@ module('Integration - Model', function (hooks) {
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), [earth, luna]);
 
-    await solarSystem.$removeFromRelatedRecords('bodies', earth);
+    solarSystem.$removeFromRelatedRecords('bodies', earth);
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), [luna]);
 
-    await solarSystem.$removeFromRelatedRecords('bodies', luna);
+    solarSystem.$removeFromRelatedRecords('bodies', luna);
 
     assert.deepEqual(solarSystem.$getRelatedRecords('bodies'), []);
   });
 
-  test('$update - updates multiple attributes', async function (assert) {
-    const record = await store.addRecord<Planet>({
+  test('$update - updates multiple attributes', function (assert) {
+    const record = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    await record.$update({
+
+    record.$update({
       name: 'Jupiter2',
       classification: 'gas giant2'
     });
@@ -564,13 +608,13 @@ module('Integration - Model', function (hooks) {
     assert.equal(record.classification, 'gas giant2');
   });
 
-  test('$update - updates attribute and relationships (with records)', async function (assert) {
-    const jupiter = await store.addRecord<Planet>({
+  test('$update - updates attribute and relationships (with records)', function (assert) {
+    const jupiter = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
-    const callisto = await store.addRecord<Moon>({
+    const sun = cache.addRecord<Star>({ type: 'star', name: 'Sun' });
+    const callisto = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Callisto'
     });
@@ -579,7 +623,7 @@ module('Integration - Model', function (hooks) {
     assert.equal(jupiter.sun, null);
     assert.deepEqual(jupiter.moons, []);
 
-    await jupiter.$update({
+    jupiter.$update({
       name: 'Jupiter2',
       sun,
       moons: [callisto]
@@ -594,13 +638,13 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('$update - updates relationships (with IDs)', async function (assert) {
-    const jupiter = await store.addRecord<Planet>({
+  test('$update - updates relationships (with IDs)', function (assert) {
+    const jupiter = cache.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
-    const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
-    const callisto = await store.addRecord<Moon>({
+    const sun = cache.addRecord<Star>({ type: 'star', name: 'Sun' });
+    const callisto = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Callisto'
     });
@@ -608,7 +652,7 @@ module('Integration - Model', function (hooks) {
     assert.equal(jupiter.sun, null);
     assert.deepEqual(jupiter.moons, []);
 
-    await jupiter.$update({
+    jupiter.$update({
       sun: sun.id,
       moons: [callisto.id]
     });
@@ -621,24 +665,34 @@ module('Integration - Model', function (hooks) {
     );
   });
 
-  test('#base store', async function (assert) {
-    const jupiter = await store.base!.addRecord<Planet>({
+  test('unforked (base) cache prevents updates by default', async function (assert) {
+    const base = store.base!;
+
+    const jupiter = await base.addRecord<Planet>({
       type: 'planet',
       name: 'Jupiter'
     });
 
     assert.throws(() => {
       jupiter.name = 'Jupiter2';
-    }, /is not allowed on a store that is not a fork/);
+    }, /You tried to update a cache that is not a fork/);
+
+    base.cache.allowUpdates = true;
+    jupiter.name = 'Jupiter3';
+    assert.equal(
+      jupiter.name,
+      'Jupiter3',
+      'cache.allowUpdates can be overridden'
+    );
   });
 
-  test('triggers updates to properties defined by ember computed macros', async function (assert) {
-    const jupiter = await store.addRecord<Planet>({ type: 'planet' });
+  test('triggers updates to properties defined by ember computed macros', function (assert) {
+    const jupiter = cache.addRecord<Planet>({ type: 'planet' });
 
     assert.equal(jupiter.name, undefined);
     assert.equal(jupiter.hasName, false);
 
-    await jupiter.$update({
+    jupiter.$update({
       name: 'Jupiter'
     });
 

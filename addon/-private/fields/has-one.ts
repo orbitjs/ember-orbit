@@ -43,8 +43,8 @@ export default function hasOne(
   return (target: Model, property: string): TrackedHasOne => {
     function get(this: Model): Model | null {
       assert(
-        `The ${this.type} record has been removed from the store, so we cannot lookup the ${property} hasOne from the cache.`,
-        !this.$disconnected
+        `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} hasOne relationship.`,
+        !this.$isDisconnected
       );
 
       return getHasOneCache(this, property).value as Model | null;
@@ -54,10 +54,7 @@ export default function hasOne(
       const oldValue = this.$getRelatedRecord(property);
 
       if (value !== oldValue) {
-        this.$assertMutableFields();
-        this.$replaceRelatedRecord(property, value).catch(() =>
-          getHasOneCache(this, property).notifyPropertyChange()
-        );
+        this.$replaceRelatedRecord(property, value);
       }
     }
 
