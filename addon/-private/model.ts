@@ -1,4 +1,4 @@
-import { Orbit } from '@orbit/core';
+import { Assertion, Orbit } from '@orbit/core';
 import { Dict } from '@orbit/utils';
 import { DefaultRequestOptions, RequestOptions } from '@orbit/data';
 import {
@@ -27,14 +27,19 @@ export interface ModelSettings {
   identity: RecordIdentity;
 }
 export default class Model {
-  @tracked protected _cache?: Cache;
+  @tracked protected _isDisconnected = false;
+  #cache?: Cache;
   #identity: RecordIdentity;
 
   constructor(settings: ModelSettings) {
-    this._cache = settings.cache;
-    this.#identity = settings.identity;
-    associateDestroyableChild(settings.cache, this);
-    registerDestructor(this, (record) => settings.cache.unload(record));
+    const { cache, identity } = settings;
+
+    assert('Model must be initialized with a cache', cache !== undefined);
+
+    this.#cache = cache;
+    this.#identity = identity;
+    associateDestroyableChild(cache, this);
+    registerDestructor(this, (record) => cache.unload(record));
   }
 
   get identity(): RecordIdentity {
@@ -64,7 +69,7 @@ export default class Model {
   }
 
   get $isDisconnected(): boolean {
-    return !this._cache;
+    return this._isDisconnected;
   }
 
   /**
@@ -78,11 +83,7 @@ export default class Model {
   }
 
   $getData(): InitializedRecord | undefined {
-    assert(
-      'Model must be connected to a cache in order to call `$getData`',
-      this._cache !== undefined
-    );
-    return this._cache!.getRecordData(this.type, this.id);
+    return this.$cache.getRecordData(this.type, this.id);
   }
 
   /**
@@ -118,7 +119,7 @@ export default class Model {
     value: string,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) => t.replaceKey(this.#identity, key, value),
       options
     );
@@ -157,7 +158,7 @@ export default class Model {
     value: unknown,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) => t.replaceAttribute(this.#identity, attribute, value),
       options
     );
@@ -174,7 +175,7 @@ export default class Model {
   }
 
   $getRelatedRecord(relationship: string): Model | null | undefined {
-    const cache = this._cache!;
+    const cache = this.$cache;
     const relatedRecord = cache.sourceCache.getRelatedRecordSync(
       this.#identity,
       relationship
@@ -205,7 +206,7 @@ export default class Model {
     relatedRecord: Model | null,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) =>
         t.replaceRelatedRecord(
           this.#identity,
@@ -227,7 +228,7 @@ export default class Model {
   }
 
   $getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
-    const cache = this._cache!;
+    const cache = this.$cache;
     const relatedRecords = cache.sourceCache.getRelatedRecordsSync(
       this.#identity,
       relationship
@@ -259,7 +260,7 @@ export default class Model {
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) =>
         t.addToRelatedRecords(this.#identity, relationship, record.$identity),
       options
@@ -285,7 +286,7 @@ export default class Model {
     record: Model,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) =>
         t.removeFromRelatedRecords(
           this.#identity,
@@ -326,7 +327,7 @@ export default class Model {
     properties: Dict<unknown>,
     options?: DefaultRequestOptions<RequestOptions>
   ): void {
-    this._cache!.update(
+    this.$cache.update(
       (t) =>
         t.updateRecord({
           ...properties,
@@ -347,7 +348,7 @@ export default class Model {
   }
 
   $remove(options?: DefaultRequestOptions<RequestOptions>): void {
-    this._cache!.update((t) => t.removeRecord(this.#identity), options);
+    this.$cache.update((t) => t.removeRecord(this.#identity), options);
   }
 
   /**
@@ -361,7 +362,8 @@ export default class Model {
   }
 
   $disconnect(): void {
-    this._cache = undefined;
+    this.#cache = undefined;
+    this._isDisconnected = true;
   }
 
   /**
@@ -393,11 +395,11 @@ export default class Model {
   }
 
   get $cache(): Cache {
-    if (!this._cache) {
-      throw new Error('record has been removed its cache');
+    if (!this.#cache) {
+      throw new Assertion('Record has been disconnected from its cache.');
     }
 
-    return this._cache;
+    return this.#cache;
   }
 
   static get definition(): ModelDefinition {
