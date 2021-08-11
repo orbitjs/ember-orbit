@@ -18,6 +18,28 @@ module('Rendering', function (hooks) {
     cache = store.cache;
   });
 
+  test('connected / disconnected models', async function (assert) {
+    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
+    this.set('planet', jupiter);
+
+    await render(hbs`
+      <h1>
+        {{#if this.planet.$isDisconnected}}
+          Disconnected
+        {{else}}
+          Connected
+        {{/if}}
+      </h1>
+    `);
+
+    assert.dom('h1').includesText('Connected');
+
+    jupiter.$disconnect();
+    await settled();
+
+    assert.dom('h1').includesText('Disconnected');
+  });
+
   test('update relationship synchronously via cache', async function (assert) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
