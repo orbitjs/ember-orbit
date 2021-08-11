@@ -19,12 +19,13 @@ type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
-    if (!injections.models) {
-      const app = getOwner(injections);
+    const app = getOwner(injections);
+    const orbitConfig = app.lookup('ember-orbit:config');
+
+    if (injections.models === undefined) {
       const modelSchemas: Dict<ModelDefinition> = {};
 
-      let orbitConfig = app.lookup('ember-orbit:config');
-      let modelNames =
+      const modelNames =
         injections.modelNames ??
         getRegisteredModels(
           app.base.modulePrefix,
@@ -45,6 +46,8 @@ export default {
 
       injections.models = modelSchemas;
     }
+
+    injections.version ??= orbitConfig.schemaVersion;
 
     return new RecordSchema(injections);
   }
