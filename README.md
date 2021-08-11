@@ -594,6 +594,7 @@ module.exports = function (environment) {
 
     // Default Orbit settings (any of which can be overridden)
     orbit: {
+      schemaVersion: undefined,
       types: {
         bucket: 'data-bucket',
         model: 'data-model',
@@ -622,6 +623,12 @@ module.exports = function (environment) {
   return ENV;
 };
 ```
+
+Note that `schemaVersion` should be set if you're using any Orbit sources, such
+as `IndexedDBSource`, that track schema version. By default, Orbit's schema
+version will start at `1`. This value should be bumped to a a higher number with
+each significant change that requires a schema migration. Migrations themselves
+must be handled in each individual source.
 
 ## Contributing to EO
 

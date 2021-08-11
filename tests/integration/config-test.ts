@@ -14,6 +14,7 @@ module('Integration - Config', function (hooks) {
       'config:environment',
       {
         orbit: {
+          schemaVersion: 2,
           types: {
             bucket: 'orbit-bucket',
             model: 'orbit-model',
@@ -48,6 +49,7 @@ module('Integration - Config', function (hooks) {
     const normalizer = this.owner.lookup('service:orbit-normalizer');
     const validatorFor = this.owner.lookup('service:orbit-validator');
 
+    assert.equal(schema.version, 2, 'schema version matches configuration');
     assert.equal(
       this.owner.lookup('service:orbit-store'),
       store,
