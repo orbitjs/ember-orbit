@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.17.0-beta.16 (2021-08-12)
+
+#### :rocket: Enhancement
+
+- [#363](https://github.com/orbitjs/ember-orbit/pull/363) Update orbit deps to v0.17.0-beta.25 and introduce Store#reset ([@dgeb](https://github.com/dgeb))
+- [#362](https://github.com/orbitjs/ember-orbit/pull/362) Provide `schemaVersion` config option ([@dgeb](https://github.com/dgeb))
+
+#### :bug: Bug Fix
+
+- [#361](https://github.com/orbitjs/ember-orbit/pull/361) Narrow Model.$isDisconnected tracking ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#360](https://github.com/orbitjs/ember-orbit/pull/360) Bump path-parse from 1.0.6 to 1.0.7 ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.15 (2021-07-27)
 
 #### :boom: Breaking Change
