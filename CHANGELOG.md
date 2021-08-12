@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0-beta.17 (2021-08-12)
+
+#### :bug: Bug Fix
+
+- [#364](https://github.com/orbitjs/ember-orbit/pull/364) Correct Model field checking of cache disconnection ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.16 (2021-08-12)
 
 #### :rocket: Enhancement
