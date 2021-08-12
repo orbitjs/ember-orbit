@@ -36,7 +36,7 @@ export default function attr(
     function get(this: Model): unknown {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} attribute.`,
-        !this.$isDisconnected
+        this._cache !== undefined
       );
 
       return getAttributeCache(this, property).value;
