@@ -248,6 +248,10 @@ export default class Store {
     this.source.rebase();
   }
 
+  reset(): Promise<void> {
+    return this.source.reset();
+  }
+
   /**
    * @deprecated
    */

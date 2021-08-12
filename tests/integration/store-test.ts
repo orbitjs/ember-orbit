@@ -713,6 +713,86 @@ module('Integration - Store', function (hooks) {
     assert.ok(fork.cache.includesRecord(recordE.type, recordE.id));
   });
 
+  test('#reset - clears the state of a store without a base', async function (assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+
+    const tb = store.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+
+    await store.update(addRecordA);
+    await store.update(addRecordB);
+
+    await store.reset();
+
+    assert.deepEqual(store.getAllTransforms(), []);
+    assert.deepEqual(store.cache.findRecords('planet').length, 0);
+  });
+
+  test('#reset - resets a fork to its base state', async function (assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const recordD = {
+      id: 'neptune',
+      type: 'planet',
+      attributes: { name: 'Neptune' }
+    };
+    const recordE = {
+      id: 'uranus',
+      type: 'planet',
+      attributes: { name: 'Uranus' }
+    };
+
+    const tb = store.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+    const addRecordC = buildTransform(tb.addRecord(recordC));
+    const addRecordD = buildTransform(tb.addRecord(recordD));
+    const addRecordE = buildTransform(tb.addRecord(recordE));
+
+    let fork;
+
+    await store.update(addRecordA);
+    await store.update(addRecordB);
+
+    fork = store.fork();
+
+    await fork.update(addRecordD);
+    await store.update(addRecordC);
+    await fork.update(addRecordE);
+
+    await fork.reset();
+
+    assert.deepEqual(fork.getAllTransforms(), []);
+
+    assert.deepEqual(fork.cache.findRecords('planet').length, 3);
+    assert.ok(fork.cache.includesRecord(recordA.type, recordA.id));
+    assert.ok(fork.cache.includesRecord(recordB.type, recordB.id));
+    assert.ok(fork.cache.includesRecord(recordC.type, recordC.id));
+  });
+
   // deprecated
   test('#findRecordByKey (deprecated) - can find a previously added record by key', async function (assert) {
     const earth = await store.addRecord({
