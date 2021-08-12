@@ -28,7 +28,7 @@ export interface ModelSettings {
 }
 export default class Model {
   @tracked protected _isDisconnected = false;
-  #cache?: Cache;
+  protected _cache?: Cache;
   #identity: RecordIdentity;
 
   constructor(settings: ModelSettings) {
@@ -36,7 +36,7 @@ export default class Model {
 
     assert('Model must be initialized with a cache', cache !== undefined);
 
-    this.#cache = cache;
+    this._cache = cache;
     this.#identity = identity;
     associateDestroyableChild(cache, this);
     registerDestructor(this, (record) => cache.unload(record));
@@ -362,7 +362,7 @@ export default class Model {
   }
 
   $disconnect(): void {
-    this.#cache = undefined;
+    this._cache = undefined;
     this._isDisconnected = true;
   }
 
@@ -395,11 +395,11 @@ export default class Model {
   }
 
   get $cache(): Cache {
-    if (!this.#cache) {
+    if (this._cache === undefined) {
       throw new Assertion('Record has been disconnected from its cache.');
     }
 
-    return this.#cache;
+    return this._cache;
   }
 
   static get definition(): ModelDefinition {

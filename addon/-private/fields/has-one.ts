@@ -44,7 +44,7 @@ export default function hasOne(
     function get(this: Model): Model | null {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} hasOne relationship.`,
-        !this.$isDisconnected
+        this._cache !== undefined
       );
 
       return getHasOneCache(this, property).value as Model | null;

@@ -17,7 +17,7 @@ export default function key(options: KeyDefinition = {}): any {
     function get(this: Model): string {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} key.`,
-        !this.$isDisconnected
+        this._cache !== undefined
       );
 
       return getKeyCache(this, property).value as string;

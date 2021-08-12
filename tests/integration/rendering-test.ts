@@ -40,6 +40,24 @@ module('Rendering', function (hooks) {
     assert.dom('h1').includesText('Disconnected');
   });
 
+  test('persistent properties, event when models are disconnected', async function (assert) {
+    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
+    this.set('planet', jupiter);
+
+    await render(hbs`
+      <h1>
+        {{this.planet.name}}
+      </h1>
+    `);
+
+    assert.dom('h1').includesText('Jupiter');
+
+    jupiter.$disconnect();
+    await settled();
+
+    assert.dom('h1').includesText('Jupiter');
+  });
+
   test('update relationship synchronously via cache', async function (assert) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
