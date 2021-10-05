@@ -75,7 +75,8 @@ export default class Store {
 
     const owner = getOwner(settings);
     const cacheSettings: CacheSettings = {
-      sourceCache: this.source.cache
+      sourceCache: this.source.cache,
+      store: this
     };
     setOwner(cacheSettings, owner);
     this.#cache = new Cache(cacheSettings);
