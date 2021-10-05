@@ -29,6 +29,7 @@ import {
   UninitializedRecord
 } from '@orbit/records';
 import { StandardValidator, ValidatorForFn } from '@orbit/validators';
+import type Store from './store';
 import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
@@ -46,6 +47,7 @@ const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
+  store: Store;
 }
 
 export default class Cache {
@@ -55,6 +57,7 @@ export default class Cache {
     ModelAwareQueryBuilder,
     ModelAwareTransformBuilder
   >;
+  #store: Store;
   #modelFactory: ModelFactory;
   allowUpdates: boolean;
 
@@ -67,6 +70,7 @@ export default class Cache {
     setOwner(this, owner);
 
     this.#sourceCache = settings.sourceCache;
+    this.#store = settings.store;
     this.#modelFactory = new ModelFactory(this);
     this.allowUpdates = this.#sourceCache.base !== undefined;
 
@@ -83,6 +87,10 @@ export default class Cache {
 
   get sourceCache(): MemoryCache {
     return this.#sourceCache;
+  }
+
+  get store(): Store {
+    return this.#store;
   }
 
   get keyMap(): RecordKeyMap | undefined {
