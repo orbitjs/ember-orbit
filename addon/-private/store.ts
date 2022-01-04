@@ -46,7 +46,6 @@ export interface StoreSettings {
     ModelAwareQueryBuilder,
     ModelAwareTransformBuilder
   >;
-  mutableModelFields?: boolean;
   base?: Store;
 }
 
