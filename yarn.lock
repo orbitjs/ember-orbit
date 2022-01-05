@@ -2183,6 +2183,13 @@
     "@orbit/utils" "^0.17.0-beta.25"
     "@orbit/validators" "^0.17.0-beta.25"
 
+"@orbit/serializers@^0.17.0-beta.25":
+  version "0.17.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@orbit/serializers/-/serializers-0.17.0-beta.25.tgz#ca26c8b4e18c244db780477e0c21164afe12a211"
+  integrity sha512-JfrTFqWoaivyRIj9bcq7lHbEnhF3t4PoouplFDbvmvE9AEclnbiQ7J+/Tsr4Xzyk8LCBTNBr50HVvZFgpJRH5g==
+  dependencies:
+    "@orbit/utils" "^0.17.0-beta.25"
+
 "@orbit/utils@^0.17.0-beta.25":
   version "0.17.0-beta.25"
   resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.17.0-beta.25.tgz#95c34c58f732a42addbcb7271213896cb3b29a25"
