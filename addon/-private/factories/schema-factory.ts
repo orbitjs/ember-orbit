@@ -1,4 +1,4 @@
-import { camelize } from '@ember/string';
+import { camelize } from '@orbit/serializers';
 import { getOwner } from '@ember/application';
 import { RecordSchema, RecordSchemaSettings } from '@orbit/records';
 import modulesOfType from '../system/modules-of-type';

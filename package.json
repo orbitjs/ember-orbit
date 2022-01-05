@@ -41,6 +41,7 @@
     "@orbit/identity-map": "^0.17.0-beta.25",
     "@orbit/memory": "^0.17.0-beta.25",
     "@orbit/records": "^0.17.0-beta.25",
+    "@orbit/serializers": "^0.17.0-beta.25",
     "@orbit/utils": "^0.17.0-beta.25",
     "@orbit/validators": "^0.17.0-beta.25",
     "ember-auto-import": "^2.2.4",
