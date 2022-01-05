@@ -7,6 +7,7 @@ export { default as attr } from './-private/fields/attr';
 export { default as hasMany } from './-private/fields/has-many';
 export { default as hasOne } from './-private/fields/has-one';
 export { default as key } from './-private/fields/key';
+export { applyStandardSourceInjections } from './-private/utils/standard-injections';
 export { default as Cache } from './-private/cache';
 export { default as Model, ModelSettings } from './-private/model';
 export { default as Store, StoreSettings } from './-private/store';

@@ -1,6 +1,5 @@
 /* eslint-disable ember/no-classic-classes */
 import { Store, Cache } from 'ember-orbit';
-import EmberObject from '@ember/object';
 import {
   Planet,
   Moon,
@@ -48,32 +47,6 @@ module('Integration - Model', function (hooks) {
       getOwner(cache),
       'model has same owner as cache'
     );
-  });
-
-  test('models can receive registered injections', async function (assert) {
-    const Foo = EmberObject.extend({
-      bar: 'bar'
-    });
-
-    const app = getOwner(store);
-    app.register('service:foo', Foo);
-    app.inject('data-model:star', 'foo', 'service:foo');
-
-    // Add record to store
-    const model = await store.addRecord<Star>({
-      type: 'star',
-      name: 'The Sun'
-    });
-    assert.ok((model as any).foo, 'service has been injected');
-    assert.equal((model as any).foo.bar, 'bar', 'service is correct');
-
-    // Add record to cache
-    const model2 = store.cache.addRecord<Star>({
-      type: 'star',
-      name: 'The Sun'
-    });
-    assert.ok((model2 as any).foo, 'service has been injected');
-    assert.equal((model2 as any).foo.bar, 'bar', 'service is correct');
   });
 
   test('models can be added to the store', async function (assert) {

@@ -18,14 +18,9 @@ export function createStore(
       types.push(type);
     });
 
-    owner.register('ember-orbit-model-names:main', types, {
+    owner.register('ember-orbit:model-names', types, {
       instantiate: false
     });
-    owner.inject(
-      `service:${orbitConfig.services.schema}`,
-      'modelNames',
-      'ember-orbit-model-names:main'
-    );
   }
 
   return owner.lookup(`service:${orbitConfig.services.store}`);
