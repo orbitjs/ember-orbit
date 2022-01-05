@@ -1,12 +1,12 @@
 import { Orbit } from '@orbit/core';
 import Application from '@ember/application';
 import { OrbitConfig } from './ember-orbit-config';
-import Store from '../-private/store';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
 import NormalizerFactory from '../-private/factories/normalizer-factory';
 import MemorySourceFactory from '../-private/factories/memory-source-factory';
+import StoreFactory from '../-private/factories/store-factory';
 import ValidatorFactory from '../-private/factories/validator-factory';
 
 const { deprecate } = Orbit;
@@ -21,13 +21,6 @@ export function initialize(application: Application) {
       `service:${orbitConfig.services.keyMap}`,
       KeyMapFactory
     );
-
-    // Inject keyMap into all sources
-    application.inject(
-      orbitConfig.types.source,
-      'keyMap',
-      `service:${orbitConfig.services.keyMap}`
-    );
   }
 
   if (!orbitConfig.skipSchemaService) {
@@ -35,13 +28,6 @@ export function initialize(application: Application) {
     application.register(
       `service:${orbitConfig.services.schema}`,
       SchemaFactory
-    );
-
-    // Inject schema into all sources
-    application.inject(
-      orbitConfig.types.source,
-      'schema',
-      `service:${orbitConfig.services.schema}`
     );
   }
 
@@ -51,13 +37,6 @@ export function initialize(application: Application) {
       `service:${orbitConfig.services.validator}`,
       ValidatorFactory
     );
-
-    // Inject validator into all sources
-    application.inject(
-      orbitConfig.types.source,
-      'validatorFor',
-      `service:${orbitConfig.services.validator}`
-    );
   }
 
   if (!orbitConfig.skipNormalizerService) {
@@ -66,30 +45,6 @@ export function initialize(application: Application) {
       `service:${orbitConfig.services.normalizer}`,
       NormalizerFactory
     );
-
-    // Inject normalizer into all sources
-    application.inject(
-      orbitConfig.types.source,
-      'normalizer',
-      `service:${orbitConfig.services.normalizer}`
-    );
-
-    // Inject schema into normalizer
-    if (!orbitConfig.skipSchemaService) {
-      application.inject(
-        `service:${orbitConfig.services.normalizer}`,
-        'schema',
-        `service:${orbitConfig.services.schema}`
-      );
-    }
-    // Inject keyMap into normalizer
-    if (!orbitConfig.skipKeyMapService) {
-      application.inject(
-        `service:${orbitConfig.services.normalizer}`,
-        'keyMap',
-        `service:${orbitConfig.services.keyMap}`
-      );
-    }
   }
 
   if (!orbitConfig.skipCoordinatorService) {
@@ -101,18 +56,11 @@ export function initialize(application: Application) {
   }
 
   if (!orbitConfig.skipStoreService) {
-    application.register(`service:${orbitConfig.services.store}`, Store);
-
-    // Store source (which is injected in store service)
     application.register(
       `${orbitConfig.types.source}:store`,
       MemorySourceFactory
     );
-    application.inject(
-      `service:${orbitConfig.services.store}`,
-      'source',
-      `${orbitConfig.types.source}:store`
-    );
+    application.register(`service:${orbitConfig.services.store}`, StoreFactory);
 
     if ((orbitConfig as any).skipStoreInjections !== undefined) {
       deprecate(
