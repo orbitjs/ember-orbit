@@ -47,7 +47,7 @@ const { assert, deprecate } = Orbit;
 
 export interface CacheSettings {
   sourceCache: MemoryCache;
-  store: Store;
+  store?: Store;
 }
 
 export default class Cache {
@@ -57,7 +57,7 @@ export default class Cache {
     ModelAwareQueryBuilder,
     ModelAwareTransformBuilder
   >;
-  #store: Store;
+  #store?: Store;
   #modelFactory: ModelFactory;
   allowUpdates: boolean;
 
@@ -89,7 +89,7 @@ export default class Cache {
     return this.#sourceCache;
   }
 
-  get store(): Store {
+  get store(): Store | undefined {
     return this.#store;
   }
 

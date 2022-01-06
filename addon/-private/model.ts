@@ -17,7 +17,6 @@ import {
 import { tracked } from '@glimmer/tracking';
 
 import Cache from './cache';
-import type Store from './store';
 import { getModelDefinition } from './utils/model-definition';
 import { notifyPropertyChange } from './utils/property-cache';
 
@@ -401,10 +400,6 @@ export default class Model {
     }
 
     return this._cache;
-  }
-
-  get $store(): Store {
-    return this.$cache.store;
   }
 
   static get definition(): ModelDefinition {
