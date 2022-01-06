@@ -9,8 +9,6 @@ control in your application's data layer.
 
 ## Highlights
 
-EO features:
-
 - Access to the full power of Orbit and its ecosystem, including compatible
   sources, buckets, and coordination strategies.
 
@@ -44,6 +42,12 @@ relationships between Orbit sources. In this way, you can install any Orbit
 > **Important**: It's strongly recommended that you read the Orbit guides at
 > [orbitjs.com](https://orbitjs.com) before using EO, since an understanding of
 > Orbit is vital to making the most of EO.
+
+## Compatibility
+
+* Ember.js v3.24 or above
+* Ember CLI v3.24 or above
+* Node.js v12 or above
 
 ## Status
 
