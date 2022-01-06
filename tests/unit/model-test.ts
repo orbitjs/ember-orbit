@@ -33,7 +33,7 @@ module('Unit - Model', function () {
 
       keys = Planet.keys;
       names = Object.keys(keys);
-      assert.equal(names.length, 0);
+      assert.strictEqual(names.length, 0);
     });
 
     test('#keys returns defined custom secondary keys', function (assert) {
@@ -45,8 +45,8 @@ module('Unit - Model', function () {
 
       keys = Planet2.keys;
       names = Object.keys(keys);
-      assert.equal(names.length, 1);
-      assert.equal(names[0], 'remoteId');
+      assert.strictEqual(names.length, 1);
+      assert.strictEqual(names[0], 'remoteId');
 
       assert.deepEqual(Planet2.definition.keys?.remoteId, {});
     });
@@ -56,9 +56,9 @@ module('Unit - Model', function () {
 
       attributes = Planet.attributes;
       keys = Object.keys(attributes);
-      assert.equal(keys.length, 2);
-      assert.equal(keys[0], 'name');
-      assert.equal(keys[1], 'classification');
+      assert.strictEqual(keys.length, 2);
+      assert.strictEqual(keys[0], 'name');
+      assert.strictEqual(keys[1], 'classification');
 
       assert.deepEqual(Planet.definition.attributes, {
         name: { type: 'string' },
@@ -71,23 +71,23 @@ module('Unit - Model', function () {
 
       relationships = Planet.relationships;
       keys = Object.keys(relationships);
-      assert.equal(keys.length, 2);
-      assert.equal(keys[0], 'sun');
-      assert.equal(keys[1], 'moons');
+      assert.strictEqual(keys.length, 2);
+      assert.strictEqual(keys[0], 'sun');
+      assert.strictEqual(keys[1], 'moons');
 
       relationships = Moon.relationships;
       keys = Object.keys(relationships);
-      assert.equal(keys.length, 1);
-      assert.equal(keys[0], 'planet');
+      assert.strictEqual(keys.length, 1);
+      assert.strictEqual(keys[0], 'planet');
 
       relationships = Star.relationships;
       keys = Object.keys(relationships);
-      assert.equal(keys.length, 1);
-      assert.equal(keys[0], 'planets');
+      assert.strictEqual(keys.length, 1);
+      assert.strictEqual(keys[0], 'planets');
 
       relationships = SolarSystem.relationships;
       keys = Object.keys(relationships);
-      assert.equal(keys.length, 1);
+      assert.strictEqual(keys.length, 1);
       assert.deepEqual(keys[0], 'bodies');
     });
 

@@ -72,8 +72,12 @@ module('Integration - Model', function (hooks) {
       { id: record.id, type: 'planet' },
       'assigned identity that includes type and id'
     );
-    assert.equal(record.name, 'Jupiter', 'assigned specified attribute');
-    assert.equal(record.remoteId, 'planet:jupiter', 'assigned secondary key');
+    assert.strictEqual(record.name, 'Jupiter', 'assigned specified attribute');
+    assert.strictEqual(
+      record.remoteId,
+      'planet:jupiter',
+      'assigned secondary key'
+    );
     assert.strictEqual(record.sun, theSun, 'assigned hasOne');
     assert.strictEqual(record.moons[0], callisto, 'assigned hasMany');
   });
@@ -101,8 +105,12 @@ module('Integration - Model', function (hooks) {
       { id: record.id, type: 'planet' },
       'assigned identity that includes type and id'
     );
-    assert.equal(record.name, 'Jupiter', 'assigned specified attribute');
-    assert.equal(record.remoteId, 'planet:jupiter', 'assigned secondary key');
+    assert.strictEqual(record.name, 'Jupiter', 'assigned specified attribute');
+    assert.strictEqual(
+      record.remoteId,
+      'planet:jupiter',
+      'assigned secondary key'
+    );
     assert.strictEqual(record.sun, theSun, 'assigned hasOne');
     assert.strictEqual(record.moons[0], callisto, 'assigned hasMany');
   });
@@ -166,7 +174,7 @@ module('Integration - Model', function (hooks) {
     jupiter.$addToRelatedRecords('moons', callisto);
 
     assert.ok(jupiter.moons.includes(callisto), 'added record to hasMany');
-    assert.equal(callisto.planet, jupiter, 'updated inverse');
+    assert.strictEqual(callisto.planet, jupiter, 'updated inverse');
   });
 
   test('add to polymorphic hasMany', async function (assert) {
@@ -267,7 +275,7 @@ module('Integration - Model', function (hooks) {
 
     callisto.planet = jupiter;
 
-    assert.equal(callisto.planet, jupiter, 'replaced hasOne with record');
+    assert.strictEqual(callisto.planet, jupiter, 'replaced hasOne with record');
     assert.ok(jupiter.moons.includes(callisto), 'updated inverse');
   });
 
@@ -284,7 +292,7 @@ module('Integration - Model', function (hooks) {
 
     solarSystem.star = twinSun;
 
-    assert.equal(
+    assert.strictEqual(
       solarSystem.star,
       twinSun,
       'replaced polymorphic hasOne with record'
@@ -292,7 +300,7 @@ module('Integration - Model', function (hooks) {
 
     solarSystem.star = sun;
 
-    assert.equal(
+    assert.strictEqual(
       solarSystem.star,
       sun,
       'replaced polymorphic hasOne with record of another valid type'
@@ -306,11 +314,11 @@ module('Integration - Model', function (hooks) {
     });
     const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
 
-    assert.equal(jupiter.sun, null); // cache the relationship
+    assert.strictEqual(jupiter.sun, undefined); // cache the relationship
     await store.source.update((t) =>
       t.replaceRelatedRecord(jupiter.$identity, 'sun', sun.$identity)
     );
-    assert.equal(jupiter.sun, sun, 'invalidates the relationship');
+    assert.strictEqual(jupiter.sun, sun, 'invalidates the relationship');
   });
 
   test('update via store: replaceRelatedRecord operation invalidates a polymorphic relationship on model', async function (assert) {
@@ -320,11 +328,11 @@ module('Integration - Model', function (hooks) {
     });
     const sun = await store.addRecord<Star>({ type: 'star', name: 'Sun' });
 
-    assert.equal(solarSystem.star, null); // cache the relationship
+    assert.strictEqual(solarSystem.star, undefined); // cache the relationship
     await store.source.update((t) =>
       t.replaceRelatedRecord(solarSystem.$identity, 'star', sun.$identity)
     );
-    assert.equal(solarSystem.star, sun, 'invalidates the relationship');
+    assert.strictEqual(solarSystem.star, sun, 'invalidates the relationship');
   });
 
   test('replace hasOne with null', function (assert) {
@@ -337,15 +345,15 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    assert.equal(callisto.planet, null, 'hasOne is null');
+    assert.strictEqual(callisto.planet, undefined, 'hasOne is undefined');
 
     callisto.planet = jupiter;
 
-    assert.equal(callisto.planet, jupiter, 'hasOne is jupiter');
+    assert.strictEqual(callisto.planet, jupiter, 'hasOne is jupiter');
 
     callisto.planet = null;
 
-    assert.equal(callisto.planet, null, 'replaced hasOne with null');
+    assert.strictEqual(callisto.planet, null, 'replaced hasOne with null');
     assert.ok(
       !jupiter.moons.includes(callisto),
       'removed from inverse hasMany'
@@ -358,7 +366,7 @@ module('Integration - Model', function (hooks) {
       name: 'Jupiter'
     });
     record.name = 'Jupiter2';
-    assert.equal(record.name, 'Jupiter2');
+    assert.strictEqual(record.name, 'Jupiter2');
   });
 
   test('update via store: replaceAttribute operation invalidates attribute on model', async function (assert) {
@@ -366,22 +374,22 @@ module('Integration - Model', function (hooks) {
       type: 'planet',
       name: 'Jupiter'
     });
-    assert.equal(record.name, 'Jupiter'); // cache the name
+    assert.strictEqual(record.name, 'Jupiter'); // cache the name
     await store.update((t) =>
       t.replaceAttribute(record.$identity, 'name', 'Jupiter2')
     );
-    assert.equal(record.name, 'Jupiter2');
+    assert.strictEqual(record.name, 'Jupiter2');
   });
 
   test('$getAttribute', function (assert) {
     const record = cache.addRecord({ type: 'planet', name: 'Jupiter' });
-    assert.equal(record.$getAttribute('name'), 'Jupiter');
+    assert.strictEqual(record.$getAttribute('name'), 'Jupiter');
   });
 
   test('$replaceAttribute', function (assert) {
     const record = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     record.$replaceAttribute('name', 'Jupiter2');
-    assert.equal(record.$getAttribute('name'), 'Jupiter2');
+    assert.strictEqual(record.$getAttribute('name'), 'Jupiter2');
   });
 
   test('$replaceKey', function (assert) {
@@ -391,7 +399,7 @@ module('Integration - Model', function (hooks) {
       remoteId: 'planet:jupiter'
     });
     record.$replaceKey('remoteId', 'planet:joopiter');
-    assert.equal(record.remoteId, 'planet:joopiter');
+    assert.strictEqual(record.remoteId, 'planet:joopiter');
   });
 
   test('replace key via setter', function (assert) {
@@ -402,7 +410,7 @@ module('Integration - Model', function (hooks) {
     });
     record.remoteId = 'planet:joopiter';
 
-    assert.equal(record.remoteId, 'planet:joopiter');
+    assert.strictEqual(record.remoteId, 'planet:joopiter');
   });
 
   test('update via store: replaceKey operation invalidates key on model', async function (assert) {
@@ -411,11 +419,11 @@ module('Integration - Model', function (hooks) {
       name: 'Jupiter',
       remoteId: 'planet:jupiter'
     });
-    assert.equal(record.remoteId, 'planet:jupiter'); // cache the key
+    assert.strictEqual(record.remoteId, 'planet:jupiter'); // cache the key
     await store.update((t) =>
       t.replaceKey(record, 'remoteId', 'planet:joopiter')
     );
-    assert.equal(record.remoteId, 'planet:joopiter');
+    assert.strictEqual(record.remoteId, 'planet:joopiter');
   });
 
   test('$destroy frees model', async function (assert) {
@@ -439,7 +447,7 @@ module('Integration - Model', function (hooks) {
       name: 'Jupiter'
     });
     let recordData = record.$getData();
-    assert.equal(
+    assert.strictEqual(
       recordData?.attributes?.name,
       'Jupiter',
       'returns record data (resource)'
@@ -577,8 +585,8 @@ module('Integration - Model', function (hooks) {
       classification: 'gas giant2'
     });
 
-    assert.equal(record.name, 'Jupiter2');
-    assert.equal(record.classification, 'gas giant2');
+    assert.strictEqual(record.name, 'Jupiter2');
+    assert.strictEqual(record.classification, 'gas giant2');
   });
 
   test('$update - updates attribute and relationships (with records)', function (assert) {
@@ -592,8 +600,8 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    assert.equal(jupiter.name, 'Jupiter');
-    assert.equal(jupiter.sun, null);
+    assert.strictEqual(jupiter.name, 'Jupiter');
+    assert.strictEqual(jupiter.sun, undefined);
     assert.deepEqual(jupiter.moons, []);
 
     jupiter.$update({
@@ -602,8 +610,8 @@ module('Integration - Model', function (hooks) {
       moons: [callisto]
     });
 
-    assert.equal(jupiter.name, 'Jupiter2');
-    assert.equal(jupiter.sun, sun, 'invalidates has one relationship');
+    assert.strictEqual(jupiter.name, 'Jupiter2');
+    assert.strictEqual(jupiter.sun, sun, 'invalidates has one relationship');
     assert.deepEqual(
       jupiter.moons,
       [callisto],
@@ -622,7 +630,7 @@ module('Integration - Model', function (hooks) {
       name: 'Callisto'
     });
 
-    assert.equal(jupiter.sun, null);
+    assert.strictEqual(jupiter.sun, undefined);
     assert.deepEqual(jupiter.moons, []);
 
     jupiter.$update({
@@ -630,7 +638,7 @@ module('Integration - Model', function (hooks) {
       moons: [callisto.id]
     });
 
-    assert.equal(jupiter.sun, sun, 'invalidates has one relationship');
+    assert.strictEqual(jupiter.sun, sun, 'invalidates has one relationship');
     assert.deepEqual(
       jupiter.moons,
       [callisto],
@@ -652,7 +660,7 @@ module('Integration - Model', function (hooks) {
 
     base.cache.allowUpdates = true;
     jupiter.name = 'Jupiter3';
-    assert.equal(
+    assert.strictEqual(
       jupiter.name,
       'Jupiter3',
       'cache.allowUpdates can be overridden'
@@ -662,14 +670,14 @@ module('Integration - Model', function (hooks) {
   test('triggers updates to properties defined by ember computed macros', function (assert) {
     const jupiter = cache.addRecord<Planet>({ type: 'planet' });
 
-    assert.equal(jupiter.name, undefined);
-    assert.equal(jupiter.hasName, false);
+    assert.strictEqual(jupiter.name, undefined);
+    assert.strictEqual(jupiter.hasName, false);
 
     jupiter.$update({
       name: 'Jupiter'
     });
 
-    assert.equal(jupiter.name, 'Jupiter');
-    assert.equal(jupiter.hasName, true);
+    assert.strictEqual(jupiter.name, 'Jupiter');
+    assert.strictEqual(jupiter.hasName, true);
   });
 });

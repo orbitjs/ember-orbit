@@ -46,8 +46,8 @@ module('Integration - normalizeModelFields', function (hooks) {
       sun: sun
     });
 
-    assert.equal(normalized.id, 'jupiter', 'normalized id');
-    assert.equal(normalized.type, 'planet', 'normalized type');
+    assert.strictEqual(normalized.id, 'jupiter', 'normalized id');
+    assert.strictEqual(normalized.type, 'planet', 'normalized type');
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
     assert.deepEqual(
@@ -117,8 +117,8 @@ module('Integration - normalizeModelFields', function (hooks) {
       bodies: [luna, earth]
     });
 
-    assert.equal(normalized.id, 'homeSystem', 'normalized id');
-    assert.equal(normalized.type, 'planetarySystem', 'normalized type');
+    assert.strictEqual(normalized.id, 'homeSystem', 'normalized id');
+    assert.strictEqual(normalized.type, 'planetarySystem', 'normalized type');
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: expectedName });
     assert.deepEqual(
