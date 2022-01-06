@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.17.0-beta.18 (2022-01-06)
+
+#### :boom: Breaking Change
+
+- [#373](https://github.com/orbitjs/ember-orbit/pull/373) Update ember v3.25.0...v4.1.0 ([@dgeb](https://github.com/dgeb))
+- [#367](https://github.com/orbitjs/ember-orbit/pull/367) [BREAKING] Replace deprecated implicit injections with explicit injections ([@dgeb](https://github.com/dgeb))
+
+#### :rocket: Enhancement
+
+- [#377](https://github.com/orbitjs/ember-orbit/pull/377) Expose store on Cache ([@dgeb](https://github.com/dgeb))
+- [#372](https://github.com/orbitjs/ember-orbit/pull/372) Use camelize from @orbit/serializers instead of @ember/string ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#365](https://github.com/orbitjs/ember-orbit/pull/365) Bump tmpl from 1.0.4 to 1.0.5 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#375](https://github.com/orbitjs/ember-orbit/pull/375) Bump browserslist from 4.16.3 to 4.19.1 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#374](https://github.com/orbitjs/ember-orbit/pull/374) Remove stagnant docs dir ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.17 (2021-08-12)
 
 #### :bug: Bug Fix
