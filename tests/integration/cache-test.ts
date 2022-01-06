@@ -20,6 +20,10 @@ module('Integration - Cache', function (hooks) {
     cache = store.cache;
   });
 
+  test('exposes store', function (assert) {
+    assert.strictEqual(cache.store, store);
+  });
+
   test('exposes properties from underlying MemoryCache', function (assert) {
     assert.strictEqual(cache.sourceCache, store.source.cache);
     assert.strictEqual(cache.keyMap, store.source.keyMap);
