@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.17.0-beta.19 (2022-01-23)
+
+#### :boom: Breaking Change
+
+- [#382](https://github.com/orbitjs/ember-orbit/pull/382) Introduce main bucket service to allow for bucket injections ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#381](https://github.com/orbitjs/ember-orbit/pull/381) Update orbit packages ^0.17.0-beta.26 ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.18 (2022-01-06)
 
 #### :boom: Breaking Change
