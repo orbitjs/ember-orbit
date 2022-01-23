@@ -16,6 +16,7 @@ export interface OrbitConfig {
   };
   services: {
     store: string;
+    bucket: string;
     coordinator: string;
     schema: string;
     keyMap: string;
@@ -23,6 +24,7 @@ export interface OrbitConfig {
     validator: string;
   };
   skipStoreService: boolean;
+  skipBucketService: boolean;
   skipCoordinatorService: boolean;
   skipSchemaService: boolean;
   skipKeyMapService: boolean;
@@ -45,6 +47,7 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
   },
   services: {
     store: 'store',
+    bucket: 'data-bucket',
     coordinator: 'data-coordinator',
     schema: 'data-schema',
     keyMap: 'data-key-map',
@@ -52,6 +55,7 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     validator: 'data-validator'
   },
   skipStoreService: false,
+  skipBucketService: false,
   skipCoordinatorService: false,
   skipSchemaService: false,
   skipKeyMapService: false,

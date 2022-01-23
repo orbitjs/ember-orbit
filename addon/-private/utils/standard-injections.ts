@@ -10,6 +10,9 @@ export function applyStandardSourceInjections(
   if (!orbitConfig.skipSchemaService) {
     injections.schema = app.lookup(`service:${orbitConfig.services.schema}`);
   }
+  if (!orbitConfig.skipBucketService) {
+    injections.bucket = app.lookup(`service:${orbitConfig.services.bucket}`);
+  }
   if (!orbitConfig.skipKeyMapService) {
     injections.keyMap = app.lookup(`service:${orbitConfig.services.keyMap}`);
   }
