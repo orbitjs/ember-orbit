@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0-beta.20 (2022-01-24)
+
+#### :rocket: Enhancement
+
+- [#384](https://github.com/orbitjs/ember-orbit/pull/384) Introduce `content` as a deprecated synonym for `value` on LiveQuery ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.19 (2022-01-23)
 
 #### :boom: Breaking Change
