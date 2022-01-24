@@ -148,13 +148,30 @@ module('Rendering', function (hooks) {
     assert.dom('.planets-count').includesText('2');
   });
 
-  test('liveQuery record', async function (assert) {
+  test('liveQuery record - accessed via `value` of LiveQuery', async function (assert) {
     const planet = cache.liveQuery((q) =>
       q.findRecord({ type: 'planet', id: '1' })
     );
     this.set('planet', planet);
 
     await render(hbs`<Planet @planet={{this.planet.value}} />`);
+
+    assert.dom('.planet').hasNoText();
+
+    await store.addRecord({ type: 'planet', id: '1', name: 'Jupiter' });
+    assert.dom('.planet').includesText('Jupiter');
+
+    await store.removeRecord({ type: 'planet', id: '1' });
+    assert.dom('.planet').hasNoText('Earth');
+  });
+
+  test('liveQuery record - accessed via deprecated `content` of LiveQuery', async function (assert) {
+    const planet = cache.liveQuery((q) =>
+      q.findRecord({ type: 'planet', id: '1' })
+    );
+    this.set('planet', planet);
+
+    await render(hbs`<Planet @planet={{this.planet.content}} />`);
 
     assert.dom('.planet').hasNoText();
 

@@ -13,7 +13,7 @@ import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import Cache from './cache';
 import { Model } from 'ember-orbit';
 
-const { assert } = Orbit;
+const { assert, deprecate } = Orbit;
 
 export interface LiveQuerySettings {
   liveQuery: SyncLiveQuery;
@@ -50,6 +50,16 @@ export default class LiveQuery implements Iterable<Model> {
 
   get query(): RecordQuery {
     return this.#query;
+  }
+
+  /**
+   * @deprecated
+   */
+  get content(): RecordQueryResult<Model> {
+    deprecate(
+      'LiveQuery#content is deprecated. Access LiveQuery#value instead.'
+    );
+    return this.value;
   }
 
   get value(): RecordQueryResult<Model> {
