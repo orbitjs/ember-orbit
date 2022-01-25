@@ -350,6 +350,32 @@ export default class Store {
   }
 
   /**
+   * Updates a record's fields. Distinct from updateRecord in that updateRecordFields takes a record identity as a separate argument
+   * from the fields to update.
+   */
+  async updateRecordFields<
+    RequestData extends RecordTransformResult<Model> = Model
+  >(
+    identity: RecordIdentityOrModel,
+    fields: Partial<InitializedRecord> | Partial<ModelFields>,
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+  ): Promise<RequestData> {
+    assert(
+      'Store#updateRecordFields does not support the `fullResponse` option. Call `store.update(..., { fullResponse: true })` instead.',
+      options?.fullResponse === undefined
+    );
+    const { type, id } = this.transformBuilder.$normalizeRecordIdentity(
+      identity
+    );
+    const properties = {
+      type,
+      id,
+      ...fields
+    };
+    return await this.update((t) => t.updateRecord(properties), options);
+  }
+
+  /**
    * Removes a record
    */
   async removeRecord(
