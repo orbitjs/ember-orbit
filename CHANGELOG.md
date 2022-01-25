@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0-beta.21 (2022-01-25)
+
+#### :rocket: Enhancement
+
+- [#385](https://github.com/orbitjs/ember-orbit/pull/385) Introduce Store#updateRecordFields ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.20 (2022-01-24)
 
 #### :rocket: Enhancement
