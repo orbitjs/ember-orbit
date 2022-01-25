@@ -127,6 +127,51 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(record, earth);
   });
 
+  test('#updateRecord - can update a record identified by id', async function (assert) {
+    const earth = await store.addRecord<Planet>({
+      type: 'planet',
+      name: 'Earth',
+      remoteId: 'p01'
+    });
+    await store.updateRecord({
+      type: 'planet',
+      id: earth.id,
+      name: 'Mother Earth'
+    });
+    assert.strictEqual(earth.name, 'Mother Earth');
+  });
+
+  test("#updateRecordFields - can update a record's fields", async function (assert) {
+    const earth = await store.addRecord<Planet>({
+      type: 'planet',
+      name: 'Earth',
+      remoteId: 'p01'
+    });
+    await store.updateRecordFields(earth, {
+      name: 'Mother Earth'
+    });
+    assert.strictEqual(earth.name, 'Mother Earth');
+  });
+
+  test('#updateRecordFields - can update a record identified by key', async function (assert) {
+    const earth = await store.addRecord<Planet>({
+      type: 'planet',
+      name: 'Earth',
+      remoteId: 'p01'
+    });
+    await store.updateRecordFields(
+      {
+        type: 'planet',
+        key: 'remoteId',
+        value: 'p01'
+      },
+      {
+        name: 'Mother Earth'
+      }
+    );
+    assert.strictEqual(earth.name, 'Mother Earth');
+  });
+
   test('#removeRecord - when passed a record, it should serialize its identity in a `removeRecord` op', async function (assert) {
     assert.expect(2);
 
