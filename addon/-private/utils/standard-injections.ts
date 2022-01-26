@@ -21,7 +21,9 @@ export function applyStandardSourceInjections(
       `service:${orbitConfig.services.normalizer}`
     );
   }
-  if (!orbitConfig.skipValidatorService) {
+  if (orbitConfig.skipValidatorService) {
+    injections.autoValidate = false;
+  } else {
     injections.validatorFor = app.lookup(
       `service:${orbitConfig.services.validator}`
     );
