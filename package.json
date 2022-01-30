@@ -38,7 +38,7 @@
     "@orbit/core": "^0.17.0-beta.26",
     "@orbit/data": "^0.17.0-beta.26",
     "@orbit/identity-map": "^0.17.0-beta.26",
-    "@orbit/memory": "^0.17.0-beta.27",
+    "@orbit/memory": "^0.17.0-beta.28",
     "@orbit/records": "^0.17.0-beta.26",
     "@orbit/serializers": "^0.17.0-beta.26",
     "@orbit/utils": "^0.17.0-beta.26",
