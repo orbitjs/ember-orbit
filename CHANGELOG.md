@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.17.0-beta.22 (2022-01-30)
+
+#### :rocket: Enhancement
+
+- [#386](https://github.com/orbitjs/ember-orbit/pull/386) Skip all validations by default when skipValidatorService = true ([@dgeb](https://github.com/dgeb))
+
+#### :house: Internal
+
+- [#387](https://github.com/orbitjs/ember-orbit/pull/387) Update @orbit/memory@^0.17.0-beta.27 ([@dgeb](https://github.com/dgeb))
+- [#383](https://github.com/orbitjs/ember-orbit/pull/383) Bump node-fetch from 2.6.1 to 2.6.7 ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.21 (2022-01-25)
 
 #### :rocket: Enhancement
