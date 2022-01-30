@@ -66,10 +66,7 @@ export default class Store {
   #base?: Store;
 
   static create(injections: StoreSettings): Store {
-    const owner = getOwner(injections);
-    const store = new this(injections);
-    setOwner(store, owner);
-    return store;
+    return new this(injections);
   }
 
   constructor(settings: StoreSettings) {
@@ -77,6 +74,8 @@ export default class Store {
     this.#base = settings.base;
 
     const owner = getOwner(settings);
+    setOwner(this, owner);
+
     const cacheSettings: CacheSettings = {
       sourceCache: this.source.cache,
       store: this
@@ -166,7 +165,7 @@ export default class Store {
   }
 
   get forked(): boolean {
-    return !!this.source.base;
+    return this.source.base !== undefined;
   }
 
   get base(): Store | undefined {
@@ -189,7 +188,7 @@ export default class Store {
     const forkedSource = this.source.fork(settings);
     const injections = getOwner(this).ownerInjection();
 
-    return Store.create({
+    return new Store({
       ...injections,
       source: forkedSource,
       base: this

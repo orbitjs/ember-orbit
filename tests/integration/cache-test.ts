@@ -4,6 +4,7 @@ import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { waitForSource } from 'ember-orbit/test-support';
+import { buildTransform } from '@orbit/data';
 
 module('Integration - Cache', function (hooks) {
   setupTest(hooks);
@@ -218,6 +219,231 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(foundRecords.length, 2, 'two records found');
     assert.ok(foundRecords.includes(earth), 'earth is included');
     assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
+  });
+
+  test('#fork - creates a clone of a base cache', async function (assert) {
+    const forkedCache = cache.fork();
+    const jupiter = await forkedCache.addRecord({
+      type: 'planet',
+      name: 'Jupiter',
+      classification: 'gas giant'
+    });
+
+    assert.strictEqual(forkedCache.base, cache);
+    assert.strictEqual(forkedCache.isForked, true);
+
+    assert.notOk(
+      cache.includesRecord('planet', jupiter.id),
+      'base cache does not contain record'
+    );
+    assert.ok(
+      forkedCache.includesRecord('planet', jupiter.id),
+      'fork includes record'
+    );
+  });
+
+  test('#fork - inherits properties from a base cache', async function (assert) {
+    const forkedCache = cache.fork();
+    assert.strictEqual(forkedCache.base, cache);
+    assert.strictEqual(forkedCache.keyMap, cache.keyMap);
+    assert.strictEqual(forkedCache.schema, cache.schema);
+    assert.strictEqual(forkedCache.queryBuilder, cache.queryBuilder);
+    assert.strictEqual(forkedCache.transformBuilder, cache.transformBuilder);
+    assert.strictEqual(forkedCache.validatorFor, cache.validatorFor);
+  });
+
+  test('#fork - can override properties from a base cache', async function (assert) {
+    const forkedCache = cache.fork({ autoValidate: false });
+    assert.notStrictEqual(cache.validatorFor, undefined);
+    assert.strictEqual(forkedCache.validatorFor, undefined);
+  });
+
+  test('#merge - merges a forked cache back into a base store', async function (assert) {
+    const forkedCache = cache.fork();
+    const jupiter = forkedCache.update<Planet>((t) =>
+      t.addRecord({
+        type: 'planet',
+        name: 'Jupiter',
+        classification: 'gas giant'
+      })
+    );
+
+    const [jupiterInCache] = cache.merge<[Planet]>(forkedCache);
+
+    assert.deepEqual(
+      jupiterInCache.$identity,
+      jupiter.$identity,
+      'result matches expectations'
+    );
+
+    assert.ok(
+      store.cache.includesRecord('planet', jupiter.id),
+      'store includes record'
+    );
+    assert.ok(
+      forkedCache.includesRecord('planet', jupiter.id),
+      'fork includes record'
+    );
+  });
+
+  test('#merge - can return a full response', async function (assert) {
+    const forkedCache = cache.fork();
+    const jupiter = forkedCache.update<Planet>((t) =>
+      t.addRecord({
+        type: 'planet',
+        name: 'Jupiter',
+        classification: 'gas giant'
+      })
+    );
+
+    const response = cache.merge<[Planet]>(forkedCache, {
+      fullResponse: true
+    });
+
+    const [jupiterInCache] = response.data as [Planet];
+
+    assert.deepEqual(
+      jupiterInCache.$identity,
+      jupiter.$identity,
+      'result matches expectations'
+    );
+
+    assert.ok(
+      store.cache.includesRecord('planet', jupiter.id),
+      'store includes record'
+    );
+    assert.ok(
+      forkedCache.includesRecord('planet', jupiter.id),
+      'fork includes record'
+    );
+  });
+
+  test('#rebase - maintains only unique transforms in fork', async function (assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const recordD = {
+      id: 'neptune',
+      type: 'planet',
+      attributes: { name: 'Neptune' }
+    };
+    const recordE = {
+      id: 'uranus',
+      type: 'planet',
+      attributes: { name: 'Uranus' }
+    };
+
+    const tb = cache.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+    const addRecordC = buildTransform(tb.addRecord(recordC));
+    const addRecordD = buildTransform(tb.addRecord(recordD));
+    const addRecordE = buildTransform(tb.addRecord(recordE));
+
+    cache.update(addRecordA);
+    cache.update(addRecordB);
+
+    const fork = cache.fork();
+
+    fork.update(addRecordD);
+    cache.update(addRecordC);
+    fork.update(addRecordE);
+
+    fork.rebase();
+
+    assert.deepEqual(fork.findRecords('planet').length, 5);
+    assert.ok(fork.includesRecord(recordA.type, recordA.id));
+    assert.ok(fork.includesRecord(recordB.type, recordB.id));
+    assert.ok(fork.includesRecord(recordC.type, recordC.id));
+    assert.ok(fork.includesRecord(recordD.type, recordD.id));
+    assert.ok(fork.includesRecord(recordE.type, recordE.id));
+  });
+
+  test('#reset - clears the state of a cache without a base', async function (assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+
+    const tb = cache.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+
+    cache.update(addRecordA);
+    cache.update(addRecordB);
+
+    cache.reset();
+
+    assert.deepEqual(cache.findRecords('planet').length, 0);
+  });
+
+  test('#reset - resets a fork to its base state', async function (assert) {
+    const recordA = {
+      id: 'jupiter',
+      type: 'planet',
+      attributes: { name: 'Jupiter' }
+    };
+    const recordB = {
+      id: 'saturn',
+      type: 'planet',
+      attributes: { name: 'Saturn' }
+    };
+    const recordC = {
+      id: 'pluto',
+      type: 'planet',
+      attributes: { name: 'Pluto' }
+    };
+    const recordD = {
+      id: 'neptune',
+      type: 'planet',
+      attributes: { name: 'Neptune' }
+    };
+    const recordE = {
+      id: 'uranus',
+      type: 'planet',
+      attributes: { name: 'Uranus' }
+    };
+
+    const tb = cache.transformBuilder;
+    const addRecordA = buildTransform(tb.addRecord(recordA));
+    const addRecordB = buildTransform(tb.addRecord(recordB));
+    const addRecordC = buildTransform(tb.addRecord(recordC));
+    const addRecordD = buildTransform(tb.addRecord(recordD));
+    const addRecordE = buildTransform(tb.addRecord(recordE));
+
+    await cache.update(addRecordA);
+    await cache.update(addRecordB);
+
+    const fork = cache.fork();
+
+    await fork.update(addRecordD);
+    await cache.update(addRecordC);
+    await fork.update(addRecordE);
+
+    await fork.reset();
+
+    assert.deepEqual(fork.findRecords('planet').length, 3);
+    assert.ok(fork.includesRecord(recordA.type, recordA.id));
+    assert.ok(fork.includesRecord(recordB.type, recordB.id));
+    assert.ok(fork.includesRecord(recordC.type, recordC.id));
   });
 
   // Deprecated

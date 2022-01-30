@@ -10,7 +10,11 @@ import {
   RequestOptions
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
-import { MemoryCache } from '@orbit/memory';
+import {
+  MemoryCache,
+  MemoryCacheMergeOptions,
+  MemoryCacheSettings
+} from '@orbit/memory';
 import {
   RecordCacheQueryOptions,
   RecordCacheTransformOptions
@@ -48,6 +52,7 @@ const { assert, deprecate } = Orbit;
 export interface CacheSettings {
   sourceCache: MemoryCache;
   store?: Store;
+  base?: Cache;
 }
 
 export default class Cache {
@@ -58,6 +63,7 @@ export default class Cache {
     ModelAwareTransformBuilder
   >;
   #store?: Store;
+  #base?: Cache;
   #modelFactory: ModelFactory;
   allowUpdates: boolean;
 
@@ -71,6 +77,7 @@ export default class Cache {
 
     this.#sourceCache = settings.sourceCache;
     this.#store = settings.store;
+    this.#base = settings.base;
     this.#modelFactory = new ModelFactory(this);
     this.allowUpdates = this.#sourceCache.base !== undefined;
 
@@ -137,6 +144,96 @@ export default class Cache {
     options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined
   ) {
     this.#sourceCache.defaultTransformOptions = options;
+  }
+
+  get isForked(): boolean {
+    return this.#sourceCache.base !== undefined;
+  }
+
+  get base(): Cache | undefined {
+    return this.#base;
+  }
+
+  fork(
+    settings: Partial<
+      MemoryCacheSettings<
+        RecordCacheQueryOptions,
+        RecordCacheTransformOptions,
+        ModelAwareQueryBuilder,
+        ModelAwareTransformBuilder
+      >
+    > = {}
+  ): Cache {
+    const forkedCache = this.#sourceCache.fork(settings);
+    const injections = getOwner(this).ownerInjection();
+
+    return new Cache({
+      ...injections,
+      sourceCache: forkedCache,
+      base: this
+    });
+  }
+
+  merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedCache: Cache,
+    options?: DefaultRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+  ): RequestData;
+  merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedCache: Cache,
+    options: FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+  ): FullResponse<RequestData, unknown, RecordOperation>;
+  merge<
+    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+  >(
+    forkedCache: Cache,
+    options?: RequestOptions & MemoryCacheMergeOptions
+  ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
+    if (options?.fullResponse) {
+      let response = this.#sourceCache.merge(
+        forkedCache.sourceCache,
+        options as FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+      ) as FullResponse<
+        RecordTransformResult<InitializedRecord>,
+        unknown,
+        RecordOperation
+      >;
+      if (response.data !== undefined) {
+        const data = this._lookupTransformResult(
+          response.data,
+          true // merge results should ALWAYS be an array
+        );
+        response = {
+          ...response,
+          data
+        };
+      }
+      return response as FullResponse<RequestData, unknown, RecordOperation>;
+    } else {
+      let response = this.#sourceCache.merge(
+        forkedCache.sourceCache,
+        options as DefaultRequestOptions<RequestOptions> &
+          MemoryCacheMergeOptions
+      ) as RecordTransformResult<InitializedRecord>;
+      if (response !== undefined) {
+        response = this._lookupTransformResult(
+          response,
+          true // merge results should ALWAYS be an array
+        );
+      }
+      return response as RequestData;
+    }
+  }
+
+  rebase(): void {
+    this.#sourceCache.rebase();
+  }
+
+  reset(): void {
+    this.#sourceCache.reset();
   }
 
   getRecordData(type: string, id: string): InitializedRecord | undefined {
