@@ -2123,10 +2123,10 @@
   resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.17.0-beta.26.tgz#22ada384a9abc119999228948abc84e493d479cf"
   integrity sha512-CSX1lHAMtUiafH3knUmPcdDcCAR3qlMgyiBMGPKfYdyeigO6XO25T4KMfgEdOgRpet2QNxOtEptVH/Rsw1DCXw==
 
-"@orbit/memory@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.17.0-beta.26.tgz#39cf15afa40ce60ae6a2178e02cd2a6600e88cad"
-  integrity sha512-i6OAoHSdPsFf5OvL3rINf1Nd1IG1Z1BGjaG9HUsi6uyXytRKAkvDFven/d9E06AUD2DIRqGEGfcgcaL5V8FZgQ==
+"@orbit/memory@^0.17.0-beta.27":
+  version "0.17.0-beta.27"
+  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.17.0-beta.27.tgz#f25a27b36ba98cf040b7adcdb18e1ec374397955"
+  integrity sha512-j6NrK2ZbYjm+Hbxj/jYMuWPiTcXIe33idRnr5Bc1r6d8KijwIRV0MUw53xQiKj8IlQOX3cEWGhuVZpDiNcdWSQ==
   dependencies:
     "@orbit/core" "^0.17.0-beta.26"
     "@orbit/data" "^0.17.0-beta.26"
