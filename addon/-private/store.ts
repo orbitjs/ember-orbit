@@ -10,7 +10,10 @@ import {
   RequestOptions,
   TransformBuilderFunc
 } from '@orbit/data';
-import MemorySource, { MemorySourceMergeOptions } from '@orbit/memory';
+import MemorySource, {
+  MemorySourceMergeOptions,
+  MemorySourceSettings
+} from '@orbit/memory';
 import { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
   InitializedRecord,
@@ -170,11 +173,20 @@ export default class Store {
     return this.#base;
   }
 
-  fork(): Store {
-    const forkedSource = this.source.fork({
-      schema: this.schema,
-      cacheSettings: { debounceLiveQueries: false }
-    });
+  fork(
+    settings: Partial<
+      MemorySourceSettings<
+        RecordSourceQueryOptions,
+        RequestOptions,
+        ModelAwareQueryBuilder,
+        ModelAwareTransformBuilder
+      >
+    > = {}
+  ): Store {
+    settings.cacheSettings ??= {};
+    settings.cacheSettings.debounceLiveQueries ??= false;
+
+    const forkedSource = this.source.fork(settings);
     const injections = getOwner(this).ownerInjection();
 
     return Store.create({
