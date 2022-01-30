@@ -164,7 +164,15 @@ export default class Store {
     return this.source.syncQueue;
   }
 
+  /**
+   * @deprecated use `isForked` instead
+   */
   get forked(): boolean {
+    deprecate('Store#forked is deprecated. Access `isForked` instead.');
+    return this.isForked;
+  }
+
+  get isForked(): boolean {
     return this.source.base !== undefined;
   }
 
