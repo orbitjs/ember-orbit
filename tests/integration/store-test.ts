@@ -565,6 +565,22 @@ module('Integration - Store', function (hooks) {
     );
   });
 
+  test('#fork - inherits properties from a base store', async function (assert) {
+    const forkedStore = store.fork();
+    assert.strictEqual(forkedStore.base, store);
+    assert.strictEqual(forkedStore.keyMap, store.keyMap);
+    assert.strictEqual(forkedStore.schema, store.schema);
+    assert.strictEqual(forkedStore.queryBuilder, store.queryBuilder);
+    assert.strictEqual(forkedStore.transformBuilder, store.transformBuilder);
+    assert.strictEqual(store.validatorFor, store.source.validatorFor);
+  });
+
+  test('#fork - can override properties from a base store', async function (assert) {
+    const forkedStore = store.fork({ autoValidate: false });
+    assert.notStrictEqual(store.validatorFor, undefined);
+    assert.strictEqual(forkedStore.validatorFor, undefined);
+  });
+
   test('#merge - merges a forked store back into a base store', async function (assert) {
     const storeTransforms: RecordTransform[] = [];
     const forkedStore = store.fork();
