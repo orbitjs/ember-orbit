@@ -241,14 +241,14 @@ export default class Cache {
   }
 
   includesRecord(type: string, id: string): boolean {
-    return !!this.getRecordData(type, id);
+    return this.getRecordData(type, id) !== undefined;
   }
 
   recordIdFromKey(type: string, keyName: string, keyValue: string): string {
-    let keyMap = this.keyMap as RecordKeyMap;
+    const keyMap = this.keyMap as RecordKeyMap;
     assert(
       'No `keyMap` has been assigned to the Cache, so `recordIdFromKey` can not work.',
-      !!keyMap
+      keyMap !== undefined
     );
     let id = keyMap.keyToId(type, keyName, keyValue);
     if (!id) {
