@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.17.0-beta.23 (2022-01-31)
+
+#### :rocket: Enhancement
+
+- [#389](https://github.com/orbitjs/ember-orbit/pull/389) Introduce Cache support for fork/merge/rebase/reset ([@dgeb](https://github.com/dgeb))
+- [#388](https://github.com/orbitjs/ember-orbit/pull/388) Allow custom source settings to be applied via Store#fork ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.22 (2022-01-30)
 
 #### :rocket: Enhancement
