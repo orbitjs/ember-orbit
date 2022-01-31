@@ -2089,89 +2089,89 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@orbit/coordinator@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/coordinator/-/coordinator-0.17.0-beta.26.tgz#a7091fb46ce69879ecc8cab4fb484963143850ba"
-  integrity sha512-nHAgXCS5APV5GNbNGvaZIKWbesh3AuSImfzLi4itaj68Lj+3RGLKCoAOawLYmEHmZ9WwMcv12kpXsgas7D761w==
+"@orbit/coordinator@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/coordinator/-/coordinator-0.17.0.tgz#ace0547d52cb6eb9a17d282b403eb3dab7939f67"
+  integrity sha512-r/jBGCi/sgvkJf9CBqQVS8pHBopYK4FQZCzcL9gdjKXOhnLwobOb9WH7/SqvwHYceFKx8tv+tOpl+d44+75DWQ==
   dependencies:
-    "@orbit/core" "^0.17.0-beta.26"
-    "@orbit/data" "^0.17.0-beta.26"
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/core" "^0.17.0"
+    "@orbit/data" "^0.17.0"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/core@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.17.0-beta.26.tgz#da517ea932389e264769886b91d658b51745059f"
-  integrity sha512-LfN7XJyPpB7BtQc+4auPy0PzjNiDyKdfda7j+b50qNElKsC+30UtQsyrH36QYtUpeTGjYywmSXygLvudkCaEZw==
+"@orbit/core@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.17.0.tgz#04f526cd0d7d2d88124e154f72b5a04095a9053b"
+  integrity sha512-wzaA7d04QU+Bi/ebVk100vPhVNDe8CHiACK7h0FjX+qTa54M9YmCNOOlXHj6PvO6GWY6s5eDBaloJdijKXjFHQ==
   dependencies:
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/data@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/data/-/data-0.17.0-beta.26.tgz#6135346752f86a8cb3a830e1c8d9bde1d4334c2a"
-  integrity sha512-eSSuWlOCR4XGzDd+N7KiKUJou1CnY+dnSe6ctmHpQRHrv767jwpQJEuB031n9HuMo50YgC0CDeTxnzYWAtXyDQ==
+"@orbit/data@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/data/-/data-0.17.0.tgz#52c2d9590df06d8f4f91c16cfae2d247720f2bcb"
+  integrity sha512-aaF40uriJ0SBXjoqyZ5/03Cj1XVxYzDwZnrRlM7GjI1lSd6f6OwyoDeru5WoflQvDTE3ILej1h0v1++fh9H5/A==
   dependencies:
-    "@orbit/core" "^0.17.0-beta.26"
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/core" "^0.17.0"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/identity-map@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/identity-map/-/identity-map-0.17.0-beta.26.tgz#a804d877675eb717d9edef770e590a3ac38b1411"
-  integrity sha512-LTuZm9OWq+6frqNEpkZA+otWxNjdMyjz4H3IvzzpUfvh2dxskrFon9Cmm2SWkIlkVgT0O7b7JVyonNM1lpOEjA==
+"@orbit/identity-map@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/identity-map/-/identity-map-0.17.0.tgz#c2c46a247fc2a4c42e9ab54d8ef2e27a4f3aa84a"
+  integrity sha512-NgKPPjp9E8vN+S90uJsCPYBbALXW+uIBVU5xUPXO0hyT+sKYMsJDWehADZklx18UTmljlqFc7JeKkWFLBAef+Q==
 
-"@orbit/immutable@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.17.0-beta.26.tgz#22ada384a9abc119999228948abc84e493d479cf"
-  integrity sha512-CSX1lHAMtUiafH3knUmPcdDcCAR3qlMgyiBMGPKfYdyeigO6XO25T4KMfgEdOgRpet2QNxOtEptVH/Rsw1DCXw==
+"@orbit/immutable@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.17.0.tgz#3e8c82740a8441a606fb51a3ac8da1d3cf5c7237"
+  integrity sha512-WImAn7I6I35lXzXq/JA5d23yPGV8Vv+xn7DM6lysPJ3ZWOXBF7aBTDJAXYxNtgdEEJnat83PctUDO/QWEKofJQ==
 
-"@orbit/memory@^0.17.0-beta.28":
-  version "0.17.0-beta.28"
-  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.17.0-beta.28.tgz#2564682a2ef19df7af8b172153141ae41bd54e7d"
-  integrity sha512-nrgSOJ1jyBOhgf1ws5eOQxEfHB9u1J/vV2/wm/vrM4zleEQve5QHjtbmsWYQFnon5pZ9ov/mlArqaWTmyd1n7w==
+"@orbit/memory@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/memory/-/memory-0.17.0.tgz#f8f2923d47d7c844467cf8af339d340203a777ba"
+  integrity sha512-217xBmFWT2kOEBiQvgKT20Cge5SRz5q/OJQ0gHsHdKKxgeEn3fUQWwsNPigEpzLKAHGivb5IXnVbuJA0TavgRg==
   dependencies:
-    "@orbit/core" "^0.17.0-beta.26"
-    "@orbit/data" "^0.17.0-beta.26"
-    "@orbit/immutable" "^0.17.0-beta.26"
-    "@orbit/record-cache" "^0.17.0-beta.26"
-    "@orbit/records" "^0.17.0-beta.26"
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/core" "^0.17.0"
+    "@orbit/data" "^0.17.0"
+    "@orbit/immutable" "^0.17.0"
+    "@orbit/record-cache" "^0.17.0"
+    "@orbit/records" "^0.17.0"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/record-cache@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/record-cache/-/record-cache-0.17.0-beta.26.tgz#5551d310fd911b07a3c56a074bdd2e17e08e73a9"
-  integrity sha512-rR69CGMub+CSpgBQY/MxxtOjFi+RVO50q9KQ/YHxunDBpB1iXPjYejprRcBNrk1HRjDjv+Tcm/Pyaf5uVolxzA==
+"@orbit/record-cache@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/record-cache/-/record-cache-0.17.0.tgz#01a834ac5be024d39ae3a12e48e297aace4bf1f0"
+  integrity sha512-oU5HINZ/oZ0bsIAalQFGl4dZN/YNknwO+lVFF4tdQmuT1icVRL9RGxoAhR9aJAdcGr/n1DhXkZI62VBC+0DPdA==
   dependencies:
-    "@orbit/core" "^0.17.0-beta.26"
-    "@orbit/data" "^0.17.0-beta.26"
-    "@orbit/records" "^0.17.0-beta.26"
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/core" "^0.17.0"
+    "@orbit/data" "^0.17.0"
+    "@orbit/records" "^0.17.0"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/records@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/records/-/records-0.17.0-beta.26.tgz#7f654dc7a5a1707257aafa3685e695158caca056"
-  integrity sha512-EaqOqzIZPjJAShPK5z1f9c7E7w+qwXnY0uMBN1pcWJMh1cqm/117+6jn8Me4jSI9ex3IjIO9EBn9r5+6n8GgJQ==
+"@orbit/records@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/records/-/records-0.17.0.tgz#5ed5a21f8b969b1cec1b8cb2bc234b2fbe443cc4"
+  integrity sha512-ljXbaV4o3iK3xDhHlCrtl5YQiMMHWav71m2qOd/BprdieMtU7nMAWeAUfXegLnIAv35imrowGcIgx5rGXkGo0g==
   dependencies:
-    "@orbit/data" "^0.17.0-beta.26"
-    "@orbit/utils" "^0.17.0-beta.26"
-    "@orbit/validators" "^0.17.0-beta.26"
+    "@orbit/data" "^0.17.0"
+    "@orbit/utils" "^0.17.0"
+    "@orbit/validators" "^0.17.0"
 
-"@orbit/serializers@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/serializers/-/serializers-0.17.0-beta.26.tgz#443ccc025f08496d72eb7cf70329f7e13b5288cf"
-  integrity sha512-4uBZXFFB3XUopVVrjisibwEdkVwxutkM2gWF7qVr3JmDt5fZydZHQRqg7HVePBTFcata8P495B0G5hBaX6GVSg==
+"@orbit/serializers@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/serializers/-/serializers-0.17.0.tgz#2080243692fb7b8c78471b5bd2199a13ac1f8e44"
+  integrity sha512-8aBMyQvqydKa+S2Br4Q6lZODKNrEw/mgs+ciznhlxx8t09lw60MfeER2wyn81Si02yflxHn3jfDHtHSp3zl7NA==
   dependencies:
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/utils" "^0.17.0"
 
-"@orbit/utils@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.17.0-beta.26.tgz#0b8beedfa0e31e4615d63dbbba9826107807a840"
-  integrity sha512-6nG/LRYldAg0Giv0qUItz1YGjE/9zwPuGAA5uZGgOOYcTiZCJJZ/NC/D3yVxBoZVM0IKGJDr0DRxG/vKIjbtFw==
+"@orbit/utils@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.17.0.tgz#a14898a7fe999176a356d3655c28415804f41787"
+  integrity sha512-nRxzl0pvFHK9+g0WhQMq++6EZ5YQjPxEkqRDAeIfPJtX2+hu8hG7Oyz/KzHJRWimzjC9nRDL4M2HatZleFCwNg==
 
-"@orbit/validators@^0.17.0-beta.26":
-  version "0.17.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@orbit/validators/-/validators-0.17.0-beta.26.tgz#957fe8eb144b79c7ce2e1c7739865f5984e0a6f7"
-  integrity sha512-ySAycnwntgUBFY5g2AlrtL9C16JdNuypUlI5Oh5mj6hMYcGyia30tUDeAbVMLv9Pd5tkra6eTI/LplLs9HTrdg==
+"@orbit/validators@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@orbit/validators/-/validators-0.17.0.tgz#a67cb03c098720913e51706ff07c9d136065f026"
+  integrity sha512-OOcrTWdai0ce7CEXPsVXOw6oxHVCbE7W9nSH1Fn3B28VpzUnKQ9O/d59e3S5E1DTFXZpNvcVBAVsohQS+PGm+g==
   dependencies:
-    "@orbit/utils" "^0.17.0-beta.26"
+    "@orbit/utils" "^0.17.0"
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
