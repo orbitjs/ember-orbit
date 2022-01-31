@@ -555,6 +555,8 @@ module('Integration - Store', function (hooks) {
     });
 
     assert.strictEqual(forkedStore.base, store);
+    assert.strictEqual(forkedStore.isForked, true);
+
     assert.notOk(
       store.cache.includesRecord('planet', jupiter.id),
       'store does not contain record'
