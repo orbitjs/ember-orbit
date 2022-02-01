@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0 (2022-02-01)
+
+#### :house: Internal
+
+- [#390](https://github.com/orbitjs/ember-orbit/pull/390) Update all orbit packages ^v0.17 ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0-beta.23 (2022-01-31)
 
 #### :rocket: Enhancement
