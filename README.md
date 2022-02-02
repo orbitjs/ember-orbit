@@ -45,9 +45,9 @@ relationships between Orbit sources. In this way, you can install any Orbit
 
 ## Compatibility
 
-* Ember.js v3.24 or above
-* Ember CLI v3.24 or above
-* Node.js v12 or above
+- Ember.js v3.24 or above
+- Ember CLI v3.24 or above
+- Node.js v12 or above
 
 ## Status
 
@@ -225,16 +225,17 @@ let planets = store.cache.findRecords('planet');
 // find a specific record by type and id
 let planet = store.cache.findRecord('planet', 'abc123');
 ```
+
 ### Updating Data
 
 There are two primary approaches to update data in EO:
 
-* Directly via async methods on the main `Store`. Direct updates flow
+- Directly via async methods on the main `Store`. Direct updates flow
   immediately into Orbit's [request
   flow](https://orbitjs.com/docs/next/data-flows), where they can trigger side
   effects, such as remote server requests.
 
-* In an isolated "forked" `Store`, usually via sync methods on its associated
+- In an isolated "forked" `Store`, usually via sync methods on its associated
   `Cache` and/or `Model` instances. These changes remain in this fork until they
   are merged back to a base store.
 
@@ -242,10 +243,12 @@ There are two primary approaches to update data in EO:
 
 The `Store` exposes several async methods to update data:
 
-* `addRecord` - adds a single record.
-* `updateRecord` - updates the fields of a single record.
-* `removeRecord` - removes a single record.
-* `update` - the most flexible and powerful method, which can perform one or
+- `addRecord` - adds a single record.
+- `updateRecord` - updates the fields of a single record.
+- `updateRecordFields` - for updating the fields of a single record, with a
+  first argument that provides the identity of the record.
+- `removeRecord` - removes a single record.
+- `update` - the most flexible and powerful method, which can perform one or
   more operations in a single request.
 
 Here are some examples of each:
@@ -337,10 +340,10 @@ Some notes about forking / merging:
 
 The `Cache` exposes sync versions of the `Store`'s async update methods:
 
-* `addRecord` - for adding a single record.
-* `updateRecord` - for updating the fields of a single record.
-* `removeRecord` - for removing a single record.
-* `update` - the most flexible and powerful method, which can perform one or
+- `addRecord` - for adding a single record.
+- `updateRecord` - for updating the fields of a single record.
+- `removeRecord` - for removing a single record.
+- `update` - the most flexible and powerful method, which can perform one or
   more operations in a single request.
 
 By default, only forked caches are able to be updated directly. This provides
@@ -349,8 +352,9 @@ Orbit's [data flows](https://orbitjs.com/docs/next/data-flows). An exception is
 made for forks because the changes are tracked and applied back to stores via
 `merge`.
 
-If you want to override these protections and update a non-forked cache, just
-set `cache.allowUpdates = true`.
+If you want to override these protections and update a non-forked cache, you can
+set `cache.allowUpdates = true`, but know that those updates won't leave the
+cache.
 
 #### Sync Updates via Model instances
 
@@ -377,13 +381,13 @@ In order to not conflict with user-defined fields, all standard methods on
 `Model` are prefixed with a `$`. The following synchronous methods are
 available:
 
-* `$replaceAttribute`
-* `$replaceRelatedRecord`
-* `$replaceRelatedRecords`
-* `$addToRelatedRecords`
-* `$removeFromRelatedRecords`
-* `$update`
-* `$remove`
+- `$replaceAttribute`
+- `$replaceRelatedRecord`
+- `$replaceRelatedRecords`
+- `$addToRelatedRecords`
+- `$removeFromRelatedRecords`
+- `$update`
+- `$remove`
 
 ```javascript
 let jupiter = forkedCache.findRecord('planet', 'jupiter');
@@ -431,9 +435,11 @@ This will generate a source factory in `app/data-sources/backup.js`:
 
 ```javascript
 import SourceClass from '@orbit/indexeddb';
+import { applyStandardSourceInjections } from 'ember-orbit';
 
 export default {
   create(injections = {}) {
+    applyStandardSourceInjections(injections);
     injections.name = 'backup';
     return new SourceClass(injections);
   }
@@ -613,14 +619,20 @@ module.exports = function (environment) {
       },
       services: {
         store: 'store',
+        bucket: 'data-bucket',
         coordinator: 'data-coordinator',
         schema: 'data-schema',
-        keyMap: 'data-key-map'
+        keyMap: 'data-key-map',
+        normalizer: 'data-normalizer',
+        validator: 'data-validator'
       },
       skipStoreService: false,
+      skipBucketService: false,
       skipCoordinatorService: false,
       skipSchemaService: false,
-      skipKeyMapService: false
+      skipKeyMapService: false,
+      skipNormalizerService: false,
+      skipValidatorService: false
     }
   };
 
