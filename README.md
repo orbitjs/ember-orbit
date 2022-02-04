@@ -156,11 +156,11 @@ export default class PlanetarySystem extends Model {
 ### Stores and Caches
 
 EO's `Store` class is a thin wrapper around Orbit's
-[`MemorySource`](https://orbitjs.com/docs/next/api/memory/classes/MemorySource),
+[`MemorySource`](https://orbitjs.com/docs/api/memory/classes/MemorySource),
 while EO's `Cache` class wraps Orbit's
-[`MemoryCache`](https://orbitjs.com/docs/next/api/memory/classes/MemoryCache).
+[`MemoryCache`](https://orbitjs.com/docs/api/memory/classes/MemoryCache).
 The difference between memory sources and caches is [explained extensively in
-Orbit's docs](https://orbitjs.com/docs/next/memory-sources).
+Orbit's docs](https://orbitjs.com/docs/memory-sources).
 
 The essential difference between EO's `Store` and `Cache` and the underlying
 Orbit classes is that EO is model-aware. Unlike plain Orbit, in which results
@@ -174,7 +174,7 @@ stores or caches provide results in the form of records, they are always
 instantiated by, and belong to, a `Cache`. For a given identity (`type` / `id`
 pair), there is only ever one record instance per cache. These are maintained in
 what is fittingly called an ["identity
-map"](https://orbitjs.com/docs/next/api/identity-map).
+map"](https://orbitjs.com/docs/api/identity-map).
 
 Records, including all their attributes and relationships, will stay in sync
 with the underlying data in their associated cache.
@@ -191,7 +191,7 @@ There are three primary methods available to query records:
   whenever the data changes in the cache.
 
 All of these query methods take the same arguments as any other queryable Orbit
-source - see [the Orbit guides](https://orbitjs.com/docs/next/querying-data) for
+source - see [the Orbit guides](https://orbitjs.com/docs/querying-data) for
 details.
 
 The following `liveQuery` immediately returns a live resultset that will stay
@@ -232,7 +232,7 @@ There are two primary approaches to update data in EO:
 
 - Directly via async methods on the main `Store`. Direct updates flow
   immediately into Orbit's [request
-  flow](https://orbitjs.com/docs/next/data-flows), where they can trigger side
+  flow](https://orbitjs.com/docs/data-flows), where they can trigger side
   effects, such as remote server requests.
 
 - In an isolated "forked" `Store`, usually via sync methods on its associated
@@ -276,7 +276,7 @@ let [mars, venus] = await store.update((t) => [
 #### Updates via Forking / Merging
 
 EO stores can be forked and merged, just as described in the [Orbit
-guides](https://orbitjs.com/docs/next/memory-sources#forking-memory-sources).
+guides](https://orbitjs.com/docs/memory-sources#forking-memory-sources).
 
 Once you have forked a store, you can proceed to make synchronous changes to the
 fork's associated `Cache` and/or `Model` instances. These changes will be
@@ -348,7 +348,7 @@ The `Cache` exposes sync versions of the `Store`'s async update methods:
 
 By default, only forked caches are able to be updated directly. This provides
 protection against data loss, since changes to caches do not participate in
-Orbit's [data flows](https://orbitjs.com/docs/next/data-flows). An exception is
+Orbit's [data flows](https://orbitjs.com/docs/data-flows). An exception is
 made for forks because the changes are tracked and applied back to stores via
 `merge`.
 
