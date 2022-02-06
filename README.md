@@ -666,7 +666,7 @@ can override the standard validator service by generating your own
 
 For instance, in order to provide a custom validator for an `address` type:
 
-```
+```js
 // app/services/data-validator.js
 
 import { buildRecordValidatorFor } from '@orbit/records';
