@@ -646,6 +646,56 @@ version will start at `1`. This value should be bumped to a a higher number with
 each significant change that requires a schema migration. Migrations themselves
 must be handled in each individual source.
 
+#### Customizing validators
+
+Like Orbit itself, EO enables validators by default in all sources. EO provides
+the same set of validators to all sources by building a single `data-validator`
+service that is injected into all sources.
+
+Validators are useful to ensure that your data matches its type expectations and
+that operations and query expressions are well formed. Of course, they also add
+some extra code and processing, which you may want to eliminate (or perhaps only
+for production environments). You can disable validators across all sources by
+setting Orbit's `skipValidatorService` environment flag to `false` in
+`config/environment`, as described above.
+
+If you want to use validators but extend them to include custom validators, you
+can override the standard validator service by generating your own
+`data-validator` service that passes custom arguments to
+[`buildRecordValidatorFor`](https://orbitjs.com/docs/api/records/modules#buildrecordvalidatorfor).
+
+For instance, in order to provide a custom validator for an `address` type:
+
+```
+// app/services/data-validator.js
+
+import { buildRecordValidatorFor } from '@orbit/records';
+
+const validators = {
+  address: (input) => {
+    if (typeof input?.country !== 'string') {
+      return [
+        {
+          validator: 'address',
+          validation: 'country',
+          description: 'is not a string',
+          ref: input,
+        },
+      ];
+    }
+  },
+};
+
+export default {
+  create() {
+    return buildRecordValidatorFor({ validators });
+  },
+};
+```
+
+This custom validator service will be injected into all your orbit sources via
+`applyStandardSourceInjections`, as described above.
+
 ## Contributing to EO
 
 ### Installation
