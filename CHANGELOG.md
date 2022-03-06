@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.17.1 (2022-03-06)
+
+#### :bug: Bug Fix
+
+- [#397](https://github.com/orbitjs/ember-orbit/pull/397) Fix isStandardRecord check ([@dgeb](https://github.com/dgeb))
+
+#### :memo: Documentation
+
+- [#393](https://github.com/orbitjs/ember-orbit/pull/393) Add 'Customizing validators' section to README ([@dgeb](https://github.com/dgeb))
+- [#391](https://github.com/orbitjs/ember-orbit/pull/391) Fix broken doc links in the README ([@bmoeskau](https://github.com/bmoeskau))
+
+#### :house: Internal
+
+- [#398](https://github.com/orbitjs/ember-orbit/pull/398) Bump @orbit/memory@^0.17.2 ([@dgeb](https://github.com/dgeb))
+- [#395](https://github.com/orbitjs/ember-orbit/pull/395) Bump follow-redirects from 1.14.7 to 1.14.8 ([@dependabot[bot]](https://github.com/apps/dependabot))
+- [#394](https://github.com/orbitjs/ember-orbit/pull/394) Bump mout from 1.2.2 to 1.2.3 ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+#### Committers: 2
+
+- Brian Moeskau ([@bmoeskau](https://github.com/bmoeskau))
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.0 (2022-02-01)
 
 #### :house: Internal
