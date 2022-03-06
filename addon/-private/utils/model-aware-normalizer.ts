@@ -22,9 +22,9 @@ export function isStandardRecord(
   data: UninitializedRecord | ModelFields
 ): data is UninitializedRecord {
   return (
-    typeof data.attributes === 'object' ||
-    typeof data.keys === 'object' ||
-    typeof data.attributes === 'object'
+    (data.attributes !== null && typeof data.attributes === 'object') ||
+    (data.keys !== null && typeof data.keys === 'object') ||
+    (data.relationships !== null && typeof data.relationships === 'object')
   );
 }
 
