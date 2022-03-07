@@ -23,9 +23,9 @@ export default {
           modulesOfType(app.base.modulePrefix, orbitConfig.collections.sources);
         sourceNames.push('store');
       }
-      injections.sources = sourceNames.map((name) =>
-        app.lookup(`${orbitConfig.types.source}:${name}`)
-      );
+      injections.sources = sourceNames
+        .map((name) => app.lookup(`${orbitConfig.types.source}:${name}`))
+        .filter((source) => !!source);
     }
 
     if (injections.strategies === undefined) {
@@ -41,9 +41,9 @@ export default {
             orbitConfig.collections.strategies
           );
       }
-      injections.strategies = strategyNames.map((name) =>
-        app.lookup(`${orbitConfig.types.strategy}:${name}`)
-      );
+      injections.strategies = strategyNames
+        .map((name) => app.lookup(`${orbitConfig.types.strategy}:${name}`))
+        .filter((strategy) => !!strategy);
     }
 
     return new Coordinator(injections);
