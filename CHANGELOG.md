@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.3 (2022-03-10)
+
+#### :rocket: Enhancement
+
+- [#401](https://github.com/orbitjs/ember-orbit/pull/401) Improve conditional creation of sources and strategies ([@dgeb](https://github.com/dgeb))
+
+#### Committers: 1
+
+- Dan Gebhardt ([@dgeb](https://github.com/dgeb))
+
 ## v0.17.2 (2022-03-07)
 
 #### :rocket: Enhancement
