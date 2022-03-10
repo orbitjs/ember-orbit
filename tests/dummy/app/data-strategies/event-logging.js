@@ -1,7 +1,11 @@
 import { EventLoggingStrategy } from '@orbit/coordinator';
+import config from 'dummy/config/environment';
 
-export default {
+const factory = {
   create() {
     return new EventLoggingStrategy();
   }
 };
+
+// Conditionally include this strategy
+export default config.environment !== 'production' ? factory : null;
