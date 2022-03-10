@@ -7,6 +7,10 @@ type CoordinatorInjections = {
   strategyNames?: string[];
 } & CoordinatorOptions;
 
+function isFactory(f?: { create: () => {} }): boolean {
+  return typeof f === 'object' && typeof f?.create === 'function';
+}
+
 export default {
   create(injections: CoordinatorInjections = {}): Coordinator {
     const app = getOwner(injections);
@@ -24,7 +28,11 @@ export default {
         sourceNames.push('store');
       }
       injections.sources = sourceNames
-        .map((name) => app.lookup(`${orbitConfig.types.source}:${name}`))
+        .map((name) => {
+          const key = `${orbitConfig.types.source}:${name}`;
+          const factory = app.resolveRegistration(key);
+          return isFactory(factory) ? app.lookup(key) : undefined;
+        })
         .filter((source) => !!source);
     }
 
@@ -42,7 +50,11 @@ export default {
           );
       }
       injections.strategies = strategyNames
-        .map((name) => app.lookup(`${orbitConfig.types.strategy}:${name}`))
+        .map((name) => {
+          const key = `${orbitConfig.types.strategy}:${name}`;
+          const factory = app.resolveRegistration(key);
+          return isFactory(factory) ? app.lookup(key) : undefined;
+        })
         .filter((strategy) => !!strategy);
     }
 

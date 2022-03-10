@@ -646,6 +646,32 @@ version will start at `1`. This value should be bumped to a a higher number with
 each significant change that requires a schema migration. Migrations themselves
 must be handled in each individual source.
 
+### Conditionally include strategies and sources
+
+Sources and strategies may be conditionally included in your app's coordinator
+by customizing the default export of the source / strategy factory. A valid
+factory is an object with the interface `{ create: () => {} }`. If a valid
+factory is not the default export for your module, it will be ignored.
+
+For example, the following strategy will be conditionally included for all
+non-production builds:
+
+```js
+// app/data-strategies/event-logging.js
+
+import { EventLoggingStrategy } from '@orbit/coordinator';
+import config from 'example/config/environment';
+
+const factory = {
+  create() {
+    return new EventLoggingStrategy();
+  }
+};
+
+// Conditionally include this strategy
+export default config.environment !== 'production' ? factory : null;
+```
+
 #### Customizing validators
 
 Like Orbit itself, EO enables validators by default in all sources. EO provides
