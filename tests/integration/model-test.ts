@@ -680,4 +680,71 @@ module('Integration - Model', function (hooks) {
     assert.strictEqual(jupiter.name, 'Jupiter');
     assert.strictEqual(jupiter.hasName, true);
   });
+
+  test('hasOne contains type, id, and remoteId for loaded record', async function (assert) {
+    await store.addRecord<Planet>({
+      type: 'planet',
+      remoteId: '3',
+      name: 'Mars'
+    });
+
+    await store.source.update((t) => {
+      return t.addRecord({
+        type: 'moon',
+        id: '4-1',
+        attributes: {
+          name: 'Phobos'
+        },
+        relationships: {
+          planet: {
+            data: t.$normalizeRecordIdentity({
+              type: 'planet',
+              key: 'remoteId',
+              value: '3'
+            })
+          }
+        }
+      });
+    });
+
+    let phobos = await store.query<Moon>((qb) =>
+      qb.findRecord({
+        type: 'moon',
+        id: '4-1'
+      })
+    );
+    assert.strictEqual(phobos.planet?.type, 'planet', 'has expected type');
+    assert.ok(phobos.planet?.id, 'has an id');
+    assert.strictEqual(phobos.planet?.remoteId, '3', 'has expected remoteId');
+  });
+
+  test('hasOne contains type, id, and remoteId for unloaded record', async function (assert) {
+    await store.source.update((t) => {
+      return t.addRecord({
+        type: 'moon',
+        id: '4-1',
+        attributes: {
+          name: 'Phobos'
+        },
+        relationships: {
+          planet: {
+            data: t.$normalizeRecordIdentity({
+              type: 'planet',
+              key: 'remoteId',
+              value: '3'
+            })
+          }
+        }
+      });
+    });
+    let phobos = await store.query<Moon>((qb) =>
+      qb.findRecord({
+        type: 'moon',
+        id: '4-1'
+      })
+    );
+    assert.strictEqual(phobos.planet?.type, 'planet', 'has expected type');
+    assert.ok(phobos.planet?.id, 'has an id');
+    assert.strictEqual(phobos.planet?.remoteId, '3', 'has expected remoteId');
+  });
 });
