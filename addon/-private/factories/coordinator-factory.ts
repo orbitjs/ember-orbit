@@ -14,7 +14,7 @@ function isFactory(f?: { create: () => {} }): boolean {
 export default {
   create(injections: CoordinatorInjections = {}): Coordinator {
     const app = getOwner(injections);
-    const orbitConfig = app.lookup('ember-orbit:config');
+    const orbitConfig = app?.lookup('ember-orbit:config');
 
     if (injections.sources === undefined) {
       let sourceNames: string[];
@@ -23,7 +23,7 @@ export default {
         delete injections.sourceNames;
       } else {
         sourceNames =
-          app.lookup('ember-orbit:source-names') ??
+          app?.lookup('ember-orbit:source-names') ??
           modulesOfType(app.base.modulePrefix, orbitConfig.collections.sources);
         sourceNames.push('store');
       }
@@ -31,7 +31,7 @@ export default {
         .map((name) => {
           const key = `${orbitConfig.types.source}:${name}`;
           const factory = app.resolveRegistration(key);
-          return isFactory(factory) ? app.lookup(key) : undefined;
+          return isFactory(factory) ? app?.lookup(key) : undefined;
         })
         .filter((source) => !!source);
     }
@@ -43,7 +43,7 @@ export default {
         delete injections.strategyNames;
       } else {
         strategyNames =
-          app.lookup('ember-orbit:strategy-names') ??
+          app?.lookup('ember-orbit:strategy-names') ??
           modulesOfType(
             app.base.modulePrefix,
             orbitConfig.collections.strategies
@@ -53,7 +53,7 @@ export default {
         .map((name) => {
           const key = `${orbitConfig.types.strategy}:${name}`;
           const factory = app.resolveRegistration(key);
-          return isFactory(factory) ? app.lookup(key) : undefined;
+          return isFactory(factory) ? app?.lookup(key) : undefined;
         })
         .filter((strategy) => !!strategy);
     }

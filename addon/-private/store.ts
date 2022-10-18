@@ -194,7 +194,7 @@ export default class Store {
     settings.cacheSettings.debounceLiveQueries ??= false;
 
     const forkedSource = this.source.fork(settings);
-    const injections = getOwner(this).ownerInjection();
+    const injections = getOwner(this)?.ownerInjection();
 
     return new Store({
       ...injections,

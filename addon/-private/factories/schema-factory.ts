@@ -15,7 +15,7 @@ type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
     const app = getOwner(injections);
-    const orbitConfig = app.lookup('ember-orbit:config');
+    const orbitConfig = app?.lookup('ember-orbit:config');
 
     if (injections.models === undefined) {
       let modelNames;
@@ -24,7 +24,7 @@ export default {
         delete injections.modelNames;
       } else {
         modelNames =
-          app.lookup('ember-orbit:model-names') ??
+          app?.lookup('ember-orbit:model-names') ??
           getRegisteredModels(
             app.base.modulePrefix,
             orbitConfig.collections.models
@@ -33,7 +33,7 @@ export default {
 
       injections.models = {};
       for (const name of modelNames) {
-        const { keys, attributes, relationships } = app.factoryFor(
+        const { keys, attributes, relationships } = app?.factoryFor(
           `${orbitConfig.types.model}:${name}`
         ).class;
 

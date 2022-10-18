@@ -34,9 +34,9 @@ export default class ModelFactory {
 
     if (!modelFactory) {
       let owner = getOwner(this.#cache);
-      let orbitConfig = owner.lookup('ember-orbit:config');
+      let orbitConfig = owner?.lookup('ember-orbit:config');
 
-      modelFactory = owner.factoryFor(
+      modelFactory = owner?.factoryFor(
         `${orbitConfig.types.model}:${type}`
       ) as Factory;
 
