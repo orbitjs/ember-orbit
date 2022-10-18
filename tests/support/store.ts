@@ -9,19 +9,19 @@ export function createStore(
 ) {
   initializeConfig(owner);
   initializeServices(owner);
-  let orbitConfig = owner.lookup('ember-orbit:config');
+  let orbitConfig = owner?.lookup('ember-orbit:config');
 
   if (models) {
     let types: string[] = [];
     Object.keys(models).forEach((type: string) => {
-      owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
+      owner?.register(`${orbitConfig.types.model}:${type}`, models[type]);
       types.push(type);
     });
 
-    owner.register('ember-orbit:model-names', types, {
+    owner?.register('ember-orbit:model-names', types, {
       instantiate: false
     });
   }
 
-  return owner.lookup(`service:${orbitConfig.services.store}`);
+  return owner?.lookup(`service:${orbitConfig.services.store}`);
 }

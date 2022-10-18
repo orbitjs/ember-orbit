@@ -165,7 +165,7 @@ export default class Cache {
     > = {}
   ): Cache {
     const forkedCache = this.#sourceCache.fork(settings);
-    const injections = getOwner(this).ownerInjection();
+    const injections = getOwner(this)?.ownerInjection();
 
     return new Cache({
       ...injections,
