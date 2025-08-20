@@ -26,12 +26,11 @@ module.exports = {
 
     const modelsDirectory = path.join(app.project.root, modelsPath);
 
-     
     assert(
       fs.existsSync(modelsDirectory),
-      `[ember-orbit] The models directory is missing: "${modelsDirectory}". You can run 'ember g ember-orbit' to initialize ember-orbit and create this directory.`
+      `[ember-orbit] The models directory is missing: "${modelsDirectory}". You can run 'ember g ember-orbit' to initialize ember-orbit and create this directory.`,
     );
 
     this._super.included.apply(this, arguments);
-  }
+  },
 };

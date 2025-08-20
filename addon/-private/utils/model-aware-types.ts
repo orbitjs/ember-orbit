@@ -6,7 +6,7 @@ import {
   RecordQueryBuilder,
   type RecordQueryExpression,
   RecordTransformBuilder,
-  type UninitializedRecord
+  type UninitializedRecord,
 } from '@orbit/records';
 import { Model } from 'ember-orbit';
 import type { ModelFields } from './model-fields';

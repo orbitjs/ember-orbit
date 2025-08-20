@@ -16,11 +16,11 @@ export default function hasOne(type: string | string[]): any;
 export default function hasOne(def: Partial<HasOneRelationshipDefinition>): any;
 export default function hasOne(
   type: string | string[],
-  def?: Partial<HasOneRelationshipDefinition>
+  def?: Partial<HasOneRelationshipDefinition>,
 ): any;
 export default function hasOne(
   typeOrDef: string | string[] | Partial<HasOneRelationshipDefinition>,
-  def?: Partial<HasOneRelationshipDefinition>
+  def?: Partial<HasOneRelationshipDefinition>,
 ): any {
   let relDef: Partial<HasOneRelationshipDefinition>;
 
@@ -32,7 +32,7 @@ export default function hasOne(
 
     assert(
       '@hasOne can be defined with a `type` and `definition` object but not two `definition` objects',
-      def === undefined
+      def === undefined,
     );
 
     assert('@hasOne() requires a `type` argument.', relDef?.type !== undefined);
@@ -44,7 +44,7 @@ export default function hasOne(
     function get(this: Model): Model | null {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} hasOne relationship.`,
-        this._cache !== undefined
+        this._cache !== undefined,
       );
 
       return getHasOneCache(this, property).value as Model | null;
@@ -61,7 +61,7 @@ export default function hasOne(
     defineRelationship(
       target,
       property,
-      relDef as HasOneRelationshipDefinition
+      relDef as HasOneRelationshipDefinition,
     );
 
     return { get, set };

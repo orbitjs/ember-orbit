@@ -4,7 +4,7 @@ import {
   Moon,
   Star,
   BinaryStar,
-  PlanetarySystem
+  PlanetarySystem,
 } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
@@ -12,7 +12,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import {
   isStandardRecord,
-  ModelAwareNormalizer
+  ModelAwareNormalizer,
 } from 'ember-orbit/-private/utils/model-aware-normalizer';
 import type ApplicationInstance from '@ember/application/instance';
 
@@ -28,7 +28,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       moon: Moon,
       star: Star,
       binaryStar: BinaryStar,
-      planetarySystem: PlanetarySystem
+      planetarySystem: PlanetarySystem,
     });
     normalizer = store.transformBuilder.$normalizer as ModelAwareNormalizer;
   });
@@ -39,18 +39,18 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
         type: 'planet',
         id: 'jupiter',
         attributes: {
-          name: 'Jupiter'
-        }
-      })
+          name: 'Jupiter',
+        },
+      }),
     );
     assert.ok(
       isStandardRecord({
         type: 'planet',
         id: 'jupiter',
         keys: {
-          remoteId: '123'
-        }
-      })
+          remoteId: '123',
+        },
+      }),
     );
     assert.ok(
       isStandardRecord({
@@ -58,18 +58,18 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
         id: 'jupiter',
         relationships: {
           sun: {
-            data: null
-          }
-        }
-      })
+            data: null,
+          },
+        },
+      }),
     );
     assert.notOk(
       isStandardRecord({
         type: 'planet',
         id: 'jupiter',
         name: 'Jupiter',
-        sun: null
-      })
+        sun: null,
+      }),
     );
   });
 
@@ -77,12 +77,12 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     const callisto = await store.addRecord({
       type: 'moon',
       id: 'callisto',
-      name: 'Callisto'
+      name: 'Callisto',
     });
     const sun = await store.addRecord({
       type: 'star',
       id: 'sun',
-      name: 'The Sun'
+      name: 'The Sun',
     });
 
     const normalized = normalizer.normalizeRecord({
@@ -90,7 +90,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       id: 'jupiter',
       name: 'Jupiter',
       moons: [callisto],
-      sun: sun
+      sun: sun,
     });
 
     assert.strictEqual(normalized.id, 'jupiter', 'normalized id');
@@ -100,12 +100,12 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     assert.deepEqual(
       normalized.relationships?.['moons'],
       { data: [{ type: 'moon', id: 'callisto' }] },
-      'normalized hasMany'
+      'normalized hasMany',
     );
     assert.deepEqual(
       normalized.relationships?.['sun'],
       { data: { type: 'star', id: 'sun' } },
-      'normalized hasOne'
+      'normalized hasOne',
     );
   });
 
@@ -113,17 +113,17 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     const luna = await store.addRecord({
       type: 'moon',
       id: 'luna',
-      name: 'Luna'
+      name: 'Luna',
     });
     const earth = await store.addRecord({
       type: 'planet',
       id: 'earth',
-      name: 'Earth'
+      name: 'Earth',
     });
     const sun = await store.addRecord({
       type: 'star',
       id: 'sun',
-      name: 'The Sun'
+      name: 'The Sun',
     });
 
     const expectedName = 'Our Solar System';
@@ -132,7 +132,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       id: 'homeSystem',
       name: expectedName,
       star: sun,
-      bodies: [luna, earth]
+      bodies: [luna, earth],
     });
 
     assert.strictEqual(normalized.id, 'homeSystem', 'normalized id');
@@ -142,17 +142,17 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     assert.deepEqual(
       normalized.relationships?.['star'],
       { data: { type: 'star', id: 'sun' } },
-      'normalized hasOne'
+      'normalized hasOne',
     );
     assert.deepEqual(
       normalized.relationships?.['bodies'],
       {
         data: [
           { type: 'moon', id: 'luna' },
-          { type: 'planet', id: 'earth' }
-        ]
+          { type: 'planet', id: 'earth' },
+        ],
       },
-      'normalized hasMany'
+      'normalized hasMany',
     );
   });
 
@@ -161,8 +161,8 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       type: 'planet',
       id: 'jupiter',
       attributes: {
-        name: 'Jupiter'
-      }
+        name: 'Jupiter',
+      },
     });
 
     assert.deepEqual(normalized.attributes?.['name'], 'Jupiter');
@@ -174,9 +174,9 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       id: 'jupiter',
       relationships: {
         sun: {
-          data: null
-        }
-      }
+          data: null,
+        },
+      },
     });
 
     assert.deepEqual(normalized.relationships?.['sun'], { data: null });

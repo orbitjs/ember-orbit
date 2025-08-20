@@ -63,7 +63,7 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(store.defaultTransformOptions, defaultTransformOptions);
     assert.deepEqual(
       store.cache.defaultTransformOptions,
-      defaultTransformOptions
+      defaultTransformOptions,
     );
   });
 
@@ -84,7 +84,7 @@ module('Integration - Store', function (hooks) {
       async (transform: RecordTransform, hints: { data: any }) => {
         await store.sync(transform);
         hints.data = (transform.operations as RecordOperation).record;
-      }
+      },
     );
 
     const planet = await store.addRecord<Planet>({
@@ -116,7 +116,7 @@ module('Integration - Store', function (hooks) {
     } catch (e) {
       assert.strictEqual(
         (e as Error).message,
-        'Record not found: planet:jupiter'
+        'Record not found: planet:jupiter',
       );
     }
   });
@@ -175,7 +175,7 @@ module('Integration - Store', function (hooks) {
       },
       {
         name: 'Mother Earth',
-      }
+      },
     );
     assert.strictEqual(earth.name, 'Mother Earth');
   });
@@ -192,7 +192,7 @@ module('Integration - Store', function (hooks) {
           op: 'removeRecord',
           record: { type: 'planet', id: record.id },
         },
-        'only the identity has been serialized in the operation'
+        'only the identity has been serialized in the operation',
       );
     });
 
@@ -206,14 +206,14 @@ module('Integration - Store', function (hooks) {
 
     const record = await store.addRecord({ type: 'planet', name: 'Earth' });
 
-    store.on('update', (data) => {
+    store.on('update', (data: { operations: any }) => {
       assert.deepEqual(
         data.operations,
         {
           op: 'removeRecord',
           record: { type: 'planet', id: record.id },
         },
-        'only the identity has been serialized in the operation'
+        'only the identity has been serialized in the operation',
       );
     });
 
@@ -230,13 +230,13 @@ module('Integration - Store', function (hooks) {
     };
 
     const addRecordATransform = buildTransform(
-      store.transformBuilder.addRecord(recordA)
+      store.transformBuilder.addRecord(recordA),
     );
 
     await store.sync(addRecordATransform);
     assert.strictEqual(
       store.getTransform(addRecordATransform.id),
-      addRecordATransform
+      addRecordATransform,
     );
   });
 
@@ -248,7 +248,7 @@ module('Integration - Store', function (hooks) {
     };
 
     const addRecordATransform = buildTransform(
-      store.transformBuilder.addRecord(recordA)
+      store.transformBuilder.addRecord(recordA),
     );
 
     await store.sync(addRecordATransform);
@@ -287,7 +287,7 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(
       store.getTransformsSince(addRecordATransform.id),
       [addRecordBTransform, addRecordCTransform],
-      'returns transforms since the specified transform'
+      'returns transforms since the specified transform',
     );
   });
 
@@ -320,7 +320,7 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(
       store.getAllTransforms(),
       [addRecordATransform, addRecordBTransform, addRecordCTransform],
-      'tracks transforms in correct order'
+      'tracks transforms in correct order',
     );
   });
 
@@ -346,7 +346,7 @@ module('Integration - Store', function (hooks) {
         id: planet.id,
         attributes: { name: 'Jupiter' },
         relationships: { sun: { data: { type: 'star', id: star.id } } },
-      })
+      }),
     );
 
     assert.strictEqual(planet.name, 'Jupiter', 'attribute has been reset');
@@ -383,7 +383,7 @@ module('Integration - Store', function (hooks) {
       sun,
     });
     const record = await store.query((q) =>
-      q.findRelatedRecord(jupiter.$identity, 'sun')
+      q.findRelatedRecord(jupiter.$identity, 'sun'),
     );
     assert.strictEqual(record, sun);
   });
@@ -400,7 +400,7 @@ module('Integration - Store', function (hooks) {
       moons: [io, callisto],
     });
     const records = await store.query<Moon[]>((q) =>
-      q.findRelatedRecords(jupiter.$identity, 'moons')
+      q.findRelatedRecords(jupiter.$identity, 'moons'),
     );
 
     assert.deepEqual(records, [io, callisto]);
@@ -415,7 +415,7 @@ module('Integration - Store', function (hooks) {
     });
     await store.addRecord<Planet>({ type: 'planet', name: 'Jupiter' });
     const records = await store.query<Planet[]>((q) =>
-      q.findRecords('planet').filter({ attribute: 'name', value: 'Earth' })
+      q.findRecords('planet').filter({ attribute: 'name', value: 'Earth' }),
     );
 
     assert.deepEqual(records, [earth]);
@@ -460,7 +460,7 @@ module('Integration - Store', function (hooks) {
     });
     const { data: planets, transforms } = await store.query<Planet[]>(
       (q) => q.findRecords('planet'),
-      { fullResponse: true }
+      { fullResponse: true },
     );
     assert.strictEqual(planets!.length, 2, 'two records found');
     assert.ok(planets!.includes(earth), 'earth is included');
@@ -470,7 +470,7 @@ module('Integration - Store', function (hooks) {
 
   test('#update - single operation', async function (assert) {
     const earth = await store.update<Planet>((o) =>
-      o.addRecord({ type: 'planet', attributes: { name: 'Earth' } })
+      o.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
     );
     assert.strictEqual(earth.name, 'Earth');
   });
@@ -480,7 +480,7 @@ module('Integration - Store', function (hooks) {
       (o) => o.addRecord({ type: 'planet', attributes: { name: 'Earth' } }),
       {
         fullResponse: true,
-      }
+      },
     );
     assert.strictEqual(data!.name, 'Earth');
     assert.strictEqual(transforms?.length, 1, 'one transform');
@@ -515,7 +515,7 @@ module('Integration - Store', function (hooks) {
 
     assert.ok(
       store.cache.includesRecord('planet', 'earth'),
-      'store includes record'
+      'store includes record',
     );
 
     store.off('beforeUpdate', beforeUpdate);
@@ -536,19 +536,19 @@ module('Integration - Store', function (hooks) {
           attributes: { name: 'Earth' },
         }),
       ],
-      { fullResponse: true }
+      { fullResponse: true },
     );
 
     // Response will be undefined because transform was applied `beforeUpdate` via `sync`
     assert.strictEqual(
       response.data,
       undefined,
-      'undefined returned from update'
+      'undefined returned from update',
     );
 
     assert.ok(
       store.cache.includesRecord('planet', 'earth'),
-      'store includes record'
+      'store includes record',
     );
 
     store.off('beforeUpdate', beforeUpdate);
@@ -567,11 +567,11 @@ module('Integration - Store', function (hooks) {
 
     assert.notOk(
       store.cache.includesRecord('planet', jupiter.id),
-      'store does not contain record'
+      'store does not contain record',
     );
     assert.ok(
       forkedStore.cache.includesRecord('planet', jupiter.id),
-      'fork includes record'
+      'fork includes record',
     );
   });
 
@@ -599,7 +599,7 @@ module('Integration - Store', function (hooks) {
         type: 'planet',
         name: 'Jupiter',
         classification: 'gas giant',
-      })
+      }),
     );
     const storeTransformed = (t: RecordTransform) => {
       storeTransforms.push(t);
@@ -611,16 +611,16 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(
       jupiterInStore.$identity,
       jupiter.$identity,
-      'result matches expectations'
+      'result matches expectations',
     );
 
     assert.ok(
       store.cache.includesRecord('planet', jupiter.id),
-      'store includes record'
+      'store includes record',
     );
     assert.ok(
       forkedStore.cache.includesRecord('planet', jupiter.id),
-      'fork includes record'
+      'fork includes record',
     );
 
     assert.strictEqual(storeTransforms.length, 1);
@@ -640,7 +640,7 @@ module('Integration - Store', function (hooks) {
         type: 'planet',
         name: 'Jupiter',
         classification: 'gas giant',
-      })
+      }),
     );
 
     // Sync transform to store before store applies update
@@ -656,11 +656,11 @@ module('Integration - Store', function (hooks) {
 
     assert.ok(
       store.cache.includesRecord('planet', jupiter.id),
-      'store includes record'
+      'store includes record',
     );
     assert.ok(
       forkedStore.cache.includesRecord('planet', jupiter.id),
-      'fork includes record'
+      'fork includes record',
     );
 
     store.off('beforeUpdate', beforeUpdate);
@@ -673,7 +673,7 @@ module('Integration - Store', function (hooks) {
         type: 'planet',
         name: 'Jupiter',
         classification: 'gas giant',
-      })
+      }),
     );
 
     // Sync transform to store before store applies update
@@ -688,16 +688,16 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(
       response.data,
       undefined,
-      'undefined data returned from merge'
+      'undefined data returned from merge',
     );
 
     assert.ok(
       store.cache.includesRecord('planet', jupiter.id),
-      'store includes record'
+      'store includes record',
     );
     assert.ok(
       forkedStore.cache.includesRecord('planet', jupiter.id),
-      'fork includes record'
+      'fork includes record',
     );
 
     store.off('beforeUpdate', beforeUpdate);
@@ -717,16 +717,16 @@ module('Integration - Store', function (hooks) {
     assert.deepEqual(
       fullResponse.data![0].$identity,
       jupiter.$identity,
-      'full response has correct data'
+      'full response has correct data',
     );
 
     assert.ok(
       store.cache.includesRecord('planet', jupiter.id),
-      'store includes record'
+      'store includes record',
     );
     assert.ok(
       forkedStore.cache.includesRecord('planet', jupiter.id),
-      'fork includes record'
+      'fork includes record',
     );
   });
 
@@ -877,6 +877,7 @@ module('Integration - Store', function (hooks) {
   // deprecated
   test('#findRecordByKey (deprecated) - will generate a local id for a record that has not been added yet', async function (assert) {
     const schema = store.source.schema;
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const prevFn = schema.generateId;
     schema.generateId = () => 'abc';
 
@@ -885,7 +886,7 @@ module('Integration - Store', function (hooks) {
 
     assert.strictEqual(
       store.source.keyMap!.keyToId('planet', 'remoteId', 'p01'),
-      'abc'
+      'abc',
     );
     schema.generateId = prevFn;
   });
@@ -896,7 +897,7 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(
       store.peekRecord('planet', jupiter.id),
       jupiter,
-      'retrieved record'
+      'retrieved record',
     );
   });
 
@@ -915,7 +916,7 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(
       store.peekRecordByKey('planet', 'remoteId', 'p01'),
       jupiter,
-      'retrieved record'
+      'retrieved record',
     );
   });
 
@@ -924,16 +925,16 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(
       store.keyMap!.keyToId('planet', 'remoteId', 'p01'),
       undefined,
-      'key is not in map'
+      'key is not in map',
     );
     assert.strictEqual(
       store.peekRecordByKey('planet', 'remoteId', 'p01'),
-      undefined
+      undefined,
     );
     assert.notStrictEqual(
       store.keyMap!.keyToId('planet', 'remoteId', 'p01'),
       undefined,
-      'id has been generated for key'
+      'id has been generated for key',
     );
   });
 
@@ -981,7 +982,7 @@ module('Integration - Store', function (hooks) {
     assert.strictEqual(
       record,
       undefined,
-      'undefined returned when record cannot be found'
+      'undefined returned when record cannot be found',
     );
   });
 
@@ -993,7 +994,7 @@ module('Integration - Store', function (hooks) {
       assert.strictEqual(
         (e as Error).message,
         'Record not found: planet:jupiter',
-        'query - error caught'
+        'query - error caught',
       );
     }
   });

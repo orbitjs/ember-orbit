@@ -7,17 +7,17 @@ import {
   type DefaultRequestOptions,
   type FullRequestOptions,
   type FullResponse,
-  type RequestOptions
+  type RequestOptions,
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
 import {
   MemoryCache,
   type MemoryCacheMergeOptions,
-  type MemoryCacheSettings
+  type MemoryCacheSettings,
 } from '@orbit/memory';
 import type {
   RecordCacheQueryOptions,
-  RecordCacheTransformOptions
+  RecordCacheTransformOptions,
 } from '@orbit/record-cache';
 import {
   type InitializedRecord,
@@ -30,7 +30,7 @@ import {
   RecordSchema,
   type RecordTransformResult,
   type StandardRecordValidator,
-  type UninitializedRecord
+  type UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import type Store from './store';
@@ -42,7 +42,7 @@ import {
   type ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
   type ModelAwareTransformOrOperations,
-  type RecordIdentityOrModel
+  type RecordIdentityOrModel,
 } from './utils/model-aware-types';
 import type { ModelFields } from './utils/model-fields';
 import recordIdentitySerializer from './utils/record-identity-serializer';
@@ -69,7 +69,7 @@ export default class Cache {
   allowUpdates: boolean;
 
   protected _identityMap: IdentityMap<RecordIdentity, Model> = new IdentityMap({
-    serializer: recordIdentitySerializer
+    serializer: recordIdentitySerializer,
   });
 
   constructor(settings: CacheSettings) {
@@ -84,7 +84,7 @@ export default class Cache {
 
     const patchUnbind = this.#sourceCache.on(
       'patch',
-      this.generatePatchListener()
+      this.generatePatchListener(),
     );
 
     registerDestructor(this, () => {
@@ -130,7 +130,7 @@ export default class Cache {
   }
 
   set defaultQueryOptions(
-    options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined
+    options: DefaultRequestOptions<RecordCacheQueryOptions> | undefined,
   ) {
     this.#sourceCache.defaultQueryOptions = options;
   }
@@ -142,7 +142,7 @@ export default class Cache {
   }
 
   set defaultTransformOptions(
-    options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined
+    options: DefaultRequestOptions<RecordCacheTransformOptions> | undefined,
   ) {
     this.#sourceCache.defaultTransformOptions = options;
   }
@@ -163,7 +163,7 @@ export default class Cache {
         ModelAwareQueryBuilder,
         ModelAwareTransformBuilder
       >
-    > = {}
+    > = {},
   ): Cache {
     const forkedCache = this.#sourceCache.fork(settings);
     const injections = (getOwner(this) as ApplicationInstance).ownerInjection();
@@ -171,32 +171,35 @@ export default class Cache {
     return new Cache({
       ...injections,
       sourceCache: forkedCache,
-      base: this
+      base: this,
     });
   }
 
   merge<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     forkedCache: Cache,
-    options?: DefaultRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+    options?: DefaultRequestOptions<RequestOptions> & MemoryCacheMergeOptions,
   ): RequestData;
   merge<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     forkedCache: Cache,
-    options: FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+    options: FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions,
   ): FullResponse<RequestData, unknown, RecordOperation>;
   merge<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     forkedCache: Cache,
-    options?: RequestOptions & MemoryCacheMergeOptions
+    options?: RequestOptions & MemoryCacheMergeOptions,
   ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
     if (options?.fullResponse) {
       let response = this.#sourceCache.merge(
         forkedCache.sourceCache,
-        options as FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions
+        options as FullRequestOptions<RequestOptions> & MemoryCacheMergeOptions,
       ) as FullResponse<
         RecordTransformResult<InitializedRecord>,
         unknown,
@@ -205,11 +208,11 @@ export default class Cache {
       if (response.data !== undefined) {
         const data = this._lookupTransformResult(
           response.data,
-          true // merge results should ALWAYS be an array
+          true, // merge results should ALWAYS be an array
         );
         response = {
           ...response,
-          data
+          data,
         };
       }
       return response as FullResponse<RequestData, unknown, RecordOperation>;
@@ -217,12 +220,12 @@ export default class Cache {
       let response = this.#sourceCache.merge(
         forkedCache.sourceCache,
         options as DefaultRequestOptions<RequestOptions> &
-          MemoryCacheMergeOptions
+          MemoryCacheMergeOptions,
       );
       if (response !== undefined) {
         response = this._lookupTransformResult(
           response,
-          true // merge results should ALWAYS be an array
+          true, // merge results should ALWAYS be an array
         );
       }
       return response as RequestData;
@@ -249,7 +252,7 @@ export default class Cache {
     const keyMap = this.keyMap as RecordKeyMap;
     assert(
       'No `keyMap` has been assigned to the Cache, so `recordIdFromKey` can not work.',
-      keyMap !== undefined
+      keyMap !== undefined,
     );
     let id = keyMap.keyToId(type, keyName, keyValue);
     if (!id) {
@@ -264,7 +267,7 @@ export default class Cache {
    */
   peekRecordData(type: string, id: string): InitializedRecord | undefined {
     deprecate(
-      'Cache#peekRecordData is deprecated. Call `getRecordData` instead.'
+      'Cache#peekRecordData is deprecated. Call `getRecordData` instead.',
     );
     return this.#sourceCache.getRecordSync({ type, id });
   }
@@ -290,7 +293,7 @@ export default class Cache {
    */
   peekRecordByKey(type: string, key: string, value: string): Model | undefined {
     deprecate(
-      'Cache#peekRecordByKey is deprecated. Instead of `cache.peekRecordByKey(type, key, value)`, call `cache.findRecord({ type, key, value })` or `cache.query(...)`.'
+      'Cache#peekRecordByKey is deprecated. Instead of `cache.peekRecordByKey(type, key, value)`, call `cache.findRecord({ type, key, value })` or `cache.query(...)`.',
     );
     return this.findRecord({ type, key, value });
   }
@@ -300,7 +303,7 @@ export default class Cache {
    */
   peekKey(identity: RecordIdentity, key: string): string | undefined {
     deprecate(
-      "Cache#peekKey is deprecated. Instead of `cache.peekKey({ type, id }, value)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+      "Cache#peekKey is deprecated. Instead of `cache.peekKey({ type, id }, value)`, call `cache.findRecord({ type, id })` and then access the record's fields directly.",
     );
     const record = this.#sourceCache.getRecordSync(identity);
     return record?.keys?.[key];
@@ -311,7 +314,7 @@ export default class Cache {
    */
   peekAttribute(identity: RecordIdentity, attribute: string): any {
     deprecate(
-      "Cache#peekAttribute is deprecated. Instead of `cache.peekAttribute({ type, id }, attribute)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+      "Cache#peekAttribute is deprecated. Instead of `cache.peekAttribute({ type, id }, attribute)`, call `cache.findRecord({ type, id })` and then access the record's fields directly.",
     );
     const record = this.#sourceCache.getRecordSync(identity);
     return record?.attributes?.[attribute];
@@ -322,14 +325,14 @@ export default class Cache {
    */
   peekRelatedRecord(
     identity: RecordIdentity,
-    relationship: string
+    relationship: string,
   ): Model | null | undefined {
     deprecate(
-      "Cache#peekRelatedRecord is deprecated. Instead of `cache.peekRelatedRecord({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+      "Cache#peekRelatedRecord is deprecated. Instead of `cache.peekRelatedRecord({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly.",
     );
     const relatedRecord = this.#sourceCache.getRelatedRecordSync(
       identity,
-      relationship
+      relationship,
     );
     if (relatedRecord) {
       return this.lookup(relatedRecord);
@@ -343,14 +346,14 @@ export default class Cache {
    */
   peekRelatedRecords(
     identity: RecordIdentity,
-    relationship: string
+    relationship: string,
   ): Model[] | undefined {
     deprecate(
-      "Cache#peekRelatedRecords is deprecated. Instead of `cache.peekRelatedRecords({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly."
+      "Cache#peekRelatedRecords is deprecated. Instead of `cache.peekRelatedRecords({ type, id }, relationship)`, call `cache.findRecord({ type, id })` and then access the record's fields directly.",
     );
     const relatedRecords = this.#sourceCache.getRelatedRecordsSync(
       identity,
-      relationship
+      relationship,
     );
     if (relatedRecords) {
       return relatedRecords.map((r) => this.lookup(r));
@@ -360,50 +363,53 @@ export default class Cache {
   }
 
   update<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     transformOrOperations: ModelAwareTransformOrOperations,
     options?: DefaultRequestOptions<RequestOptions>,
-    id?: string
+    id?: string,
   ): RequestData;
   update<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     transformOrOperations: ModelAwareTransformOrOperations,
     options: FullRequestOptions<RequestOptions>,
-    id?: string
+    id?: string,
   ): FullResponse<RequestData, unknown, RecordOperation>;
   update<
-    RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>
+    RequestData extends
+      RecordTransformResult<Model> = RecordTransformResult<Model>,
   >(
     transformOrOperations: ModelAwareTransformOrOperations,
     options?: RequestOptions,
-    id?: string
+    id?: string,
   ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
     assert(
       `You tried to update a cache that is not a fork, which is not allowed by default. Either fork the store/cache before making updates directly to the cache or, if the update you are making is ephemeral, set 'cache.allowUpdates = true' to override this assertion.`,
-      this.allowUpdates
+      this.allowUpdates,
     );
 
     const transform = buildTransform(
       transformOrOperations,
       options,
       id,
-      this.#sourceCache.transformBuilder
+      this.#sourceCache.transformBuilder,
     );
 
     if (options?.fullResponse) {
       let response = this.#sourceCache.update(transform, {
-        fullResponse: true
+        fullResponse: true,
       });
       if (response.data !== undefined) {
         const data = this._lookupTransformResult(
           response.data,
-          Array.isArray(transform.operations)
+          Array.isArray(transform.operations),
         );
         response = {
           ...response,
-          data
+          data,
         };
       }
       return response as FullResponse<RequestData, unknown, RecordOperation>;
@@ -412,7 +418,7 @@ export default class Cache {
       if (response !== undefined) {
         response = this._lookupTransformResult(
           response,
-          Array.isArray(transform.operations)
+          Array.isArray(transform.operations),
         );
       }
       return response as RequestData;
@@ -420,48 +426,48 @@ export default class Cache {
   }
 
   query<
-    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>,
   >(
     queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
-    id?: string
+    id?: string,
   ): RequestData;
   query<
-    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>,
   >(
     queryOrExpressions: ModelAwareQueryOrExpressions,
     options: FullRequestOptions<RecordCacheQueryOptions>,
-    id?: string
+    id?: string,
   ): FullResponse<RequestData, undefined, RecordOperation>;
   query<
-    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>
+    RequestData extends RecordQueryResult<Model> = RecordQueryResult<Model>,
   >(
     queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: RecordCacheQueryOptions,
-    id?: string
+    id?: string,
   ): RequestData | FullResponse<RequestData, undefined, RecordOperation> {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
-      this.#sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder,
     );
 
     if (options?.fullResponse) {
       const response = this.#sourceCache.query(query, { fullResponse: true });
       const data = this._lookupQueryResult(
         response.data,
-        Array.isArray(query.expressions)
+        Array.isArray(query.expressions),
       );
       return {
         ...response,
-        data
+        data,
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
       const response = this.#sourceCache.query(query);
       const data = this._lookupQueryResult(
         response,
-        Array.isArray(query.expressions)
+        Array.isArray(query.expressions),
       );
       return data as RequestData;
     }
@@ -470,13 +476,13 @@ export default class Cache {
   liveQuery(
     queryOrExpressions: ModelAwareQueryOrExpressions,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
-    id?: string
+    id?: string,
   ): LiveQuery {
     const query = buildQuery(
       queryOrExpressions,
       options,
       id,
-      this.#sourceCache.queryBuilder
+      this.#sourceCache.queryBuilder,
     );
     const liveQuery = this.#sourceCache.liveQuery(query);
     return new LiveQuery({ liveQuery, cache: this, query });
@@ -487,7 +493,7 @@ export default class Cache {
    */
   find(type: string, id?: string): Model | Model[] | undefined {
     deprecate(
-      '`Cache#find` is deprecated. Call `cache.findRecords(type)`, `cache.findRecord(type, id)`, or `cache.query(...)` instead.'
+      '`Cache#find` is deprecated. Call `cache.findRecords(type)`, `cache.findRecord(type, id)`, or `cache.query(...)` instead.',
     );
     if (id === undefined) {
       return this.findRecords(type);
@@ -499,16 +505,16 @@ export default class Cache {
   findRecord(
     type: string,
     id: string,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): Model | undefined;
   findRecord(
     identity: RecordIdentityOrModel,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): Model | undefined;
   findRecord(
     typeOrIdentity: string | RecordIdentityOrModel,
     idOrOptions?: string | DefaultRequestOptions<RecordCacheQueryOptions>,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): Model | undefined {
     if (options?.fullResponse) {
       delete options.fullResponse;
@@ -521,7 +527,7 @@ export default class Cache {
         queryOptions = options;
       } else {
         throw new Assertion(
-          '`Cache#findRecord` may be called with either `type` and `id` strings OR a single `identity` object.'
+          '`Cache#findRecord` may be called with either `type` and `id` strings OR a single `identity` object.',
         );
       }
     } else {
@@ -533,15 +539,12 @@ export default class Cache {
 
   findRecords(
     typeOrIdentities: string | RecordIdentityOrModel[],
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): Model[] {
     if (options?.fullResponse) {
       delete options.fullResponse;
     }
-    return this.query(
-      (q) => q.findRecords(typeOrIdentities),
-      options
-    );
+    return this.query((q) => q.findRecords(typeOrIdentities), options);
   }
 
   /**
@@ -549,11 +552,11 @@ export default class Cache {
    */
   addRecord<RequestData extends RecordTransformResult<Model> = Model>(
     properties: UninitializedRecord | ModelFields,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): RequestData {
     assert(
       'Cache#addRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
-      options?.fullResponse === undefined
+      options?.fullResponse === undefined,
     );
     return this.update((t) => t.addRecord(properties), options);
   }
@@ -563,11 +566,11 @@ export default class Cache {
    */
   updateRecord<RequestData extends RecordTransformResult<Model> = Model>(
     properties: InitializedRecord | ModelFields,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): RequestData {
     assert(
       'Cache#updateRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
-      options?.fullResponse === undefined
+      options?.fullResponse === undefined,
     );
     return this.update((t) => t.updateRecord(properties), options);
   }
@@ -577,11 +580,11 @@ export default class Cache {
    */
   removeRecord(
     identity: RecordIdentityOrModel,
-    options?: DefaultRequestOptions<RecordCacheQueryOptions>
+    options?: DefaultRequestOptions<RecordCacheQueryOptions>,
   ): void {
     assert(
       'Cache#removeRecord does not support the `fullResponse` option. Call `cache.update(..., { fullResponse: true })` instead.',
-      options?.fullResponse === undefined
+      options?.fullResponse === undefined,
     );
     this.update((t) => t.removeRecord(identity), options);
   }
@@ -607,43 +610,43 @@ export default class Cache {
 
   _lookupQueryResult(
     result: RecordQueryResult<InitializedRecord>,
-    isArray: boolean
+    isArray: boolean,
   ): RecordQueryResult<Model> {
     if (isArray) {
       if (Array.isArray(result)) {
         return (result as RecordQueryExpressionResult[]).map((i) =>
-          this.lookupQueryExpressionResult(i)
+          this.lookupQueryExpressionResult(i),
         );
       } else {
         throw new Assertion(
-          'A resultset for a query with an array of `expressions` should also be an array.'
+          'A resultset for a query with an array of `expressions` should also be an array.',
         );
       }
     } else {
       return this.lookupQueryExpressionResult(
-        result as RecordQueryExpressionResult<InitializedRecord>
+        result as RecordQueryExpressionResult<InitializedRecord>,
       );
     }
   }
 
   _lookupTransformResult(
     result: RecordTransformResult<InitializedRecord>,
-    isArray: boolean
+    isArray: boolean,
   ): RecordTransformResult<Model> {
     if (isArray) {
       if (Array.isArray(result)) {
         return (result as RecordOperationResult[]).map((i) =>
-          this.lookupOperationResult(i)
+          this.lookupOperationResult(i),
         );
       } else {
         throw new Assertion(
-          'A resultset for a transform with an array of `operations` should also be an array.'
+          'A resultset for a transform with an array of `operations` should also be an array.',
         );
       }
     } else {
       if (Array.isArray(result)) {
         throw new Assertion(
-          'A resultset for a transform with singular (i.e. non-array) `operations` should not be an array.'
+          'A resultset for a transform with singular (i.e. non-array) `operations` should not be an array.',
         );
       } else {
         return this.lookupOperationResult(result);
@@ -652,7 +655,7 @@ export default class Cache {
   }
 
   private lookupQueryExpressionResult(
-    result: RecordQueryExpressionResult<InitializedRecord>
+    result: RecordQueryExpressionResult<InitializedRecord>,
   ): RecordQueryExpressionResult<Model> {
     if (Array.isArray(result)) {
       return result.map((i) => (i ? this.lookup(i) : i));
@@ -664,7 +667,7 @@ export default class Cache {
   }
 
   private lookupOperationResult(
-    result: RecordOperationResult<InitializedRecord>
+    result: RecordOperationResult<InitializedRecord>,
   ): RecordOperationResult<Model> {
     if (result) {
       return this.lookup(result);
@@ -675,7 +678,7 @@ export default class Cache {
 
   private notifyPropertyChange(
     identity: RecordIdentity,
-    property: string
+    property: string,
   ): void {
     const record = this._identityMap.get(identity);
     record?.$notifyPropertyChange(property);

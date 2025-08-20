@@ -40,7 +40,7 @@ export default {
        * invoked in the context of this strategy (and thus will have access to
        * both `this.source` and `this.target`).
        */
-      blocking: true
+      blocking: true,
     });
-  }
+  },
 };

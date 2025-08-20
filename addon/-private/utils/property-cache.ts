@@ -20,6 +20,7 @@ export class PropertyCache<T> {
   constructor(getter: () => T) {
     this.#getter = getter;
     this.#value = createCache<T>(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.invalidate;
       if (values.has(this)) {
         return values.get(this) as T;
@@ -54,7 +55,7 @@ export function notifyPropertyChange(record: Model, property: string) {
 
 export function getKeyCache(
   record: Model,
-  property: string
+  property: string,
 ): PropertyCache<unknown> {
   let recordCaches = caches.get(record);
 
@@ -67,7 +68,7 @@ export function getKeyCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.$getKey(property)
+      record.$getKey(property),
     );
   }
 
@@ -76,7 +77,7 @@ export function getKeyCache(
 
 export function getAttributeCache(
   record: Model,
-  property: string
+  property: string,
 ): PropertyCache<unknown> {
   let recordCaches = caches.get(record);
 
@@ -89,7 +90,7 @@ export function getAttributeCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.$getAttribute(property)
+      record.$getAttribute(property),
     );
   }
 
@@ -98,7 +99,7 @@ export function getAttributeCache(
 
 export function getHasOneCache(
   record: Model,
-  property: string
+  property: string,
 ): PropertyCache<unknown> {
   let recordCaches = caches.get(record);
 
@@ -111,7 +112,7 @@ export function getHasOneCache(
 
   if (propertyCache === undefined) {
     propertyCache = recordCaches[property] = new PropertyCache(() =>
-      record.$getRelatedRecord(property)
+      record.$getRelatedRecord(property),
     );
   }
 
@@ -120,7 +121,7 @@ export function getHasOneCache(
 
 export function getHasManyCache(
   record: Model,
-  property: string
+  property: string,
 ): PropertyCache<unknown> {
   let recordCaches = caches.get(record);
 
@@ -136,8 +137,8 @@ export function getHasManyCache(
       addLegacyMutationMethods(
         record,
         property,
-        record.$getRelatedRecords(property) ?? []
-      )
+        record.$getRelatedRecords(property) ?? [],
+      ),
     );
   }
 
@@ -147,7 +148,7 @@ export function getHasManyCache(
 function addLegacyMutationMethods(
   owner: Model,
   relationship: string,
-  records: ReadonlyArray<Model>
+  records: ReadonlyArray<Model>,
 ) {
   if (DEBUG) {
     records = [...records];
@@ -157,19 +158,19 @@ function addLegacyMutationMethods(
     pushObject: {
       value: (record: Model) => {
         deprecate(
-          'pushObject(record) is deprecated. Use record.addToRelatedRecords(relationship, record)'
+          'pushObject(record) is deprecated. Use record.addToRelatedRecords(relationship, record)',
         );
         owner.$addToRelatedRecords(relationship, record);
-      }
+      },
     },
     removeObject: {
       value: (record: Model) => {
         deprecate(
-          'removeObject(record) is deprecated. Use record.removeFromRelatedRecords(relationship, record)'
+          'removeObject(record) is deprecated. Use record.removeFromRelatedRecords(relationship, record)',
         );
         owner.$removeFromRelatedRecords(relationship, record);
-      }
-    }
+      },
+    },
   });
 
   if (DEBUG) {

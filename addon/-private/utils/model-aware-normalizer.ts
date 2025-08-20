@@ -7,19 +7,19 @@ import {
   RecordSchema,
   StandardRecordNormalizer,
   type StandardRecordNormalizerSettings,
-  type UninitializedRecord
+  type UninitializedRecord,
 } from '@orbit/records';
 import { Model } from 'ember-orbit';
 import {
   type RecordFieldsOrModel,
-  type RecordIdentityOrModel
+  type RecordIdentityOrModel,
 } from './model-aware-types';
 import { normalizeModelFields, type ModelFields } from './model-fields';
 
 export type ModelRecordNormalizerSettings = StandardRecordNormalizerSettings;
 
 export function isStandardRecord(
-  data: UninitializedRecord | ModelFields
+  data: UninitializedRecord | ModelFields,
 ): data is UninitializedRecord {
   return (
     (data.attributes !== null && typeof data.attributes === 'object') ||
@@ -30,7 +30,8 @@ export function isStandardRecord(
 
 export class ModelAwareNormalizer
   implements
-    RecordNormalizer<string, RecordIdentityOrModel, RecordFieldsOrModel> {
+    RecordNormalizer<string, RecordIdentityOrModel, RecordFieldsOrModel>
+{
   protected _normalizer: StandardRecordNormalizer;
 
   constructor(settings: ModelRecordNormalizerSettings) {
@@ -50,7 +51,7 @@ export class ModelAwareNormalizer
   }
 
   normalizeRecordIdentity(
-    identity: RecordIdentity | RecordKeyValue | Model
+    identity: RecordIdentity | RecordKeyValue | Model,
   ): RecordIdentity {
     if (identity instanceof Model) {
       return identity.$identity;

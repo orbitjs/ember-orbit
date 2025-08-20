@@ -10,7 +10,7 @@ module.exports = {
     return {
       __models__() {
         return collections.models || 'data-models';
-      }
+      },
     };
-  }
+  },
 };

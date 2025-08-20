@@ -15,13 +15,13 @@ export function getModelDefinition(proto: any): ModelDefinition {
     return proto[MODEL_DEFINITION] as ModelDefinition;
   } else {
     proto[MODEL_DEFINITION] = {};
-    return proto[MODEL_DEFINITION];
+    return proto[MODEL_DEFINITION] as ModelDefinition;
   }
 }
 
 export function extendModelDefinition(
   proto: any,
-  modelDefinition: ModelDefinition
+  modelDefinition: ModelDefinition,
 ): void {
   if (proto[MODEL_DEFINITION] && proto[MODEL_DEFINITION_FOR]) {
     let currentDef = proto[MODEL_DEFINITION];
@@ -39,7 +39,7 @@ export function extendModelDefinition(
 export function defineAttribute(
   proto: object,
   name: string,
-  options: AttributeDefinition
+  options: AttributeDefinition,
 ): void {
   extendModelDefinition(proto, {
     attributes: { [name]: options },
@@ -49,7 +49,7 @@ export function defineAttribute(
 export function defineKey(
   proto: object,
   name: string,
-  options: KeyDefinition
+  options: KeyDefinition,
 ): void {
   extendModelDefinition(proto, {
     keys: { [name]: options },
@@ -59,7 +59,7 @@ export function defineKey(
 export function defineRelationship(
   proto: object,
   name: string,
-  options: RelationshipDefinition
+  options: RelationshipDefinition,
 ): void {
   extendModelDefinition(proto, {
     relationships: { [name]: options },

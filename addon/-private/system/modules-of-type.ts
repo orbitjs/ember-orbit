@@ -8,7 +8,11 @@
  */
 export default function (prefix: string, type: string): string[] {
   const regex = new RegExp(`^${prefix}/${type}/?/`);
-  const moduleNames = Object.keys((self as any).requirejs._eak_seen);
+
+  const moduleNames = Object.keys(
+    // @ts-expect-error TODO: fix this type error
+    (self.requirejs as { _eak_seen: object })._eak_seen,
+  );
   const found: string[] = [];
 
   for (const moduleName of moduleNames) {

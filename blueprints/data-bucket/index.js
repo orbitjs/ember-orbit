@@ -5,7 +5,7 @@ module.exports = {
 
   availableOptions: [
     { name: 'from', type: String, default: '@orbit/indexeddb-bucket' },
-    { name: 'namespace', type: String }
+    { name: 'namespace', type: String },
   ],
 
   fileMapTokens() {
@@ -15,7 +15,7 @@ module.exports = {
       },
       __initializer__(options) {
         return options.locals.initializerName;
-      }
+      },
     };
   },
 
@@ -29,7 +29,7 @@ module.exports = {
       namespace,
       bucketsCollection: collections.buckets || 'data-buckets',
       initializerName: `${options.entity.name}-bucket-initializer`,
-      serviceName: `${options.entity.name}-bucket`
+      serviceName: `${options.entity.name}-bucket`,
     };
   },
 
@@ -37,5 +37,5 @@ module.exports = {
     if (options.from) {
       return this.addPackageToProject(options.from);
     }
-  }
+  },
 };

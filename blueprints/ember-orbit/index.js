@@ -26,9 +26,9 @@ module.exports = {
       },
       __strategies__() {
         return collections.strategies || 'data-strategies';
-      }
+      },
     };
 
     return tokens;
-  }
+  },
 };

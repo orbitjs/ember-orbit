@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { camelize } from '@orbit/serializers';
 import { getOwner } from '@ember/application';
 import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
@@ -7,7 +8,7 @@ import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
 
 function getRegisteredModels(
   prefix: string,
-  modelsCollection: string
+  modelsCollection: string,
 ): string[] {
   return modulesOfType(prefix, modelsCollection).map(camelize);
 }
@@ -26,11 +27,11 @@ export default {
         delete injections.modelNames;
       } else {
         modelNames =
-          app.lookup('ember-orbit:model-names') as Array<string> ??
+          (app.lookup('ember-orbit:model-names') as Array<string>) ??
           getRegisteredModels(
             // @ts-expect-error TODO: fix this type error
             app.base.modulePrefix as string,
-            orbitConfig.collections.models
+            orbitConfig.collections.models,
           );
       }
 
@@ -38,7 +39,7 @@ export default {
       for (const name of modelNames) {
         // @ts-expect-error TODO: fix this type error
         const { keys, attributes, relationships } = app.factoryFor(
-          `${orbitConfig.types.model}:${name}`
+          `${orbitConfig.types.model}:${name}`,
         )!.class;
 
         injections.models[name] = {

@@ -29,14 +29,14 @@ export default {
         sourceNames = injections.sourceNames;
         delete injections.sourceNames;
       } else {
-        sourceNames = ((app.lookup(
-          'ember-orbit:source-names'
-        ) as Array<string>) ??
+        sourceNames =
+          (app.lookup('ember-orbit:source-names') as Array<string>) ??
           modulesOfType(
             // @ts-expect-error TODO: fix this type error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             app.base.modulePrefix,
-            orbitConfig.collections.sources
-          ));
+            orbitConfig.collections.sources,
+          );
         sourceNames.push('store');
       }
       injections.sources = sourceNames
@@ -63,8 +63,9 @@ export default {
           (app.lookup('ember-orbit:strategy-names') as Array<string>) ??
           modulesOfType(
             // @ts-expect-error TODO: fix this type error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             app.base.modulePrefix,
-            orbitConfig.collections.strategies
+            orbitConfig.collections.strategies,
           );
       }
       injections.strategies = strategyNames

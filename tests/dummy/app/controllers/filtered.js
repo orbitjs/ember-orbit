@@ -45,8 +45,8 @@ export default class FilteredController extends Controller {
         operations.push(
           t.replaceRelatedRecord({ type: 'moon', id: moonCopy.id }, 'planet', {
             type: 'planet',
-            id: planetCopy.id
-          })
+            id: planetCopy.id,
+          }),
         );
       });
 

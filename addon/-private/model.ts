@@ -7,12 +7,12 @@ import type {
   AttributeDefinition,
   RelationshipDefinition,
   InitializedRecord,
-  ModelDefinition
+  ModelDefinition,
 } from '@orbit/records';
 import {
   destroy,
   associateDestroyableChild,
-  registerDestructor
+  registerDestructor,
 } from '@ember/destroyable';
 import { tracked } from '@glimmer/tracking';
 
@@ -44,7 +44,7 @@ export default class Model {
 
   get identity(): RecordIdentity {
     deprecate(
-      '`Model#identity` is deprecated to avoid potential conflicts with field names. Access `$identity` instead.'
+      '`Model#identity` is deprecated to avoid potential conflicts with field names. Access `$identity` instead.',
     );
     return this.#identity;
   }
@@ -63,7 +63,7 @@ export default class Model {
 
   get disconnected(): boolean {
     deprecate(
-      '`Model#disconnected` is deprecated to avoid potential conflicts with field names. Access `$isDisconnected` instead.'
+      '`Model#disconnected` is deprecated to avoid potential conflicts with field names. Access `$isDisconnected` instead.',
     );
     return this.$isDisconnected;
   }
@@ -77,7 +77,7 @@ export default class Model {
    */
   getData(): InitializedRecord | undefined {
     deprecate(
-      '`Model#getData` is deprecated to avoid potential conflicts with field names. Call `$getData` instead.'
+      '`Model#getData` is deprecated to avoid potential conflicts with field names. Call `$getData` instead.',
     );
     return this.$getData();
   }
@@ -91,7 +91,7 @@ export default class Model {
    */
   getKey(field: string): string | undefined {
     deprecate(
-      '`Model#getKey` is deprecated to avoid potential conflicts with field names. Call `$getKey` instead.'
+      '`Model#getKey` is deprecated to avoid potential conflicts with field names. Call `$getKey` instead.',
     );
     return this.$getKey(field);
   }
@@ -106,10 +106,10 @@ export default class Model {
   replaceKey(
     key: string,
     value: string,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#replaceKey` is deprecated to avoid potential conflicts with field names. Call `$replaceKey` instead.'
+      '`Model#replaceKey` is deprecated to avoid potential conflicts with field names. Call `$replaceKey` instead.',
     );
     this.$replaceKey(key, value, options);
   }
@@ -117,11 +117,11 @@ export default class Model {
   $replaceKey(
     key: string,
     value: string,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) => t.replaceKey(this.#identity, key, value),
-      options
+      options,
     );
   }
 
@@ -130,7 +130,7 @@ export default class Model {
    */
   getAttribute(attribute: string): unknown {
     deprecate(
-      '`Model#getAttribute` is deprecated to avoid potential conflicts with field names. Call `$getAttribute` instead.'
+      '`Model#getAttribute` is deprecated to avoid potential conflicts with field names. Call `$getAttribute` instead.',
     );
     return this.$getAttribute(attribute);
   }
@@ -145,10 +145,10 @@ export default class Model {
   replaceAttribute(
     attribute: string,
     value: unknown,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#replaceAttribute` is deprecated to avoid potential conflicts with field names. Call `$replaceAttribute` instead.'
+      '`Model#replaceAttribute` is deprecated to avoid potential conflicts with field names. Call `$replaceAttribute` instead.',
     );
     this.$replaceAttribute(attribute, value, options);
   }
@@ -156,11 +156,11 @@ export default class Model {
   $replaceAttribute(
     attribute: string,
     value: unknown,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) => t.replaceAttribute(this.#identity, attribute, value),
-      options
+      options,
     );
   }
 
@@ -169,7 +169,7 @@ export default class Model {
    */
   getRelatedRecord(relationship: string): Model | null | undefined {
     deprecate(
-      '`Model#getRelatedRecord` is deprecated to avoid potential conflicts with field names. Call `$getRelatedRecord` instead.'
+      '`Model#getRelatedRecord` is deprecated to avoid potential conflicts with field names. Call `$getRelatedRecord` instead.',
     );
     return this.$getRelatedRecord(relationship);
   }
@@ -178,7 +178,7 @@ export default class Model {
     const cache = this.$cache;
     const relatedRecord = cache.sourceCache.getRelatedRecordSync(
       this.#identity,
-      relationship
+      relationship,
     );
     if (relatedRecord) {
       return cache.lookup(relatedRecord);
@@ -193,10 +193,10 @@ export default class Model {
   replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#replaceRelatedRecord` is deprecated to avoid potential conflicts with field names. Call `$replaceRelatedRecord` instead.'
+      '`Model#replaceRelatedRecord` is deprecated to avoid potential conflicts with field names. Call `$replaceRelatedRecord` instead.',
     );
     this.$replaceRelatedRecord(relationship, relatedRecord, options);
   }
@@ -204,16 +204,16 @@ export default class Model {
   $replaceRelatedRecord(
     relationship: string,
     relatedRecord: Model | null,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) =>
         t.replaceRelatedRecord(
           this.#identity,
           relationship,
-          relatedRecord ? relatedRecord.$identity : null
+          relatedRecord ? relatedRecord.$identity : null,
         ),
-      options
+      options,
     );
   }
 
@@ -222,7 +222,7 @@ export default class Model {
    */
   getRelatedRecords(relationship: string): ReadonlyArray<Model> | undefined {
     deprecate(
-      '`Model#getRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$getRelatedRecords` instead.'
+      '`Model#getRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$getRelatedRecords` instead.',
     );
     return this.$getRelatedRecords(relationship);
   }
@@ -231,7 +231,7 @@ export default class Model {
     const cache = this.$cache;
     const relatedRecords = cache.sourceCache.getRelatedRecordsSync(
       this.#identity,
-      relationship
+      relationship,
     );
 
     if (relatedRecords) {
@@ -247,10 +247,10 @@ export default class Model {
   addToRelatedRecords(
     relationship: string,
     record: Model,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#addToRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$addToRelatedRecords` instead.'
+      '`Model#addToRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$addToRelatedRecords` instead.',
     );
     this.$addToRelatedRecords(relationship, record, options);
   }
@@ -258,12 +258,12 @@ export default class Model {
   $addToRelatedRecords(
     relationship: string,
     record: Model,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) =>
         t.addToRelatedRecords(this.#identity, relationship, record.$identity),
-      options
+      options,
     );
   }
 
@@ -273,10 +273,10 @@ export default class Model {
   removeFromRelatedRecords(
     relationship: string,
     record: Model,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#removeFromRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$removeFromRelatedRecords` instead.'
+      '`Model#removeFromRelatedRecords` is deprecated to avoid potential conflicts with field names. Call `$removeFromRelatedRecords` instead.',
     );
     this.$removeFromRelatedRecords(relationship, record, options);
   }
@@ -284,16 +284,16 @@ export default class Model {
   $removeFromRelatedRecords(
     relationship: string,
     record: Model,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) =>
         t.removeFromRelatedRecords(
           this.#identity,
           relationship,
-          record.$identity
+          record.$identity,
         ),
-      options
+      options,
     );
   }
 
@@ -302,10 +302,10 @@ export default class Model {
    */
   replaceAttributes(
     properties: Dict<unknown>,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#replaceAttributes` is deprecated. Call `$update` instead (with the same arguments).'
+      '`Model#replaceAttributes` is deprecated. Call `$update` instead (with the same arguments).',
     );
     this.$update(properties, options);
   }
@@ -315,25 +315,25 @@ export default class Model {
    */
   update(
     properties: Dict<unknown>,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     deprecate(
-      '`Model#update` is deprecated to avoid potential conflicts with field names. Call `$update` instead.'
+      '`Model#update` is deprecated to avoid potential conflicts with field names. Call `$update` instead.',
     );
     this.$update(properties, options);
   }
 
   $update(
     properties: Dict<unknown>,
-    options?: DefaultRequestOptions<RequestOptions>
+    options?: DefaultRequestOptions<RequestOptions>,
   ): void {
     this.$cache.update(
       (t) =>
         t.updateRecord({
           ...properties,
-          ...this.#identity
+          ...this.#identity,
         }),
-      options
+      options,
     );
   }
 
@@ -342,7 +342,7 @@ export default class Model {
    */
   remove(options?: DefaultRequestOptions<RequestOptions>): void {
     deprecate(
-      '`Model#remove` is deprecated to avoid potential conflicts with field names. Call `$remove` instead.'
+      '`Model#remove` is deprecated to avoid potential conflicts with field names. Call `$remove` instead.',
     );
     this.$remove(options);
   }
@@ -356,7 +356,7 @@ export default class Model {
    */
   disconnect(): void {
     deprecate(
-      '`Model#disconnect` is deprecated to avoid potential conflicts with field names. Call `$disconnect` instead.'
+      '`Model#disconnect` is deprecated to avoid potential conflicts with field names. Call `$disconnect` instead.',
     );
     this.$disconnect();
   }
@@ -371,7 +371,7 @@ export default class Model {
    */
   destroy(): void {
     deprecate(
-      '`Model#destroy` is deprecated to avoid potential conflicts with field names. Call `$destroy` instead.'
+      '`Model#destroy` is deprecated to avoid potential conflicts with field names. Call `$destroy` instead.',
     );
     this.$destroy();
   }
@@ -385,7 +385,7 @@ export default class Model {
    */
   notifyPropertyChange(key: string) {
     deprecate(
-      '`Model#notifyPropertyChange` is deprecated to avoid potential conflicts with field names. Call `$notifyPropertyChange` instead.'
+      '`Model#notifyPropertyChange` is deprecated to avoid potential conflicts with field names. Call `$notifyPropertyChange` instead.',
     );
     this.$notifyPropertyChange(key);
   }

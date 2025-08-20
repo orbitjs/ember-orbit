@@ -9,7 +9,7 @@ import { initialize as initializeServices } from 'ember-orbit/initializers/ember
 
 export function createStore(
   owner: ApplicationInstance,
-  models: Dict<new (settings: ModelSettings) => Model>
+  models: Dict<new (settings: ModelSettings) => Model>,
 ) {
   initializeConfig(owner);
   initializeServices(owner);

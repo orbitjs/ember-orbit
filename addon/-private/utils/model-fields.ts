@@ -5,7 +5,7 @@ import {
   type ModelDefinition,
   type RecordIdentity,
   type RelationshipDefinition,
-  type UninitializedRecord
+  type UninitializedRecord,
 } from '@orbit/records';
 import { deepSet } from '@orbit/utils';
 
@@ -19,7 +19,7 @@ export type ModelFields = {
 
 export function normalizeModelFields(
   schema: RecordSchema,
-  properties: ModelFields
+  properties: ModelFields,
 ): UninitializedRecord {
   const { id, type } = properties;
   const modelDefinition = schema.getModel(type);
@@ -35,7 +35,7 @@ export function normalizeModelFields(
 function assignKeys(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const keyDefs = modelDefinition.keys;
   if (keyDefs) {
@@ -50,7 +50,7 @@ function assignKeys(
 function assignAttributes(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const attributeDefs = modelDefinition.attributes;
   if (attributeDefs) {
@@ -65,7 +65,7 @@ function assignAttributes(
 function assignRelationships(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const relationshipDefs = modelDefinition.relationships;
   if (relationshipDefs) {
@@ -84,7 +84,7 @@ function assignRelationships(
         deepSet(
           record,
           ['relationships', relationship],
-          normalizeRelationship(relationshipType, relationshipProperties)
+          normalizeRelationship(relationshipType, relationshipProperties),
         );
       }
     }
@@ -93,7 +93,7 @@ function assignRelationships(
 
 function normalizeRelationship(
   type: string | string[],
-  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null,
 ): RecordRelationship {
   const relationship: RecordRelationship = {};
 
@@ -105,7 +105,7 @@ function normalizeRelationship(
       if (typeof identity === 'string') {
         assert(
           'The hasMany relationship is polymorphic, so string[] will not work as a value. RecordIdentity[] must be provided for type information.',
-          !isPolymorphic
+          !isPolymorphic,
         );
         relationship.data.push({ type: type as string, id: identity });
       } else {
@@ -117,7 +117,7 @@ function normalizeRelationship(
   } else if (typeof value === 'string') {
     assert(
       'The relationship is polymorphic, so string will not work as a value. RecordIdentity must be provided for type information.',
-      !isPolymorphic
+      !isPolymorphic,
     );
     relationship.data = { type: type as string, id: value };
   } else {
@@ -128,7 +128,7 @@ function normalizeRelationship(
 }
 
 function isHasMany(
-  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null,
 ): value is RecordIdentity[] | string[] {
   return Array.isArray(value);
 }

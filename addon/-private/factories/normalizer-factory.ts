@@ -1,7 +1,7 @@
 import { getOwner } from '@ember/application';
 import {
   ModelAwareNormalizer,
-  type ModelRecordNormalizerSettings
+  type ModelRecordNormalizerSettings,
 } from '../utils/model-aware-normalizer';
 import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
 import type { RecordKeyMap, RecordSchema } from '@orbit/records';
@@ -13,12 +13,16 @@ export default {
     const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
 
     if (!orbitConfig.skipSchemaService) {
-      injections.schema = app.lookup(`service:${orbitConfig.services.schema}`) as RecordSchema;
+      injections.schema = app.lookup(
+        `service:${orbitConfig.services.schema}`,
+      ) as RecordSchema;
     }
     if (!orbitConfig.skipKeyMapService) {
-      injections.keyMap = app.lookup(`service:${orbitConfig.services.keyMap}`) as RecordKeyMap;
+      injections.keyMap = app.lookup(
+        `service:${orbitConfig.services.keyMap}`,
+      ) as RecordKeyMap;
     }
 
     return new ModelAwareNormalizer(injections);
-  }
+  },
 };

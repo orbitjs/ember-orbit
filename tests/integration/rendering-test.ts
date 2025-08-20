@@ -70,7 +70,7 @@ module('Rendering', function (hooks) {
     cache.addRecord({
       type: 'moon',
       name: 'Callisto',
-      planet: jupiter
+      planet: jupiter,
     });
 
     await settled();
@@ -79,7 +79,7 @@ module('Rendering', function (hooks) {
     const europa = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Europa',
-      planet: jupiter
+      planet: jupiter,
     });
 
     await settled();
@@ -151,7 +151,7 @@ module('Rendering', function (hooks) {
 
   test('liveQuery record - accessed via `value` of LiveQuery', async function (assert) {
     const planet = cache.liveQuery((q) =>
-      q.findRecord({ type: 'planet', id: '1' })
+      q.findRecord({ type: 'planet', id: '1' }),
     );
     this.set('planet', planet);
 
@@ -168,7 +168,7 @@ module('Rendering', function (hooks) {
 
   test('liveQuery record - accessed via deprecated `content` of LiveQuery', async function (assert) {
     const planet = cache.liveQuery((q) =>
-      q.findRecord({ type: 'planet', id: '1' })
+      q.findRecord({ type: 'planet', id: '1' }),
     );
     this.set('planet', planet);
 

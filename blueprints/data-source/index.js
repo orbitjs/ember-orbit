@@ -14,7 +14,7 @@ module.exports = {
     return {
       __sources__() {
         return collections.sources || 'data-sources';
-      }
+      },
     };
   },
 
@@ -27,5 +27,5 @@ module.exports = {
     if (options.from && options.from !== DEFAULT_PACKAGE) {
       return this.addPackageToProject(options.from);
     }
-  }
+  },
 };

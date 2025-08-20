@@ -4,7 +4,7 @@ import { Source } from '@orbit/data';
 import type ApplicationInstance from '@ember/application/instance';
 
 export async function waitForSource(
-  sourceOrSourceName: Store | Source | string
+  sourceOrSourceName: Store | Source | string,
 ): Promise<void> {
   let source;
   if (typeof sourceOrSourceName === 'string') {
@@ -12,7 +12,7 @@ export async function waitForSource(
     source = owner.lookup(`data-source:${sourceOrSourceName}`) as Source;
     if (!source) {
       throw new Error(
-        `data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`
+        `data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`,
       );
     }
   } else {

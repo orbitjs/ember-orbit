@@ -14,7 +14,7 @@ module.exports = {
     return {
       __strategies__() {
         return collections.strategies || 'data-strategies';
-      }
+      },
     };
   },
 
@@ -73,5 +73,5 @@ module.exports = {
     }
 
     return { type, strategyClass, source, target, on, action };
-  }
+  },
 };

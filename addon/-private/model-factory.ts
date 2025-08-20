@@ -39,12 +39,12 @@ export default class ModelFactory {
       const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
 
       modelFactory = owner.factoryFor(
-        `${orbitConfig.types.model}:${type}`
+        `${orbitConfig.types.model}:${type}`,
       ) as Factory;
 
       assert(
         `An ember-orbit model for type ${type} has not been registered.`,
-        modelFactory !== undefined
+        modelFactory !== undefined,
       );
 
       this.#modelFactoryMap[type] = modelFactory;

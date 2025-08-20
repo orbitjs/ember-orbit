@@ -7,5 +7,5 @@ export default {
     injections.name = injections.name ?? 'store';
     injections.cacheSettings = { debounceLiveQueries: false };
     return new MemorySource(injections);
-  }
+  },
 };

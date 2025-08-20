@@ -43,7 +43,7 @@ module('Integration - Config', function (hooks) {
           },
         },
       },
-      { instantiate: false }
+      { instantiate: false },
     );
     const models = { planet: Planet, moon: Moon, star: Star };
     store = createStore(this.owner as ApplicationInstance, models);
@@ -53,70 +53,71 @@ module('Integration - Config', function (hooks) {
     const schema = this.owner.lookup('service:data-schema') as RecordSchema;
     const keyMap = this.owner.lookup('service:orbit-key-map') as RecordKeyMap;
     const normalizer = this.owner.lookup(
-      'service:orbit-normalizer'
+      'service:orbit-normalizer',
     ) as StandardRecordNormalizer;
     const validatorFor = this.owner.lookup('service:orbit-validator');
 
     assert.strictEqual(
       schema.version,
       2,
-      'schema version matches configuration'
+      'schema version matches configuration',
     );
     assert.strictEqual(
       this.owner.lookup('service:orbit-store'),
       store,
-      'store service registration is named from configuration'
+      'store service registration is named from configuration',
     );
     assert.ok(
-      // @ts-expect-error TODO: fix this type error
-      this.owner.resolveRegistration('orbit-model:planet') as Planet,
-      'model factory registration is named from configuration'
+      (this.owner as ApplicationInstance).resolveRegistration(
+        'orbit-model:planet',
+      ) as Planet,
+      'model factory registration is named from configuration',
     );
     assert.strictEqual(
       this.owner.lookup('orbit-source:store'),
       store.source,
-      'source registation is named from configuration'
+      'source registation is named from configuration',
     );
     assert.strictEqual(
       (this.owner.lookup('orbit-source:store') as Store).schema,
       schema,
-      'schema is injected into sources'
+      'schema is injected into sources',
     );
     assert.strictEqual(
       (this.owner.lookup('orbit-source:store') as Store).keyMap,
       keyMap,
-      'keyMap is injected into sources'
+      'keyMap is injected into sources',
     );
     assert.strictEqual(
       (this.owner.lookup('orbit-source:store') as Store).validatorFor,
       validatorFor,
-      'validatorFor is injected into sources'
+      'validatorFor is injected into sources',
     );
     assert.strictEqual(
       normalizer.schema,
       schema,
-      'schema is injected into normalizer'
+      'schema is injected into normalizer',
     );
     assert.strictEqual(
       normalizer.keyMap,
       keyMap,
-      'keyMap is injected into normalizer'
+      'keyMap is injected into normalizer',
     );
     assert.strictEqual(
       (this.owner.lookup('orbit-source:store') as Store).queryBuilder
         .$normalizer,
       normalizer,
-      'normalizer is injected into sources and assigned to query builders'
+      'normalizer is injected into sources and assigned to query builders',
     );
     assert.strictEqual(
       (this.owner.lookup('orbit-source:store') as Store).transformBuilder
         .$normalizer,
       normalizer,
-      'normalizer is injected into sources and assigned to transform builders'
+      'normalizer is injected into sources and assigned to transform builders',
     );
     assert.ok(
       this.owner.lookup('service:data-schema'),
-      'unconfigured lookup type falls back to default configuration'
+      'unconfigured lookup type falls back to default configuration',
     );
   });
 });

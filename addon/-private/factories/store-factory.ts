@@ -17,7 +17,7 @@ export default {
     const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
 
     injections.source = app.lookup(
-      `${orbitConfig.types.source}:store`
+      `${orbitConfig.types.source}:store`,
     ) as MemorySource<
       RecordSourceQueryOptions,
       RequestOptions,

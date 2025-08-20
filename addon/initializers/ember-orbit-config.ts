@@ -70,7 +70,7 @@ export function initialize(application: ApplicationInstance) {
     {},
     DEFAULT_ORBIT_CONFIG,
     // @ts-expect-error TODO: fix this type error
-    envConfig.orbit ?? {}
+    envConfig.orbit ?? {},
   ) as OrbitConfig;
 
   // Customize pluralization rules

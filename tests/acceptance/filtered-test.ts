@@ -21,7 +21,7 @@ module('Acceptance | filtered', function (hooks) {
     // undo
     await triggerEvent(document.body, 'keydown', {
       keyCode: 90,
-      ctrlKey: true
+      ctrlKey: true,
     });
 
     assert.dom('.planet-row').exists({ count: 2 });
@@ -31,7 +31,7 @@ module('Acceptance | filtered', function (hooks) {
     await triggerEvent(document.body, 'keydown', {
       keyCode: 90,
       ctrlKey: true,
-      shiftKey: true
+      shiftKey: true,
     });
 
     assert.dom('.planet-row').exists({ count: 3 });
