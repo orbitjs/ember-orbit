@@ -11,7 +11,12 @@ import { createStore } from 'dummy/tests/support/store';
 import { buildTransform } from '@orbit/data';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import type { InitializedRecord, RecordTransform } from '@orbit/records';
+import type {
+  InitializedRecord,
+  RecordOperation,
+  RecordTransform,
+} from '@orbit/records';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Store', function (hooks) {
   setupTest(hooks);
@@ -19,7 +24,7 @@ module('Integration - Store', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,
@@ -74,10 +79,13 @@ module('Integration - Store', function (hooks) {
   });
 
   test('#addRecord - with blocking sync updates that return hints', async function (assert) {
-    store.source.on('beforeUpdate', async (transform, hints) => {
-      await store.sync(transform);
-      hints.data = transform.operations.record;
-    });
+    store.source.on(
+      'beforeUpdate',
+      async (transform: RecordTransform, hints: { data: any }) => {
+        await store.sync(transform);
+        hints.data = (transform.operations as RecordOperation).record;
+      }
+    );
 
     const planet = await store.addRecord<Planet>({
       type: 'planet',
@@ -177,7 +185,7 @@ module('Integration - Store', function (hooks) {
 
     const record = await store.addRecord({ type: 'planet', name: 'Earth' });
 
-    store.on('update', (data) => {
+    store.on('update', (data: { operations: any }) => {
       assert.deepEqual(
         data.operations,
         {
@@ -836,12 +844,10 @@ module('Integration - Store', function (hooks) {
     const addRecordD = buildTransform(tb.addRecord(recordD));
     const addRecordE = buildTransform(tb.addRecord(recordE));
 
-    let fork;
-
     await store.update(addRecordA);
     await store.update(addRecordB);
 
-    fork = store.fork();
+    const fork = store.fork();
 
     await fork.update(addRecordD);
     await store.update(addRecordC);

@@ -1,5 +1,5 @@
 import { deepMerge } from '@orbit/utils';
-import Application from '@ember/application';
+import type ApplicationInstance from '@ember/application/instance';
 
 export interface OrbitConfig {
   types: {
@@ -37,13 +37,13 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     bucket: 'data-bucket',
     model: 'data-model',
     source: 'data-source',
-    strategy: 'data-strategy'
+    strategy: 'data-strategy',
   },
   collections: {
     buckets: 'data-buckets',
     models: 'data-models',
     sources: 'data-sources',
-    strategies: 'data-strategies'
+    strategies: 'data-strategies',
   },
   services: {
     store: 'store',
@@ -52,7 +52,7 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     schema: 'data-schema',
     keyMap: 'data-key-map',
     normalizer: 'data-normalizer',
-    validator: 'data-validator'
+    validator: 'data-validator',
   },
   skipStoreService: false,
   skipBucketService: false,
@@ -60,20 +60,25 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
   skipSchemaService: false,
   skipKeyMapService: false,
   skipNormalizerService: false,
-  skipValidatorService: false
+  skipValidatorService: false,
 };
 
-interface ApplicationRegistry {
-  __registry__: any;
-}
-
-export function initialize(application: Application & ApplicationRegistry) {
+export function initialize(application: ApplicationInstance) {
   const envConfig = application.resolveRegistration('config:environment') ?? {};
-  // @ts-expect-error TODO: fix this type error
-  const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit ?? {});
+
+  const config = deepMerge(
+    {},
+    DEFAULT_ORBIT_CONFIG,
+    // @ts-expect-error TODO: fix this type error
+    envConfig.orbit ?? {}
+  ) as OrbitConfig;
 
   // Customize pluralization rules
-  const pluralizedTypes = application.__registry__?.resolver?.pluralizedTypes;
+
+  const pluralizedTypes = // @ts-expect-error TODO: fix this type error
+    application.__registry__?.resolver?.pluralizedTypes as
+      | Record<string, string>
+      | undefined;
   if (pluralizedTypes) {
     pluralizedTypes[config.types.bucket] = config.collections.buckets;
     pluralizedTypes[config.types.model] = config.collections.models;
@@ -82,11 +87,11 @@ export function initialize(application: Application & ApplicationRegistry) {
   }
 
   application.register('ember-orbit:config', config, {
-    instantiate: false
+    instantiate: false,
   });
 }
 
 export default {
   name: 'ember-orbit-config',
-  initialize
+  initialize,
 };

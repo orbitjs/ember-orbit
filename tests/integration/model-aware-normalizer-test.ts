@@ -14,6 +14,7 @@ import {
   isStandardRecord,
   ModelAwareNormalizer
 } from 'ember-orbit/-private/utils/model-aware-normalizer';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - ModelAwareNormalizer', function (hooks) {
   setupTest(hooks);
@@ -22,7 +23,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
   let normalizer: ModelAwareNormalizer;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,

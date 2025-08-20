@@ -59,7 +59,7 @@ export default ts.config(
    */
   {
     ignores: [
-      '/blueprints/*/files/',
+      'blueprints/**/files/**',
       'dist/',
       'node_modules/',
       'coverage/',

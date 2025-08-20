@@ -14,7 +14,7 @@ type CoordinatorInjections = {
   strategyNames?: string[];
 } & CoordinatorOptions;
 
-function isFactory(f?: { create: () => {} }): boolean {
+function isFactory(f?: { create: () => any }): boolean {
   return typeof f === 'object' && typeof f?.create === 'function';
 }
 
@@ -29,10 +29,14 @@ export default {
         sourceNames = injections.sourceNames;
         delete injections.sourceNames;
       } else {
-        sourceNames =
-          (app.lookup('ember-orbit:source-names') as Array<string>) ??
-          // @ts-expect-error TODO: fix this type error
-          modulesOfType(app.base.modulePrefix, orbitConfig.collections.sources);
+        sourceNames = ((app.lookup(
+          'ember-orbit:source-names'
+        ) as Array<string>) ??
+          modulesOfType(
+            // @ts-expect-error TODO: fix this type error
+            app.base.modulePrefix,
+            orbitConfig.collections.sources
+          ));
         sourceNames.push('store');
       }
       injections.sources = sourceNames

@@ -5,6 +5,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Rendering', function (hooks) {
   let store: Store;
@@ -14,7 +15,7 @@ module('Rendering', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon };
-    store = createStore(this.owner, models).fork();
+    store = createStore(this.owner as ApplicationInstance, models).fork();
     cache = store.cache;
   });
 

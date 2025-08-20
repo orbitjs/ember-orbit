@@ -5,6 +5,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { waitForSource } from 'ember-orbit/test-support';
 import { buildTransform } from '@orbit/data';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Cache', function (hooks) {
   setupTest(hooks);
@@ -13,7 +14,7 @@ module('Integration - Cache', function (hooks) {
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,
@@ -221,9 +222,9 @@ module('Integration - Cache', function (hooks) {
     assert.ok(foundRecords.includes(jupiter), 'jupiter is included');
   });
 
-  test('#fork - creates a clone of a base cache', async function (assert) {
+  test('#fork - creates a clone of a base cache', function (assert) {
     const forkedCache = cache.fork();
-    const jupiter = await forkedCache.addRecord({
+    const jupiter = forkedCache.addRecord({
       type: 'planet',
       name: 'Jupiter',
       classification: 'gas giant',
@@ -395,7 +396,7 @@ module('Integration - Cache', function (hooks) {
     assert.deepEqual(cache.findRecords('planet').length, 0);
   });
 
-  test('#reset - resets a fork to its base state', async function (assert) {
+  test('#reset - resets a fork to its base state', function (assert) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
@@ -429,16 +430,16 @@ module('Integration - Cache', function (hooks) {
     const addRecordD = buildTransform(tb.addRecord(recordD));
     const addRecordE = buildTransform(tb.addRecord(recordE));
 
-    await cache.update(addRecordA);
-    await cache.update(addRecordB);
+    cache.update(addRecordA);
+    cache.update(addRecordB);
 
     const fork = cache.fork();
 
-    await fork.update(addRecordD);
-    await cache.update(addRecordC);
-    await fork.update(addRecordE);
+    fork.update(addRecordD);
+    cache.update(addRecordC);
+    fork.update(addRecordE);
 
-    await fork.reset();
+    fork.reset();
 
     assert.deepEqual(fork.findRecords('planet').length, 3);
     assert.ok(fork.includesRecord(recordA.type, recordA.id));

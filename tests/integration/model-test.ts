@@ -14,6 +14,7 @@ import { getOwner } from '@ember/application';
 import { setupTest } from 'ember-qunit';
 import { Assertion } from '@orbit/core';
 import { settled } from '@ember/test-helpers';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Model', function (hooks) {
   setupTest(hooks);
@@ -30,7 +31,7 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem
     };
-    store = createStore(this.owner, models).fork();
+    store = createStore(this.owner as ApplicationInstance, models).fork();
     cache = store.cache;
   });
 

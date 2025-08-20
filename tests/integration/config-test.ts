@@ -3,7 +3,12 @@ import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import type { RecordKeyMap, RecordNormalizer, RecordSchema, StandardRecordNormalizer } from '@orbit/records';
+import type {
+  RecordKeyMap,
+  RecordSchema,
+  StandardRecordNormalizer,
+} from '@orbit/records';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Config', function (hooks) {
   setupTest(hooks);
@@ -20,13 +25,13 @@ module('Integration - Config', function (hooks) {
             bucket: 'orbit-bucket',
             model: 'orbit-model',
             source: 'orbit-source',
-            strategy: 'orbit-strategy'
+            strategy: 'orbit-strategy',
           },
           collections: {
             buckets: 'orbit-buckets',
             models: 'orbit-models',
             sources: 'orbit-sources',
-            strategies: 'orbit-strategies'
+            strategies: 'orbit-strategies',
           },
           services: {
             store: 'orbit-store',
@@ -34,20 +39,22 @@ module('Integration - Config', function (hooks) {
             schema: 'data-schema',
             keyMap: 'orbit-key-map',
             normalizer: 'orbit-normalizer',
-            validator: 'orbit-validator'
-          }
-        }
+            validator: 'orbit-validator',
+          },
+        },
       },
       { instantiate: false }
     );
     const models = { planet: Planet, moon: Moon, star: Star };
-    store = createStore(this.owner, models);
+    store = createStore(this.owner as ApplicationInstance, models);
   });
 
-  test('registrations respect config', async function (assert) {
+  test('registrations respect config', function (assert) {
     const schema = this.owner.lookup('service:data-schema') as RecordSchema;
     const keyMap = this.owner.lookup('service:orbit-key-map') as RecordKeyMap;
-    const normalizer = this.owner.lookup('service:orbit-normalizer') as StandardRecordNormalizer;
+    const normalizer = this.owner.lookup(
+      'service:orbit-normalizer'
+    ) as StandardRecordNormalizer;
     const validatorFor = this.owner.lookup('service:orbit-validator');
 
     assert.strictEqual(
@@ -62,7 +69,7 @@ module('Integration - Config', function (hooks) {
     );
     assert.ok(
       // @ts-expect-error TODO: fix this type error
-      this.owner.resolveRegistration('orbit-model:planet'),
+      this.owner.resolveRegistration('orbit-model:planet') as Planet,
       'model factory registration is named from configuration'
     );
     assert.strictEqual(
@@ -96,12 +103,14 @@ module('Integration - Config', function (hooks) {
       'keyMap is injected into normalizer'
     );
     assert.strictEqual(
-      (this.owner.lookup('orbit-source:store') as Store).queryBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).queryBuilder
+        .$normalizer,
       normalizer,
       'normalizer is injected into sources and assigned to query builders'
     );
     assert.strictEqual(
-      (this.owner.lookup('orbit-source:store') as Store).transformBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).transformBuilder
+        .$normalizer,
       normalizer,
       'normalizer is injected into sources and assigned to transform builders'
     );

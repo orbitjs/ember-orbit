@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import type {
   KeyDefinition,
   AttributeDefinition,
   RelationshipDefinition,
-  ModelDefinition
+  ModelDefinition,
 } from '@orbit/records';
 import { clone, deepMerge } from '@orbit/utils';
 
@@ -41,7 +42,7 @@ export function defineAttribute(
   options: AttributeDefinition
 ): void {
   extendModelDefinition(proto, {
-    attributes: { [name]: options }
+    attributes: { [name]: options },
   });
 }
 
@@ -51,7 +52,7 @@ export function defineKey(
   options: KeyDefinition
 ): void {
   extendModelDefinition(proto, {
-    keys: { [name]: options }
+    keys: { [name]: options },
   });
 }
 
@@ -61,6 +62,6 @@ export function defineRelationship(
   options: RelationshipDefinition
 ): void {
   extendModelDefinition(proto, {
-    relationships: { [name]: options }
+    relationships: { [name]: options },
   });
 }

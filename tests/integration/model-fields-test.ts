@@ -11,6 +11,7 @@ import { module, test } from 'qunit';
 
 import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
 import { setupTest } from 'ember-qunit';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - normalizeModelFields', function (hooks) {
   setupTest(hooks);
@@ -18,7 +19,7 @@ module('Integration - normalizeModelFields', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,

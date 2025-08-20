@@ -20,7 +20,7 @@ export default {
     const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
 
     if (injections.models === undefined) {
-      let modelNames;
+      let modelNames: Array<string>;
       if (injections.modelNames) {
         modelNames = injections.modelNames;
         delete injections.modelNames;
@@ -29,7 +29,7 @@ export default {
           app.lookup('ember-orbit:model-names') as Array<string> ??
           getRegisteredModels(
             // @ts-expect-error TODO: fix this type error
-            app.base.modulePrefix,
+            app.base.modulePrefix as string,
             orbitConfig.collections.models
           );
       }
