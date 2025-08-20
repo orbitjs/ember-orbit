@@ -1,7 +1,9 @@
 import { camelize } from '@orbit/serializers';
 import { getOwner } from '@ember/application';
-import { RecordSchema, RecordSchemaSettings } from '@orbit/records';
+import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
 import modulesOfType from '../system/modules-of-type';
+import type ApplicationInstance from '@ember/application/instance';
+import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
 
 function getRegisteredModels(
   prefix: string,
@@ -14,8 +16,8 @@ type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
-    const app = getOwner(injections);
-    const orbitConfig = app.lookup('ember-orbit:config');
+    const app = getOwner(injections) as ApplicationInstance;
+    const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
 
     if (injections.models === undefined) {
       let modelNames;
@@ -24,8 +26,9 @@ export default {
         delete injections.modelNames;
       } else {
         modelNames =
-          app.lookup('ember-orbit:model-names') ??
+          app.lookup('ember-orbit:model-names') as Array<string> ??
           getRegisteredModels(
+            // @ts-expect-error TODO: fix this type error
             app.base.modulePrefix,
             orbitConfig.collections.models
           );
@@ -33,20 +36,22 @@ export default {
 
       injections.models = {};
       for (const name of modelNames) {
+        // @ts-expect-error TODO: fix this type error
         const { keys, attributes, relationships } = app.factoryFor(
           `${orbitConfig.types.model}:${name}`
-        ).class;
+        )!.class;
 
         injections.models[name] = {
           keys,
           attributes,
-          relationships
+          relationships,
         };
       }
     }
 
+    // @ts-expect-error TODO: fix this type error
     injections.version ??= orbitConfig.schemaVersion;
 
     return new RecordSchema(injections);
-  }
+  },
 };

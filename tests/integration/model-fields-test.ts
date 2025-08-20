@@ -51,12 +51,12 @@ module('Integration - normalizeModelFields', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
     assert.deepEqual(
-      normalized.relationships?.moons,
+      normalized.relationships?.['moons'],
       { data: [{ type: 'moon', id: 'callisto' }] },
       'normalized hasMany'
     );
     assert.deepEqual(
-      normalized.relationships?.sun,
+      normalized.relationships?.['sun'],
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
@@ -85,7 +85,7 @@ module('Integration - normalizeModelFields', function (hooks) {
     });
 
     assert.deepEqual(
-      normalized.relationships?.sun,
+      normalized.relationships?.['sun'],
       { data: null },
       'normalized nullable hasOne'
     );
@@ -122,12 +122,12 @@ module('Integration - normalizeModelFields', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: expectedName });
     assert.deepEqual(
-      normalized.relationships?.star,
+      normalized.relationships?.['star'],
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
     assert.deepEqual(
-      normalized.relationships?.bodies,
+      normalized.relationships?.['bodies'],
       {
         data: [
           { type: 'moon', id: 'luna' },

@@ -4,48 +4,49 @@ import { Assertion, Orbit } from '@orbit/core';
 import {
   buildQuery,
   buildTransform,
-  DefaultRequestOptions,
-  FullRequestOptions,
-  FullResponse,
-  RequestOptions
+  type DefaultRequestOptions,
+  type FullRequestOptions,
+  type FullResponse,
+  type RequestOptions
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
 import {
   MemoryCache,
-  MemoryCacheMergeOptions,
-  MemoryCacheSettings
+  type MemoryCacheMergeOptions,
+  type MemoryCacheSettings
 } from '@orbit/memory';
-import {
+import type {
   RecordCacheQueryOptions,
   RecordCacheTransformOptions
 } from '@orbit/record-cache';
 import {
-  InitializedRecord,
-  RecordIdentity,
+  type InitializedRecord,
+  type RecordIdentity,
   RecordKeyMap,
-  RecordOperation,
-  RecordOperationResult,
-  RecordQueryExpressionResult,
-  RecordQueryResult,
+  type RecordOperation,
+  type RecordOperationResult,
+  type RecordQueryExpressionResult,
+  type RecordQueryResult,
   RecordSchema,
-  RecordTransformResult,
-  StandardRecordValidator,
-  UninitializedRecord
+  type RecordTransformResult,
+  type StandardRecordValidator,
+  type UninitializedRecord
 } from '@orbit/records';
-import { StandardValidator, ValidatorForFn } from '@orbit/validators';
+import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 import type Store from './store';
 import LiveQuery from './live-query';
 import Model from './model';
 import ModelFactory from './model-factory';
 import {
   ModelAwareQueryBuilder,
-  ModelAwareQueryOrExpressions,
+  type ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
-  ModelAwareTransformOrOperations,
-  RecordIdentityOrModel
+  type ModelAwareTransformOrOperations,
+  type RecordIdentityOrModel
 } from './utils/model-aware-types';
-import { ModelFields } from './utils/model-fields';
+import type { ModelFields } from './utils/model-fields';
 import recordIdentitySerializer from './utils/record-identity-serializer';
+import type ApplicationInstance from '@ember/application/instance';
 
 const { assert, deprecate } = Orbit;
 
@@ -72,7 +73,7 @@ export default class Cache {
   });
 
   constructor(settings: CacheSettings) {
-    const owner = getOwner(settings);
+    const owner = getOwner(settings) as ApplicationInstance;
     setOwner(this, owner);
 
     this.#sourceCache = settings.sourceCache;
@@ -165,7 +166,7 @@ export default class Cache {
     > = {}
   ): Cache {
     const forkedCache = this.#sourceCache.fork(settings);
-    const injections = getOwner(this).ownerInjection();
+    const injections = (getOwner(this) as ApplicationInstance).ownerInjection();
 
     return new Cache({
       ...injections,
@@ -217,7 +218,7 @@ export default class Cache {
         forkedCache.sourceCache,
         options as DefaultRequestOptions<RequestOptions> &
           MemoryCacheMergeOptions
-      ) as RecordTransformResult<InitializedRecord>;
+      );
       if (response !== undefined) {
         response = this._lookupTransformResult(
           response,
@@ -331,7 +332,7 @@ export default class Cache {
       relationship
     );
     if (relatedRecord) {
-      return this.lookup(relatedRecord) as Model;
+      return this.lookup(relatedRecord);
     } else {
       return relatedRecord;
     }
@@ -352,7 +353,7 @@ export default class Cache {
       relationship
     );
     if (relatedRecords) {
-      return relatedRecords.map((r) => this.lookup(r) as Model);
+      return relatedRecords.map((r) => this.lookup(r));
     } else {
       return undefined;
     }
@@ -540,7 +541,7 @@ export default class Cache {
     return this.query(
       (q) => q.findRecords(typeOrIdentities),
       options
-    ) as Model[];
+    );
   }
 
   /**
@@ -688,9 +689,9 @@ export default class Cache {
 
       switch (operation.op) {
         case 'updateRecord':
-          for (let properties of [attributes, keys, relationships]) {
+          for (const properties of [attributes, keys, relationships]) {
             if (properties) {
-              for (let property of Object.keys(properties)) {
+              for (const property of Object.keys(properties)) {
                 if (
                   Object.prototype.hasOwnProperty.call(properties, property)
                 ) {

@@ -97,12 +97,12 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: 'Jupiter' });
     assert.deepEqual(
-      normalized.relationships?.moons,
+      normalized.relationships?.['moons'],
       { data: [{ type: 'moon', id: 'callisto' }] },
       'normalized hasMany'
     );
     assert.deepEqual(
-      normalized.relationships?.sun,
+      normalized.relationships?.['sun'],
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
@@ -139,12 +139,12 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
     assert.deepEqual(normalized.keys, undefined, 'normalized keys');
     assert.deepEqual(normalized.attributes, { name: expectedName });
     assert.deepEqual(
-      normalized.relationships?.star,
+      normalized.relationships?.['star'],
       { data: { type: 'star', id: 'sun' } },
       'normalized hasOne'
     );
     assert.deepEqual(
-      normalized.relationships?.bodies,
+      normalized.relationships?.['bodies'],
       {
         data: [
           { type: 'moon', id: 'luna' },
@@ -164,7 +164,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       }
     });
 
-    assert.deepEqual(normalized.attributes?.name, 'Jupiter');
+    assert.deepEqual(normalized.attributes?.['name'], 'Jupiter');
   });
 
   test('#normalizeRecord - pre-normalized relationship + undefined attributes', function (assert) {
@@ -178,6 +178,6 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
       }
     });
 
-    assert.deepEqual(normalized.relationships?.sun, { data: null });
+    assert.deepEqual(normalized.relationships?.['sun'], { data: null });
   });
 });

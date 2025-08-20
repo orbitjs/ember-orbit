@@ -5,6 +5,9 @@ const fs = require('fs');
 
 module.exports = {
   name: require('./package').name,
+  options: {
+    'ember-cli-babel': { enableTypeScriptTransform: true },
+  },
   included() {
     const app = this._findHost();
     const addonConfig = app.project.config(app.env)['orbit'] || {};
@@ -23,7 +26,7 @@ module.exports = {
 
     const modelsDirectory = path.join(app.project.root, modelsPath);
 
-    /* eslint-disable ember/no-invalid-debug-function-arguments */
+     
     assert(
       fs.existsSync(modelsDirectory),
       `[ember-orbit] The models directory is missing: "${modelsDirectory}". You can run 'ember g ember-orbit' to initialize ember-orbit and create this directory.`

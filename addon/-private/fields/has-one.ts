@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { HasOneRelationshipDefinition } from '@orbit/records';
+import type { HasOneRelationshipDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getHasOneCache } from '../utils/property-cache';

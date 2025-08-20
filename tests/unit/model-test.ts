@@ -29,45 +29,39 @@ module('Unit - Model', function () {
     });
 
     test('#keys returns no keys by default', function (assert) {
-      var keys, names;
-
-      keys = Planet.keys;
-      names = Object.keys(keys);
+      const keys = Planet.keys;
+      const names = Object.keys(keys);
       assert.strictEqual(names.length, 0);
     });
 
     test('#keys returns defined custom secondary keys', function (assert) {
-      var keys, names;
-
       class Planet2 extends Planet {
         @key() remoteId?: string;
       }
 
-      keys = Planet2.keys;
-      names = Object.keys(keys);
+      const keys = Planet2.keys;
+      const names = Object.keys(keys);
       assert.strictEqual(names.length, 1);
       assert.strictEqual(names[0], 'remoteId');
 
-      assert.deepEqual(Planet2.definition.keys?.remoteId, {});
+      assert.deepEqual(Planet2.definition.keys?.['remoteId'], {});
     });
 
     test('#attributes returns defined attributes', function (assert) {
-      var attributes, keys;
-
-      attributes = Planet.attributes;
-      keys = Object.keys(attributes);
+      const attributes = Planet.attributes;
+      const keys = Object.keys(attributes);
       assert.strictEqual(keys.length, 2);
       assert.strictEqual(keys[0], 'name');
       assert.strictEqual(keys[1], 'classification');
 
       assert.deepEqual(Planet.definition.attributes, {
         name: { type: 'string' },
-        classification: { type: 'string' }
+        classification: { type: 'string' },
       });
     });
 
     test('#relationships returns defined relationships', function (assert) {
-      var relationships, keys;
+      let relationships, keys;
 
       relationships = Planet.relationships;
       keys = Object.keys(relationships);
@@ -95,19 +89,19 @@ module('Unit - Model', function () {
       assert.deepEqual(Planet.definition, {
         attributes: {
           name: { type: 'string' },
-          classification: { type: 'string' }
+          classification: { type: 'string' },
         },
         relationships: {
           sun: {
             kind: 'hasOne',
-            type: 'star'
+            type: 'star',
           },
           moons: {
             kind: 'hasMany',
             type: 'moon',
-            inverse: 'planet'
-          }
-        }
+            inverse: 'planet',
+          },
+        },
       });
     });
   });
@@ -134,19 +128,19 @@ module('Unit - Model', function () {
       assert.deepEqual(Planet.definition, {
         attributes: {
           name: { type: 'string' },
-          classification: { type: 'string' }
+          classification: { type: 'string' },
         },
         relationships: {
           sun: {
             kind: 'hasOne',
-            type: 'star'
+            type: 'star',
           },
           moons: {
             kind: 'hasMany',
             type: 'moon',
-            inverse: 'planet'
-          }
-        }
+            inverse: 'planet',
+          },
+        },
       });
     });
   });

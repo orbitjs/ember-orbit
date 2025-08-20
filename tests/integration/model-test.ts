@@ -1,4 +1,4 @@
-/* eslint-disable ember/no-classic-classes */
+ 
 import { Store, Cache } from 'ember-orbit';
 import {
   Planet,
@@ -446,9 +446,9 @@ module('Integration - Model', function (hooks) {
       type: 'planet',
       name: 'Jupiter'
     });
-    let recordData = record.$getData();
+    const recordData = record.$getData();
     assert.strictEqual(
-      recordData?.attributes?.name,
+      recordData?.attributes?.['name'],
       'Jupiter',
       'returns record data (resource)'
     );
@@ -459,7 +459,7 @@ module('Integration - Model', function (hooks) {
       type: 'planet',
       id: 'jupiter'
     });
-    let recordData = record.$getData();
+    const recordData = record.$getData();
     assert.strictEqual(recordData, undefined, 'returns undefined');
   });
 

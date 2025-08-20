@@ -1,44 +1,45 @@
 import { getOwner, setOwner } from '@ember/application';
 import { associateDestroyableChild, destroy } from '@ember/destroyable';
-import { Assertion, Listener, Log, Orbit, TaskQueue } from '@orbit/core';
+import { Assertion, type Listener, Log, Orbit, TaskQueue } from '@orbit/core';
 import {
   buildQuery,
   buildTransform,
-  DefaultRequestOptions,
-  FullRequestOptions,
-  FullResponse,
-  RequestOptions,
-  TransformBuilderFunc
+  type DefaultRequestOptions,
+  type FullRequestOptions,
+  type FullResponse,
+  type RequestOptions,
+  type TransformBuilderFunc,
 } from '@orbit/data';
 import MemorySource, {
-  MemorySourceMergeOptions,
-  MemorySourceSettings
+  type MemorySourceMergeOptions,
+  type MemorySourceSettings,
 } from '@orbit/memory';
-import { RecordCacheQueryOptions } from '@orbit/record-cache';
+import type { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
-  InitializedRecord,
+  type InitializedRecord,
   RecordKeyMap,
-  RecordOperation,
-  RecordQueryResult,
+  type RecordOperation,
+  type RecordQueryResult,
   RecordSchema,
-  RecordSourceQueryOptions,
-  RecordTransform,
-  RecordTransformResult,
-  StandardRecordValidator,
-  UninitializedRecord
+  type RecordSourceQueryOptions,
+  type RecordTransform,
+  type RecordTransformResult,
+  type StandardRecordValidator,
+  type UninitializedRecord,
 } from '@orbit/records';
-import { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import Cache, { CacheSettings } from './cache';
+import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
+import Cache, { type CacheSettings } from './cache';
 import LiveQuery from './live-query';
 import Model from './model';
 import {
   ModelAwareQueryBuilder,
-  ModelAwareQueryOrExpressions,
+  type ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
-  ModelAwareTransformOrOperations,
-  RecordIdentityOrModel
+  type ModelAwareTransformOrOperations,
+  type RecordIdentityOrModel,
 } from './utils/model-aware-types';
-import { ModelFields } from './utils/model-fields';
+import type { ModelFields } from './utils/model-fields';
+import type ApplicationInstance from '@ember/application/instance';
 
 const { assert, deprecate } = Orbit;
 
@@ -73,12 +74,12 @@ export default class Store {
     this.#source = settings.source;
     this.#base = settings.base;
 
-    const owner = getOwner(settings);
+    const owner = getOwner(settings) as ApplicationInstance;
     setOwner(this, owner);
 
     const cacheSettings: CacheSettings = {
       sourceCache: this.source.cache,
-      store: this
+      store: this,
     };
     setOwner(cacheSettings, owner);
     this.#cache = new Cache(cacheSettings);
@@ -194,12 +195,12 @@ export default class Store {
     settings.cacheSettings.debounceLiveQueries ??= false;
 
     const forkedSource = this.source.fork(settings);
-    const injections = getOwner(this).ownerInjection();
+    const injections = (getOwner(this) as ApplicationInstance).ownerInjection();
 
     return new Store({
       ...injections,
       source: forkedSource,
-      base: this
+      base: this,
     });
   }
 
@@ -239,7 +240,7 @@ export default class Store {
         );
         response = {
           ...response,
-          data
+          data,
         };
       }
       return response as FullResponse<RequestData, unknown, RecordOperation>;
@@ -248,7 +249,7 @@ export default class Store {
         forkedStore.source,
         options as DefaultRequestOptions<RequestOptions> &
           MemorySourceMergeOptions
-      )) as RecordTransformResult<InitializedRecord>;
+      ));
       if (response !== undefined) {
         response = this.cache._lookupTransformResult(
           response,
@@ -328,7 +329,7 @@ export default class Store {
         data: this.cache._lookupQueryResult(
           response.data,
           Array.isArray(query.expressions)
-        )
+        ),
       } as FullResponse<RequestData, undefined, RecordOperation>;
     } else {
       const response = await this.source.query(query);
@@ -383,13 +384,12 @@ export default class Store {
       'Store#updateRecordFields does not support the `fullResponse` option. Call `store.update(..., { fullResponse: true })` instead.',
       options?.fullResponse === undefined
     );
-    const { type, id } = this.transformBuilder.$normalizeRecordIdentity(
-      identity
-    );
+    const { type, id } =
+      this.transformBuilder.$normalizeRecordIdentity(identity);
     const properties = {
       type,
       id,
-      ...fields
+      ...fields,
     };
     return await this.update((t) => t.updateRecord(properties), options);
   }
@@ -413,7 +413,7 @@ export default class Store {
    */
   find(
     type: string,
-    id?: string | undefined,
+    id?: string  ,
     options?: DefaultRequestOptions<RecordCacheQueryOptions>
   ): Promise<Model | Model[] | undefined> {
     deprecate(
@@ -573,7 +573,7 @@ export default class Store {
     );
     if (options?.fullResponse) {
       let response = await this.source.update(transform, {
-        fullResponse: true
+        fullResponse: true,
       });
       if (response.data !== undefined) {
         const data = this.cache._lookupTransformResult(
@@ -582,7 +582,7 @@ export default class Store {
         );
         response = {
           ...response,
-          data
+          data,
         };
       }
       return response as FullResponse<RequestData, unknown, RecordOperation>;

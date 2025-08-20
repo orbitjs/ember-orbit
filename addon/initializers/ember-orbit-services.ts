@@ -1,6 +1,6 @@
 import { Orbit } from '@orbit/core';
 import Application from '@ember/application';
-import { OrbitConfig } from './ember-orbit-config';
+import type { OrbitConfig } from './ember-orbit-config';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
@@ -12,9 +12,9 @@ import ValidatorFactory from '../-private/factories/validator-factory';
 const { deprecate } = Orbit;
 
 export function initialize(application: Application) {
-  let orbitConfig: OrbitConfig = application.resolveRegistration(
+  const orbitConfig: OrbitConfig = application.resolveRegistration(
     'ember-orbit:config'
-  );
+  ) as OrbitConfig;
 
   if (!orbitConfig.skipKeyMapService) {
     // Register a keyMap service

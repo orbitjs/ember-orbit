@@ -1,4 +1,4 @@
-import { MemorySource, MemorySourceSettings } from '@orbit/memory';
+import { MemorySource, type MemorySourceSettings } from '@orbit/memory';
 import { applyStandardSourceInjections } from '../utils/standard-injections';
 
 export default {

@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { AttributeDefinition } from '@orbit/records';
+import type { AttributeDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getAttributeCache } from '../utils/property-cache';

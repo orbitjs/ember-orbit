@@ -1,7 +1,7 @@
 import { Assertion, Orbit } from '@orbit/core';
-import { Dict } from '@orbit/utils';
-import { DefaultRequestOptions, RequestOptions } from '@orbit/data';
-import {
+import type { Dict } from '@orbit/utils';
+import type { DefaultRequestOptions, RequestOptions } from '@orbit/data';
+import type {
   RecordIdentity,
   KeyDefinition,
   AttributeDefinition,
@@ -181,7 +181,7 @@ export default class Model {
       relationship
     );
     if (relatedRecord) {
-      return cache.lookup(relatedRecord) as Model;
+      return cache.lookup(relatedRecord);
     } else {
       return relatedRecord;
     }

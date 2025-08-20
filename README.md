@@ -45,9 +45,9 @@ relationships between Orbit sources. In this way, you can install any Orbit
 
 ## Compatibility
 
-- Ember.js v3.24 or above
-- Ember CLI v3.24 or above
-- Node.js v12 or above
+- Ember.js v3.28 or above
+- Ember CLI v3.28 or above
+- Node.js v20 or above
 
 ## Status
 

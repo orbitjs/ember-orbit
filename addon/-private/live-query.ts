@@ -2,7 +2,7 @@ import { Orbit } from '@orbit/core';
 import { tracked } from '@glimmer/tracking';
 import { notifyPropertyChange } from '@ember/object';
 import { SyncLiveQuery } from '@orbit/record-cache';
-import { RecordQuery, RecordQueryResult } from '@orbit/records';
+import type { RecordQuery, RecordQueryResult } from '@orbit/records';
 import {
   registerDestructor,
   associateDestroyableChild,

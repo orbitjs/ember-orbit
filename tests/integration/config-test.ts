@@ -3,6 +3,7 @@ import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import type { RecordKeyMap, RecordNormalizer, RecordSchema, StandardRecordNormalizer } from '@orbit/records';
 
 module('Integration - Config', function (hooks) {
   setupTest(hooks);
@@ -44,9 +45,9 @@ module('Integration - Config', function (hooks) {
   });
 
   test('registrations respect config', async function (assert) {
-    const schema = this.owner.lookup('service:data-schema');
-    const keyMap = this.owner.lookup('service:orbit-key-map');
-    const normalizer = this.owner.lookup('service:orbit-normalizer');
+    const schema = this.owner.lookup('service:data-schema') as RecordSchema;
+    const keyMap = this.owner.lookup('service:orbit-key-map') as RecordKeyMap;
+    const normalizer = this.owner.lookup('service:orbit-normalizer') as StandardRecordNormalizer;
     const validatorFor = this.owner.lookup('service:orbit-validator');
 
     assert.strictEqual(
@@ -60,6 +61,7 @@ module('Integration - Config', function (hooks) {
       'store service registration is named from configuration'
     );
     assert.ok(
+      // @ts-expect-error TODO: fix this type error
       this.owner.resolveRegistration('orbit-model:planet'),
       'model factory registration is named from configuration'
     );
@@ -69,17 +71,17 @@ module('Integration - Config', function (hooks) {
       'source registation is named from configuration'
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').schema,
+      (this.owner.lookup('orbit-source:store') as Store).schema,
       schema,
       'schema is injected into sources'
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').keyMap,
+      (this.owner.lookup('orbit-source:store') as Store).keyMap,
       keyMap,
       'keyMap is injected into sources'
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').validatorFor,
+      (this.owner.lookup('orbit-source:store') as Store).validatorFor,
       validatorFor,
       'validatorFor is injected into sources'
     );
@@ -94,12 +96,12 @@ module('Integration - Config', function (hooks) {
       'keyMap is injected into normalizer'
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').queryBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).queryBuilder.$normalizer,
       normalizer,
       'normalizer is injected into sources and assigned to query builders'
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').transformBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).transformBuilder.$normalizer,
       normalizer,
       'normalizer is injected into sources and assigned to transform builders'
     );

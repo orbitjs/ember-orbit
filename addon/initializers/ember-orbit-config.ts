@@ -69,6 +69,7 @@ interface ApplicationRegistry {
 
 export function initialize(application: Application & ApplicationRegistry) {
   const envConfig = application.resolveRegistration('config:environment') ?? {};
+  // @ts-expect-error TODO: fix this type error
   const config = deepMerge({}, DEFAULT_ORBIT_CONFIG, envConfig.orbit ?? {});
 
   // Customize pluralization rules

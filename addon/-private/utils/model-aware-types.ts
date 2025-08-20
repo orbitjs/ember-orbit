@@ -1,15 +1,15 @@
-import { QueryOrExpressions, TransformOrOperations } from '@orbit/data';
+import type { QueryOrExpressions, TransformOrOperations } from '@orbit/data';
 import {
-  RecordIdentity,
-  RecordKeyValue,
-  RecordOperation,
+  type RecordIdentity,
+  type RecordKeyValue,
+  type RecordOperation,
   RecordQueryBuilder,
-  RecordQueryExpression,
+  type RecordQueryExpression,
   RecordTransformBuilder,
-  UninitializedRecord
+  type UninitializedRecord
 } from '@orbit/records';
 import { Model } from 'ember-orbit';
-import { ModelFields } from './model-fields';
+import type { ModelFields } from './model-fields';
 
 export type RecordIdentityOrModel = RecordIdentity | RecordKeyValue | Model;
 

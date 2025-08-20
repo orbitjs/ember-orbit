@@ -16,7 +16,7 @@ module('Integration - Cache', function (hooks) {
     store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
-      star: Star
+      star: Star,
     }).fork();
     cache = store.cache;
   });
@@ -39,13 +39,13 @@ module('Integration - Cache', function (hooks) {
     const retrievedRecordData = cache.getRecordData('planet', jupiter.id);
     assert.ok(retrievedRecordData, 'retrieved record data');
     assert.strictEqual(
-      retrievedRecordData!.attributes!.name,
+      retrievedRecordData!.attributes!['name'],
       'Jupiter',
       'retrieved record data has attribute value'
     );
   });
 
-  test('#getRecordData - missing record', async function (assert) {
+  test('#getRecordData - missing record', function (assert) {
     assert.strictEqual(cache.getRecordData('planet', 'fake'), undefined);
   });
 
@@ -54,7 +54,7 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(cache.includesRecord('planet', jupiter.id), true);
   });
 
-  test('#includesRecord - missing record', async function (assert) {
+  test('#includesRecord - missing record', function (assert) {
     assert.strictEqual(cache.includesRecord('planet', 'fake'), false);
   });
 
@@ -63,19 +63,19 @@ module('Integration - Cache', function (hooks) {
       type: 'planet',
       id: '123',
       name: 'Earth',
-      remoteId: 'p01'
+      remoteId: 'p01',
     });
     const id = cache.recordIdFromKey('planet', 'remoteId', 'p01');
     assert.strictEqual(id, '123');
   });
 
-  test('#recordIdFromKey - generates a record id based on an unknown key', async function (assert) {
+  test('#recordIdFromKey - generates a record id based on an unknown key', function (assert) {
     cache.schema.generateId = () => '123';
     const id = cache.recordIdFromKey('planet', 'remoteId', 'p01');
     assert.strictEqual(id, '123');
   });
 
-  test('#update - addRecord', async function (assert) {
+  test('#update - addRecord', function (assert) {
     const earth = cache.update<Planet>((t) =>
       t.addRecord({ type: 'planet', name: 'Earth' })
     );
@@ -83,18 +83,18 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(earth.name, 'Earth');
   });
 
-  test('#update - [addRecord]', async function (assert) {
+  test('#update - [addRecord]', function (assert) {
     const [earth] = cache.update<[Planet]>((t) => [
-      t.addRecord({ type: 'planet', name: 'Earth' })
+      t.addRecord({ type: 'planet', name: 'Earth' }),
     ]);
     assert.strictEqual(cache.lookup(earth), earth);
     assert.strictEqual(earth.name, 'Earth');
   });
 
-  test('#update - [addRecord, addRecord]', async function (assert) {
+  test('#update - [addRecord, addRecord]', function (assert) {
     const [earth, jupiter] = cache.update<[Planet, Planet]>((t) => [
       t.addRecord({ type: 'planet', name: 'Earth' }),
-      t.addRecord({ type: 'planet', name: 'Jupiter' })
+      t.addRecord({ type: 'planet', name: 'Jupiter' }),
     ]);
     assert.strictEqual(cache.lookup(earth), earth);
     assert.strictEqual(earth.name, 'Earth');
@@ -102,24 +102,24 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(jupiter.name, 'Jupiter');
   });
 
-  test('#addRecord', async function (assert) {
+  test('#addRecord', function (assert) {
     const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
     assert.strictEqual(cache.lookup(earth), earth);
     assert.strictEqual(earth.name, 'Earth');
   });
 
-  test('#updateRecord', async function (assert) {
+  test('#updateRecord', function (assert) {
     const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
     cache.updateRecord({
       type: 'planet',
       id: earth.id,
-      name: 'Mother Earth'
+      name: 'Mother Earth',
     });
     assert.strictEqual(cache.lookup(earth), earth);
     assert.strictEqual(earth.name, 'Mother Earth');
   });
 
-  test('#removeRecord', async function (assert) {
+  test('#removeRecord', function (assert) {
     const earth = cache.addRecord<Planet>({ type: 'planet', name: 'Earth' });
     cache.removeRecord(earth);
     assert.ok(earth.$isDisconnected, 'model is disconnected');
@@ -154,11 +154,11 @@ module('Integration - Cache', function (hooks) {
   test('#query - records', async function (assert) {
     const earth = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Earth'
+      name: 'Earth',
     });
     const jupiter = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Jupiter'
+      name: 'Jupiter',
     });
     const foundRecords = cache.query<Planet[]>((q) => q.findRecords('planet'));
     assert.strictEqual(foundRecords.length, 2, 'two records found');
@@ -169,20 +169,20 @@ module('Integration - Cache', function (hooks) {
   test('#query - records - multiple expressions', async function (assert) {
     const earth = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Earth'
+      name: 'Earth',
     });
     const jupiter = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Jupiter'
+      name: 'Jupiter',
     });
     const io = await store.addRecord<Moon>({ type: 'moon', name: 'Io' });
     const callisto = await store.addRecord<Moon>({
       type: 'moon',
-      name: 'Callisto'
+      name: 'Callisto',
     });
     const [planets, moons] = cache.query<[Planet[], Moon[]]>((q) => [
       q.findRecords('planet'),
-      q.findRecords('moon')
+      q.findRecords('moon'),
     ]);
     assert.strictEqual(planets.length, 2, 'two records found');
     assert.ok(planets.includes(earth), 'earth is included');
@@ -195,7 +195,7 @@ module('Integration - Cache', function (hooks) {
   test('#query - filter', async function (assert) {
     const earth = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Earth'
+      name: 'Earth',
     });
     await store.addRecord<Planet>({ type: 'planet', name: 'Jupiter' });
     const foundRecords = cache.query<Planet[]>((q) =>
@@ -226,7 +226,7 @@ module('Integration - Cache', function (hooks) {
     const jupiter = await forkedCache.addRecord({
       type: 'planet',
       name: 'Jupiter',
-      classification: 'gas giant'
+      classification: 'gas giant',
     });
 
     assert.strictEqual(forkedCache.base, cache);
@@ -242,7 +242,7 @@ module('Integration - Cache', function (hooks) {
     );
   });
 
-  test('#fork - inherits properties from a base cache', async function (assert) {
+  test('#fork - inherits properties from a base cache', function (assert) {
     const forkedCache = cache.fork();
     assert.strictEqual(forkedCache.base, cache);
     assert.strictEqual(forkedCache.keyMap, cache.keyMap);
@@ -252,19 +252,19 @@ module('Integration - Cache', function (hooks) {
     assert.strictEqual(forkedCache.validatorFor, cache.validatorFor);
   });
 
-  test('#fork - can override properties from a base cache', async function (assert) {
+  test('#fork - can override properties from a base cache', function (assert) {
     const forkedCache = cache.fork({ autoValidate: false });
     assert.notStrictEqual(cache.validatorFor, undefined);
     assert.strictEqual(forkedCache.validatorFor, undefined);
   });
 
-  test('#merge - merges a forked cache back into a base store', async function (assert) {
+  test('#merge - merges a forked cache back into a base store', function (assert) {
     const forkedCache = cache.fork();
     const jupiter = forkedCache.update<Planet>((t) =>
       t.addRecord({
         type: 'planet',
         name: 'Jupiter',
-        classification: 'gas giant'
+        classification: 'gas giant',
       })
     );
 
@@ -286,18 +286,18 @@ module('Integration - Cache', function (hooks) {
     );
   });
 
-  test('#merge - can return a full response', async function (assert) {
+  test('#merge - can return a full response', function (assert) {
     const forkedCache = cache.fork();
     const jupiter = forkedCache.update<Planet>((t) =>
       t.addRecord({
         type: 'planet',
         name: 'Jupiter',
-        classification: 'gas giant'
+        classification: 'gas giant',
       })
     );
 
     const response = cache.merge<[Planet]>(forkedCache, {
-      fullResponse: true
+      fullResponse: true,
     });
 
     const [jupiterInCache] = response.data as [Planet];
@@ -318,31 +318,31 @@ module('Integration - Cache', function (hooks) {
     );
   });
 
-  test('#rebase - maintains only unique transforms in fork', async function (assert) {
+  test('#rebase - maintains only unique transforms in fork', function (assert) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
-      attributes: { name: 'Jupiter' }
+      attributes: { name: 'Jupiter' },
     };
     const recordB = {
       id: 'saturn',
       type: 'planet',
-      attributes: { name: 'Saturn' }
+      attributes: { name: 'Saturn' },
     };
     const recordC = {
       id: 'pluto',
       type: 'planet',
-      attributes: { name: 'Pluto' }
+      attributes: { name: 'Pluto' },
     };
     const recordD = {
       id: 'neptune',
       type: 'planet',
-      attributes: { name: 'Neptune' }
+      attributes: { name: 'Neptune' },
     };
     const recordE = {
       id: 'uranus',
       type: 'planet',
-      attributes: { name: 'Uranus' }
+      attributes: { name: 'Uranus' },
     };
 
     const tb = cache.transformBuilder;
@@ -371,16 +371,16 @@ module('Integration - Cache', function (hooks) {
     assert.ok(fork.includesRecord(recordE.type, recordE.id));
   });
 
-  test('#reset - clears the state of a cache without a base', async function (assert) {
+  test('#reset - clears the state of a cache without a base', function (assert) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
-      attributes: { name: 'Jupiter' }
+      attributes: { name: 'Jupiter' },
     };
     const recordB = {
       id: 'saturn',
       type: 'planet',
-      attributes: { name: 'Saturn' }
+      attributes: { name: 'Saturn' },
     };
 
     const tb = cache.transformBuilder;
@@ -399,27 +399,27 @@ module('Integration - Cache', function (hooks) {
     const recordA = {
       id: 'jupiter',
       type: 'planet',
-      attributes: { name: 'Jupiter' }
+      attributes: { name: 'Jupiter' },
     };
     const recordB = {
       id: 'saturn',
       type: 'planet',
-      attributes: { name: 'Saturn' }
+      attributes: { name: 'Saturn' },
     };
     const recordC = {
       id: 'pluto',
       type: 'planet',
-      attributes: { name: 'Pluto' }
+      attributes: { name: 'Pluto' },
     };
     const recordD = {
       id: 'neptune',
       type: 'planet',
-      attributes: { name: 'Neptune' }
+      attributes: { name: 'Neptune' },
     };
     const recordE = {
       id: 'uranus',
       type: 'planet',
-      attributes: { name: 'Uranus' }
+      attributes: { name: 'Uranus' },
     };
 
     const tb = cache.transformBuilder;
@@ -450,7 +450,7 @@ module('Integration - Cache', function (hooks) {
   test('#find (deprecated) - by type and id', async function (assert) {
     const earth = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Earth'
+      name: 'Earth',
     });
     const foundRecord = cache.find('planet', earth.id);
     assert.strictEqual(foundRecord, earth, 'exact match');
@@ -460,11 +460,11 @@ module('Integration - Cache', function (hooks) {
   test('#find (deprecated) - by type', async function (assert) {
     const earth = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Earth'
+      name: 'Earth',
     });
     const jupiter = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Jupiter'
+      name: 'Jupiter',
     });
 
     const foundRecords = cache.find('planet') as Planet[];
@@ -484,7 +484,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   // deprecated
-  test('#peekRecord (deprecated) - missing record', async function (assert) {
+  test('#peekRecord (deprecated) - missing record', function (assert) {
     assert.strictEqual(cache.peekRecord('planet', 'fake'), undefined);
   });
 
@@ -493,7 +493,7 @@ module('Integration - Cache', function (hooks) {
     const jupiter = await store.addRecord({
       type: 'planet',
       name: 'Jupiter',
-      remoteId: 'p01'
+      remoteId: 'p01',
     });
     assert.strictEqual(
       cache.peekRecordByKey('planet', 'remoteId', 'p01'),
@@ -503,7 +503,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   // deprecated
-  test('#peekRecordByKey (deprecated) - missing record', async function (assert) {
+  test('#peekRecordByKey (deprecated) - missing record', function (assert) {
     assert.strictEqual(
       cache.keyMap!.keyToId('planet', 'remoteId', 'p01'),
       undefined,
@@ -539,7 +539,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   // deprecated
-  test('#peekKey (deprecated) - missing record', async function (assert) {
+  test('#peekKey (deprecated) - missing record', function (assert) {
     assert.strictEqual(
       cache.peekKey({ type: 'planet', id: 'fake' }, 'remoteId'),
       undefined
@@ -559,7 +559,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   // deprecated
-  test('#peekAttribute (deprecated) - missing record', async function (assert) {
+  test('#peekAttribute (deprecated) - missing record', function (assert) {
     assert.strictEqual(
       cache.peekAttribute({ type: 'planet', id: 'fake' }, 'name'),
       undefined
@@ -576,11 +576,11 @@ module('Integration - Cache', function (hooks) {
   test('#peekRelatedRecord (deprecated) - existing record + relationship', async function (assert) {
     const jupiter = await store.addRecord<Planet>({
       type: 'planet',
-      name: 'Jupiter'
+      name: 'Jupiter',
     });
     const callisto = await store.addRecord<Moon>({
       type: 'moon',
-      name: 'Callisto'
+      name: 'Callisto',
     });
     callisto.planet = jupiter;
     await waitForSource(store);
@@ -588,7 +588,7 @@ module('Integration - Cache', function (hooks) {
   });
 
   // deprecated
-  test('#peekRelatedRecord (deprecated) - missing record', async function (assert) {
+  test('#peekRelatedRecord (deprecated) - missing record', function (assert) {
     assert.strictEqual(
       cache.peekRelatedRecord({ type: 'planet', id: 'fake' }, 'planet'),
       undefined
@@ -600,7 +600,7 @@ module('Integration - Cache', function (hooks) {
     const callisto = await store.addRecord({
       type: 'moon',
       name: 'Callisto',
-      planet: null
+      planet: null,
     });
     assert.strictEqual(cache.peekRelatedRecord(callisto, 'planet'), null);
   });
@@ -618,16 +618,16 @@ module('Integration - Cache', function (hooks) {
     const jupiter = await store.addRecord({
       type: 'planet',
       name: 'Jupiter',
-      moons: [callisto, europa]
+      moons: [callisto, europa],
     });
     assert.deepEqual(cache.peekRelatedRecords(jupiter, 'moons'), [
       callisto,
-      europa
+      europa,
     ]);
   });
 
   // deprecated
-  test('#peekRelatedRecords (deprecated) - missing record', async function (assert) {
+  test('#peekRelatedRecords (deprecated) - missing record', function (assert) {
     assert.strictEqual(
       cache.peekRelatedRecords({ type: 'planet', id: 'fake' }, 'moons'),
       undefined
@@ -639,7 +639,7 @@ module('Integration - Cache', function (hooks) {
     const jupiter = await store.addRecord({
       type: 'planet',
       name: 'Jupiter',
-      moons: []
+      moons: [],
     });
     assert.deepEqual(cache.peekRelatedRecords(jupiter, 'moons'), []);
   });
@@ -648,7 +648,7 @@ module('Integration - Cache', function (hooks) {
   test('#peekRelatedRecords (deprecated) - existing record, missing relationship', async function (assert) {
     const jupiter = await store.addRecord({
       type: 'planet',
-      name: 'Jupiter'
+      name: 'Jupiter',
     });
     assert.strictEqual(cache.peekRelatedRecords(jupiter, 'moons'), undefined);
   });
@@ -659,14 +659,14 @@ module('Integration - Cache', function (hooks) {
     const retrievedRecordData = cache.peekRecordData('planet', jupiter.id);
     assert.ok(retrievedRecordData, 'retrieved record data');
     assert.strictEqual(
-      retrievedRecordData!.attributes!.name,
+      retrievedRecordData!.attributes!['name'],
       'Jupiter',
       'retrieved record data has attribute value'
     );
   });
 
   // deprecated
-  test('peekRecordData (deprecated) - missing record', async function (assert) {
+  test('peekRecordData (deprecated) - missing record', function (assert) {
     assert.strictEqual(cache.peekRecordData('planet', 'fake'), undefined);
   });
 });

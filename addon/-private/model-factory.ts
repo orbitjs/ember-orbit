@@ -1,9 +1,11 @@
 import Orbit from '@orbit/core';
 import { getOwner } from '@ember/application';
-import { Dict } from '@orbit/utils';
-import { RecordIdentity, cloneRecordIdentity } from '@orbit/records';
+import type { Dict } from '@orbit/utils';
+import { type RecordIdentity, cloneRecordIdentity } from '@orbit/records';
 import Cache from './cache';
-import Model, { ModelSettings } from './model';
+import Model, { type ModelSettings } from './model';
+import type ApplicationInstance from '@ember/application/instance';
+import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
 
 const { assert } = Orbit;
 
@@ -25,7 +27,7 @@ export default class ModelFactory {
 
     return modelFactory.create({
       identity: cloneRecordIdentity(identity),
-      cache: this.#cache
+      cache: this.#cache,
     });
   }
 
@@ -33,8 +35,8 @@ export default class ModelFactory {
     let modelFactory = this.#modelFactoryMap[type];
 
     if (!modelFactory) {
-      let owner = getOwner(this.#cache);
-      let orbitConfig = owner.lookup('ember-orbit:config');
+      const owner = getOwner(this.#cache) as ApplicationInstance;
+      const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
 
       modelFactory = owner.factoryFor(
         `${orbitConfig.types.model}:${type}`
