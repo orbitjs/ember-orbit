@@ -1,6 +1,6 @@
 import { Store } from 'ember-orbit';
-import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
+import { Planet, Moon, Star } from '../support/dummy-models';
+import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import type {

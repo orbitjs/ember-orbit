@@ -6,8 +6,8 @@ import {
   Ocean,
   BinaryStar,
   PlanetarySystem,
-} from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
 import { setupTest } from 'ember-qunit';

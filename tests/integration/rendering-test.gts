@@ -1,11 +1,21 @@
 import { Store, Cache } from 'ember-orbit';
-import { Planet, Moon } from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
+import { Planet, Moon } from '../support/dummy-models';
+import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
-import { hbs } from 'ember-cli-htmlbars';
 import type ApplicationInstance from '@ember/application/instance';
+
+const PlanetsList = <template>
+  <ul class="planets">
+    {{#each @planets as |planet|}}
+      <li>
+        {{planet.name}}
+      </li>
+    {{/each}}
+  </ul>
+  <div class="planets-count">{{@planets.length}}</div>
+</template>;
 
 module('Rendering', function (hooks) {
   let store: Store;
@@ -23,15 +33,17 @@ module('Rendering', function (hooks) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
 
-    await render(hbs`
-      <h1>
-        {{#if this.planet.$isDisconnected}}
-          Disconnected
-        {{else}}
-          Connected
-        {{/if}}
-      </h1>
-    `);
+    await render(
+      <template>
+        <h1>
+          {{#if this.planet.$isDisconnected}}
+            Disconnected
+          {{else}}
+            Connected
+          {{/if}}
+        </h1>
+      </template>,
+    );
 
     assert.dom('h1').includesText('Connected');
 
@@ -45,11 +57,13 @@ module('Rendering', function (hooks) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
 
-    await render(hbs`
-      <h1>
-        {{this.planet.name}}
-      </h1>
-    `);
+    await render(
+      <template>
+        <h1>
+          {{this.planet.name}}
+        </h1>
+      </template>,
+    );
 
     assert.dom('h1').includesText('Jupiter');
 
@@ -63,7 +77,17 @@ module('Rendering', function (hooks) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
     this.set('planet', jupiter);
 
-    await render(hbs`<MoonsList @planet={{this.planet}} />`);
+    await render(
+      <template>
+        <ul class="moons">
+          {{#each this.planet.moons as |moon|}}
+            <li>
+              {{moon.name}}
+            </li>
+          {{/each}}
+        </ul>
+      </template>,
+    );
 
     assert.dom('.moons li').doesNotExist();
 
@@ -100,7 +124,9 @@ module('Rendering', function (hooks) {
     const planets = cache.liveQuery((q) => q.findRecords('planet'));
     this.set('planets', planets);
 
-    await render(hbs`<PlanetsList @planets={{this.planets}} />`);
+    await render(
+      <template><PlanetsList @planets={{this.planets}} /></template>,
+    );
 
     assert.dom('.planets').hasNoText();
 
@@ -115,7 +141,9 @@ module('Rendering', function (hooks) {
     const planets = cache.liveQuery((q) => q.findRecords('planet'));
     this.set('planets', planets);
 
-    await render(hbs`<PlanetsList @planets={{this.planets.value}} />`);
+    await render(
+      <template><PlanetsList @planets={{this.planets.value}} /></template>,
+    );
 
     assert.dom('.planets').hasNoText();
 
@@ -134,7 +162,9 @@ module('Rendering', function (hooks) {
     const planets = cache.liveQuery((q) => q.findRecords('planet'));
     this.set('planets', planets);
 
-    await render(hbs`<PlanetsList @planets={{this.planets}} />`);
+    await render(
+      <template><PlanetsList @planets={{this.planets}} /></template>,
+    );
 
     assert.dom('.planets').hasNoText();
 
@@ -155,7 +185,7 @@ module('Rendering', function (hooks) {
     );
     this.set('planet', planet);
 
-    await render(hbs`<Planet @planet={{this.planet.value}} />`);
+    await render(<template><Planet @planet={{this.planet.value}} /></template>);
 
     assert.dom('.planet').hasNoText();
 
@@ -172,7 +202,9 @@ module('Rendering', function (hooks) {
     );
     this.set('planet', planet);
 
-    await render(hbs`<Planet @planet={{this.planet.content}} />`);
+    await render(
+      <template><Planet @planet={{this.planet.content}} /></template>,
+    );
 
     assert.dom('.planet').hasNoText();
 

@@ -5,7 +5,13 @@
 
       <div>
         Moons:
-        <MoonsList @planet={{planet}} />
+        <ul class="moons">
+          {{#each planet.moons as |moon|}}
+            <li>
+              {{moon.name}}
+            </li>
+          {{/each}}
+        </ul>
       </div>
 
       <button

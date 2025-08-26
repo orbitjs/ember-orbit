@@ -1,6 +1,6 @@
 import { Model, attr, hasMany } from 'ember-orbit';
 
-import Moon from 'dummy/data-models/moon';
+import Moon from './moon';
 
 export default class Planet extends Model {
   @attr('string') name?: string;

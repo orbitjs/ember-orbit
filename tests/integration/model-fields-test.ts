@@ -5,8 +5,8 @@ import {
   Star,
   BinaryStar,
   PlanetarySystem,
-} from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 
 import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
