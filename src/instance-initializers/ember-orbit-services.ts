@@ -1,12 +1,12 @@
 import { Orbit } from '@orbit/core';
-import type { OrbitConfig } from './ember-orbit-config';
-import SchemaFactory from '../-private/factories/schema-factory';
-import CoordinatorFactory from '../-private/factories/coordinator-factory';
-import KeyMapFactory from '../-private/factories/key-map-factory';
-import NormalizerFactory from '../-private/factories/normalizer-factory';
-import MemorySourceFactory from '../-private/factories/memory-source-factory';
-import StoreFactory from '../-private/factories/store-factory';
-import ValidatorFactory from '../-private/factories/validator-factory';
+import type { OrbitConfig } from './ember-orbit-config.ts';
+import SchemaFactory from '../-private/factories/schema-factory.ts';
+import CoordinatorFactory from '../-private/factories/coordinator-factory.ts';
+import KeyMapFactory from '../-private/factories/key-map-factory.ts';
+import NormalizerFactory from '../-private/factories/normalizer-factory.ts';
+import MemorySourceFactory from '../-private/factories/memory-source-factory.ts';
+import StoreFactory from '../-private/factories/store-factory.ts';
+import ValidatorFactory from '../-private/factories/validator-factory.ts';
 import type ApplicationInstance from '@ember/application/instance';
 
 const { deprecate } = Orbit;

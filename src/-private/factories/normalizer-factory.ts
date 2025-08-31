@@ -2,8 +2,8 @@ import { getOwner } from '@ember/application';
 import {
   ModelAwareNormalizer,
   type ModelRecordNormalizerSettings,
-} from '../utils/model-aware-normalizer';
-import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
+} from '../utils/model-aware-normalizer.ts';
+import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
 import type { RecordKeyMap, RecordSchema } from '@orbit/records';
 import type ApplicationInstance from '@ember/application/instance';
 

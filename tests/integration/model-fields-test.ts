@@ -1,4 +1,4 @@
-import { Store } from 'ember-orbit';
+import { Store } from '#src/index.ts';
 import {
   Planet,
   Moon,
@@ -9,7 +9,7 @@ import {
 import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 
-import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
+import { normalizeModelFields } from '#src/-private/utils/model-fields.ts';
 import { setupTest } from 'ember-qunit';
 import type ApplicationInstance from '@ember/application/instance';
 

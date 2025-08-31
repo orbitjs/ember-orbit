@@ -11,7 +11,7 @@ import type {
   UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
+import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
 
 export function applyStandardSourceInjections(
   injections: RecordSourceSettings,

@@ -10,8 +10,8 @@ import {
 } from '@ember/destroyable';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 
-import Cache from './cache';
-import { Model } from 'ember-orbit';
+import Cache from './cache.ts';
+import { Model } from '../index.ts';
 
 const { assert, deprecate } = Orbit;
 

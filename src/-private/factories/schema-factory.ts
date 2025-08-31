@@ -2,9 +2,9 @@
 import { camelize } from '@orbit/serializers';
 import { getOwner } from '@ember/application';
 import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
-import modulesOfType from '../system/modules-of-type';
+import modulesOfType from '../system/modules-of-type.ts';
 import type ApplicationInstance from '@ember/application/instance';
-import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
+import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
 
 function getRegisteredModels(
   prefix: string,

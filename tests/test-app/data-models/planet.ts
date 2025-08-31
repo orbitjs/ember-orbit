@@ -1,4 +1,4 @@
-import { Model, attr, hasMany } from 'ember-orbit';
+import { Model, attr, hasMany } from '#src/index.ts';
 
 import Moon from './moon';
 

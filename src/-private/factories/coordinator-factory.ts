@@ -4,9 +4,9 @@ import {
   Strategy,
   type CoordinatorOptions,
 } from '@orbit/coordinator';
-import modulesOfType from '../system/modules-of-type';
+import modulesOfType from '../system/modules-of-type.ts';
 import type ApplicationInstance from '@ember/application/instance';
-import type { OrbitConfig } from 'ember-orbit/initializers/ember-orbit-config';
+import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
 import type { RequestOptions, Source } from '@orbit/data';
 
 type CoordinatorInjections = {

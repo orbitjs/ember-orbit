@@ -48,6 +48,7 @@ const config = [
       'dist-*/',
       'declarations/',
       'node_modules/',
+      'blueprints/**/files/**',
       'coverage/',
       '!**/.*',
     ],
@@ -82,6 +83,9 @@ const config = [
       parserOptions: tsParserOptions,
     },
     extends: [...ts.configs.recommendedTypeChecked, ember.configs.gts],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
   {
     files: ['src/**/*'],
@@ -102,6 +106,8 @@ const config = [
       '.prettierrc.cjs',
       '.template-lintrc.cjs',
       'addon-main.cjs',
+      'blueprints/*/index.js',
+      'index.js',
     ],
     plugins: {
       n,

@@ -1,10 +1,16 @@
-import { Store, Cache } from 'ember-orbit';
+import { Store, Cache } from '#src/index.ts';
 import { Planet, Moon } from '../support/dummy-models';
 import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
 import type ApplicationInstance from '@ember/application/instance';
+
+const PlanetComponent = <template>
+  <div class="planet">
+    {{@planet.name}}
+  </div>
+</template>;
 
 const PlanetsList = <template>
   <ul class="planets">
@@ -31,12 +37,11 @@ module('Rendering', function (hooks) {
 
   test('connected / disconnected models', async function (assert) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
-    this.set('planet', jupiter);
 
     await render(
       <template>
         <h1>
-          {{#if this.planet.$isDisconnected}}
+          {{#if jupiter.$isDisconnected}}
             Disconnected
           {{else}}
             Connected
@@ -55,12 +60,11 @@ module('Rendering', function (hooks) {
 
   test('persistent properties, event when models are disconnected', async function (assert) {
     const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
-    this.set('planet', jupiter);
 
     await render(
       <template>
         <h1>
-          {{this.planet.name}}
+          {{jupiter.name}}
         </h1>
       </template>,
     );
@@ -185,7 +189,9 @@ module('Rendering', function (hooks) {
     );
     this.set('planet', planet);
 
-    await render(<template><Planet @planet={{this.planet.value}} /></template>);
+    await render(
+      <template><PlanetComponent @planet={{this.planet.value}} /></template>,
+    );
 
     assert.dom('.planet').hasNoText();
 
@@ -203,7 +209,7 @@ module('Rendering', function (hooks) {
     this.set('planet', planet);
 
     await render(
-      <template><Planet @planet={{this.planet.content}} /></template>,
+      <template><PlanetComponent @planet={{this.planet.content}} /></template>,
     );
 
     assert.dom('.planet').hasNoText();

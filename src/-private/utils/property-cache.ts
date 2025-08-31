@@ -4,7 +4,7 @@ import { Orbit } from '@orbit/core';
 import { DEBUG } from '@glimmer/env';
 import { notifyPropertyChange as emberNotifyPropertyChange } from '@ember/object';
 
-import Model from '../model';
+import Model from '../model.ts';
 
 type Cache<T> = ReturnType<typeof createCache<T>>;
 

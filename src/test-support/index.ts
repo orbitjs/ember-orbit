@@ -1,5 +1,5 @@
 import { getContext } from '@ember/test-helpers';
-import { Store } from 'ember-orbit';
+import { Store } from '../index.ts';
 import { Source } from '@orbit/data';
 import type ApplicationInstance from '@ember/application/instance';
 

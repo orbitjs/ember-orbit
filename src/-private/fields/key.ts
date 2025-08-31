@@ -1,9 +1,9 @@
 import { Orbit } from '@orbit/core';
 import type { KeyDefinition } from '@orbit/records';
 
-import Model from '../model';
-import { getKeyCache } from '../utils/property-cache';
-import { defineKey } from '../utils/model-definition';
+import Model from '../model.ts';
+import { getKeyCache } from '../utils/property-cache.ts';
+import { defineKey } from '../utils/model-definition.ts';
 
 const { assert } = Orbit;
 

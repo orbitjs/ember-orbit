@@ -1,9 +1,9 @@
 import { Orbit } from '@orbit/core';
 import type { HasManyRelationshipDefinition } from '@orbit/records';
 
-import Model from '../model';
-import { getHasManyCache } from '../utils/property-cache';
-import { defineRelationship } from '../utils/model-definition';
+import Model from '../model.ts';
+import { getHasManyCache } from '../utils/property-cache.ts';
+import { defineRelationship } from '../utils/model-definition.ts';
 
 const { assert } = Orbit;
 

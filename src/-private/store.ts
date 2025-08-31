@@ -28,17 +28,17 @@ import {
   type UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import Cache, { type CacheSettings } from './cache';
-import LiveQuery from './live-query';
-import Model from './model';
+import Cache, { type CacheSettings } from './cache.ts';
+import LiveQuery from './live-query.ts';
+import Model from './model.ts';
 import {
   ModelAwareQueryBuilder,
   type ModelAwareQueryOrExpressions,
   ModelAwareTransformBuilder,
   type ModelAwareTransformOrOperations,
   type RecordIdentityOrModel,
-} from './utils/model-aware-types';
-import type { ModelFields } from './utils/model-fields';
+} from './utils/model-aware-types.ts';
+import type { ModelFields } from './utils/model-fields.ts';
 import type ApplicationInstance from '@ember/application/instance';
 
 const { assert, deprecate } = Orbit;

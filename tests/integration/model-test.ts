@@ -1,4 +1,4 @@
-import { Store, Cache } from 'ember-orbit';
+import { Store, Cache } from '#src/index.ts';
 import {
   Planet,
   Moon,

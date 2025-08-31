@@ -16,9 +16,9 @@ import {
 } from '@ember/destroyable';
 import { tracked } from '@glimmer/tracking';
 
-import Cache from './cache';
-import { getModelDefinition } from './utils/model-definition';
-import { notifyPropertyChange } from './utils/property-cache';
+import Cache from './cache.ts';
+import { getModelDefinition } from './utils/model-definition.ts';
+import { notifyPropertyChange } from './utils/property-cache.ts';
 
 const { assert, deprecate } = Orbit;
 

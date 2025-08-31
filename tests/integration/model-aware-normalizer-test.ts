@@ -1,4 +1,4 @@
-import { Store } from 'ember-orbit';
+import { Store } from '#src/index.ts';
 import {
   Planet,
   Moon,
@@ -13,7 +13,7 @@ import { setupTest } from 'ember-qunit';
 import {
   isStandardRecord,
   ModelAwareNormalizer,
-} from 'ember-orbit/-private/utils/model-aware-normalizer';
+} from '#src/-private/utils/model-aware-normalizer.ts';
 import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - ModelAwareNormalizer', function (hooks) {

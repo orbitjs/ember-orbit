@@ -9,12 +9,12 @@ import {
   type StandardRecordNormalizerSettings,
   type UninitializedRecord,
 } from '@orbit/records';
-import { Model } from 'ember-orbit';
+import { Model } from '../../index.ts';
 import {
   type RecordFieldsOrModel,
   type RecordIdentityOrModel,
-} from './model-aware-types';
-import { normalizeModelFields, type ModelFields } from './model-fields';
+} from './model-aware-types.ts';
+import { normalizeModelFields, type ModelFields } from './model-fields.ts';
 
 export type ModelRecordNormalizerSettings = StandardRecordNormalizerSettings;
 

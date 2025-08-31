@@ -1,10 +1,10 @@
-import { Store } from 'ember-orbit';
+import { Store } from '#src/index.ts';
 import { MemorySource } from '@orbit/memory';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { Planet } from '../support/dummy-models';
 import { createStore } from '../support/store';
-import { waitForSource } from 'ember-orbit/test-support';
+import { waitForSource } from '#src/test-support/index.ts';
 import type ApplicationInstance from '@ember/application/instance';
 import type { Transform } from '@orbit/data';
 import type { RecordOperation } from '@orbit/records';

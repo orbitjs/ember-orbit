@@ -1,4 +1,4 @@
-import { Model, attr, hasOne } from 'ember-orbit';
+import { Model, attr, hasOne } from '#src/index.ts';
 
 import Planet from './planet';
 

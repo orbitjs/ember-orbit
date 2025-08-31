@@ -1,9 +1,9 @@
 import { Planet, Moon, Star } from '../support/dummy-models';
-import { Cache, Store } from 'ember-orbit';
+import { Cache, Store } from '#src/index.ts';
 import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { waitForSource } from 'ember-orbit/test-support';
+import { waitForSource } from '#src/test-support/index.ts';
 import { buildTransform } from '@orbit/data';
 import type ApplicationInstance from '@ember/application/instance';
 

@@ -13,6 +13,7 @@ module('Acceptance | filtered', function (hooks) {
     assert.dom('.planet-row').exists({ count: 2 });
     assert.dom('.moons li').exists({ count: 2 });
 
+    await this.pauseTest();
     await click('[data-test-duplicate="Pluto"]');
 
     assert.dom('.planet-row').exists({ count: 3 });
