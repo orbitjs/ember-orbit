@@ -63,7 +63,7 @@ module('Rendering', function (hooks) {
     const jupiter = cache.addRecord({
       type: 'planet',
       name: 'Jupiter',
-    });
+    }) as Planet;
 
     await render(
       <template>
@@ -85,7 +85,7 @@ module('Rendering', function (hooks) {
     const jupiter = cache.addRecord({
       type: 'planet',
       name: 'Jupiter',
-    });
+    }) as Planet;
 
     await render(
       <template>
