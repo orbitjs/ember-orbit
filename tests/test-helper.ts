@@ -14,6 +14,7 @@ import ApplicationRoute from './test-app/routes/application.gjs';
 import FilteredRoute from './test-app/routes/filtered.gjs';
 // @ts-expect-error TODO: convert these to TS
 import UndoManager from './test-app/services/undo-manager.js';
+import type ApplicationInstance from '@ember/application/instance';
 
 class Router extends EmberRouter {
   location = 'none';
@@ -43,8 +44,10 @@ export function start() {
 
   setApplication(applicationInstance);
 
-  orbitConfigInitialize(applicationInstance);
-  orbitServicesInitialize(applicationInstance);
+  orbitConfigInitialize(applicationInstance as unknown as ApplicationInstance);
+  orbitServicesInitialize(
+    applicationInstance as unknown as ApplicationInstance,
+  );
 
   setup(QUnit.assert);
   setupEmberOnerrorValidation();

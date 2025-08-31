@@ -73,19 +73,6 @@ export function initialize(application: ApplicationInstance) {
     envConfig.orbit ?? {},
   ) as OrbitConfig;
 
-  // Customize pluralization rules
-
-  const pluralizedTypes = // @ts-expect-error TODO: fix this type error
-    application.__registry__?.resolver?.pluralizedTypes as
-      | Record<string, string>
-      | undefined;
-  if (pluralizedTypes) {
-    pluralizedTypes[config.types.bucket] = config.collections.buckets;
-    pluralizedTypes[config.types.model] = config.collections.models;
-    pluralizedTypes[config.types.source] = config.collections.sources;
-    pluralizedTypes[config.types.strategy] = config.collections.strategies;
-  }
-
   application.register('ember-orbit:config', config, {
     instantiate: false,
   });

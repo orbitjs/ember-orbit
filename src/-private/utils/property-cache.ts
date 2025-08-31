@@ -32,7 +32,8 @@ export class PropertyCache<T> {
   }
 
   get value(): T | undefined {
-    return getValue(this.#value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return getValue(this.#value as any);
   }
 
   set value(value: T | undefined) {

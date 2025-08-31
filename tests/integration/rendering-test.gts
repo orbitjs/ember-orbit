@@ -5,12 +5,13 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
 import type ApplicationInstance from '@ember/application/instance';
+import type { TOC } from '@ember/component/template-only';
 
 const PlanetComponent = <template>
   <div class="planet">
     {{@planet.name}}
   </div>
-</template>;
+</template> satisfies TOC<{ Args: { planet: Planet } }>;
 
 const PlanetsList = <template>
   <ul class="planets">
@@ -21,7 +22,7 @@ const PlanetsList = <template>
     {{/each}}
   </ul>
   <div class="planets-count">{{@planets.length}}</div>
-</template>;
+</template> satisfies TOC<{ Args: { planets: Array<Planet> } }>;
 
 module('Rendering', function (hooks) {
   let store: Store;
@@ -59,7 +60,10 @@ module('Rendering', function (hooks) {
   });
 
   test('persistent properties, event when models are disconnected', async function (assert) {
-    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
+    const jupiter = cache.addRecord({
+      type: 'planet',
+      name: 'Jupiter',
+    });
 
     await render(
       <template>
@@ -78,13 +82,15 @@ module('Rendering', function (hooks) {
   });
 
   test('update relationship synchronously via cache', async function (assert) {
-    const jupiter = cache.addRecord({ type: 'planet', name: 'Jupiter' });
-    this.set('planet', jupiter);
+    const jupiter = cache.addRecord({
+      type: 'planet',
+      name: 'Jupiter',
+    });
 
     await render(
       <template>
         <ul class="moons">
-          {{#each this.planet.moons as |moon|}}
+          {{#each jupiter.moons as |moon|}}
             <li>
               {{moon.name}}
             </li>
@@ -125,12 +131,11 @@ module('Rendering', function (hooks) {
   });
 
   test('liveQuery iterator', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    this.set('planets', planets);
+    const planets = cache.liveQuery((q) =>
+      q.findRecords('planet'),
+    ) as unknown as Array<Planet>;
 
-    await render(
-      <template><PlanetsList @planets={{this.planets}} /></template>,
-    );
+    await render(<template><PlanetsList @planets={{planets}} /></template>);
 
     assert.dom('.planets').hasNoText();
 
@@ -142,11 +147,11 @@ module('Rendering', function (hooks) {
   });
 
   test('liveQuery records - accessed via liveQuery.value', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    this.set('planets', planets);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const planets = cache.liveQuery((q) => q.findRecords('planet')) as any;
 
     await render(
-      <template><PlanetsList @planets={{this.planets.value}} /></template>,
+      <template><PlanetsList @planets={{planets.value}} /></template>,
     );
 
     assert.dom('.planets').hasNoText();
@@ -163,12 +168,11 @@ module('Rendering', function (hooks) {
   });
 
   test('liveQuery records - accessed via liveQuery directly', async function (assert) {
-    const planets = cache.liveQuery((q) => q.findRecords('planet'));
-    this.set('planets', planets);
+    const planets = cache.liveQuery((q) =>
+      q.findRecords('planet'),
+    ) as unknown as Array<Planet>;
 
-    await render(
-      <template><PlanetsList @planets={{this.planets}} /></template>,
-    );
+    await render(<template><PlanetsList @planets={{planets}} /></template>);
 
     assert.dom('.planets').hasNoText();
 
@@ -184,13 +188,13 @@ module('Rendering', function (hooks) {
   });
 
   test('liveQuery record - accessed via `value` of LiveQuery', async function (assert) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const planet = cache.liveQuery((q) =>
       q.findRecord({ type: 'planet', id: '1' }),
-    );
-    this.set('planet', planet);
+    ) as any;
 
     await render(
-      <template><PlanetComponent @planet={{this.planet.value}} /></template>,
+      <template><PlanetComponent @planet={{planet.value}} /></template>,
     );
 
     assert.dom('.planet').hasNoText();
@@ -203,13 +207,13 @@ module('Rendering', function (hooks) {
   });
 
   test('liveQuery record - accessed via deprecated `content` of LiveQuery', async function (assert) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const planet = cache.liveQuery((q) =>
       q.findRecord({ type: 'planet', id: '1' }),
-    );
-    this.set('planet', planet);
+    ) as any;
 
     await render(
-      <template><PlanetComponent @planet={{this.planet.content}} /></template>,
+      <template><PlanetComponent @planet={{planet.content}} /></template>,
     );
 
     assert.dom('.planet').hasNoText();
