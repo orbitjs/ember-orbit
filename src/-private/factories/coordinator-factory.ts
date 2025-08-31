@@ -4,10 +4,10 @@ import {
   Strategy,
   type CoordinatorOptions,
 } from '@orbit/coordinator';
-import modulesOfType from '../system/modules-of-type.ts';
 import type ApplicationInstance from '@ember/application/instance';
 import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
 import type { RequestOptions, Source } from '@orbit/data';
+import { orbitModuleRegistry } from '../system/ember-orbit-setup.ts';
 
 type CoordinatorInjections = {
   sourceNames?: string[];
@@ -29,14 +29,7 @@ export default {
         sourceNames = injections.sourceNames;
         delete injections.sourceNames;
       } else {
-        sourceNames =
-          (app.lookup('ember-orbit:source-names') as Array<string>) ??
-          modulesOfType(
-            // @ts-expect-error TODO: fix this type error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            app.base.modulePrefix,
-            orbitConfig.collections.sources,
-          );
+        sourceNames = Object.keys(orbitModuleRegistry.registrations.sources);
         sourceNames.push('store');
       }
       injections.sources = sourceNames
@@ -59,14 +52,9 @@ export default {
         strategyNames = injections.strategyNames;
         delete injections.strategyNames;
       } else {
-        strategyNames =
-          (app.lookup('ember-orbit:strategy-names') as Array<string>) ??
-          modulesOfType(
-            // @ts-expect-error TODO: fix this type error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            app.base.modulePrefix,
-            orbitConfig.collections.strategies,
-          );
+        strategyNames = Object.keys(
+          orbitModuleRegistry.registrations.strategies,
+        );
       }
       injections.strategies = strategyNames
         .map((name) => {

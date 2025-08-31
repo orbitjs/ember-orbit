@@ -1,11 +1,11 @@
-import { module, skip } from 'qunit';
+import { module, test } from 'qunit';
 import { visit, currentURL, click, triggerEvent } from '@ember/test-helpers';
 import { setupApplicationTest } from 'ember-qunit';
 
 module('Acceptance | filtered', function (hooks) {
   setupApplicationTest(hooks);
 
-  skip('visiting /filtered', async function (assert) {
+  test('visiting /filtered', async function (assert) {
     await visit('/filtered');
 
     assert.equal(currentURL(), '/filtered');

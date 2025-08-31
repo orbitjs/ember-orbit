@@ -4,8 +4,7 @@ import type { Dict } from '@orbit/utils';
 import { type RecordIdentity, cloneRecordIdentity } from '@orbit/records';
 import Cache from './cache.ts';
 import Model, { type ModelSettings } from './model.ts';
-import type ApplicationInstance from '@ember/application/instance';
-import type { OrbitConfig } from '../instance-initializers/ember-orbit-config.ts';
+import { orbitModuleRegistry } from './system/ember-orbit-setup.ts';
 
 const { assert } = Orbit;
 
@@ -35,13 +34,7 @@ export default class ModelFactory {
     let modelFactory = this.#modelFactoryMap[type];
 
     if (!modelFactory) {
-      const owner = getOwner(this.#cache) as ApplicationInstance;
-      const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
-
-      modelFactory = owner.factoryFor(
-        `${orbitConfig.types.model}:${type}`,
-      ) as Factory;
-
+      modelFactory = orbitModuleRegistry.registrations.models[type];
       assert(
         `An ember-orbit model for type ${type} has not been registered.`,
         modelFactory !== undefined,

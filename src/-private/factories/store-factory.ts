@@ -1,7 +1,7 @@
 import { getOwner } from '@ember/application';
 import Store, { type StoreSettings } from '../store.ts';
 import type ApplicationInstance from '@ember/application/instance';
-import type { OrbitConfig } from '../../instance-initializers/ember-orbit-config.ts';
+import type { OrbitConfig } from '../system/ember-orbit-setup.ts';
 import type MemorySource from '@orbit/memory';
 import type { RecordSourceQueryOptions } from '@orbit/records';
 import type { RequestOptions } from '@orbit/data';

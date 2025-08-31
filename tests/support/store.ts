@@ -2,17 +2,17 @@ import type ApplicationInstance from '@ember/application/instance';
 import type { Dict } from '@orbit/utils';
 import { Model, Store, type ModelSettings } from '#src/index.ts';
 import {
-  initialize as initializeConfig,
+  initialize as orbitConfigInitialize,
   type OrbitConfig,
 } from '#src/instance-initializers/ember-orbit-config.ts';
-import { initialize as initializeServices } from '#src/instance-initializers/ember-orbit-services.ts';
+import { initialize as orbitServicesInitialize } from '#src/instance-initializers/ember-orbit-services.ts';
 
 export function createStore(
   owner: ApplicationInstance,
   models: Dict<new (settings: ModelSettings) => Model>,
 ) {
-  initializeConfig(owner);
-  initializeServices(owner);
+  orbitConfigInitialize(owner);
+  orbitServicesInitialize(owner);
   const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
 
   if (models) {
