@@ -60,6 +60,7 @@ module('Rendering', function (hooks) {
   });
 
   test('persistent properties, event when models are disconnected', async function (assert) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const jupiter = cache.addRecord({
       type: 'planet',
       name: 'Jupiter',
@@ -82,6 +83,7 @@ module('Rendering', function (hooks) {
   });
 
   test('update relationship synchronously via cache', async function (assert) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const jupiter = cache.addRecord({
       type: 'planet',
       name: 'Jupiter',
