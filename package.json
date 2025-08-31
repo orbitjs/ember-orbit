@@ -133,5 +133,6 @@
         "declarations/*"
       ]
     }
-  }
+  },
+  "packageManager": "pnpm@10.15.0"
 }
