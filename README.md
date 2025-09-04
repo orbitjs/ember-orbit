@@ -624,14 +624,7 @@ module.exports = function (environment) {
         keyMap: "data-key-map",
         normalizer: "data-normalizer",
         validator: "data-validator",
-      },
-      skipStoreService: false,
-      skipBucketService: false,
-      skipCoordinatorService: false,
-      skipSchemaService: false,
-      skipKeyMapService: false,
-      skipNormalizerService: false,
-      skipValidatorService: false,
+      }
     },
   };
 
@@ -680,9 +673,7 @@ service that is injected into all sources.
 Validators are useful to ensure that your data matches its type expectations and
 that operations and query expressions are well formed. Of course, they also add
 some extra code and processing, which you may want to eliminate (or perhaps only
-for production environments). You can disable validators across all sources by
-setting Orbit's `skipValidatorService` environment flag to `false` in
-`config/environment`, as described above.
+for production environments).
 
 If you want to use validators but extend them to include custom validators, you
 can override the standard validator service by generating your own

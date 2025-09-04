@@ -12,9 +12,6 @@ import StoreFactory from '#src/-private/factories/store-factory.ts';
 import type { Dict } from '@orbit/utils';
 import ValidatorFactory from '#src/services/data-validator.ts';
 
-// const dataModels = import.meta.glob('../test-app/data-models/*.{js,ts}', {
-//   eager: true,
-// });
 const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
   eager: true,
 });
