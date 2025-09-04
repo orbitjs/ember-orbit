@@ -1,10 +1,10 @@
+import type ApplicationInstance from '@ember/application/instance';
+import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import {
   ModelAwareNormalizer,
   type ModelRecordNormalizerSettings,
 } from '../utils/model-aware-normalizer.ts';
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type { RecordKeyMap, RecordSchema } from '@orbit/records';
-import type ApplicationInstance from '@ember/application/instance';
 
 export default {
   create(injections: ModelRecordNormalizerSettings): ModelAwareNormalizer {

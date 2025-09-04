@@ -1,6 +1,5 @@
+import Service, { inject as service } from '@ember/service';
 import type { Store } from '#src/index.ts';
-import Service from '@ember/service';
-import { inject as service } from '@ember/service';
 
 function removeFromTo(array, from, to) {
   array.splice(

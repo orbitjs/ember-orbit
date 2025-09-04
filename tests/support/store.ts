@@ -1,7 +1,7 @@
 import type ApplicationInstance from '@ember/application/instance';
-import type { Dict } from '@orbit/utils';
-import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
 import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
+import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import type { Dict } from '@orbit/utils';
 
 const dataModels = import.meta.glob('../test-app/data-models/*.{js,ts}', {
   eager: true,

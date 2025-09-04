@@ -1,5 +1,6 @@
 import { getOwner } from '@ember/application';
 import type ApplicationInstance from '@ember/application/instance';
+import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type { Bucket } from '@orbit/core';
 import type {
   RecordIdentity,
@@ -11,7 +12,6 @@ import type {
   UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 
 export function applyStandardSourceInjections(
   injections: RecordSourceSettings,

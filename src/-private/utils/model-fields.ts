@@ -1,9 +1,9 @@
 import { Orbit } from '@orbit/core';
 import {
   RecordSchema,
-  type RecordRelationship,
   type ModelDefinition,
   type RecordIdentity,
+  type RecordRelationship,
   type RelationshipDefinition,
   type UninitializedRecord,
 } from '@orbit/records';

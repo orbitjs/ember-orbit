@@ -1,10 +1,9 @@
+import { notifyPropertyChange as emberNotifyPropertyChange } from '@ember/object';
+import { DEBUG } from '@glimmer/env';
 import { tracked } from '@glimmer/tracking';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
-import { Orbit } from '@orbit/core';
-import { DEBUG } from '@glimmer/env';
-import { notifyPropertyChange as emberNotifyPropertyChange } from '@ember/object';
-
 import Model from '../model.ts';
+import { Orbit } from '@orbit/core';
 
 type Cache<T> = ReturnType<typeof createCache<T>>;
 

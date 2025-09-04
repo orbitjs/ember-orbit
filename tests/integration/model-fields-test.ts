@@ -1,17 +1,16 @@
+import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import type ApplicationInstance from '@ember/application/instance';
+import { normalizeModelFields } from '#src/-private/utils/model-fields.ts';
 import { Store } from '#src/index.ts';
 import {
-  Planet,
-  Moon,
-  Star,
   BinaryStar,
+  Moon,
+  Planet,
   PlanetarySystem,
+  Star,
 } from '../support/dummy-models';
 import { createStore } from '../support/store';
-import { module, test } from 'qunit';
-
-import { normalizeModelFields } from '#src/-private/utils/model-fields.ts';
-import { setupTest } from 'ember-qunit';
-import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - normalizeModelFields', function (hooks) {
   setupTest(hooks);

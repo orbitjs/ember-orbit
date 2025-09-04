@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import type {
-  KeyDefinition,
   AttributeDefinition,
-  RelationshipDefinition,
+  KeyDefinition,
   ModelDefinition,
+  RelationshipDefinition,
 } from '@orbit/records';
 import { clone, deepMerge } from '@orbit/utils';
 

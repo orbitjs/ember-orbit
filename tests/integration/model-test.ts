@@ -1,19 +1,19 @@
-import { Store, Cache } from '#src/index.ts';
-import {
-  Planet,
-  Moon,
-  Star,
-  Ocean,
-  BinaryStar,
-  PlanetarySystem,
-} from '../support/dummy-models';
-import { createStore } from '../support/store';
+import { settled } from '@ember/test-helpers';
+import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 import { getOwner } from '@ember/application';
-import { setupTest } from 'ember-qunit';
-import { Assertion } from '@orbit/core';
-import { settled } from '@ember/test-helpers';
 import type ApplicationInstance from '@ember/application/instance';
+import { Cache, Store } from '#src/index.ts';
+import {
+  BinaryStar,
+  Moon,
+  Ocean,
+  Planet,
+  PlanetarySystem,
+  Star,
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
+import { Assertion } from '@orbit/core';
 
 module('Integration - Model', function (hooks) {
   setupTest(hooks);

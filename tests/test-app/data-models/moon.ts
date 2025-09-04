@@ -1,5 +1,4 @@
-import { Model, attr, hasOne } from '#src/index.ts';
-
+import { attr, hasOne, Model } from '#src/index.ts';
 import Planet from './planet';
 
 export default class Moon extends Model {

@@ -1,22 +1,22 @@
+import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import type ApplicationInstance from '@ember/application/instance';
 import { Store } from '#src/index.ts';
 import {
-  Planet,
-  Moon,
-  Star,
-  Ocean,
   BinaryStar,
+  Moon,
+  Ocean,
+  Planet,
   PlanetarySystem,
+  Star,
 } from '../support/dummy-models';
 import { createStore } from '../support/store';
 import { buildTransform } from '@orbit/data';
-import { module, test } from 'qunit';
-import { setupTest } from 'ember-qunit';
 import type {
   InitializedRecord,
   RecordOperation,
   RecordTransform,
 } from '@orbit/records';
-import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Store', function (hooks) {
   setupTest(hooks);

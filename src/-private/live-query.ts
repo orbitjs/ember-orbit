@@ -1,17 +1,16 @@
-import { Orbit } from '@orbit/core';
-import { tracked } from '@glimmer/tracking';
-import { notifyPropertyChange } from '@ember/object';
-import { SyncLiveQuery } from '@orbit/record-cache';
-import type { RecordQuery, RecordQueryResult } from '@orbit/records';
 import {
-  registerDestructor,
   associateDestroyableChild,
   destroy,
+  registerDestructor,
 } from '@ember/destroyable';
+import { notifyPropertyChange } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
-
-import Cache from './cache.ts';
 import { Model } from '../index.ts';
+import Cache from './cache.ts';
+import { Orbit } from '@orbit/core';
+import { SyncLiveQuery } from '@orbit/record-cache';
+import type { RecordQuery, RecordQueryResult } from '@orbit/records';
 
 const { assert, deprecate } = Orbit;
 

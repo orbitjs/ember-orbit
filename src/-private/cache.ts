@@ -1,5 +1,19 @@
 import { getOwner, setOwner } from '@ember/application';
+import type ApplicationInstance from '@ember/application/instance';
 import { registerDestructor } from '@ember/destroyable';
+import LiveQuery from './live-query.ts';
+import ModelFactory from './model-factory.ts';
+import Model from './model.ts';
+import type Store from './store.ts';
+import {
+  ModelAwareQueryBuilder,
+  ModelAwareTransformBuilder,
+  type ModelAwareQueryOrExpressions,
+  type ModelAwareTransformOrOperations,
+  type RecordIdentityOrModel,
+} from './utils/model-aware-types.ts';
+import type { ModelFields } from './utils/model-fields.ts';
+import recordIdentitySerializer from './utils/record-identity-serializer.ts';
 import { Assertion, Orbit } from '@orbit/core';
 import {
   buildQuery,
@@ -20,33 +34,19 @@ import type {
   RecordCacheTransformOptions,
 } from '@orbit/record-cache';
 import {
+  RecordKeyMap,
+  RecordSchema,
   type InitializedRecord,
   type RecordIdentity,
-  RecordKeyMap,
   type RecordOperation,
   type RecordOperationResult,
   type RecordQueryExpressionResult,
   type RecordQueryResult,
-  RecordSchema,
   type RecordTransformResult,
   type StandardRecordValidator,
   type UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import type Store from './store.ts';
-import LiveQuery from './live-query.ts';
-import Model from './model.ts';
-import ModelFactory from './model-factory.ts';
-import {
-  ModelAwareQueryBuilder,
-  type ModelAwareQueryOrExpressions,
-  ModelAwareTransformBuilder,
-  type ModelAwareTransformOrOperations,
-  type RecordIdentityOrModel,
-} from './utils/model-aware-types.ts';
-import type { ModelFields } from './utils/model-fields.ts';
-import recordIdentitySerializer from './utils/record-identity-serializer.ts';
-import type ApplicationInstance from '@ember/application/instance';
 
 const { assert, deprecate } = Orbit;
 

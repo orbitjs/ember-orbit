@@ -1,24 +1,23 @@
-import { Assertion, Orbit } from '@orbit/core';
-import type { Dict } from '@orbit/utils';
-import type { DefaultRequestOptions, RequestOptions } from '@orbit/data';
-import type {
-  RecordIdentity,
-  KeyDefinition,
-  AttributeDefinition,
-  RelationshipDefinition,
-  InitializedRecord,
-  ModelDefinition,
-} from '@orbit/records';
 import {
-  destroy,
   associateDestroyableChild,
+  destroy,
   registerDestructor,
 } from '@ember/destroyable';
 import { tracked } from '@glimmer/tracking';
-
 import Cache from './cache.ts';
 import { getModelDefinition } from './utils/model-definition.ts';
 import { notifyPropertyChange } from './utils/property-cache.ts';
+import { Assertion, Orbit } from '@orbit/core';
+import type { DefaultRequestOptions, RequestOptions } from '@orbit/data';
+import type {
+  AttributeDefinition,
+  InitializedRecord,
+  KeyDefinition,
+  ModelDefinition,
+  RecordIdentity,
+  RelationshipDefinition,
+} from '@orbit/records';
+import type { Dict } from '@orbit/utils';
 
 const { assert, deprecate } = Orbit;
 

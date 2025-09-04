@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import EmberApp from '@ember/application';
-import Resolver from 'ember-resolver';
-import EmberRouter from '@ember/routing/router';
-import * as QUnit from 'qunit';
 import { setApplication } from '@ember/test-helpers';
-import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
+import * as QUnit from 'qunit';
+import { setup } from 'qunit-dom';
+import EmberApp from '@ember/application';
+import EmberRouter from '@ember/routing/router';
+import Resolver from 'ember-resolver';
 import ApplicationRoute from './test-app/routes/application.gts';
 import FilteredRoute from './test-app/routes/filtered.gts';
 // @ts-expect-error TODO: convert these to TS

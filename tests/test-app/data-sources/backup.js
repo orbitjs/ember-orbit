@@ -1,5 +1,5 @@
-import { MemorySource } from '@orbit/memory';
 import { applyStandardSourceInjections } from 'ember-orbit';
+import { MemorySource } from '@orbit/memory';
 
 export default {
   create(injections = {}) {

@@ -1,6 +1,18 @@
 import { getOwner, setOwner } from '@ember/application';
+import type ApplicationInstance from '@ember/application/instance';
 import { associateDestroyableChild, destroy } from '@ember/destroyable';
-import { Assertion, type Listener, Log, Orbit, TaskQueue } from '@orbit/core';
+import Cache, { type CacheSettings } from './cache.ts';
+import LiveQuery from './live-query.ts';
+import Model from './model.ts';
+import {
+  ModelAwareQueryBuilder,
+  ModelAwareTransformBuilder,
+  type ModelAwareQueryOrExpressions,
+  type ModelAwareTransformOrOperations,
+  type RecordIdentityOrModel,
+} from './utils/model-aware-types.ts';
+import type { ModelFields } from './utils/model-fields.ts';
+import { Assertion, Log, Orbit, TaskQueue, type Listener } from '@orbit/core';
 import {
   buildQuery,
   buildTransform,
@@ -16,11 +28,11 @@ import MemorySource, {
 } from '@orbit/memory';
 import type { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
-  type InitializedRecord,
   RecordKeyMap,
+  RecordSchema,
+  type InitializedRecord,
   type RecordOperation,
   type RecordQueryResult,
-  RecordSchema,
   type RecordSourceQueryOptions,
   type RecordTransform,
   type RecordTransformResult,
@@ -28,18 +40,6 @@ import {
   type UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import Cache, { type CacheSettings } from './cache.ts';
-import LiveQuery from './live-query.ts';
-import Model from './model.ts';
-import {
-  ModelAwareQueryBuilder,
-  type ModelAwareQueryOrExpressions,
-  ModelAwareTransformBuilder,
-  type ModelAwareTransformOrOperations,
-  type RecordIdentityOrModel,
-} from './utils/model-aware-types.ts';
-import type { ModelFields } from './utils/model-fields.ts';
-import type ApplicationInstance from '@ember/application/instance';
 
 const { assert, deprecate } = Orbit;
 

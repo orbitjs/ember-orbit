@@ -1,14 +1,14 @@
-import { Store } from '#src/index.ts';
-import { Planet, Moon, Star } from '../support/dummy-models';
-import { createStore } from '../support/store';
-import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import type ApplicationInstance from '@ember/application/instance';
+import { Store } from '#src/index.ts';
+import { Moon, Planet, Star } from '../support/dummy-models';
+import { createStore } from '../support/store';
 import type {
   RecordKeyMap,
   RecordSchema,
   StandardRecordNormalizer,
 } from '@orbit/records';
-import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Config', function (hooks) {
   setupTest(hooks);

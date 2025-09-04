@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { camelize } from '@orbit/serializers';
-import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
-
 import { orbitRegistry } from '../system/ember-orbit-setup.ts';
+import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
+import { camelize } from '@orbit/serializers';
 
 function getRegisteredModels(): string[] {
   return Object.keys(orbitRegistry.registrations.models).map(camelize);

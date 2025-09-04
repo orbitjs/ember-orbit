@@ -1,5 +1,5 @@
-import { MemorySource, type MemorySourceSettings } from '@orbit/memory';
 import { applyStandardSourceInjections } from '../utils/standard-injections.ts';
+import { MemorySource, type MemorySourceSettings } from '@orbit/memory';
 
 export default {
   create(injections: MemorySourceSettings): MemorySource {

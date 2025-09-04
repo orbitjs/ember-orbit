@@ -1,11 +1,11 @@
+import type ApplicationInstance from '@ember/application/instance';
+import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import {
   Coordinator,
   Strategy,
   type CoordinatorOptions,
 } from '@orbit/coordinator';
-import type ApplicationInstance from '@ember/application/instance';
 import type { RequestOptions, Source } from '@orbit/data';
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 
 type CoordinatorInjections = {
   sourceNames?: string[];

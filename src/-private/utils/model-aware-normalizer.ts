@@ -1,20 +1,20 @@
-import {
-  type InitializedRecord,
-  type RecordIdentity,
-  RecordKeyMap,
-  type RecordKeyValue,
-  type RecordNormalizer,
-  RecordSchema,
-  StandardRecordNormalizer,
-  type StandardRecordNormalizerSettings,
-  type UninitializedRecord,
-} from '@orbit/records';
 import { Model } from '../../index.ts';
 import {
   type RecordFieldsOrModel,
   type RecordIdentityOrModel,
 } from './model-aware-types.ts';
 import { normalizeModelFields, type ModelFields } from './model-fields.ts';
+import {
+  RecordKeyMap,
+  RecordSchema,
+  StandardRecordNormalizer,
+  type InitializedRecord,
+  type RecordIdentity,
+  type RecordKeyValue,
+  type RecordNormalizer,
+  type StandardRecordNormalizerSettings,
+  type UninitializedRecord,
+} from '@orbit/records';
 
 export type ModelRecordNormalizerSettings = StandardRecordNormalizerSettings;
 

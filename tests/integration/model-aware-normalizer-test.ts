@@ -1,20 +1,19 @@
-import { Store } from '#src/index.ts';
-import {
-  Planet,
-  Moon,
-  Star,
-  BinaryStar,
-  PlanetarySystem,
-} from '../support/dummy-models';
-import { createStore } from '../support/store';
-import { module, test } from 'qunit';
-
 import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import type ApplicationInstance from '@ember/application/instance';
 import {
   isStandardRecord,
   ModelAwareNormalizer,
 } from '#src/-private/utils/model-aware-normalizer.ts';
-import type ApplicationInstance from '@ember/application/instance';
+import { Store } from '#src/index.ts';
+import {
+  BinaryStar,
+  Moon,
+  Planet,
+  PlanetarySystem,
+  Star,
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
 
 module('Integration - ModelAwareNormalizer', function (hooks) {
   setupTest(hooks);

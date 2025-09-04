@@ -1,5 +1,5 @@
-import { deepMerge } from '@orbit/utils';
 import type ApplicationInstance from '@ember/application/instance';
+import { deepMerge } from '@orbit/utils';
 
 export interface OrbitConfig {
   types: {
@@ -46,7 +46,7 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     keyMap: 'data-key-map',
     normalizer: 'data-normalizer',
     validator: 'data-validator',
-  }
+  },
 };
 
 export function setupEmberOrbitConfig(application: ApplicationInstance) {

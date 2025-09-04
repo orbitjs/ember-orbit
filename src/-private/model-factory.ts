@@ -1,10 +1,10 @@
-import Orbit from '@orbit/core';
 import { getOwner } from '@ember/application';
-import type { Dict } from '@orbit/utils';
-import { type RecordIdentity, cloneRecordIdentity } from '@orbit/records';
 import Cache from './cache.ts';
 import Model, { type ModelSettings } from './model.ts';
 import { orbitRegistry } from './system/ember-orbit-setup.ts';
+import Orbit from '@orbit/core';
+import { cloneRecordIdentity, type RecordIdentity } from '@orbit/records';
+import type { Dict } from '@orbit/utils';
 
 const { assert } = Orbit;
 

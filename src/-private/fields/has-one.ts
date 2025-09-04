@@ -1,9 +1,8 @@
+import Model from '../model.ts';
+import { defineRelationship } from '../utils/model-definition.ts';
+import { getHasOneCache } from '../utils/property-cache.ts';
 import { Orbit } from '@orbit/core';
 import type { HasOneRelationshipDefinition } from '@orbit/records';
-
-import Model from '../model.ts';
-import { getHasOneCache } from '../utils/property-cache.ts';
-import { defineRelationship } from '../utils/model-definition.ts';
 
 const { assert } = Orbit;
 

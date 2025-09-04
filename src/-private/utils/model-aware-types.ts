@@ -1,15 +1,15 @@
+import { Model } from '../../index.ts';
+import type { ModelFields } from './model-fields';
 import type { QueryOrExpressions, TransformOrOperations } from '@orbit/data';
 import {
+  RecordQueryBuilder,
+  RecordTransformBuilder,
   type RecordIdentity,
   type RecordKeyValue,
   type RecordOperation,
-  RecordQueryBuilder,
   type RecordQueryExpression,
-  RecordTransformBuilder,
   type UninitializedRecord,
 } from '@orbit/records';
-import { Model } from '../../index.ts';
-import type { ModelFields } from './model-fields';
 
 export type RecordIdentityOrModel = RecordIdentity | RecordKeyValue | Model;
 
