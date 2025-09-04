@@ -1,4 +1,3 @@
-import { getOwner } from '@ember/application';
 import Cache from './cache.ts';
 import Model, { type ModelSettings } from './model.ts';
 import { orbitRegistry } from './system/ember-orbit-setup.ts';
@@ -34,7 +33,9 @@ export default class ModelFactory {
     let modelFactory = this.#modelFactoryMap[type];
 
     if (!modelFactory) {
-      modelFactory = orbitRegistry.registrations.models[type];
+      modelFactory = orbitRegistry.registrations.models[
+        type as keyof object
+      ] as Factory;
       assert(
         `An ember-orbit model for type ${type} has not been registered.`,
         modelFactory !== undefined,

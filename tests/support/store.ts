@@ -1,7 +1,16 @@
 import type ApplicationInstance from '@ember/application/instance';
-import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
-import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import {
+  CoordinatorFactory,
+  MemorySourceFactory,
+  Model,
+  SchemaFactory,
+  setupOrbit,
+  Store,
+  type ModelSettings,
+} from '#src/index.ts';
+import StoreFactory from '#src/-private/factories/store-factory.ts';
 import type { Dict } from '@orbit/utils';
+import ValidatorFactory from '#src/services/data-validator.ts';
 
 // const dataModels = import.meta.glob('../test-app/data-models/*.{js,ts}', {
 //   eager: true,
@@ -18,16 +27,15 @@ const dataStrategies = import.meta.glob(
 
 export function createStore(
   owner: ApplicationInstance,
-  dataModels: Dict<new (settings: ModelSettings) => Model>,
+  models: Dict<new (settings: ModelSettings) => Model>,
 ) {
-  const orbitConfig = orbitRegistry.config;
-
-  // if (models) {
-  //   Object.keys(models).forEach((type: string) => {
-  //     // @ts-expect-error TODO: fix this type error
-  //     owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
-  //   });
-  // }
+  // TODO: maybe make these not need such specific paths
+  const dataModels = Object.fromEntries(
+    Object.entries(models).map(([key, value]) => [
+      `../test-app/data-models/${key}`,
+      value,
+    ]),
+  );
 
   setupOrbit(owner, {
     ...dataModels,
@@ -35,7 +43,11 @@ export function createStore(
     ...dataStrategies,
   });
 
-  debugger;
-
+  // TODO: we should not need to manually register all these. Where did the magic go?
+  owner.register(`data-source:store`, MemorySourceFactory);
+  owner.register('service:data-coordinator', CoordinatorFactory);
+  owner.register('service:data-schema', SchemaFactory);
+  owner.register('service:data-validator', ValidatorFactory);
+  owner.register('service:store', StoreFactory);
   return owner.lookup('service:store') as Store;
 }

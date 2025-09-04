@@ -14,13 +14,11 @@ module('Integration - Cache', function (hooks) {
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    debugger;
     store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,
     }).fork();
-    debugger;
     cache = store.cache;
   });
 
