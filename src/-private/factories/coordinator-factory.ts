@@ -12,15 +12,9 @@ type CoordinatorInjections = {
   strategyNames?: string[];
 } & CoordinatorOptions;
 
-function isFactory(f?: { create: () => any }): boolean {
-  return typeof f === 'object' && typeof f?.create === 'function';
-}
-
 export default {
   create(injections: CoordinatorInjections = {}): Coordinator {
     const app = orbitRegistry.application as ApplicationInstance;
-    const orbitConfig = orbitRegistry.config;
-    debugger;
 
     if (injections.sources === undefined) {
       let sourceNames: string[];
@@ -34,14 +28,7 @@ export default {
       injections.sources = sourceNames
         .map((name) => {
           if (name === 'store') {
-            const key = `${orbitConfig.types.source}:${name}`;
-            const factory = app.resolveRegistration(
-              key as `${string}:${string}`,
-            );
-            // @ts-expect-error TODO: fix this type error
-            return isFactory(factory)
-              ? app.lookup(key as `${string}:${string}`)
-              : undefined;
+            return app.lookup('data-source:store');
           } else {
             return orbitRegistry.registrations.sources[name];
           }
@@ -49,7 +36,6 @@ export default {
         .filter((source) => !!source) as Array<
         Source<RequestOptions, RequestOptions, unknown, unknown>
       >;
-      debugger;
     }
 
     if (injections.strategies === undefined) {

@@ -1,5 +1,5 @@
 import { waitForSource } from '#src/test-support/index.ts';
-import { setupTest } from 'ember-qunit';
+import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 import type ApplicationInstance from '@ember/application/instance';
 import { Cache, Store } from '#src/index.ts';
@@ -8,17 +8,19 @@ import { createStore } from '../support/store';
 import { buildTransform } from '@orbit/data';
 
 module('Integration - Cache', function (hooks) {
-  setupTest(hooks);
+  setupRenderingTest(hooks);
 
   let store: Store;
   let cache: Cache;
 
   hooks.beforeEach(function () {
+    debugger;
     store = createStore(this.owner as ApplicationInstance, {
       planet: Planet,
       moon: Moon,
       star: Star,
     }).fork();
+    debugger;
     cache = store.cache;
   });
 

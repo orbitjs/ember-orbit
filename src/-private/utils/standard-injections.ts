@@ -1,4 +1,3 @@
-import { getOwner } from '@ember/application';
 import type ApplicationInstance from '@ember/application/instance';
 import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type { Bucket } from '@orbit/core';
@@ -17,34 +16,18 @@ export function applyStandardSourceInjections(
   injections: RecordSourceSettings,
 ): void {
   const app = orbitRegistry.application as ApplicationInstance;
-  const orbitConfig = orbitRegistry.config;
-  debugger;
 
-  if (!orbitConfig.skipSchemaService) {
-    injections.schema = app.lookup(
-      `service:${orbitConfig.services.schema}`,
-    ) as RecordSchema;
-  }
-  if (!orbitConfig.skipBucketService) {
-    injections.bucket = app.lookup(
-      `service:${orbitConfig.services.bucket}`,
-    ) as Bucket<unknown>;
-  }
-  if (!orbitConfig.skipKeyMapService) {
-    injections.keyMap = app.lookup(
-      `service:${orbitConfig.services.keyMap}`,
-    ) as RecordKeyMap;
-  }
-  if (!orbitConfig.skipNormalizerService) {
-    injections.normalizer = app.lookup(
-      `service:${orbitConfig.services.normalizer}`,
-    ) as RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
-  }
-  if (orbitConfig.skipValidatorService) {
-    injections.autoValidate = false;
-  } else {
-    injections.validatorFor = app.lookup(
-      `service:${orbitConfig.services.validator}`,
-    ) as ValidatorForFn<StandardValidator | StandardRecordValidator>;
-  }
+  injections.schema = app.lookup('service:data-schema') as RecordSchema;
+
+  injections.bucket = app.lookup('service:data-bucket') as Bucket<unknown>;
+
+  injections.keyMap = app.lookup('service:data-key-map') as RecordKeyMap;
+
+  injections.normalizer = app.lookup(
+    'service:data-normalizer',
+  ) as RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
+
+  injections.validatorFor = app.lookup(
+    'service:data-validator',
+  ) as ValidatorForFn<StandardValidator | StandardRecordValidator>;
 }

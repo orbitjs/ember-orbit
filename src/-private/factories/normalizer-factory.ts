@@ -9,18 +9,10 @@ import type { RecordKeyMap, RecordSchema } from '@orbit/records';
 export default {
   create(injections: ModelRecordNormalizerSettings): ModelAwareNormalizer {
     const app = orbitRegistry.application as ApplicationInstance;
-    const orbitConfig = orbitRegistry.config;
 
-    if (!orbitConfig.skipSchemaService) {
-      injections.schema = app.lookup(
-        `service:${orbitConfig.services.schema}`,
-      ) as RecordSchema;
-    }
-    if (!orbitConfig.skipKeyMapService) {
-      injections.keyMap = app.lookup(
-        `service:${orbitConfig.services.keyMap}`,
-      ) as RecordKeyMap;
-    }
+    injections.schema = app.lookup('service:data-schema') as RecordSchema;
+
+    injections.keyMap = app.lookup('service:data-key-map') as RecordKeyMap;
 
     return new ModelAwareNormalizer(injections);
   },

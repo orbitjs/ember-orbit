@@ -13,11 +13,8 @@ import type { RecordSourceQueryOptions } from '@orbit/records';
 export default {
   create(injections: StoreSettings): Store {
     const app = orbitRegistry.application as ApplicationInstance;
-    const orbitConfig = orbitRegistry.config;
 
-    injections.source = app.lookup(
-      `${orbitConfig.types.source}:store`,
-    ) as MemorySource<
+    injections.source = app.lookup('data-source:store') as MemorySource<
       RecordSourceQueryOptions,
       RequestOptions,
       ModelAwareQueryBuilder,
