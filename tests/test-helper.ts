@@ -6,47 +6,18 @@ import * as QUnit from 'qunit';
 import { setApplication } from '@ember/test-helpers';
 import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
-import { initialize as orbitConfigInitialize } from '#src/instance-initializers/ember-orbit-config.ts';
-import { initialize as orbitServicesInitialize } from '#src/instance-initializers/ember-orbit-services.ts';
-import { setupOrbit } from '#src/index.ts';
-// @ts-expect-error TODO: convert these to TS
-import ApplicationRoute from './test-app/routes/application.gjs';
-// @ts-expect-error TODO: convert these to TS
-import FilteredRoute from './test-app/routes/filtered.gjs';
+import ApplicationRoute from './test-app/routes/application.gts';
+import FilteredRoute from './test-app/routes/filtered.gts';
 // @ts-expect-error TODO: convert these to TS
 import UndoManager from './test-app/services/undo-manager.js';
-import type ApplicationInstance from '@ember/application/instance';
 
 class Router extends EmberRouter {
   location = 'none';
   rootURL = '/';
 }
-
-const dataModels = import.meta.glob('./test-app/data-models/*.{js,ts}', {
-  eager: true,
-});
-const dataSources = import.meta.glob('./test-app/data-sources/*.{js,ts}', {
-  eager: true,
-});
-const dataStrategies = import.meta.glob(
-  './test-app/data-strategies/*.{js,ts}',
-  {
-    eager: true,
-  },
-);
-
-setupOrbit({
-  ...dataModels,
-  ...dataSources,
-  ...dataStrategies,
-});
-
 class TestApp extends EmberApp {
   modulePrefix = 'test-app';
   Resolver = Resolver.withModules({
-    ...dataModels,
-    ...dataSources,
-    ...dataStrategies,
     'test-app/routes/application': { default: ApplicationRoute },
     'test-app/routes/filtered': { default: FilteredRoute },
     'test-app/router': { default: Router },
@@ -66,11 +37,6 @@ export function start() {
   });
 
   setApplication(applicationInstance);
-
-  orbitConfigInitialize(applicationInstance as unknown as ApplicationInstance);
-  orbitServicesInitialize(
-    applicationInstance as unknown as ApplicationInstance,
-  );
 
   setup(QUnit.assert);
   setupEmberOnerrorValidation();

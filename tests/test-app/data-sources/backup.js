@@ -2,7 +2,7 @@ import { MemorySource } from '@orbit/memory';
 import { applyStandardSourceInjections } from 'ember-orbit';
 
 export default {
-  create(injections) {
+  create(injections = {}) {
     applyStandardSourceInjections(injections);
 
     // Note: An IndexedDBSource is typically used for data backups, since

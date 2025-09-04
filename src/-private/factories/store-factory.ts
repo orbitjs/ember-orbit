@@ -1,7 +1,6 @@
-import { getOwner } from '@ember/application';
 import Store, { type StoreSettings } from '../store.ts';
 import type ApplicationInstance from '@ember/application/instance';
-import type { OrbitConfig } from '../system/ember-orbit-setup.ts';
+import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type MemorySource from '@orbit/memory';
 import type { RecordSourceQueryOptions } from '@orbit/records';
 import type { RequestOptions } from '@orbit/data';
@@ -13,8 +12,8 @@ import type { RecordCacheUpdateDetails } from '@orbit/record-cache';
 
 export default {
   create(injections: StoreSettings): Store {
-    const app = getOwner(injections) as ApplicationInstance;
-    const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
+    const app = orbitRegistry.application as ApplicationInstance;
+    const orbitConfig = orbitRegistry.config;
 
     injections.source = app.lookup(
       `${orbitConfig.types.source}:store`,

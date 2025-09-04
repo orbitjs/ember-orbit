@@ -23,13 +23,6 @@ export interface OrbitConfig {
     normalizer: string;
     validator: string;
   };
-  skipStoreService: boolean;
-  skipBucketService: boolean;
-  skipCoordinatorService: boolean;
-  skipSchemaService: boolean;
-  skipKeyMapService: boolean;
-  skipNormalizerService: boolean;
-  skipValidatorService: boolean;
 }
 
 export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
@@ -53,17 +46,10 @@ export const DEFAULT_ORBIT_CONFIG: OrbitConfig = {
     keyMap: 'data-key-map',
     normalizer: 'data-normalizer',
     validator: 'data-validator',
-  },
-  skipStoreService: false,
-  skipBucketService: false,
-  skipCoordinatorService: false,
-  skipSchemaService: false,
-  skipKeyMapService: false,
-  skipNormalizerService: false,
-  skipValidatorService: false,
+  }
 };
 
-export function initialize(application: ApplicationInstance) {
+export function setupEmberOrbitConfig(application: ApplicationInstance) {
   const envConfig = application.resolveRegistration('config:environment') ?? {};
 
   const config = deepMerge(
@@ -73,12 +59,5 @@ export function initialize(application: ApplicationInstance) {
     envConfig.orbit ?? {},
   ) as OrbitConfig;
 
-  application.register('ember-orbit:config', config, {
-    instantiate: false,
-  });
+  return config;
 }
-
-export default {
-  name: 'ember-orbit-config',
-  initialize,
-};

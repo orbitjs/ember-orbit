@@ -11,13 +11,14 @@ import type {
   UninitializedRecord,
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
-import type { OrbitConfig } from '../system/ember-orbit-setup.ts';
+import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 
 export function applyStandardSourceInjections(
   injections: RecordSourceSettings,
 ): void {
-  const app = getOwner(injections) as ApplicationInstance;
-  const orbitConfig = app.lookup('ember-orbit:config') as OrbitConfig;
+  const app = orbitRegistry.application as ApplicationInstance;
+  const orbitConfig = orbitRegistry.config;
+  debugger;
 
   if (!orbitConfig.skipSchemaService) {
     injections.schema = app.lookup(

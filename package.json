@@ -69,6 +69,7 @@
     "@glint/environment-ember-template-imports": "^2.0.0-alpha.2",
     "@glint/template": "^1.6.0-alpha.1",
     "@glint/tsserver-plugin": "^2.0.0-alpha.2",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@types/qunit": "^2.19.12",
     "babel-plugin-ember-template-compilation": "^2.2.5",

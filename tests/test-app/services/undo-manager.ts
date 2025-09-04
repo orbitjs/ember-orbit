@@ -1,3 +1,4 @@
+import type { Store } from '#src/index.ts';
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 
@@ -14,7 +15,7 @@ function removeFromTo(array, from, to) {
 }
 
 export default class UndoManager extends Service {
-  @service store;
+  @service declare store: Store;
 
   commands = [];
   index = -1;

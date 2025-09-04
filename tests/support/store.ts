@@ -1,32 +1,41 @@
 import type ApplicationInstance from '@ember/application/instance';
 import type { Dict } from '@orbit/utils';
-import { Model, Store, type ModelSettings } from '#src/index.ts';
-import {
-  initialize as orbitConfigInitialize,
-  type OrbitConfig,
-} from '#src/instance-initializers/ember-orbit-config.ts';
-import { initialize as orbitServicesInitialize } from '#src/instance-initializers/ember-orbit-services.ts';
+import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
+
+const dataModels = import.meta.glob('../test-app/data-models/*.{js,ts}', {
+  eager: true,
+});
+const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
+  eager: true,
+});
+const dataStrategies = import.meta.glob(
+  '../test-app/data-strategies/*.{js,ts}',
+  {
+    eager: true,
+  },
+);
 
 export function createStore(
   owner: ApplicationInstance,
-  models: Dict<new (settings: ModelSettings) => Model>,
+  dataModels: Dict<new (settings: ModelSettings) => Model>,
 ) {
-  orbitConfigInitialize(owner);
-  orbitServicesInitialize(owner);
-  const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
+  const orbitConfig = orbitRegistry.config;
 
-  if (models) {
-    const types: string[] = [];
-    Object.keys(models).forEach((type: string) => {
-      // @ts-expect-error TODO: fix this type error
-      owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
-      types.push(type);
-    });
+  // if (models) {
+  //   Object.keys(models).forEach((type: string) => {
+  //     // @ts-expect-error TODO: fix this type error
+  //     owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
+  //   });
+  // }
 
-    owner.register('ember-orbit:model-names', types, {
-      instantiate: false,
-    });
-  }
+  debugger;
+
+  setupOrbit(owner, {
+    ...dataModels,
+    ...dataSources,
+    ...dataStrategies,
+  });
 
   return owner.lookup(`service:${orbitConfig.services.store}`) as Store;
 }
