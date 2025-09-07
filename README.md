@@ -45,9 +45,9 @@ relationships between Orbit sources. In this way, you can install any Orbit
 
 ## Compatibility
 
-- Ember.js v3.24 or above
-- Ember CLI v3.24 or above
-- Node.js v12 or above
+- Ember.js v3.28 or above
+- Ember CLI v3.28 or above
+- Node.js v20 or above
 
 ## Status
 
@@ -123,7 +123,7 @@ ember g data-model planet
 This will create the following module in `app/data-models/planet.js`:
 
 ```js
-import { Model } from 'ember-orbit';
+import { Model } from "ember-orbit";
 
 export default class Planet extends Model {}
 ```
@@ -131,25 +131,25 @@ export default class Planet extends Model {}
 You can then extend your model to include keys, attributes, and relationships:
 
 ```js
-import { Model, attr, hasOne, hasMany, key } from 'ember-orbit';
+import { Model, attr, hasOne, hasMany, key } from "ember-orbit";
 
 export default class Planet extends Model {
   @key() remoteId;
-  @attr('string') name;
-  @hasMany('moon', { inverse: 'planet' }) moons;
-  @hasOne('star') sun;
+  @attr("string") name;
+  @hasMany("moon", { inverse: "planet" }) moons;
+  @hasOne("star") sun;
 }
 ```
 
 You can create polymorphic relationships by passing in an array of types:
 
 ```js
-import { Model, attr, hasOne, hasMany } from 'ember-orbit';
+import { Model, attr, hasOne, hasMany } from "ember-orbit";
 
 export default class PlanetarySystem extends Model {
-  @attr('string') name;
-  @hasMany(['moon', 'planet']) bodies;
-  @hasOne(['star', 'binaryStar']) star;
+  @attr("string") name;
+  @hasMany(["moon", "planet"]) bodies;
+  @hasOne(["star", "binaryStar"]) star;
 }
 ```
 
@@ -200,8 +200,8 @@ updated with the "terrestrial" planets in the store:
 ```javascript
 let planets = store.cache.liveQuery((qb) =>
   qb
-    .findRecords('planet')
-    .filter({ attribute: 'classification', value: 'terrestrial' })
+    .findRecords("planet")
+    .filter({ attribute: "classification", value: "terrestrial" }),
 );
 ```
 
@@ -210,20 +210,20 @@ methods are async and call `query` internally:
 
 ```javascript
 // find all records of a type
-let planets = await store.findRecords('planet');
+let planets = await store.findRecords("planet");
 
 // find a specific record by type and id
-let planet = await store.findRecord('planet', 'abc123');
+let planet = await store.findRecord("planet", "abc123");
 ```
 
 These methods are also available on the EO `Cache`, but are synchronous:
 
 ```javascript
 // find all records of a type
-let planets = store.cache.findRecords('planet');
+let planets = store.cache.findRecords("planet");
 
 // find a specific record by type and id
-let planet = store.cache.findRecord('planet', 'abc123');
+let planet = store.cache.findRecord("planet", "abc123");
 ```
 
 ### Updating Data
@@ -255,21 +255,21 @@ Here are some examples of each:
 
 ```javascript
 // add a new record (returned as a Model instance)
-let planet = await store.addRecord({ type: 'planet', id: '1', name: 'Earth' });
+let planet = await store.addRecord({ type: "planet", id: "1", name: "Earth" });
 console.log(planet.name); // Earth
 
 // update one or more fields of the record
-await store.updateRecord({ type: 'planet', id: '1', name: 'Mother Earth' });
+await store.updateRecord({ type: "planet", id: "1", name: "Mother Earth" });
 console.log(planet.name); // Mother Earth
 
 // remove the record
-await store.removeRecord({ type: 'planet', id: '1' });
+await store.removeRecord({ type: "planet", id: "1" });
 // or alternatively: await store.removeRecord(planet);
 
 // add more planets in a single `Transform`
 let [mars, venus] = await store.update((t) => [
-  t.addRecord({ type: 'planet', name: 'Mars' }),
-  t.addRecord({ type: 'planet', name: 'Venus' })
+  t.addRecord({ type: "planet", name: "Mars" }),
+  t.addRecord({ type: "planet", name: "Venus" }),
 ]);
 ```
 
@@ -364,13 +364,13 @@ as properties that stay updated.
 Attributes and has-one relationships are also directly editable. For instance:
 
 ```javascript
-let jupiter = forkedCache.findRecord('planet', 'jupiter');
-let sun = forkedCache.findRecord('star', 'theSun');
+let jupiter = forkedCache.findRecord("planet", "jupiter");
+let sun = forkedCache.findRecord("star", "theSun");
 
 console.log(jupiter.name); // 'Jupiter'
 
 // update attribute
-jupiter.name = 'Jupiter!';
+jupiter.name = "Jupiter!";
 console.log(jupiter.name); // 'Jupiter!'
 
 // update has-one relationship
@@ -390,15 +390,15 @@ available:
 - `$remove`
 
 ```javascript
-let jupiter = forkedCache.findRecord('planet', 'jupiter');
-let io = forkedCache.findRecord('moon', 'io');
-let europa = forkedCache.findRecord('moon', 'europa');
-let sun = forkedCache.findRecord('star', 'theSun');
+let jupiter = forkedCache.findRecord("planet", "jupiter");
+let io = forkedCache.findRecord("moon", "io");
+let europa = forkedCache.findRecord("moon", "europa");
+let sun = forkedCache.findRecord("star", "theSun");
 
-jupiter.$replaceAttribute('name', 'JUPITER!');
-jupiter.$addToRelatedRecords('moons', io);
-jupiter.$removeFromRelatedRecords('moons', europa);
-jupiter.$replaceRelatedRecord('sun', sun);
+jupiter.$replaceAttribute("name", "JUPITER!");
+jupiter.$addToRelatedRecords("moons", io);
+jupiter.$removeFromRelatedRecords("moons", europa);
+jupiter.$replaceRelatedRecord("sun", sun);
 
 console.log(jupiter.name); // 'JUPITER!'
 console.log(jupiter.moons.includes(io)); // true
@@ -434,15 +434,15 @@ ember g data-source backup --from=@orbit/indexeddb
 This will generate a source factory in `app/data-sources/backup.js`:
 
 ```javascript
-import SourceClass from '@orbit/indexeddb';
-import { applyStandardSourceInjections } from 'ember-orbit';
+import SourceClass from "@orbit/indexeddb";
+import { applyStandardSourceInjections } from "ember-orbit";
 
 export default {
   create(injections = {}) {
     applyStandardSourceInjections(injections);
-    injections.name = 'backup';
+    injections.name = "backup";
     return new SourceClass(injections);
-  }
+  },
 };
 ```
 
@@ -477,17 +477,17 @@ This should create a `SyncStrategy` factory in
 `app/data-strategies/store-backup-sync.js` as follows:
 
 ```js
-import { SyncStrategy } from '@orbit/coordinator';
+import { SyncStrategy } from "@orbit/coordinator";
 
 export default {
   create() {
     return new SyncStrategy({
-      name: 'store-backup-sync',
+      name: "store-backup-sync",
 
       /**
        * The name of the source which will have its `transform` event observed.
        */
-      source: 'store',
+      source: "store",
 
       /**
        * The name of the source which will be acted upon.
@@ -495,7 +495,7 @@ export default {
        * When the source receives the `transform` event, the `sync` method
        * will be invoked on the target.
        */
-      target: 'backup',
+      target: "backup",
 
       /**
        * A handler for any errors thrown as a result of invoking `sync` on the
@@ -519,9 +519,9 @@ export default {
        * invoked in the context of this strategy (and thus will have access to
        * both `this.source` and `this.target`).
        */
-      blocking: true
+      blocking: true,
     });
-  }
+  },
 };
 ```
 
@@ -553,8 +553,8 @@ enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
 ```js
-import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import Route from "@ember/routing/route";
+import { inject as service } from "@ember/service";
 
 export default class ApplicationRoute extends Route {
   @service dataCoordinator;
@@ -562,7 +562,7 @@ export default class ApplicationRoute extends Route {
 
   async beforeModel() {
     // Populate the store from backup prior to activating the coordinator
-    const backup = this.dataCoordinator.getSource('backup');
+    const backup = this.dataCoordinator.getSource("backup");
     const records = await backup.query((q) => q.findRecords());
     await this.store.sync((t) => records.map((r) => t.addRecord(r)));
 
@@ -606,25 +606,25 @@ module.exports = function (environment) {
     orbit: {
       schemaVersion: undefined,
       types: {
-        bucket: 'data-bucket',
-        model: 'data-model',
-        source: 'data-source',
-        strategy: 'data-strategy'
+        bucket: "data-bucket",
+        model: "data-model",
+        source: "data-source",
+        strategy: "data-strategy",
       },
       collections: {
-        buckets: 'data-buckets',
-        models: 'data-models',
-        sources: 'data-sources',
-        strategies: 'data-strategies'
+        buckets: "data-buckets",
+        models: "data-models",
+        sources: "data-sources",
+        strategies: "data-strategies",
       },
       services: {
-        store: 'store',
-        bucket: 'data-bucket',
-        coordinator: 'data-coordinator',
-        schema: 'data-schema',
-        keyMap: 'data-key-map',
-        normalizer: 'data-normalizer',
-        validator: 'data-validator'
+        store: "store",
+        bucket: "data-bucket",
+        coordinator: "data-coordinator",
+        schema: "data-schema",
+        keyMap: "data-key-map",
+        normalizer: "data-normalizer",
+        validator: "data-validator",
       },
       skipStoreService: false,
       skipBucketService: false,
@@ -632,8 +632,8 @@ module.exports = function (environment) {
       skipSchemaService: false,
       skipKeyMapService: false,
       skipNormalizerService: false,
-      skipValidatorService: false
-    }
+      skipValidatorService: false,
+    },
   };
 
   return ENV;
@@ -659,17 +659,17 @@ non-production builds:
 ```js
 // app/data-strategies/event-logging.js
 
-import { EventLoggingStrategy } from '@orbit/coordinator';
-import config from 'example/config/environment';
+import { EventLoggingStrategy } from "@orbit/coordinator";
+import config from "example/config/environment";
 
 const factory = {
   create() {
     return new EventLoggingStrategy();
-  }
+  },
 };
 
 // Conditionally include this strategy
-export default config.environment !== 'production' ? factory : null;
+export default config.environment !== "production" ? factory : null;
 ```
 
 #### Customizing validators
@@ -695,16 +695,16 @@ For instance, in order to provide a custom validator for an `address` type:
 ```js
 // app/services/data-validator.js
 
-import { buildRecordValidatorFor } from '@orbit/records';
+import { buildRecordValidatorFor } from "@orbit/records";
 
 const validators = {
   address: (input) => {
-    if (typeof input?.country !== 'string') {
+    if (typeof input?.country !== "string") {
       return [
         {
-          validator: 'address',
-          validation: 'country',
-          description: 'is not a string',
+          validator: "address",
+          validation: "country",
+          description: "is not a string",
           ref: input,
         },
       ];

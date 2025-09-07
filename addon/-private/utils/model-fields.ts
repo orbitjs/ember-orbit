@@ -1,11 +1,11 @@
 import { Orbit } from '@orbit/core';
 import {
   RecordSchema,
-  RecordRelationship,
-  ModelDefinition,
-  RecordIdentity,
-  RelationshipDefinition,
-  UninitializedRecord
+  type RecordRelationship,
+  type ModelDefinition,
+  type RecordIdentity,
+  type RelationshipDefinition,
+  type UninitializedRecord,
 } from '@orbit/records';
 import { deepSet } from '@orbit/utils';
 
@@ -19,7 +19,7 @@ export type ModelFields = {
 
 export function normalizeModelFields(
   schema: RecordSchema,
-  properties: ModelFields
+  properties: ModelFields,
 ): UninitializedRecord {
   const { id, type } = properties;
   const modelDefinition = schema.getModel(type);
@@ -35,11 +35,11 @@ export function normalizeModelFields(
 function assignKeys(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const keyDefs = modelDefinition.keys;
   if (keyDefs) {
-    for (let key of Object.keys(keyDefs)) {
+    for (const key of Object.keys(keyDefs)) {
       if (properties[key] !== undefined) {
         deepSet(record, ['keys', key], properties[key]);
       }
@@ -50,11 +50,11 @@ function assignKeys(
 function assignAttributes(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const attributeDefs = modelDefinition.attributes;
   if (attributeDefs) {
-    for (let attribute of Object.keys(attributeDefs)) {
+    for (const attribute of Object.keys(attributeDefs)) {
       if (properties[attribute] !== undefined) {
         deepSet(record, ['attributes', attribute], properties[attribute]);
       }
@@ -65,17 +65,17 @@ function assignAttributes(
 function assignRelationships(
   modelDefinition: ModelDefinition,
   record: UninitializedRecord,
-  properties: ModelFields
+  properties: ModelFields,
 ) {
   const relationshipDefs = modelDefinition.relationships;
   if (relationshipDefs) {
-    for (let relationship of Object.keys(relationshipDefs)) {
+    for (const relationship of Object.keys(relationshipDefs)) {
       if (properties[relationship] !== undefined) {
-        let relationshipDef = relationshipDefs[
+        const relationshipDef = relationshipDefs[
           relationship
         ] as RelationshipDefinition;
-        let relationshipType = relationshipDef.type as string | string[];
-        let relationshipProperties = properties[relationship] as
+        const relationshipType = relationshipDef.type as string | string[];
+        const relationshipProperties = properties[relationship] as
           | RecordIdentity
           | RecordIdentity[]
           | string
@@ -84,7 +84,7 @@ function assignRelationships(
         deepSet(
           record,
           ['relationships', relationship],
-          normalizeRelationship(relationshipType, relationshipProperties)
+          normalizeRelationship(relationshipType, relationshipProperties),
         );
       }
     }
@@ -93,7 +93,7 @@ function assignRelationships(
 
 function normalizeRelationship(
   type: string | string[],
-  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null,
 ): RecordRelationship {
   const relationship: RecordRelationship = {};
 
@@ -101,11 +101,11 @@ function normalizeRelationship(
 
   if (isHasMany(value)) {
     relationship.data = [];
-    for (let identity of value) {
+    for (const identity of value) {
       if (typeof identity === 'string') {
         assert(
           'The hasMany relationship is polymorphic, so string[] will not work as a value. RecordIdentity[] must be provided for type information.',
-          !isPolymorphic
+          !isPolymorphic,
         );
         relationship.data.push({ type: type as string, id: identity });
       } else {
@@ -117,7 +117,7 @@ function normalizeRelationship(
   } else if (typeof value === 'string') {
     assert(
       'The relationship is polymorphic, so string will not work as a value. RecordIdentity must be provided for type information.',
-      !isPolymorphic
+      !isPolymorphic,
     );
     relationship.data = { type: type as string, id: value };
   } else {
@@ -128,7 +128,7 @@ function normalizeRelationship(
 }
 
 function isHasMany(
-  value: RecordIdentity | RecordIdentity[] | string | string[] | null
+  value: RecordIdentity | RecordIdentity[] | string | string[] | null,
 ): value is RecordIdentity[] | string[] {
   return Array.isArray(value);
 }

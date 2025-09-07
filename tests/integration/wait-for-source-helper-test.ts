@@ -5,6 +5,9 @@ import { setupTest } from 'ember-qunit';
 import { Planet } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { waitForSource } from 'ember-orbit/test-support';
+import type ApplicationInstance from '@ember/application/instance';
+import type { Transform } from '@orbit/data';
+import type { RecordOperation } from '@orbit/records';
 
 module('waitForSource helper', function (hooks) {
   let store: Store;
@@ -12,14 +15,14 @@ module('waitForSource helper', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, { planet: Planet });
+    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
   });
 
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
     const backup = new MemorySource({ schema: store.schema });
 
-    store.on('update', (transform) => {
-      backup.sync(transform);
+    store.on('update', async (transform: Transform<RecordOperation>) => {
+      await backup.sync(transform);
     });
 
     await store.addRecord({ type: 'planet', name: 'Earth' });
@@ -35,8 +38,8 @@ module('waitForSource helper', function (hooks) {
 
     this.owner.register('data-source:backup', backup, { instantiate: false });
 
-    store.on('update', (transform) => {
-      backup.update(transform);
+    store.on('update', async (transform: Transform<RecordOperation>) => {
+      await backup.update(transform);
     });
 
     await store.addRecord({ type: 'planet', name: 'Earth' });

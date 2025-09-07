@@ -9,8 +9,8 @@ export { default as hasOne } from './-private/fields/has-one';
 export { default as key } from './-private/fields/key';
 export { applyStandardSourceInjections } from './-private/utils/standard-injections';
 export { default as Cache } from './-private/cache';
-export { default as Model, ModelSettings } from './-private/model';
-export { default as Store, StoreSettings } from './-private/store';
+export { default as Model, type ModelSettings } from './-private/model';
+export { default as Store, type StoreSettings } from './-private/store';
 export { default as LiveQuery } from './-private/live-query';
 // Provide `belongsTo` as an alias to `hasOne`
 export { default as belongsTo } from './-private/fields/has-one';

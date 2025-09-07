@@ -1,12 +1,13 @@
 import {
-  RecordIdentity,
+  type RecordIdentity,
   serializeRecordIdentity,
-  deserializeRecordIdentity
+  deserializeRecordIdentity,
 } from '@orbit/records';
-import { IdentitySerializer } from '@orbit/identity-map';
+import type { IdentitySerializer } from '@orbit/identity-map';
 
 export class RecordIdentitySerializer
-  implements IdentitySerializer<RecordIdentity> {
+  implements IdentitySerializer<RecordIdentity>
+{
   serialize(identity: RecordIdentity) {
     return serializeRecordIdentity(identity);
   }

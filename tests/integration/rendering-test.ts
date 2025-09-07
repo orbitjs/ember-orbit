@@ -5,6 +5,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Rendering', function (hooks) {
   let store: Store;
@@ -14,7 +15,7 @@ module('Rendering', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon };
-    store = createStore(this.owner, models).fork();
+    store = createStore(this.owner as ApplicationInstance, models).fork();
     cache = store.cache;
   });
 
@@ -69,7 +70,7 @@ module('Rendering', function (hooks) {
     cache.addRecord({
       type: 'moon',
       name: 'Callisto',
-      planet: jupiter
+      planet: jupiter,
     });
 
     await settled();
@@ -78,7 +79,7 @@ module('Rendering', function (hooks) {
     const europa = cache.addRecord<Moon>({
       type: 'moon',
       name: 'Europa',
-      planet: jupiter
+      planet: jupiter,
     });
 
     await settled();
@@ -150,7 +151,7 @@ module('Rendering', function (hooks) {
 
   test('liveQuery record - accessed via `value` of LiveQuery', async function (assert) {
     const planet = cache.liveQuery((q) =>
-      q.findRecord({ type: 'planet', id: '1' })
+      q.findRecord({ type: 'planet', id: '1' }),
     );
     this.set('planet', planet);
 
@@ -167,7 +168,7 @@ module('Rendering', function (hooks) {
 
   test('liveQuery record - accessed via deprecated `content` of LiveQuery', async function (assert) {
     const planet = cache.liveQuery((q) =>
-      q.findRecord({ type: 'planet', id: '1' })
+      q.findRecord({ type: 'planet', id: '1' }),
     );
     this.set('planet', planet);
 

@@ -3,6 +3,12 @@ import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
 import { createStore } from 'dummy/tests/support/store';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import type {
+  RecordKeyMap,
+  RecordSchema,
+  StandardRecordNormalizer,
+} from '@orbit/records';
+import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Config', function (hooks) {
   setupTest(hooks);
@@ -19,13 +25,13 @@ module('Integration - Config', function (hooks) {
             bucket: 'orbit-bucket',
             model: 'orbit-model',
             source: 'orbit-source',
-            strategy: 'orbit-strategy'
+            strategy: 'orbit-strategy',
           },
           collections: {
             buckets: 'orbit-buckets',
             models: 'orbit-models',
             sources: 'orbit-sources',
-            strategies: 'orbit-strategies'
+            strategies: 'orbit-strategies',
           },
           services: {
             store: 'orbit-store',
@@ -33,79 +39,85 @@ module('Integration - Config', function (hooks) {
             schema: 'data-schema',
             keyMap: 'orbit-key-map',
             normalizer: 'orbit-normalizer',
-            validator: 'orbit-validator'
-          }
-        }
+            validator: 'orbit-validator',
+          },
+        },
       },
-      { instantiate: false }
+      { instantiate: false },
     );
     const models = { planet: Planet, moon: Moon, star: Star };
-    store = createStore(this.owner, models);
+    store = createStore(this.owner as ApplicationInstance, models);
   });
 
-  test('registrations respect config', async function (assert) {
-    const schema = this.owner.lookup('service:data-schema');
-    const keyMap = this.owner.lookup('service:orbit-key-map');
-    const normalizer = this.owner.lookup('service:orbit-normalizer');
+  test('registrations respect config', function (assert) {
+    const schema = this.owner.lookup('service:data-schema') as RecordSchema;
+    const keyMap = this.owner.lookup('service:orbit-key-map') as RecordKeyMap;
+    const normalizer = this.owner.lookup(
+      'service:orbit-normalizer',
+    ) as StandardRecordNormalizer;
     const validatorFor = this.owner.lookup('service:orbit-validator');
 
     assert.strictEqual(
       schema.version,
       2,
-      'schema version matches configuration'
+      'schema version matches configuration',
     );
     assert.strictEqual(
       this.owner.lookup('service:orbit-store'),
       store,
-      'store service registration is named from configuration'
+      'store service registration is named from configuration',
     );
     assert.ok(
-      this.owner.resolveRegistration('orbit-model:planet'),
-      'model factory registration is named from configuration'
+      (this.owner as ApplicationInstance).resolveRegistration(
+        'orbit-model:planet',
+      ) as Planet,
+      'model factory registration is named from configuration',
     );
     assert.strictEqual(
       this.owner.lookup('orbit-source:store'),
       store.source,
-      'source registation is named from configuration'
+      'source registation is named from configuration',
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').schema,
+      (this.owner.lookup('orbit-source:store') as Store).schema,
       schema,
-      'schema is injected into sources'
+      'schema is injected into sources',
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').keyMap,
+      (this.owner.lookup('orbit-source:store') as Store).keyMap,
       keyMap,
-      'keyMap is injected into sources'
+      'keyMap is injected into sources',
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').validatorFor,
+      (this.owner.lookup('orbit-source:store') as Store).validatorFor,
       validatorFor,
-      'validatorFor is injected into sources'
+      'validatorFor is injected into sources',
     );
     assert.strictEqual(
       normalizer.schema,
       schema,
-      'schema is injected into normalizer'
+      'schema is injected into normalizer',
     );
     assert.strictEqual(
       normalizer.keyMap,
       keyMap,
-      'keyMap is injected into normalizer'
+      'keyMap is injected into normalizer',
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').queryBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).queryBuilder
+        .$normalizer,
       normalizer,
-      'normalizer is injected into sources and assigned to query builders'
+      'normalizer is injected into sources and assigned to query builders',
     );
     assert.strictEqual(
-      this.owner.lookup('orbit-source:store').transformBuilder.$normalizer,
+      (this.owner.lookup('orbit-source:store') as Store).transformBuilder
+        .$normalizer,
       normalizer,
-      'normalizer is injected into sources and assigned to transform builders'
+      'normalizer is injected into sources and assigned to transform builders',
     );
     assert.ok(
       this.owner.lookup('service:data-schema'),
-      'unconfigured lookup type falls back to default configuration'
+      'unconfigured lookup type falls back to default configuration',
     );
   });
 });

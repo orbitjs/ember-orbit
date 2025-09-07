@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { KeyDefinition } from '@orbit/records';
+import type { KeyDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getKeyCache } from '../utils/property-cache';
@@ -17,7 +17,7 @@ export default function key(options: KeyDefinition = {}): any {
     function get(this: Model): string {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} key.`,
-        this._cache !== undefined
+        this._cache !== undefined,
       );
 
       return getKeyCache(this, property).value as string;
@@ -32,7 +32,7 @@ export default function key(options: KeyDefinition = {}): any {
       }
     }
 
-    defineKey(target, property, options as KeyDefinition);
+    defineKey(target, property, options);
 
     return { get, set };
   };

@@ -4,7 +4,7 @@ import config from 'dummy/config/environment';
 const factory = {
   create() {
     return new EventLoggingStrategy();
-  }
+  },
 };
 
 // Conditionally include this strategy

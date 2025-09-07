@@ -10,7 +10,7 @@ export default {
     // done as a simple demo that avoids an additional dependency.
     return new MemorySource({
       name: 'backup',
-      ...injections
+      ...injections,
     });
-  }
+  },
 };

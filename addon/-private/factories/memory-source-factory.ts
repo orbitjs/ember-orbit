@@ -1,4 +1,4 @@
-import { MemorySource, MemorySourceSettings } from '@orbit/memory';
+import { MemorySource, type MemorySourceSettings } from '@orbit/memory';
 import { applyStandardSourceInjections } from '../utils/standard-injections';
 
 export default {
@@ -7,5 +7,5 @@ export default {
     injections.name = injections.name ?? 'store';
     injections.cacheSettings = { debounceLiveQueries: false };
     return new MemorySource(injections);
-  }
+  },
 };

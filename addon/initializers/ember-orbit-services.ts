@@ -1,6 +1,5 @@
 import { Orbit } from '@orbit/core';
-import Application from '@ember/application';
-import { OrbitConfig } from './ember-orbit-config';
+import type { OrbitConfig } from './ember-orbit-config';
 import SchemaFactory from '../-private/factories/schema-factory';
 import CoordinatorFactory from '../-private/factories/coordinator-factory';
 import KeyMapFactory from '../-private/factories/key-map-factory';
@@ -8,19 +7,20 @@ import NormalizerFactory from '../-private/factories/normalizer-factory';
 import MemorySourceFactory from '../-private/factories/memory-source-factory';
 import StoreFactory from '../-private/factories/store-factory';
 import ValidatorFactory from '../-private/factories/validator-factory';
+import type ApplicationInstance from '@ember/application/instance';
 
 const { deprecate } = Orbit;
 
-export function initialize(application: Application) {
-  let orbitConfig: OrbitConfig = application.resolveRegistration(
-    'ember-orbit:config'
-  );
+export function initialize(application: ApplicationInstance) {
+  const orbitConfig: OrbitConfig = application.resolveRegistration(
+    'ember-orbit:config',
+  ) as OrbitConfig;
 
   if (!orbitConfig.skipKeyMapService) {
     // Register a keyMap service
     application.register(
       `service:${orbitConfig.services.keyMap}`,
-      KeyMapFactory
+      KeyMapFactory,
     );
   }
 
@@ -28,7 +28,7 @@ export function initialize(application: Application) {
     // Register a schema service
     application.register(
       `service:${orbitConfig.services.schema}`,
-      SchemaFactory
+      SchemaFactory,
     );
   }
 
@@ -36,7 +36,7 @@ export function initialize(application: Application) {
     // Register a validator service
     application.register(
       `service:${orbitConfig.services.validator}`,
-      ValidatorFactory
+      ValidatorFactory,
     );
   }
 
@@ -44,7 +44,7 @@ export function initialize(application: Application) {
     // Register a normalizer service
     application.register(
       `service:${orbitConfig.services.normalizer}`,
-      NormalizerFactory
+      NormalizerFactory,
     );
   }
 
@@ -52,20 +52,21 @@ export function initialize(application: Application) {
     // Register a coordinator service
     application.register(
       `service:${orbitConfig.services.coordinator}`,
-      CoordinatorFactory
+      CoordinatorFactory,
     );
   }
 
   if (!orbitConfig.skipStoreService) {
     application.register(
       `${orbitConfig.types.source}:store`,
-      MemorySourceFactory
+      MemorySourceFactory,
     );
     application.register(`service:${orbitConfig.services.store}`, StoreFactory);
 
-    if ((orbitConfig as any).skipStoreInjections !== undefined) {
+    // @ts-expect-error TODO: fix this type error
+    if (orbitConfig.skipStoreInjections !== undefined) {
       deprecate(
-        'The `skipStoreInjections` configuration option in ember-orbit is deprecated because implicit injection is now deprecated in Ember itself. Please inject the orbit store into routes and controllers using the `@service` decorator as needed.'
+        'The `skipStoreInjections` configuration option in ember-orbit is deprecated because implicit injection is now deprecated in Ember itself. Please inject the orbit store into routes and controllers using the `@service` decorator as needed.',
       );
     }
   }
@@ -74,5 +75,5 @@ export function initialize(application: Application) {
 export default {
   name: 'ember-orbit-services',
   after: 'ember-orbit-config',
-  initialize
+  initialize,
 };

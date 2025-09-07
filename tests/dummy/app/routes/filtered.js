@@ -14,12 +14,12 @@ export default class FilteredRoute extends Route {
         t.addRecord({
           type: 'moon',
           id: blueMoonId,
-          attributes: { name: 'Blue' }
+          attributes: { name: 'Blue' },
         }),
         t.addRecord({
           type: 'moon',
           id: newMoonId,
-          attributes: { name: 'New' }
+          attributes: { name: 'New' },
         }),
         t.addRecord({ type: 'planet', attributes: { name: 'Mars' } }),
         t.addRecord({ type: 'planet', attributes: { name: 'Filtered' } }),
@@ -31,11 +31,11 @@ export default class FilteredRoute extends Route {
             moons: {
               data: [
                 { type: 'moon', id: blueMoonId },
-                { type: 'moon', id: newMoonId }
-              ]
-            }
-          }
-        })
+                { type: 'moon', id: newMoonId },
+              ],
+            },
+          },
+        }),
       ];
     });
   }

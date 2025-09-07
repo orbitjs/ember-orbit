@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { HasManyRelationshipDefinition } from '@orbit/records';
+import type { HasManyRelationshipDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getHasManyCache } from '../utils/property-cache';
@@ -13,15 +13,15 @@ export interface TrackedHasMany {
 
 export default function hasMany(type: string | string[]): any;
 export default function hasMany(
-  def: Partial<HasManyRelationshipDefinition>
+  def: Partial<HasManyRelationshipDefinition>,
 ): any;
 export default function hasMany(
   type: string | string[],
-  def?: Partial<HasManyRelationshipDefinition>
+  def?: Partial<HasManyRelationshipDefinition>,
 ): any;
 export default function hasMany(
   typeOrDef: string | string[] | Partial<HasManyRelationshipDefinition>,
-  def?: Partial<HasManyRelationshipDefinition>
+  def?: Partial<HasManyRelationshipDefinition>,
 ): any {
   let relDef: Partial<HasManyRelationshipDefinition>;
 
@@ -33,12 +33,12 @@ export default function hasMany(
 
     assert(
       '@hasMany can be defined with a `type` and `definition` object but not two `definition` objects',
-      def === undefined
+      def === undefined,
     );
 
     assert(
       '@hasMany() requires a `type` argument.',
-      relDef?.type !== undefined
+      relDef?.type !== undefined,
     );
   }
 
@@ -48,7 +48,7 @@ export default function hasMany(
     function get(this: Model): Model[] {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} hasMany relationship.`,
-        this._cache !== undefined
+        this._cache !== undefined,
       );
 
       return getHasManyCache(this, property).value as Model[];
@@ -57,7 +57,7 @@ export default function hasMany(
     defineRelationship(
       target,
       property,
-      relDef as HasManyRelationshipDefinition
+      relDef as HasManyRelationshipDefinition,
     );
 
     return { get };

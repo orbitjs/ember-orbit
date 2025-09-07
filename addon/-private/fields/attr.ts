@@ -1,5 +1,5 @@
 import { Orbit } from '@orbit/core';
-import { AttributeDefinition } from '@orbit/records';
+import type { AttributeDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { getAttributeCache } from '../utils/property-cache';
@@ -16,7 +16,7 @@ export default function attr(type: string): any;
 export default function attr(def: AttributeDefinition): any;
 export default function attr(
   typeOrDef?: string | AttributeDefinition,
-  def?: AttributeDefinition
+  def?: AttributeDefinition,
 ): any {
   let attrDef: AttributeDefinition;
 
@@ -28,7 +28,7 @@ export default function attr(
 
     assert(
       '@attr can be defined with a `type` and `definition` object but not two `definition` objects',
-      def === undefined
+      def === undefined,
     );
   }
 
@@ -36,7 +36,7 @@ export default function attr(
     function get(this: Model): unknown {
       assert(
         `The ${this.type} record has been removed from its cache, so we cannot lookup the ${property} attribute.`,
-        this._cache !== undefined
+        this._cache !== undefined,
       );
 
       return getAttributeCache(this, property).value;

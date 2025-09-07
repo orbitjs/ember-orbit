@@ -1,8 +1,9 @@
-import {
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+import type {
   KeyDefinition,
   AttributeDefinition,
   RelationshipDefinition,
-  ModelDefinition
+  ModelDefinition,
 } from '@orbit/records';
 import { clone, deepMerge } from '@orbit/utils';
 
@@ -14,13 +15,13 @@ export function getModelDefinition(proto: any): ModelDefinition {
     return proto[MODEL_DEFINITION] as ModelDefinition;
   } else {
     proto[MODEL_DEFINITION] = {};
-    return proto[MODEL_DEFINITION];
+    return proto[MODEL_DEFINITION] as ModelDefinition;
   }
 }
 
 export function extendModelDefinition(
   proto: any,
-  modelDefinition: ModelDefinition
+  modelDefinition: ModelDefinition,
 ): void {
   if (proto[MODEL_DEFINITION] && proto[MODEL_DEFINITION_FOR]) {
     let currentDef = proto[MODEL_DEFINITION];
@@ -38,29 +39,29 @@ export function extendModelDefinition(
 export function defineAttribute(
   proto: object,
   name: string,
-  options: AttributeDefinition
+  options: AttributeDefinition,
 ): void {
   extendModelDefinition(proto, {
-    attributes: { [name]: options }
+    attributes: { [name]: options },
   });
 }
 
 export function defineKey(
   proto: object,
   name: string,
-  options: KeyDefinition
+  options: KeyDefinition,
 ): void {
   extendModelDefinition(proto, {
-    keys: { [name]: options }
+    keys: { [name]: options },
   });
 }
 
 export function defineRelationship(
   proto: object,
   name: string,
-  options: RelationshipDefinition
+  options: RelationshipDefinition,
 ): void {
   extendModelDefinition(proto, {
-    relationships: { [name]: options }
+    relationships: { [name]: options },
   });
 }

@@ -2,11 +2,11 @@ import { Orbit } from '@orbit/core';
 import { tracked } from '@glimmer/tracking';
 import { notifyPropertyChange } from '@ember/object';
 import { SyncLiveQuery } from '@orbit/record-cache';
-import { RecordQuery, RecordQueryResult } from '@orbit/records';
+import type { RecordQuery, RecordQueryResult } from '@orbit/records';
 import {
   registerDestructor,
   associateDestroyableChild,
-  destroy
+  destroy,
 } from '@ember/destroyable';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 
@@ -28,6 +28,7 @@ export default class LiveQuery implements Iterable<Model> {
   #iteratorAccessed = false;
 
   #value = createCache(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this._invalidate;
     return this.#cache.query(this.#query);
   });
@@ -57,7 +58,7 @@ export default class LiveQuery implements Iterable<Model> {
    */
   get content(): RecordQueryResult<Model> {
     deprecate(
-      'LiveQuery#content is deprecated. Access LiveQuery#value instead.'
+      'LiveQuery#content is deprecated. Access LiveQuery#value instead.',
     );
     return this.value;
   }
@@ -73,7 +74,7 @@ export default class LiveQuery implements Iterable<Model> {
   [Symbol.iterator](): IterableIterator<Model> {
     assert(
       'LiveQuery result is not a collection. You can access the result as `liveQuery.value`.',
-      Array.isArray(this.value)
+      Array.isArray(this.value),
     );
 
     this.#iteratorAccessed = true;

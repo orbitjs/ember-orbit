@@ -9,7 +9,7 @@ module.exports = {
   browser_args: {
     Firefox: {
       mode: 'ci',
-      args: ['-headless']
+      args: ['-headless'],
     },
     Chrome: {
       ci: [
@@ -20,8 +20,8 @@ module.exports = {
         '--disable-software-rasterizer',
         '--mute-audio',
         '--remote-debugging-port=0',
-        '--window-size=1440,900'
-      ].filter(Boolean)
-    }
-  }
+        '--window-size=1440,900',
+      ].filter(Boolean),
+    },
+  },
 };
