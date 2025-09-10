@@ -1,15 +1,10 @@
 import type ApplicationInstance from '@ember/application/instance';
-import StoreFactory from '#src/-private/factories/store-factory.ts';
 import {
-  CoordinatorFactory,
-  MemorySourceFactory,
   Model,
-  SchemaFactory,
   setupOrbit,
   Store,
   type ModelSettings,
 } from '#src/index.ts';
-import ValidatorFactory from '#src/services/data-validator.ts';
 import type { Dict } from '@orbit/utils';
 
 const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
@@ -39,9 +34,6 @@ export function createStore(
     ...dataSources,
     ...dataStrategies,
   });
-
-  // TODO: we should not need to manually register all these. Where did the magic go?
-  owner.register(`data-source:store`, MemorySourceFactory);
 
   return owner.lookup('service:store') as Store;
 }

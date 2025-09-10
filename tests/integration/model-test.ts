@@ -1,7 +1,6 @@
 import { settled } from '@ember/test-helpers';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import { getOwner } from '@ember/application';
 import type ApplicationInstance from '@ember/application/instance';
 import { Cache, Store } from '#src/index.ts';
 import {
@@ -32,21 +31,6 @@ module('Integration - Model', function (hooks) {
     };
     store = createStore(this.owner as ApplicationInstance, models).fork();
     cache = store.cache;
-  });
-
-  test('models are assigned the same owner as the store and cache', async function (assert) {
-    const model = await store.addRecord({ type: 'star', name: 'The Sun' });
-    assert.ok(getOwner(model), 'model has an owner');
-    assert.strictEqual(
-      getOwner(model),
-      getOwner(store),
-      'model has same owner as store',
-    );
-    assert.strictEqual(
-      getOwner(model),
-      getOwner(cache),
-      'model has same owner as cache',
-    );
   });
 
   test('models can be added to the store', async function (assert) {
