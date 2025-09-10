@@ -1,10 +1,5 @@
 import type ApplicationInstance from '@ember/application/instance';
-import {
-  Model,
-  setupOrbit,
-  Store,
-  type ModelSettings,
-} from '#src/index.ts';
+import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
 import type { Dict } from '@orbit/utils';
 
 const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {

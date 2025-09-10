@@ -32,13 +32,15 @@ function injectModules(application: ApplicationInstance, modules: object) {
     } else if (key.includes('/data-sources/')) {
       let [, name] = key.split('data-sources/');
       name = getName(name as string);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      orbitRegistry.registrations.sources[name] = module.default;
+      // TODO: maybe find a better way to do `create` here?
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      orbitRegistry.registrations.sources[name] = module.default?.create?.();
     } else if (key.includes('/data-strategies/')) {
       let [, name] = key.split('data-strategies/');
       name = getName(name as string);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      orbitRegistry.registrations.strategies[name] = module.default;
+      // TODO: maybe find a better way to do `create` here?
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      orbitRegistry.registrations.strategies[name] = module.default?.create?.();
     }
   }
 }

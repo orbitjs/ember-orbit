@@ -71,6 +71,8 @@ ember install ember-orbit
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
+TODO: talk about the new `setupOrbit` stuff here
+
 ## Usage
 
 EO creates the following directories by default:
@@ -102,9 +104,6 @@ EO installs the following services by default:
 - `dataKeyMap` - An `@orbit/data` `KeyMap` that manages a mapping between keys
   and local IDs for scenarios in which a server does not accept client-generated
   IDs.
-
-All the directories and services configured by EO can be customized for your
-app, as described in the "Customizing EO" section below.
 
 ### Defining models
 
@@ -593,8 +592,7 @@ sources and key maps.
 
 ### Customizing EO
 
-The types, collections, and services used by EO can all be customized for
-your application via settings under the `orbit` key in `config/environment`:
+TODO: should schemaVersion just be in setupOrbit and remove this config?
 
 ```js
 module.exports = function (environment) {
@@ -604,27 +602,6 @@ module.exports = function (environment) {
     // Default Orbit settings (any of which can be overridden)
     orbit: {
       schemaVersion: undefined,
-      types: {
-        bucket: "data-bucket",
-        model: "data-model",
-        source: "data-source",
-        strategy: "data-strategy",
-      },
-      collections: {
-        buckets: "data-buckets",
-        models: "data-models",
-        sources: "data-sources",
-        strategies: "data-strategies",
-      },
-      services: {
-        store: "store",
-        bucket: "data-bucket",
-        coordinator: "data-coordinator",
-        schema: "data-schema",
-        keyMap: "data-key-map",
-        normalizer: "data-normalizer",
-        validator: "data-validator",
-      }
     },
   };
 

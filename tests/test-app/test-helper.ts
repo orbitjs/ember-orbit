@@ -11,17 +11,17 @@ class Router extends EmberRouter {
   rootURL = '/';
 }
 
-class TestApp extends EmberApp {
-  modules = {
-    './router': { default: Router },
-    ...import.meta.glob('./test-app/**/*.{js,ts,gjs,gts}', { eager: true }),
-    ...emberOrbitRegistry(),
-  };
-}
-
 Router.map(function () {
   this.route('filtered');
 });
+
+class TestApp extends EmberApp {
+  modules = {
+    './router': { default: Router },
+    ...import.meta.glob('./**/*.{js,ts,gjs,gts}', { eager: true }),
+    ...emberOrbitRegistry(),
+  };
+}
 
 export function start() {
   const applicationInstance = TestApp.create({
