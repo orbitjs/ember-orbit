@@ -42,9 +42,6 @@ export function createStore(
 
   // TODO: we should not need to manually register all these. Where did the magic go?
   owner.register(`data-source:store`, MemorySourceFactory);
-  owner.register('service:data-coordinator', CoordinatorFactory);
-  owner.register('service:data-schema', SchemaFactory);
-  owner.register('service:data-validator', ValidatorFactory);
-  owner.register('service:store', StoreFactory);
+
   return owner.lookup('service:store') as Store;
 }

@@ -110,7 +110,16 @@
   "ember-addon": {
     "version": 2,
     "type": "addon",
-    "main": "addon-main.cjs"
+    "main": "addon-main.cjs",
+    "app-js": {
+      "./data-sources/store.js": "./dist/_app_/data-sources/store.js",
+      "./services/data-coordinator.js": "./dist/_app_/services/data-coordinator.js",
+      "./services/data-key-map.js": "./dist/_app_/services/data-key-map.js",
+      "./services/data-normalizer.js": "./dist/_app_/services/data-normalizer.js",
+      "./services/data-schema.js": "./dist/_app_/services/data-schema.js",
+      "./services/data-validator.js": "./dist/_app_/services/data-validator.js",
+      "./services/store.js": "./dist/_app_/services/store.js"
+    }
   },
   "imports": {
     "#src/*": "./src/*"
