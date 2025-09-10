@@ -24,6 +24,7 @@ export default {
 
       injections.models = {};
       for (const name of modelNames) {
+        // @ts-expect-error TODO: fix these types
         const { keys, attributes, relationships } =
           orbitRegistry.registrations.models[name];
 

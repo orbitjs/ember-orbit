@@ -2,12 +2,14 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
+import type { ModelAwareTransformBuilder } from '#src/-private/utils/model-aware-types.ts';
+import type { Store } from '#src/index.ts';
 
 export default class FilteredRoute extends Route {
-  @service store;
+  @service declare store: Store;
 
   async beforeModel() {
-    await this.store.update((t) => {
+    await this.store.update((t: ModelAwareTransformBuilder) => {
       const blueMoonId = this.store.schema.generateId('moon');
       const newMoonId = this.store.schema.generateId('moon');
       const plutoId = this.store.schema.generateId('planet');
@@ -42,11 +44,12 @@ export default class FilteredRoute extends Route {
     });
   }
 
-  async model() {
+  model() {
     return this.store.cache.liveQuery((qb) => qb.findRecords('planet'));
   }
 
   <template>
+    {{!@glint-nocheck}}
     <ul class="planets">
       {{#each @controller.filteredPlanets as |planet|}}
         <li class="planet-row">

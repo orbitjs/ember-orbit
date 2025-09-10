@@ -1,4 +1,5 @@
 import type ApplicationInstance from '@ember/application/instance';
+import StoreFactory from '#src/-private/factories/store-factory.ts';
 import {
   CoordinatorFactory,
   MemorySourceFactory,
@@ -8,9 +9,8 @@ import {
   Store,
   type ModelSettings,
 } from '#src/index.ts';
-import StoreFactory from '#src/-private/factories/store-factory.ts';
-import type { Dict } from '@orbit/utils';
 import ValidatorFactory from '#src/services/data-validator.ts';
+import type { Dict } from '@orbit/utils';
 
 const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
   eager: true,

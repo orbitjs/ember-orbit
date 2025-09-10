@@ -12,6 +12,10 @@ class OrbitRegistry {
     models: {},
     sources: {},
     strategies: {},
+  } as {
+    models: Record<string, unknown>;
+    sources: Record<string, unknown>;
+    strategies: Record<string, unknown>;
   };
 }
 
@@ -23,14 +27,17 @@ function injectModules(application: ApplicationInstance, modules: object) {
     if (key.includes('/data-models/')) {
       let [, name] = key.split('data-models/');
       name = getName(name as string);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       orbitRegistry.registrations.models[name] = module.default ?? module;
     } else if (key.includes('/data-sources/')) {
       let [, name] = key.split('data-sources/');
       name = getName(name as string);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       orbitRegistry.registrations.sources[name] = module.default;
     } else if (key.includes('/data-strategies/')) {
       let [, name] = key.split('data-strategies/');
       name = getName(name as string);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       orbitRegistry.registrations.strategies[name] = module.default;
     }
   }

@@ -22,7 +22,7 @@ export default class ApplicationRoute extends Route {
   @service declare dataCoordinator: Coordinator;
 
   async beforeModel() {
-    const application = getOwner(this);
+    const application = getOwner(this) as ApplicationInstance;
 
     setupOrbit(application, {
       ...dataModels,

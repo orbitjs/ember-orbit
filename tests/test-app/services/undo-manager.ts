@@ -1,13 +1,20 @@
+import type { AnyFn } from '@ember/-internals/utility-types';
 import Service, { inject as service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 import type { Store } from '#src/index.ts';
 
-function removeFromTo(array, from, to) {
+type Command = Record<'undo' | 'redo', AnyFn>;
+
+function removeFromTo(array: Array<unknown>, from: number, to?: number) {
   array.splice(
     from,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     !to ||
+      // @ts-expect-error TODO: maybe type this one day
       1 +
         to -
         from +
+        // @ts-expect-error TODO: maybe type this one day
         (!((to < 0) ^ (from >= 0)) && (to < 0 || -1) * array.length),
   );
   return array.length;
@@ -16,15 +23,18 @@ function removeFromTo(array, from, to) {
 export default class UndoManager extends Service {
   @service declare store: Store;
 
-  commands = [];
+  commands: Array<Command> = [];
   index = -1;
   isExecuting = false;
-  limit = 0;
+  undoListener: (e: KeyboardEvent) => Promise<void>;
+  @tracked limit = 0;
+  @tracked callback?: AnyFn;
 
   constructor() {
+    // eslint-disable-next-line prefer-rest-params
     super(...arguments);
 
-    this.undoListener = async (e) => {
+    this.undoListener = async (e: KeyboardEvent) => {
       {
         const key = e.which || e.keyCode;
         // testing for CMD or CTRL
@@ -37,6 +47,7 @@ export default class UndoManager extends Service {
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     document.addEventListener('keydown', this.undoListener, true);
   }
 
@@ -44,6 +55,7 @@ export default class UndoManager extends Service {
     super.willDestroy();
 
     if (this.undoListener) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       document.removeEventListener('keydown', this.undoListener, true);
     }
   }
@@ -54,7 +66,7 @@ export default class UndoManager extends Service {
    * @param isUndo true if operation is 'undo'
    * @private
    */
-  async _doUndoRedo(isRedo, isUndo) {
+  async _doUndoRedo(isRedo: boolean, isUndo: boolean) {
     if (isRedo) {
       if (!this.isExecuting && this.hasRedo()) {
         await this.redo();
@@ -66,22 +78,24 @@ export default class UndoManager extends Service {
     }
   }
 
-  async execute(command, action) {
+  async execute(command: Command, action: 'undo' | 'redo') {
     if (!command || typeof command[action] !== 'function') {
       return this;
     }
     this.isExecuting = true;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const executed = await command[action]();
 
     this.isExecuting = false;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return executed;
   }
 
   /**
    * Add a command to the queue.
    */
-  async add(command) {
+  async add(command: Command) {
     if (this.isExecuting) {
       return this;
     }
@@ -107,7 +121,7 @@ export default class UndoManager extends Service {
   /**
    * Pass a function to be called on undo and redo actions.
    */
-  setCallback(callbackFunc) {
+  setCallback(callbackFunc: AnyFn) {
     this.callback = callbackFunc;
   }
 
@@ -119,11 +133,13 @@ export default class UndoManager extends Service {
     if (!command) {
       return this;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const executed = await this.execute(command, 'undo');
     this.index -= 1;
     if (this.callback) {
       this.callback();
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return executed;
   }
 
@@ -135,11 +151,13 @@ export default class UndoManager extends Service {
     if (!command) {
       return this;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const executed = await this.execute(command, 'redo');
     this.index += 1;
     if (this.callback) {
       this.callback();
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return executed;
   }
 
@@ -173,7 +191,7 @@ export default class UndoManager extends Service {
     return this.index;
   }
 
-  setLimit(l) {
+  setLimit(l: number) {
     this.limit = l;
   }
 
@@ -190,6 +208,7 @@ export default class UndoManager extends Service {
       await this.store.update(redoTransform);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.add({ undo, redo });
   }
 }
