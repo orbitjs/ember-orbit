@@ -11,8 +11,6 @@ type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
-    const orbitConfig = orbitRegistry.config;
-
     if (injections.models === undefined) {
       let modelNames: Array<string>;
       if (injections.modelNames) {
@@ -36,8 +34,7 @@ export default {
       }
     }
 
-    // @ts-expect-error TODO: fix this type error
-    injections.version ??= orbitConfig.schemaVersion;
+    injections.version ??= orbitRegistry.schemaVersion;
 
     return new RecordSchema(injections);
   },

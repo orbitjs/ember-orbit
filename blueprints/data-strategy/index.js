@@ -8,12 +8,9 @@ module.exports = {
   availableOptions: [{ name: 'type', type: availableTypes }],
 
   fileMapTokens() {
-    const addonConfig = this.project.config()['orbit'] || {};
-    const collections = addonConfig.collections || {};
-
     return {
       __strategies__() {
-        return collections.strategies || 'data-strategies';
+        return 'data-strategies';
       },
     };
   },

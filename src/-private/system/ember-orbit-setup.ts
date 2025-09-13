@@ -1,22 +1,20 @@
 import type ApplicationInstance from '@ember/application/instance';
 import { getName } from '../utils/get-name.ts';
-import {
-  setupEmberOrbitConfig,
-  type OrbitConfig,
-} from './ember-orbit-config.ts';
 
 class OrbitRegistry {
   application: ApplicationInstance | null = null;
-  config = {} as OrbitConfig;
   registrations = {
+    buckets: {},
     models: {},
     sources: {},
     strategies: {},
   } as {
+    buckets: Record<string, unknown>;
     models: Record<string, unknown>;
     sources: Record<string, unknown>;
     strategies: Record<string, unknown>;
   };
+  schemaVersion?: number;
 }
 
 export const orbitRegistry = new OrbitRegistry();
@@ -24,7 +22,13 @@ export const orbitRegistry = new OrbitRegistry();
 function injectModules(application: ApplicationInstance, modules: object) {
   for (const [key, module] of Object.entries(modules)) {
     // TODO: maybe make these not need such specific paths
-    if (key.includes('/data-models/')) {
+    if (key.includes('/data-buckets/')) {
+      let [, name] = key.split('data-buckets/');
+      name = getName(name as string);
+      // TODO: maybe find a better way to do `create` here?
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      orbitRegistry.registrations.buckets[name] = module.default?.create?.();
+    } else if (key.includes('/data-models/')) {
       let [, name] = key.split('data-models/');
       name = getName(name as string);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -45,9 +49,12 @@ function injectModules(application: ApplicationInstance, modules: object) {
   }
 }
 
-export function setupOrbit(application: ApplicationInstance, modules: object) {
-  const orbitConfig = setupEmberOrbitConfig(application);
+export function setupOrbit(
+  application: ApplicationInstance,
+  modules: object,
+  config?: { schemaVersion?: number },
+) {
   orbitRegistry.application = application;
-  orbitRegistry.config = orbitConfig;
+  orbitRegistry.schemaVersion = config?.schemaVersion;
   injectModules(application, modules);
 }

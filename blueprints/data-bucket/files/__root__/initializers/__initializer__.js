@@ -1,3 +1,4 @@
+// TODO: should this be from not bucketsCollection anymore?
 import BucketFactory from '../<%= bucketsCollection %>/<%= dasherizedModuleName %>';
 
 export function initialize(application) {

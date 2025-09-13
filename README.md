@@ -71,7 +71,63 @@ ember install ember-orbit
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
-TODO: talk about the new `setupOrbit` stuff here
+All models, sources, and strategies need to be manually registered using the `setupOrbit`
+function. You may want to set this up in your application route's `beforeModel` hook.
+
+### Vite Setup
+
+In a new vite based app, we can use `import.meta.glob` to grab all the things we need
+to register and pass them to `setupOrbit.
+
+```ts
+import { getOwner } from "@ember/-internals/owner";
+import type ApplicationInstance from "@ember/application/instance";
+import Route from "@ember/routing/route";
+import { inject as service } from "@ember/service";
+import { setupOrbit } from "#src/index.ts";
+import type Coordinator from "@orbit/coordinator";
+
+const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
+  eager: true,
+});
+const dataSources = import.meta.glob("../data-sources/*.{js,ts}", {
+  eager: true,
+});
+const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
+  eager: true,
+});
+
+export default class ApplicationRoute extends Route {
+  @service declare dataCoordinator: Coordinator;
+
+  async beforeModel() {
+    const application = getOwner(this) as ApplicationInstance;
+
+    setupOrbit(
+      application,
+      {
+        ...dataModels,
+        ...dataSources,
+        ...dataStrategies,
+      },
+      { schemaVersion: 2 },
+    );
+
+    await this.dataCoordinator.activate();
+  }
+}
+```
+
+Note that `schemaVersion` should be set if you're using any Orbit sources, such
+as `IndexedDBSource`, that track schema version. By default, Orbit's schema
+version will start at `1`. This value should be bumped to a a higher number with
+each significant change that requires a schema migration. Migrations themselves
+must be handled in each individual source.
+
+### Ember-CLI Compatibility
+
+In a classic ember-cli app, we are not able to use `import.meta.glob` out of the box yet.
+Until ember-cli is updated to support this, you will need to install [ember-classic-import-meta-glob](https://github.com/NullVoxPopuli/ember-classic-import-meta-glob) to get it to work.
 
 ## Usage
 
@@ -129,7 +185,7 @@ export default class Planet extends Model {}
 You can then extend your model to include keys, attributes, and relationships:
 
 ```js
-import { Model, attr, hasOne, hasMany, key } from "ember-orbit";
+import { attr, hasMany, hasOne, key, Model } from "ember-orbit";
 
 export default class Planet extends Model {
   @key() remoteId;
@@ -142,7 +198,7 @@ export default class Planet extends Model {
 You can create polymorphic relationships by passing in an array of types:
 
 ```js
-import { Model, attr, hasOne, hasMany } from "ember-orbit";
+import { attr, hasMany, hasOne, Model } from "ember-orbit";
 
 export default class PlanetarySystem extends Model {
   @attr("string") name;
@@ -432,8 +488,8 @@ ember g data-source backup --from=@orbit/indexeddb
 This will generate a source factory in `app/data-sources/backup.js`:
 
 ```javascript
-import SourceClass from "@orbit/indexeddb";
 import { applyStandardSourceInjections } from "ember-orbit";
+import SourceClass from "@orbit/indexeddb";
 
 export default {
   create(injections = {}) {
@@ -590,31 +646,6 @@ By default this will create a new bucket factory based on `@orbit/indexeddb-buck
 It will also create an initializer that injects this bucket into all your
 sources and key maps.
 
-### Customizing EO
-
-TODO: should schemaVersion just be in setupOrbit and remove this config?
-
-```js
-module.exports = function (environment) {
-  let ENV = {
-    // ... other settings here
-
-    // Default Orbit settings (any of which can be overridden)
-    orbit: {
-      schemaVersion: undefined,
-    },
-  };
-
-  return ENV;
-};
-```
-
-Note that `schemaVersion` should be set if you're using any Orbit sources, such
-as `IndexedDBSource`, that track schema version. By default, Orbit's schema
-version will start at `1`. This value should be bumped to a a higher number with
-each significant change that requires a schema migration. Migrations themselves
-must be handled in each individual source.
-
 ### Conditionally include strategies and sources
 
 Sources and strategies may be conditionally included in your app's coordinator
@@ -628,8 +659,8 @@ non-production builds:
 ```js
 // app/data-strategies/event-logging.js
 
-import { EventLoggingStrategy } from "@orbit/coordinator";
 import config from "example/config/environment";
+import { EventLoggingStrategy } from "@orbit/coordinator";
 
 const factory = {
   create() {
