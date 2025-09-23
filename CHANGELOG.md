@@ -2,6 +2,17 @@
 
 ## Release (2025-09-23)
 
+* ember-orbit 0.17.5 (patch)
+
+#### :house: Internal
+* `ember-orbit`
+  * [#424](https://github.com/orbitjs/ember-orbit/pull/424) Use correct node/pnpm versions in CI ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+## Release (2025-09-23)
+
 * ember-orbit 0.17.4 (patch)
 
 #### :bug: Bug Fix
