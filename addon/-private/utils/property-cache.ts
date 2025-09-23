@@ -6,6 +6,8 @@ import { notifyPropertyChange as emberNotifyPropertyChange } from '@ember/object
 
 import Model from '../model';
 
+type Cache<T> = ReturnType<typeof createCache<T>>;
+
 const { deprecate } = Orbit;
 
 const values = new WeakMap<PropertyCache<unknown>, unknown>();
@@ -14,7 +16,7 @@ const caches = new WeakMap<Model, Record<string, PropertyCache<unknown>>>();
 export class PropertyCache<T> {
   @tracked invalidate = 0;
 
-  #value: object;
+  #value: Cache<T>;
   #getter: () => T;
 
   constructor(getter: () => T) {
