@@ -1,5 +1,20 @@
 # Changelog
 
+## Release (2025-09-23)
+
+* ember-orbit 0.17.4 (patch)
+
+#### :bug: Bug Fix
+* `ember-orbit`
+  * [#420](https://github.com/orbitjs/ember-orbit/pull/420) Switch from yarn to pnpm, run latest blueprints, fix types and lint ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### :house: Internal
+* `ember-orbit`
+  * [#422](https://github.com/orbitjs/ember-orbit/pull/422) Add release-plan for releases ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
 ## v0.17.3 (2022-03-10)
 
 #### :rocket: Enhancement
