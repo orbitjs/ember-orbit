@@ -1,5 +1,4 @@
-import { getContext } from '@ember/test-helpers';
-import type ApplicationInstance from '@ember/application/instance';
+import { orbitRegistry } from '../-private/system/ember-orbit-setup.ts';
 import { Store } from '../index.ts';
 import { Source } from '@orbit/data';
 
@@ -8,8 +7,7 @@ export async function waitForSource(
 ): Promise<void> {
   let source;
   if (typeof sourceOrSourceName === 'string') {
-    const { owner } = getContext() as { owner: ApplicationInstance };
-    source = owner.lookup(`data-source:${sourceOrSourceName}`) as Source;
+    source = orbitRegistry.registrations.sources[sourceOrSourceName] as Source;
     if (!source) {
       throw new Error(
         `data-source:${sourceOrSourceName} not found. Maybe you misspelled it?`,

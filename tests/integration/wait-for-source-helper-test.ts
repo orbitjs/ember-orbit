@@ -36,6 +36,8 @@ module('waitForSource helper', function (hooks) {
   test('it looks up data sources by name if a string is provided', async function (assert) {
     const backup = new MemorySource({ schema: store.schema });
 
+    // TODO: we should not be registering this on owner. We should use `orbitRegistry`.
+    // We probably need to update `createStore` to support this.
     this.owner.register('data-source:backup', backup, { instantiate: false });
 
     store.on('update', async (transform: Transform<RecordOperation>) => {

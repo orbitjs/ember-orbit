@@ -10,11 +10,11 @@ function removeFromTo(array: Array<unknown>, from: number, to?: number) {
     from,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     !to ||
-      // @ts-expect-error TODO: maybe type this one day
+      // @ts-expect-error Ignore this type error
       1 +
         to -
         from +
-        // @ts-expect-error TODO: maybe type this one day
+        // @ts-expect-error Ignore this type error
         (!((to < 0) ^ (from >= 0)) && (to < 0 || -1) * array.length),
   );
   return array.length;
