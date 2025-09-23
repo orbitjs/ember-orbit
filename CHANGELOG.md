@@ -2,6 +2,17 @@
 
 ## Release (2025-09-23)
 
+* ember-orbit 0.17.6 (patch)
+
+#### :house: Internal
+* `ember-orbit`
+  * [#426](https://github.com/orbitjs/ember-orbit/pull/426) Fix some type errors ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+## Release (2025-09-23)
+
 * ember-orbit 0.17.5 (patch)
 
 #### :house: Internal
