@@ -1,0 +1,22 @@
+{
+  "solution": {
+    "ember-orbit": {
+      "impact": "patch",
+      "oldVersion": "0.17.3",
+      "newVersion": "0.17.4",
+      "tagName": "latest",
+      "constraints": [
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :bug: Bug Fix"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2025-09-23)\n\n* ember-orbit 0.17.4 (patch)\n\n#### :bug: Bug Fix\n* `ember-orbit`\n  * [#420](https://github.com/orbitjs/ember-orbit/pull/420) Switch from yarn to pnpm, run latest blueprints, fix types and lint ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### :house: Internal\n* `ember-orbit`\n  * [#422](https://github.com/orbitjs/ember-orbit/pull/422) Add release-plan for releases ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
+}
