@@ -113,6 +113,7 @@
     "prettier-plugin-ember-template-tag": "^2.1.0",
     "qunit": "^2.24.1",
     "qunit-dom": "^3.4.0",
+    "release-plan": "^0.17.0",
     "rimraf": "^5.0.10",
     "stylelint": "^16.22.0",
     "stylelint-config-standard": "^36.0.1",
