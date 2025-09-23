@@ -2,8 +2,8 @@
   "solution": {
     "ember-orbit": {
       "impact": "patch",
-      "oldVersion": "0.17.4",
-      "newVersion": "0.17.5",
+      "oldVersion": "0.17.5",
+      "newVersion": "0.17.6",
       "tagName": "latest",
       "constraints": [
         {
@@ -14,5 +14,5 @@
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2025-09-23)\n\n* ember-orbit 0.17.5 (patch)\n\n#### :house: Internal\n* `ember-orbit`\n  * [#424](https://github.com/orbitjs/ember-orbit/pull/424) Use correct node/pnpm versions in CI ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
+  "description": "## Release (2025-09-23)\n\n* ember-orbit 0.17.6 (patch)\n\n#### :house: Internal\n* `ember-orbit`\n  * [#426](https://github.com/orbitjs/ember-orbit/pull/426) Fix some type errors ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
 }
