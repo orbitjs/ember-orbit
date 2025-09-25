@@ -37,7 +37,7 @@ interface FactoryForFolderType {
   '/data-strategies/': { default: { create(): Strategy } };
 }
 
-function injectModules(modules: Record<string, FactoryForFolderType[Folder]>) {
+function injectModules(modules: Record<string, unknown>) {
   const folderConfig = {
     '/data-buckets/': { registry: orbitRegistry.registrations.buckets },
     '/data-models/': { registry: orbitRegistry.registrations.models },
@@ -76,7 +76,7 @@ function injectModules(modules: Record<string, FactoryForFolderType[Folder]>) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         registry[name] =
           (module as FactoryForFolderType[typeof folder]).default ??
-          (module as unknown as ModelFactory);
+          (module as ModelFactory);
       } else {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         registry[name] = (module as FactoryForFolderType[typeof folder]).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -88,7 +88,7 @@ function injectModules(modules: Record<string, FactoryForFolderType[Folder]>) {
 
 export function setupOrbit(
   application: ApplicationInstance,
-  modules: Record<string, FactoryForFolderType[Folder]>,
+  modules: Record<string, unknown>,
   config?: { schemaVersion?: number },
 ) {
   orbitRegistry.application = application;
