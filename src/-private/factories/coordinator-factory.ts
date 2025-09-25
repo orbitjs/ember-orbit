@@ -1,10 +1,6 @@
 import type ApplicationInstance from '@ember/application/instance';
 import { orbitRegistry } from '../system/ember-orbit-setup.ts';
-import {
-  Coordinator,
-  Strategy,
-  type CoordinatorOptions,
-} from '@orbit/coordinator';
+import { Coordinator, type CoordinatorOptions } from '@orbit/coordinator';
 import type { RequestOptions, Source } from '@orbit/data';
 
 type CoordinatorInjections = {
@@ -50,7 +46,7 @@ export default {
         .map((name) => {
           return orbitRegistry.registrations.strategies[name];
         })
-        .filter((strategy) => !!strategy) as Array<Strategy>;
+        .filter((strategy) => !!strategy);
     }
 
     return new Coordinator(injections);

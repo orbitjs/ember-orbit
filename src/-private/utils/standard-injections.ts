@@ -1,6 +1,5 @@
 import type ApplicationInstance from '@ember/application/instance';
 import { orbitRegistry } from '../system/ember-orbit-setup.ts';
-import type { Bucket } from '@orbit/core';
 import type {
   RecordIdentity,
   RecordKeyMap,
@@ -20,7 +19,7 @@ export function applyStandardSourceInjections(
   injections.schema = app.lookup('service:data-schema') as RecordSchema;
 
   // TODO: Either register the main bucket as 'service:data-bucket' or look this up from `orbitRegistry`
-  injections.bucket = app.lookup('service:data-bucket') as Bucket<unknown>;
+  injections.bucket = orbitRegistry.registrations.buckets['main'];
 
   injections.keyMap = app.lookup('service:data-key-map') as RecordKeyMap;
 

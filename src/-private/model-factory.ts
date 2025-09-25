@@ -35,7 +35,7 @@ export default class ModelFactory {
     if (!modelFactory) {
       modelFactory = orbitRegistry.registrations.models[
         type as keyof object
-      ] as Factory;
+      ] as unknown as Factory;
       assert(
         `An ember-orbit model for type ${type} has not been registered.`,
         modelFactory !== undefined,

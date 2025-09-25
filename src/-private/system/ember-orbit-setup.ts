@@ -1,60 +1,97 @@
 import type ApplicationInstance from '@ember/application/instance';
+import type MemorySourceFactory from '../factories/memory-source-factory.ts';
+import type ModelFactory from '../model-factory.ts';
 import { getName } from '../utils/get-name.ts';
+import type { Strategy } from '@orbit/coordinator';
+import type { Bucket } from '@orbit/core';
+import type { Source } from '@orbit/data';
 
 class OrbitRegistry {
   application: ApplicationInstance | null = null;
-  registrations = {
-    buckets: {},
+  registrations: {
+    buckets: Record<'main', Bucket>;
+    models: Record<string, ModelFactory>;
+    sources: Record<string, Source>;
+    strategies: Record<string, Strategy>;
+  } = {
+    buckets: {} as Record<'main', Bucket>,
     models: {},
     sources: {},
     strategies: {},
-  } as {
-    buckets: Record<string, unknown>;
-    models: Record<string, unknown>;
-    sources: Record<string, unknown>;
-    strategies: Record<string, unknown>;
   };
   schemaVersion?: number;
 }
 
 export const orbitRegistry = new OrbitRegistry();
 
-function injectModules(application: ApplicationInstance, modules: object) {
-  for (const [key, module] of Object.entries(modules)) {
-    // TODO: maybe make these not need such specific paths
-    if (key.includes('/data-buckets/')) {
-      let [, name] = key.split('data-buckets/');
+type Folder =
+  | '/data-buckets/'
+  | '/data-models/'
+  | '/data-sources/'
+  | '/data-strategies/';
+
+interface FactoryForFolderType {
+  '/data-buckets/': { default: { create(): Bucket } };
+  '/data-models/': { default: ModelFactory };
+  '/data-sources/': { default: typeof MemorySourceFactory };
+  '/data-strategies/': { default: { create(): Strategy } };
+}
+
+function injectModules(modules: Record<string, FactoryForFolderType[Folder]>) {
+  const folderConfig = {
+    '/data-buckets/': { registry: orbitRegistry.registrations.buckets },
+    '/data-models/': { registry: orbitRegistry.registrations.models },
+    '/data-sources/': { registry: orbitRegistry.registrations.sources },
+    '/data-strategies/': { registry: orbitRegistry.registrations.strategies },
+  };
+
+  for (const [folder, { registry }] of Object.entries(folderConfig) as [
+    Folder,
+    { registry: any },
+  ][]) {
+    const matches = Object.entries(modules).filter(([key]) =>
+      key.includes(folder),
+    );
+
+    if (folder === '/data-buckets/' && matches.length > 1) {
+      throw new Error(
+        `Expected only one file under /data-buckets/, found ${matches.length}: ` +
+          matches.map(([key]) => key).join(', '),
+      );
+    }
+
+    for (const [key, module] of matches) {
+      if (folder === '/data-buckets/') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        registry['main'] = (
+          module as FactoryForFolderType['/data-buckets/']
+        ).default?.create?.();
+        continue;
+      }
+
+      let [, name] = key.split(folder);
       name = getName(name as string);
-      // TODO: maybe find a better way to do `create` here?
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      orbitRegistry.registrations.buckets[name] = module.default?.create?.();
-    } else if (key.includes('/data-models/')) {
-      let [, name] = key.split('data-models/');
-      name = getName(name as string);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      orbitRegistry.registrations.models[name] = module.default ?? module;
-    } else if (key.includes('/data-sources/')) {
-      let [, name] = key.split('data-sources/');
-      name = getName(name as string);
-      // TODO: maybe find a better way to do `create` here?
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      orbitRegistry.registrations.sources[name] = module.default?.create?.();
-    } else if (key.includes('/data-strategies/')) {
-      let [, name] = key.split('data-strategies/');
-      name = getName(name as string);
-      // TODO: maybe find a better way to do `create` here?
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      orbitRegistry.registrations.strategies[name] = module.default?.create?.();
+
+      if (folder === '/data-models/') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        registry[name] =
+          (module as FactoryForFolderType[typeof folder]).default ??
+          (module as unknown as ModelFactory);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        registry[name] = (module as FactoryForFolderType[typeof folder]).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          ?.create?.({} as any);
+      }
     }
   }
 }
 
 export function setupOrbit(
   application: ApplicationInstance,
-  modules: object,
+  modules: Record<string, FactoryForFolderType[Folder]>,
   config?: { schemaVersion?: number },
 ) {
   orbitRegistry.application = application;
   orbitRegistry.schemaVersion = config?.schemaVersion;
-  injectModules(application, modules);
+  injectModules(modules);
 }
