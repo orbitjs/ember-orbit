@@ -1,8 +1,9 @@
 import type ApplicationInstance from '@ember/application/instance';
 import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import { MemorySource } from '@orbit/memory';
 import type { Dict } from '@orbit/utils';
 
-const dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
+let dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
   eager: true,
 });
 const dataStrategies = import.meta.glob(
@@ -15,6 +16,7 @@ const dataStrategies = import.meta.glob(
 export function createStore(
   owner: ApplicationInstance,
   models: Dict<new (settings: ModelSettings) => Model>,
+  sources?: Dict<MemorySource>,
 ) {
   // TODO: maybe make these not need such specific paths
   const dataModels = Object.fromEntries(
@@ -23,6 +25,15 @@ export function createStore(
       value,
     ]),
   );
+
+  if (sources) {
+    dataSources = Object.fromEntries(
+      Object.entries(sources).map(([key, value]) => [
+        `../test-app/data-sources/${key}`,
+        value,
+      ]),
+    );
+  }
 
   setupOrbit(owner, {
     ...dataModels,

@@ -84,7 +84,7 @@ import { getOwner } from "@ember/-internals/owner";
 import type ApplicationInstance from "@ember/application/instance";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
-import { setupOrbit } from "#src/index.ts";
+import { setupOrbit, type Store } from "ember-orbit/index.ts";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -99,6 +99,7 @@ const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
 
 export default class ApplicationRoute extends Route {
   @service declare dataCoordinator: Coordinator;
+  @service declare store: Store;
 
   async beforeModel() {
     const application = getOwner(this) as ApplicationInstance;
@@ -112,6 +113,11 @@ export default class ApplicationRoute extends Route {
       },
       { schemaVersion: 2 },
     );
+
+    // Populate the store from backup prior to activating the coordinator
+    const backup = this.dataCoordinator.getSource("backup");
+    const records = await backup.query((q) => q.findRecords());
+    await this.store.sync((t) => records.map((r) => t.addRecord(r)));
 
     await this.dataCoordinator.activate();
   }
@@ -143,7 +149,7 @@ EO creates the following directories by default:
 
 - `app/data-strategies` - Factories for creating Orbit coordination strategies.
 
-Note that "factories" are simply objects with a `create` method that serves to
+Note that "factories" are simply objects with a `create` method that serve to
 instantiate an object. The factory interface conforms with the expectations of
 Ember's DI system.
 
@@ -505,8 +511,7 @@ are injected by default for every EO application. We're also adding
 a `name` to uniquely identify the source within the coordinator. You could
 optionally specify a `namespace` to be used to name the IndexedDB database.
 
-Every source that's defined in `app/data-sources` will be discovered
-automatically by EO and added to the `dataCoordinator` service.
+Every source that's defined in `app/data-sources` needs to be registered via `setupOrbit` which will automatically add it to the `dataCoordinator` service.
 
 Next let's define some strategies to synchronize data between sources.
 
@@ -606,15 +611,41 @@ In our case, we want to restore our store from the backup source before we
 enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
-```js
+```ts
+import { getOwner } from "@ember/-internals/owner";
+import type ApplicationInstance from "@ember/application/instance";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
+import { setupOrbit, type Store } from "ember-orbit/index.ts";
+import type Coordinator from "@orbit/coordinator";
+
+const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
+  eager: true,
+});
+const dataSources = import.meta.glob("../data-sources/*.{js,ts}", {
+  eager: true,
+});
+const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
+  eager: true,
+});
 
 export default class ApplicationRoute extends Route {
-  @service dataCoordinator;
-  @service store;
+  @service declare dataCoordinator: Coordinator;
+  @service declare store: Store;
 
   async beforeModel() {
+    const application = getOwner(this) as ApplicationInstance;
+
+    setupOrbit(
+      application,
+      {
+        ...dataModels,
+        ...dataSources,
+        ...dataStrategies,
+      },
+      { schemaVersion: 2 },
+    );
+
     // Populate the store from backup prior to activating the coordinator
     const backup = this.dataCoordinator.getSource("backup");
     const records = await backup.query((q) => q.findRecords());
@@ -643,7 +674,7 @@ ember g data-bucket main
 ```
 
 By default this will create a new bucket factory based on `@orbit/indexeddb-bucket`.
-It will also create an initializer that injects this bucket into all your
+This bucket will be registered as the `'main'` bucket and injected into all your
 sources and key maps.
 
 ### Conditionally include strategies and sources

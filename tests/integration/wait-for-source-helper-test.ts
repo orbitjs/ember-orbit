@@ -2,6 +2,7 @@ import { waitForSource } from '#src/test-support/index.ts';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 import type ApplicationInstance from '@ember/application/instance';
+import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
 import { Store } from '#src/index.ts';
 import { Planet } from '../support/dummy-models';
 import { createStore } from '../support/store';
@@ -14,11 +15,9 @@ module('waitForSource helper', function (hooks) {
 
   setupTest(hooks);
 
-  hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
-  });
-
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
+    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
+
     const backup = new MemorySource({ schema: store.schema });
 
     store.on('update', async (transform: Transform<RecordOperation>) => {
@@ -34,11 +33,12 @@ module('waitForSource helper', function (hooks) {
   });
 
   test('it looks up data sources by name if a string is provided', async function (assert) {
+    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
+
     const backup = new MemorySource({ schema: store.schema });
 
-    // TODO: we should not be registering this on owner. We should use `orbitRegistry`.
-    // We probably need to update `createStore` to support this.
-    this.owner.register('data-source:backup', backup, { instantiate: false });
+    // Register backup source with orbitRegistry for waitForSource to find it
+    orbitRegistry.registrations.sources['backup'] = backup;
 
     store.on('update', async (transform: Transform<RecordOperation>) => {
       await backup.update(transform);

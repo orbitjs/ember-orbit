@@ -1,10 +1,12 @@
 import type ApplicationInstance from '@ember/application/instance';
+import DataSourceStore from '../../data-sources/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
 import { getName } from '../utils/get-name.ts';
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import type { Source } from '@orbit/data';
+import { type MemorySourceSettings } from '@orbit/memory';
 
 class OrbitRegistry {
   application: ApplicationInstance | null = null;
@@ -84,6 +86,11 @@ function injectModules(modules: Record<string, unknown>) {
       }
     }
   }
+
+  // Register the store source after processing all modules
+  orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
+    {} as MemorySourceSettings,
+  );
 }
 
 export function setupOrbit(

@@ -18,8 +18,8 @@ Router.map(function () {
 class TestApp extends EmberApp {
   modules = {
     './router': { default: Router },
-    ...import.meta.glob('./**/*.{js,ts,gjs,gts}', { eager: true }),
     ...emberOrbitRegistry(),
+    ...import.meta.glob('./**/*.{js,ts,gjs,gts}', { eager: true }),
   };
 }
 

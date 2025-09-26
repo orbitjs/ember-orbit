@@ -1,4 +1,3 @@
-import type ApplicationInstance from '@ember/application/instance';
 import Store, { type StoreSettings } from '../store.ts';
 import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type {
@@ -12,9 +11,9 @@ import type { RecordSourceQueryOptions } from '@orbit/records';
 
 export default {
   create(injections: StoreSettings): Store {
-    const app = orbitRegistry.application as ApplicationInstance;
-
-    injections.source = app.lookup('data-source:store') as MemorySource<
+    injections.source = orbitRegistry.registrations.sources[
+      'store'
+    ] as MemorySource<
       RecordSourceQueryOptions,
       RequestOptions,
       ModelAwareQueryBuilder,
