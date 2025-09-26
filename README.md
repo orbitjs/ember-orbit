@@ -71,13 +71,21 @@ ember install ember-orbit
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
-All models, sources, and strategies need to be manually registered using the `setupOrbit`
-function. You may want to set this up in your application route's `beforeModel` hook.
+## Configuration
+
+Since v0.18+, all models, sources, and strategies need to be manually registered using the `setupOrbit` function. If you were running on v0.17.x before you will need to take the following steps to migrate to v0.18+.
+
+- Remove all ember-orbit configs. There is no custom folder or naming support anymore.
+- If you had set `schemaVersion`, that is the one thing you will want to keep, but it now is passed into `setupOrbit`.
+- Move all buckets to the default bucket folder `app/data-buckets`.
+- Move all models to the default model folder `app/data-models`.
+- Move all sources to the default source folder `app/data-sources`.
+- Move all strategies to the default strategy folder `app/data-strategies`.
 
 ### Vite Setup
 
 In a new vite based app, we can use `import.meta.glob` to grab all the things we need
-to register and pass them to `setupOrbit.
+to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
 
 ```ts
 import { getOwner } from "@ember/-internals/owner";
