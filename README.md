@@ -757,11 +757,11 @@ This custom validator service will be injected into all your orbit sources via
 
 - `git clone https://github.com/orbitjs/ember-orbit.git`
 - `cd ember-orbit`
-- `yarn install`
+- `pnpm install`
 
 ### Running Tests
 
-- `yarn test`
+- `pnpm test`
 
 ## Acknowledgments
 
@@ -775,4 +775,4 @@ possible, EO will also be able to contribute back to Ember Data.
 
 ## License
 
-Copyright 2014-2021 Cerebris Corporation. MIT License (see LICENSE for details).
+Copyright 2014-2025 Cerebris Corporation. MIT License (see LICENSE for details).

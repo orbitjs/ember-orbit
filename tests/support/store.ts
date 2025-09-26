@@ -18,7 +18,6 @@ export function createStore(
   models: Dict<new (settings: ModelSettings) => Model>,
   sources?: Dict<MemorySource>,
 ) {
-  // TODO: maybe make these not need such specific paths
   const dataModels = Object.fromEntries(
     Object.entries(models).map(([key, value]) => [
       `../test-app/data-models/${key}`,

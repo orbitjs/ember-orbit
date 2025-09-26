@@ -420,7 +420,7 @@ module('Integration - Model', function (hooks) {
     await settled();
 
     assert.ok(
-      // @ts-expect-error TODO: fix this type error
+      // @ts-expect-error this is fine
       !cache._identityMap.has(identifier),
       'removed from identity map',
     );
