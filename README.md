@@ -88,7 +88,7 @@ In a new vite based app, we can use `import.meta.glob` to grab all the things we
 to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
 
 ```ts
-import { getOwner } from "@ember/-internals/owner";
+import { getOwner } from "@ember/owner";
 import type ApplicationInstance from "@ember/application/instance";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
