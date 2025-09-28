@@ -6,7 +6,6 @@ import { getName } from '../utils/get-name.ts';
 import { orbitRegistry } from '../utils/orbit-registry.ts';
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
-import type { Source } from '@orbit/data';
 import { type MemorySourceSettings } from '@orbit/memory';
 
 type Folder =

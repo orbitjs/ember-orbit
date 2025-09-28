@@ -1,7 +1,7 @@
 import { waitForSource } from '#src/test-support/index.ts';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
+import { orbitRegistry } from '#src/-private/utils/orbit-registry.ts';
 import { Store } from '#src/index.ts';
 import { Planet } from '../support/dummy-models';
 import { createStore } from '../support/store';
