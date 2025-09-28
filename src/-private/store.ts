@@ -14,9 +14,9 @@ import {
 import type { ModelFields } from './utils/model-fields.ts';
 import {
   Assertion,
-  Log,
   Orbit,
   type Listener,
+  type Log,
   type TaskQueue,
 } from '@orbit/core';
 import {
@@ -28,9 +28,10 @@ import {
   type RequestOptions,
   type TransformBuilderFunc,
 } from '@orbit/data';
-import MemorySource, {
-  type MemorySourceMergeOptions,
-  type MemorySourceSettings,
+import type MemorySource from '@orbit/memory';
+import type {
+  MemorySourceMergeOptions,
+  MemorySourceSettings,
 } from '@orbit/memory';
 import type { RecordCacheQueryOptions } from '@orbit/record-cache';
 import {
