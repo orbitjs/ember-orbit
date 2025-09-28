@@ -1,5 +1,5 @@
 import type ApplicationInstance from '@ember/application/instance';
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
+import { orbitRegistry } from './orbit-registry.ts';
 import type {
   RecordIdentity,
   RecordKeyMap,

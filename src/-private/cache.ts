@@ -3,7 +3,7 @@ import { registerDestructor } from '@ember/destroyable';
 import { getOwner, setOwner } from '@ember/owner';
 import LiveQuery from './live-query.ts';
 import ModelFactory from './model-factory.ts';
-import Model from './model.ts';
+import type Model from './model.ts';
 import type Store from './store.ts';
 import {
   ModelAwareQueryBuilder,

@@ -1,4 +1,4 @@
-import { orbitRegistry } from '../-private/system/ember-orbit-setup.ts';
+import { orbitRegistry } from '../-private/utils/orbit-registry.ts';
 import type { Store } from '../index.ts';
 import type { Source } from '@orbit/data';
 

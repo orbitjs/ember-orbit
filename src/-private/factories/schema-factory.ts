@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
+import { orbitRegistry } from '../utils/orbit-registry.ts';
 import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
 import { camelize } from '@orbit/serializers';
 

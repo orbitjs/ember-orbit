@@ -1,6 +1,7 @@
-import Cache from './cache.ts';
-import Model, { type ModelSettings } from './model.ts';
-import { orbitRegistry } from './system/ember-orbit-setup.ts';
+import type Cache from './cache.ts';
+import type Model from './model.ts';
+import type { ModelSettings } from './model.ts';
+import { orbitRegistry } from './utils/orbit-registry.ts';
 import Orbit from '@orbit/core';
 import { cloneRecordIdentity, type RecordIdentity } from '@orbit/records';
 import type { Dict } from '@orbit/utils';

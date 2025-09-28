@@ -1,4 +1,4 @@
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
+import { orbitRegistry } from '../utils/orbit-registry.ts';
 import { Coordinator, type CoordinatorOptions } from '@orbit/coordinator';
 
 type CoordinatorInjections = {

@@ -1,9 +1,9 @@
 import Store, { type StoreSettings } from '../store.ts';
-import { orbitRegistry } from '../system/ember-orbit-setup.ts';
 import type {
   ModelAwareQueryBuilder,
   ModelAwareTransformBuilder,
 } from '../utils/model-aware-types';
+import { orbitRegistry } from '../utils/orbit-registry.ts';
 import type { RequestOptions } from '@orbit/data';
 import type MemorySource from '@orbit/memory';
 import type { RecordCacheUpdateDetails } from '@orbit/record-cache';

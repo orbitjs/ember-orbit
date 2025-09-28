@@ -3,28 +3,11 @@ import DataSourceStore from '../../data-sources/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
 import { getName } from '../utils/get-name.ts';
+import { orbitRegistry } from '../utils/orbit-registry.ts';
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import type { Source } from '@orbit/data';
 import { type MemorySourceSettings } from '@orbit/memory';
-
-class OrbitRegistry {
-  application: Owner | null = null;
-  registrations: {
-    buckets: Record<'main', Bucket>;
-    models: Record<string, ModelFactory>;
-    sources: Record<string, Source>;
-    strategies: Record<string, Strategy>;
-  } = {
-    buckets: {} as Record<'main', Bucket>,
-    models: {},
-    sources: {},
-    strategies: {},
-  };
-  schemaVersion?: number;
-}
-
-export const orbitRegistry = new OrbitRegistry();
 
 type Folder =
   | '/data-buckets/'

@@ -1,4 +1,4 @@
-import { Model } from '../../index.ts';
+import type Model from '../model.ts';
 import type { ModelFields } from './model-fields';
 import type { QueryOrExpressions, TransformOrOperations } from '@orbit/data';
 import {
