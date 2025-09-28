@@ -620,7 +620,7 @@ enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
 ```ts
-import { getOwner } from "@ember/-internals/owner";
+import { getOwner } from "@ember/owner";
 import type ApplicationInstance from "@ember/application/instance";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
