@@ -1,7 +1,7 @@
 import { getOwner } from '@ember/owner';
 import type Owner from '@ember/owner';
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { setupOrbit } from '#src/index.ts';
 import type Coordinator from '@orbit/coordinator';
 

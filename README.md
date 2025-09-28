@@ -45,7 +45,7 @@ relationships between Orbit sources. In this way, you can install any Orbit
 
 ## Compatibility
 
-- Ember.js v3.28 or above
+- Ember.js v4.12 or above
 - Embroider or ember-auto-import v2
 
 ## Status
@@ -90,7 +90,7 @@ to register and pass them to `setupOrbit. You may want to set this up in your ap
 ```ts
 import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { setupOrbit, type Store } from "ember-orbit/index.ts";
 import type Coordinator from "@orbit/coordinator";
 
@@ -621,7 +621,7 @@ hook (in `app/routes/application.js`):
 ```ts
 import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { setupOrbit, type Store } from "ember-orbit/index.ts";
 import type Coordinator from "@orbit/coordinator";
 

@@ -1,5 +1,5 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import type { ModelAwareTransformBuilder } from '#src/-private/utils/model-aware-types.ts';
 import type { Store } from '#src/index.ts';
 

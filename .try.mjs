@@ -26,64 +26,6 @@ const compatDeps = {
 export default {
   scenarios: [
     {
-      name: 'ember-lts-3.28',
-      npm: {
-        dependencies: {
-          'ember-auto-import': '^2.10.0',
-          'ember-cli-htmlbars': '^6.3.0',
-        },
-        devDependencies: {
-          '@ember/optional-features': '^2.2.0',
-          '@ember/string': '^3.1.1',
-          'ember-cli': '^4.12.0',
-          'ember-exam': '^6.1.0',
-          'ember-source': '^3.28.0',
-        },
-      },
-      env: {
-        ENABLE_COMPAT_BUILD: true,
-      },
-      files: compatFiles,
-    },
-    {
-      name: 'ember-lts-4.4',
-      npm: {
-        dependencies: {
-          'ember-auto-import': '^2.10.0',
-          'ember-cli-htmlbars': '^6.3.0',
-        },
-        devDependencies: {
-          '@ember/optional-features': '^2.2.0',
-          '@ember/string': '^3.1.1',
-          'ember-cli': '~4.12.0',
-          'ember-source': '~4.4.0',
-        },
-      },
-      env: {
-        ENABLE_COMPAT_BUILD: true,
-      },
-      files: compatFiles,
-    },
-    {
-      name: 'ember-lts-4.8',
-      npm: {
-        dependencies: {
-          'ember-auto-import': '^2.10.0',
-          'ember-cli-htmlbars': '^6.3.0',
-        },
-        devDependencies: {
-          '@ember/optional-features': '^2.2.0',
-          '@ember/string': '^3.1.1',
-          'ember-cli': '~4.12.0',
-          'ember-source': '~4.8.0',
-        },
-      },
-      env: {
-        ENABLE_COMPAT_BUILD: true,
-      },
-      files: compatFiles,
-    },
-    {
       name: 'ember-lts-4.12',
       npm: {
         dependencies: {

@@ -1,5 +1,5 @@
 import type { AnyFn } from '@ember/-internals/utility-types';
-import Service, { inject as service } from '@ember/service';
+import Service, { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import type { Store } from '#src/index.ts';
 
