@@ -1,6 +1,6 @@
-import { getOwner, setOwner } from '@ember/application';
 import type ApplicationInstance from '@ember/application/instance';
 import { associateDestroyableChild, destroy } from '@ember/destroyable';
+import { getOwner, setOwner } from '@ember/owner';
 import Cache, { type CacheSettings } from './cache.ts';
 import LiveQuery from './live-query.ts';
 import Model from './model.ts';

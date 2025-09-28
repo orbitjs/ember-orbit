@@ -88,8 +88,8 @@ In a new vite based app, we can use `import.meta.glob` to grab all the things we
 to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
 
 ```ts
-import { getOwner } from "@ember/owner";
 import type ApplicationInstance from "@ember/application/instance";
+import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
 import { setupOrbit, type Store } from "ember-orbit/index.ts";
@@ -620,8 +620,8 @@ enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
 ```ts
-import { getOwner } from "@ember/owner";
 import type ApplicationInstance from "@ember/application/instance";
+import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
 import { inject as service } from "@ember/service";
 import { setupOrbit, type Store } from "ember-orbit/index.ts";

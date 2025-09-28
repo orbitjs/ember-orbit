@@ -1,6 +1,6 @@
-import { getOwner, setOwner } from '@ember/application';
 import type ApplicationInstance from '@ember/application/instance';
 import { registerDestructor } from '@ember/destroyable';
+import { getOwner, setOwner } from '@ember/owner';
 import LiveQuery from './live-query.ts';
 import ModelFactory from './model-factory.ts';
 import Model from './model.ts';

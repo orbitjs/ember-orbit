@@ -1,5 +1,5 @@
-import { getOwner } from '@ember/-internals/owner';
 import type ApplicationInstance from '@ember/application/instance';
+import { getOwner } from '@ember/owner';
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { setupOrbit } from '#src/index.ts';
@@ -19,7 +19,7 @@ export default class ApplicationRoute extends Route {
   @service declare dataCoordinator: Coordinator;
 
   async beforeModel() {
-    const application = getOwner(this) as ApplicationInstance;
+    const application = getOwner(this);
 
     setupOrbit(application, {
       ...dataModels,
