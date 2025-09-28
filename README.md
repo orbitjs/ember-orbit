@@ -91,7 +91,7 @@ to register and pass them to `setupOrbit. You may want to set this up in your ap
 import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
 import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit/index.ts";
+import { setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -622,7 +622,7 @@ hook (in `app/routes/application.js`):
 import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
 import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit/index.ts";
+import { setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {

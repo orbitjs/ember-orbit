@@ -25,7 +25,7 @@ import {
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
 import {
-  MemoryCache,
+  type MemoryCache,
   type MemoryCacheMergeOptions,
   type MemoryCacheSettings,
 } from '@orbit/memory';

@@ -1,6 +1,6 @@
 import { orbitRegistry } from '../-private/system/ember-orbit-setup.ts';
-import { Store } from '../index.ts';
-import { Source } from '@orbit/data';
+import type { Store } from '../index.ts';
+import type { Source } from '@orbit/data';
 
 export async function waitForSource(
   sourceOrSourceName: Store | Source | string,

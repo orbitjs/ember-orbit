@@ -12,7 +12,13 @@ import {
   type RecordIdentityOrModel,
 } from './utils/model-aware-types.ts';
 import type { ModelFields } from './utils/model-fields.ts';
-import { Assertion, Log, Orbit, TaskQueue, type Listener } from '@orbit/core';
+import {
+  Assertion,
+  Log,
+  Orbit,
+  type Listener,
+  type TaskQueue,
+} from '@orbit/core';
 import {
   buildQuery,
   buildTransform,

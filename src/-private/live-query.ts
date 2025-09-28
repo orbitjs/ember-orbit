@@ -7,9 +7,9 @@ import { notifyPropertyChange } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { Model } from '../index.ts';
-import Cache from './cache.ts';
+import type Cache from './cache.ts';
 import { Orbit } from '@orbit/core';
-import { SyncLiveQuery } from '@orbit/record-cache';
+import type { SyncLiveQuery } from '@orbit/record-cache';
 import type { RecordQuery, RecordQueryResult } from '@orbit/records';
 
 const { assert, deprecate } = Orbit;
