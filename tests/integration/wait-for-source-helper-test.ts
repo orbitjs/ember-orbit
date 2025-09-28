@@ -1,7 +1,6 @@
 import { waitForSource } from '#src/test-support/index.ts';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import type ApplicationInstance from '@ember/application/instance';
 import { orbitRegistry } from '#src/-private/system/ember-orbit-setup.ts';
 import { Store } from '#src/index.ts';
 import { Planet } from '../support/dummy-models';
@@ -16,7 +15,7 @@ module('waitForSource helper', function (hooks) {
   setupTest(hooks);
 
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
-    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
+    store = createStore(this.owner, { planet: Planet });
 
     const backup = new MemorySource({ schema: store.schema });
 
@@ -33,7 +32,7 @@ module('waitForSource helper', function (hooks) {
   });
 
   test('it looks up data sources by name if a string is provided', async function (assert) {
-    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
+    store = createStore(this.owner, { planet: Planet });
 
     const backup = new MemorySource({ schema: store.schema });
 

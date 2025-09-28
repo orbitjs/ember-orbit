@@ -1,7 +1,6 @@
 import { settled } from '@ember/test-helpers';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import type ApplicationInstance from '@ember/application/instance';
 import { Cache, Store } from '#src/index.ts';
 import {
   BinaryStar,
@@ -29,7 +28,7 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem,
     };
-    store = createStore(this.owner as ApplicationInstance, models).fork();
+    store = createStore(this.owner, models).fork();
     cache = store.cache;
   });
 

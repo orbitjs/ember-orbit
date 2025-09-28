@@ -1,4 +1,4 @@
-import type ApplicationInstance from '@ember/application/instance';
+import type Owner from '@ember/owner';
 import DataSourceStore from '../../data-sources/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
@@ -9,7 +9,7 @@ import type { Source } from '@orbit/data';
 import { type MemorySourceSettings } from '@orbit/memory';
 
 class OrbitRegistry {
-  application: ApplicationInstance | null = null;
+  application: Owner | null = null;
   registrations: {
     buckets: Record<'main', Bucket>;
     models: Record<string, ModelFactory>;
@@ -94,7 +94,7 @@ function injectModules(modules: Record<string, unknown>) {
 }
 
 export function setupOrbit(
-  application: ApplicationInstance,
+  application: Owner,
   modules: Record<string, unknown>,
   config?: { schemaVersion?: number },
 ) {

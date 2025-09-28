@@ -1,6 +1,5 @@
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import type ApplicationInstance from '@ember/application/instance';
 import {
   isStandardRecord,
   ModelAwareNormalizer,
@@ -22,7 +21,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
   let normalizer: ModelAwareNormalizer;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,

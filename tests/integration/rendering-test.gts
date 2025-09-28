@@ -4,7 +4,6 @@ import { createStore } from '../support/store';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
-import type ApplicationInstance from '@ember/application/instance';
 import type { TOC } from '@ember/component/template-only';
 
 const PlanetComponent = <template>
@@ -32,7 +31,7 @@ module('Rendering', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon };
-    store = createStore(this.owner as ApplicationInstance, models).fork();
+    store = createStore(this.owner, models).fork();
     cache = store.cache;
   });
 

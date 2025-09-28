@@ -1,6 +1,5 @@
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import type ApplicationInstance from '@ember/application/instance';
 import { Store } from '#src/index.ts';
 import {
   BinaryStar,
@@ -24,7 +23,7 @@ module('Integration - Store', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,

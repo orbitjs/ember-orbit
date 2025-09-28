@@ -1,7 +1,6 @@
 import { waitForSource } from '#src/test-support/index.ts';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import type ApplicationInstance from '@ember/application/instance';
 import { Cache, Store } from '#src/index.ts';
 import { Moon, Planet, Star } from '../support/dummy-models';
 import { createStore } from '../support/store';
@@ -14,7 +13,7 @@ module('Integration - Cache', function (hooks) {
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,
