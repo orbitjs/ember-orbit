@@ -88,10 +88,8 @@ In a new vite based app, we can use `import.meta.glob` to grab all the things we
 to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
 
 ```ts
-import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
-import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit";
+import { orbit, setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -105,14 +103,11 @@ const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
-  @service declare store: Store;
+  @orbit declare dataCoordinator;
+  @orbit declare store;
 
   async beforeModel() {
-    const application = getOwner(this);
-
     setupOrbit(
-      application,
       {
         ...dataModels,
         ...dataSources,
@@ -141,24 +136,6 @@ must be handled in each individual source.
 
 In a classic ember-cli app, we are not able to use `import.meta.glob` out of the box yet.
 Until ember-cli is updated to support this, you will need to install [ember-classic-import-meta-glob](https://github.com/NullVoxPopuli/ember-classic-import-meta-glob) to get it to work.
-
-### Registering services
-
-In your `app/app.ts` you will need to register all the services as well.
-It should be something like this:
-
-```ts
-import emberOrbitRegistry from "ember-orbit/registry.ts";
-
-// ...
-
-modules = {
-  // if the app is using ember-strict-application-resolver
-  ...emberOrbitRegistry(),
-  // or if using ember-resolver
-  ...emberOrbitRegistry("name-of-app"),
-};
-```
 
 ## Usage
 
@@ -191,6 +168,20 @@ EO installs the following services by default:
 - `dataKeyMap` - An `@orbit/data` `KeyMap` that manages a mapping between keys
   and local IDs for scenarios in which a server does not accept client-generated
   IDs.
+
+### Orbit Decorator Usage
+
+The `@orbit` decorator allows you to inject orbit services that are registered in the `orbitRegistry.registrations.services` instead of using Ember's `@service` decorator. This decouples your services from Ember's owner system.
+
+```ts
+import { orbit, type OrbitServiceRegistry } from "ember-orbit";
+
+class MyComponent {
+  @orbit declare dataCoordinator;
+
+  @orbit declare store;
+}
+```
 
 ### Defining models
 
@@ -637,10 +628,8 @@ enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
 ```ts
-import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
-import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit";
+import { orbit, setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -654,14 +643,11 @@ const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
-  @service declare store: Store;
+  @orbit declare dataCoordinator;
+  @orbit declare store;
 
   async beforeModel() {
-    const application = getOwner(this);
-
     setupOrbit(
-      application,
       {
         ...dataModels,
         ...dataSources,

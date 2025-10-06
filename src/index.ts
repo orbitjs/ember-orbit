@@ -15,3 +15,8 @@ export { default as LiveQuery } from './-private/live-query.ts';
 // Provide `belongsTo` as an alias to `hasOne`
 export { default as belongsTo } from './-private/fields/has-one.ts';
 export { setupOrbit } from './-private/system/ember-orbit-setup.ts';
+export { orbit } from './-private/decorators/orbit.ts';
+export type {
+  OrbitServiceRegistry,
+  OrbitServiceName,
+} from './-private/types/service-registry.ts';

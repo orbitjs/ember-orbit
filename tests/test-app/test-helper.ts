@@ -4,7 +4,7 @@ import * as QUnit from 'qunit';
 import { setup } from 'qunit-dom';
 import EmberRouter from '@ember/routing/router';
 import EmberApp from 'ember-strict-application-resolver';
-import emberOrbitRegistry from '#src/registry.ts';
+import emberOrbitRegistry from '../../src/registry.ts';
 
 class Router extends EmberRouter {
   location = 'none';

@@ -1,5 +1,11 @@
-import type Owner from '@ember/owner';
 import DataSourceStore from '../../data-sources/store.ts';
+// Import service factories
+import DataCoordinator from '../../services/data-coordinator.ts';
+import DataKeyMap from '../../services/data-key-map.ts';
+import DataNormalizer from '../../services/data-normalizer.ts';
+import DataSchema from '../../services/data-schema.ts';
+import DataValidator from '../../services/data-validator.ts';
+import Store from '../../services/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
 import { getName } from '../utils/get-name.ts';
@@ -22,9 +28,24 @@ interface FactoryForFolderType {
 }
 
 function injectModules(modules: Record<string, unknown>) {
+  // First register models (they don't need services)
+  const modelMatches = Object.entries(modules).filter(([key]) =>
+    key.includes('/data-models/'),
+  );
+
+  for (const [key, module] of modelMatches) {
+    let [, name] = key.split('/data-models/');
+    name = getName(name as string);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    orbitRegistry.registrations.models[name] =
+      (module as FactoryForFolderType['/data-models/']).default ??
+      (module as ModelFactory);
+  }
+}
+
+function injectSourcesAndStrategies(modules: Record<string, unknown>) {
   const folderConfig = {
     '/data-buckets/': { registry: orbitRegistry.registrations.buckets },
-    '/data-models/': { registry: orbitRegistry.registrations.models },
     '/data-sources/': { registry: orbitRegistry.registrations.sources },
     '/data-strategies/': { registry: orbitRegistry.registrations.strategies },
   };
@@ -56,16 +77,9 @@ function injectModules(modules: Record<string, unknown>) {
       let [, name] = key.split(folder);
       name = getName(name as string);
 
-      if (folder === '/data-models/') {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        registry[name] =
-          (module as FactoryForFolderType[typeof folder]).default ??
-          (module as ModelFactory);
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        registry[name] = (module as FactoryForFolderType[typeof folder]).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          ?.create?.({} as any);
-      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      registry[name] = (module as FactoryForFolderType[typeof folder]).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        ?.create?.({} as any);
     }
   }
 
@@ -76,11 +90,30 @@ function injectModules(modules: Record<string, unknown>) {
 }
 
 export function setupOrbit(
-  application: Owner,
   modules: Record<string, unknown>,
   config?: { schemaVersion?: number },
 ) {
-  orbitRegistry.application = application;
   orbitRegistry.schemaVersion = config?.schemaVersion;
+
+  // First create only services that truly have no dependencies
+  orbitRegistry.registrations.services['data-key-map'] = DataKeyMap.create();
+  orbitRegistry.registrations.services['data-validator'] = DataValidator.create(
+    {},
+  );
+
+  // Register models first (needed for schema)
   injectModules(modules);
+
+  // Create schema service (needs models)
+  orbitRegistry.registrations.services['data-schema'] = DataSchema.create({});
+
+  // Create sources, buckets, strategies (need schema)
+  injectSourcesAndStrategies(modules);
+
+  // Finally create services that depend on sources
+  orbitRegistry.registrations.services['data-normalizer'] =
+    DataNormalizer.create({} as any);
+  orbitRegistry.registrations.services['data-coordinator'] =
+    DataCoordinator.create({});
+  orbitRegistry.registrations.services['store'] = Store.create({} as any);
 }
