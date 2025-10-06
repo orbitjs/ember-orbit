@@ -1,11 +1,15 @@
 {
   "solution": {
     "ember-orbit": {
-      "impact": "patch",
-      "oldVersion": "0.17.5",
-      "newVersion": "0.17.6",
+      "impact": "major",
+      "oldVersion": "0.17.6",
+      "newVersion": "0.18.0",
       "tagName": "latest",
       "constraints": [
+        {
+          "impact": "major",
+          "reason": "Appears in changelog section :boom: Breaking Change"
+        },
         {
           "impact": "patch",
           "reason": "Appears in changelog section :house: Internal"
@@ -14,5 +18,5 @@
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2025-09-23)\n\n* ember-orbit 0.17.6 (patch)\n\n#### :house: Internal\n* `ember-orbit`\n  * [#426](https://github.com/orbitjs/ember-orbit/pull/426) Fix some type errors ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
+  "description": "## Release (2025-10-06)\n\n* ember-orbit 0.18.0 (major)\n\n#### :boom: Breaking Change\n* `ember-orbit`\n  * [#421](https://github.com/orbitjs/ember-orbit/pull/421) Convert to v2 addon, require Ember 4.12+ ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### :house: Internal\n* `ember-orbit`\n  * [#430](https://github.com/orbitjs/ember-orbit/pull/430) Run latest blueprints ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n  * [#428](https://github.com/orbitjs/ember-orbit/pull/428) Setup release-plan to do minor for major ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
 }
