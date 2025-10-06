@@ -8,12 +8,9 @@ module.exports = {
   availableOptions: [{ name: 'from', type: String, default: DEFAULT_PACKAGE }],
 
   fileMapTokens() {
-    const addonConfig = this.project.config()['orbit'] || {};
-    const collections = addonConfig.collections || {};
-
     return {
       __sources__() {
-        return collections.sources || 'data-sources';
+        return 'data-sources';
       },
     };
   },

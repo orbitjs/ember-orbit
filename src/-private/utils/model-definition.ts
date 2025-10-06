@@ -1,0 +1,67 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+import type {
+  AttributeDefinition,
+  KeyDefinition,
+  ModelDefinition,
+  RelationshipDefinition,
+} from '@orbit/records';
+import { clone, deepMerge } from '@orbit/utils';
+
+const MODEL_DEFINITION = Symbol('@orbit:modelDefinition');
+const MODEL_DEFINITION_FOR = Symbol('@orbit:modelDefinitionFor');
+
+export function getModelDefinition(proto: any): ModelDefinition {
+  if (proto[MODEL_DEFINITION]) {
+    return proto[MODEL_DEFINITION] as ModelDefinition;
+  } else {
+    proto[MODEL_DEFINITION] = {};
+    return proto[MODEL_DEFINITION] as ModelDefinition;
+  }
+}
+
+export function extendModelDefinition(
+  proto: any,
+  modelDefinition: ModelDefinition,
+): void {
+  if (proto[MODEL_DEFINITION] && proto[MODEL_DEFINITION_FOR]) {
+    let currentDef = proto[MODEL_DEFINITION];
+    if (proto[MODEL_DEFINITION_FOR] !== proto) {
+      currentDef = clone(currentDef);
+      proto[MODEL_DEFINITION_FOR] = proto;
+    }
+    proto[MODEL_DEFINITION] = deepMerge(currentDef, modelDefinition);
+  } else {
+    proto[MODEL_DEFINITION] = modelDefinition;
+    proto[MODEL_DEFINITION_FOR] = proto;
+  }
+}
+
+export function defineAttribute(
+  proto: object,
+  name: string,
+  options: AttributeDefinition,
+): void {
+  extendModelDefinition(proto, {
+    attributes: { [name]: options },
+  });
+}
+
+export function defineKey(
+  proto: object,
+  name: string,
+  options: KeyDefinition,
+): void {
+  extendModelDefinition(proto, {
+    keys: { [name]: options },
+  });
+}
+
+export function defineRelationship(
+  proto: object,
+  name: string,
+  options: RelationshipDefinition,
+): void {
+  extendModelDefinition(proto, {
+    relationships: { [name]: options },
+  });
+}

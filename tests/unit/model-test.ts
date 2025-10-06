@@ -1,5 +1,5 @@
-import { key, attr, hasOne, hasMany, Model } from 'ember-orbit';
 import { module, test } from 'qunit';
+import { attr, hasMany, hasOne, key, Model } from '#src/index.ts';
 
 module('Unit - Model', function () {
   module('fields defined by `type`, `definition` object', function () {

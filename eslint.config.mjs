@@ -12,56 +12,43 @@
  *     npx eslint --inspect-config
  *
  */
-import globals from 'globals';
+import babelParser from '@babel/eslint-parser';
 import js from '@eslint/js';
-
+import prettier from 'eslint-config-prettier';
+import ember from 'eslint-plugin-ember/recommended';
+import importPlugin from 'eslint-plugin-import';
+import n from 'eslint-plugin-n';
+import globals from 'globals';
 import ts from 'typescript-eslint';
 
-import ember from 'eslint-plugin-ember/recommended';
-
-import eslintConfigPrettier from 'eslint-config-prettier';
-import qunit from 'eslint-plugin-qunit';
-import n from 'eslint-plugin-n';
-
-import babelParser from '@babel/eslint-parser';
-
-const parserOptions = {
-  esm: {
-    js: {
-      ecmaFeatures: { modules: true },
-      ecmaVersion: 'latest',
-      requireConfigFile: false,
-      babelOptions: {
-        plugins: [
-          [
-            '@babel/plugin-proposal-decorators',
-            { decoratorsBeforeExport: true },
-          ],
-        ],
-      },
-    },
-    ts: {
-      projectService: true,
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
+const esmParserOptions = {
+  ecmaFeatures: { modules: true },
+  ecmaVersion: 'latest',
 };
 
-export default ts.config(
+const tsParserOptions = {
+  projectService: true,
+  project: true,
+  tsconfigRootDir: import.meta.dirname,
+};
+
+const config = [
   js.configs.recommended,
+  prettier,
   ember.configs.base,
   ember.configs.gjs,
   ember.configs.gts,
-  eslintConfigPrettier,
   /**
    * Ignores must be in their own object
    * https://eslint.org/docs/latest/use/configure/ignore
    */
   {
     ignores: [
-      'blueprints/**/files/**',
       'dist/',
+      'dist-*/',
+      'declarations/',
       'node_modules/',
+      'blueprints/**/files/**',
       'coverage/',
       '!**/.*',
     ],
@@ -83,7 +70,7 @@ export default ts.config(
   {
     files: ['**/*.{js,gjs}'],
     languageOptions: {
-      parserOptions: parserOptions.esm.js,
+      parserOptions: esmParserOptions,
       globals: {
         ...globals.browser,
       },
@@ -93,7 +80,7 @@ export default ts.config(
     files: ['**/*.{ts,gts}'],
     languageOptions: {
       parser: ember.parser,
-      parserOptions: parserOptions.esm.ts,
+      parserOptions: tsParserOptions,
     },
     extends: [...ts.configs.recommendedTypeChecked, ember.configs.gts],
     rules: {
@@ -101,9 +88,13 @@ export default ts.config(
     },
   },
   {
-    files: ['tests/**/*-test.{js,gjs,ts,gts}'],
+    files: ['src/**/*'],
     plugins: {
-      qunit,
+      import: importPlugin,
+    },
+    rules: {
+      // require relative imports use full extensions
+      'import/extensions': ['error', 'always', { ignorePackages: true }],
     },
   },
   /**
@@ -112,16 +103,11 @@ export default ts.config(
   {
     files: [
       '**/*.cjs',
+      '.prettierrc.cjs',
+      '.template-lintrc.cjs',
+      'addon-main.cjs',
       'blueprints/*/index.js',
-      'config/**/*.js',
-      'tests/dummy/config/**/*.js',
-      'testem.js',
-      'testem*.js',
       'index.js',
-      '.prettierrc.js',
-      '.stylelintrc.js',
-      '.template-lintrc.js',
-      'ember-cli-build.js',
     ],
     plugins: {
       n,
@@ -147,10 +133,12 @@ export default ts.config(
     languageOptions: {
       sourceType: 'module',
       ecmaVersion: 'latest',
-      parserOptions: parserOptions.esm.js,
+      parserOptions: esmParserOptions,
       globals: {
         ...globals.node,
       },
     },
   },
-);
+];
+
+export default ts.config(...config);

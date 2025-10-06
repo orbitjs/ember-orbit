@@ -1,0 +1,86 @@
+import {
+  associateDestroyableChild,
+  destroy,
+  registerDestructor,
+} from '@ember/destroyable';
+import { notifyPropertyChange } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
+import type Cache from './cache.ts';
+import type Model from './model.ts';
+import { Orbit } from '@orbit/core';
+import type { SyncLiveQuery } from '@orbit/record-cache';
+import type { RecordQuery, RecordQueryResult } from '@orbit/records';
+
+const { assert, deprecate } = Orbit;
+
+export interface LiveQuerySettings {
+  liveQuery: SyncLiveQuery;
+  query: RecordQuery;
+  cache: Cache;
+}
+
+export default class LiveQuery implements Iterable<Model> {
+  #query: RecordQuery;
+  #cache: Cache;
+
+  #iteratorAccessed = false;
+
+  #value = createCache(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    this._invalidate;
+    return this.#cache.query(this.#query);
+  });
+
+  @tracked _invalidate = 0;
+
+  constructor(settings: LiveQuerySettings) {
+    this.#query = settings.query;
+    this.#cache = settings.cache;
+
+    const unsubscribe = settings.liveQuery.subscribe(() => {
+      this._invalidate++;
+      if (this.#iteratorAccessed) {
+        notifyPropertyChange(this, '[]');
+      }
+    });
+    registerDestructor(this, unsubscribe);
+    associateDestroyableChild(this.#cache, this);
+  }
+
+  get query(): RecordQuery {
+    return this.#query;
+  }
+
+  /**
+   * @deprecated
+   */
+  get content(): RecordQueryResult<Model> {
+    deprecate(
+      'LiveQuery#content is deprecated. Access LiveQuery#value instead.',
+    );
+    return this.value;
+  }
+
+  get value(): RecordQueryResult<Model> {
+    return getValue(this.#value);
+  }
+
+  get length(): number {
+    return (this.value as Model[]).length;
+  }
+
+  [Symbol.iterator](): IterableIterator<Model> {
+    assert(
+      'LiveQuery result is not a collection. You can access the result as `liveQuery.value`.',
+      Array.isArray(this.value),
+    );
+
+    this.#iteratorAccessed = true;
+    return (this.value as Model[])[Symbol.iterator]();
+  }
+
+  destroy() {
+    destroy(this);
+  }
+}

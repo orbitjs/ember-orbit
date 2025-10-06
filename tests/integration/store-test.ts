@@ -1,22 +1,21 @@
-import { Store } from 'ember-orbit';
-import {
-  Planet,
-  Moon,
-  Star,
-  Ocean,
-  BinaryStar,
-  PlanetarySystem,
-} from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
-import { buildTransform } from '@orbit/data';
-import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { Store } from '#src/index.ts';
+import {
+  BinaryStar,
+  Moon,
+  Ocean,
+  Planet,
+  PlanetarySystem,
+  Star,
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
+import { buildTransform } from '@orbit/data';
 import type {
   InitializedRecord,
   RecordOperation,
   RecordTransform,
 } from '@orbit/records';
-import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Store', function (hooks) {
   setupTest(hooks);
@@ -24,7 +23,7 @@ module('Integration - Store', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,

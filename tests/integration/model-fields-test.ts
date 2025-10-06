@@ -1,17 +1,15 @@
-import { Store } from 'ember-orbit';
-import {
-  Planet,
-  Moon,
-  Star,
-  BinaryStar,
-  PlanetarySystem,
-} from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
-import { module, test } from 'qunit';
-
-import { normalizeModelFields } from 'ember-orbit/-private/utils/model-fields';
 import { setupTest } from 'ember-qunit';
-import type ApplicationInstance from '@ember/application/instance';
+import { module, test } from 'qunit';
+import { normalizeModelFields } from '#src/-private/utils/model-fields.ts';
+import { Store } from '#src/index.ts';
+import {
+  BinaryStar,
+  Moon,
+  Planet,
+  PlanetarySystem,
+  Star,
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
 
 module('Integration - normalizeModelFields', function (hooks) {
   setupTest(hooks);
@@ -19,7 +17,7 @@ module('Integration - normalizeModelFields', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,

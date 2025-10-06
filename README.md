@@ -45,9 +45,8 @@ relationships between Orbit sources. In this way, you can install any Orbit
 
 ## Compatibility
 
-- Ember.js v3.28 or above
-- Ember CLI v3.28 or above
-- Node.js v20 or above
+- Ember.js v4.12 or above
+- Embroider or ember-auto-import v2
 
 ## Status
 
@@ -72,6 +71,95 @@ ember install ember-orbit
 The generators for orbit sources and buckets will attempt to install any
 additional orbit-related dependencies.
 
+## Configuration
+
+Since v0.18+, all models, sources, and strategies need to be manually registered using the `setupOrbit` function. If you were running on v0.17.x before you will need to take the following steps to migrate to v0.18+.
+
+- Remove all ember-orbit configs. There is no custom folder or naming support anymore.
+- If you had set `schemaVersion`, that is the one thing you will want to keep, but it now is passed into `setupOrbit`.
+- Move all buckets to the default bucket folder `app/data-buckets`.
+- Move all models to the default model folder `app/data-models`.
+- Move all sources to the default source folder `app/data-sources`.
+- Move all strategies to the default strategy folder `app/data-strategies`.
+
+### Vite Setup
+
+In a new vite based app, we can use `import.meta.glob` to grab all the things we need
+to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
+
+```ts
+import { getOwner } from "@ember/owner";
+import Route from "@ember/routing/route";
+import { service } from "@ember/service";
+import { setupOrbit, type Store } from "ember-orbit";
+import type Coordinator from "@orbit/coordinator";
+
+const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
+  eager: true,
+});
+const dataSources = import.meta.glob("../data-sources/*.{js,ts}", {
+  eager: true,
+});
+const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
+  eager: true,
+});
+
+export default class ApplicationRoute extends Route {
+  @service declare dataCoordinator: Coordinator;
+  @service declare store: Store;
+
+  async beforeModel() {
+    const application = getOwner(this);
+
+    setupOrbit(
+      application,
+      {
+        ...dataModels,
+        ...dataSources,
+        ...dataStrategies,
+      },
+      { schemaVersion: 2 },
+    );
+
+    // Populate the store from backup prior to activating the coordinator
+    const backup = this.dataCoordinator.getSource("backup");
+    const records = await backup.query((q) => q.findRecords());
+    await this.store.sync((t) => records.map((r) => t.addRecord(r)));
+
+    await this.dataCoordinator.activate();
+  }
+}
+```
+
+Note that `schemaVersion` should be set if you're using any Orbit sources, such
+as `IndexedDBSource`, that track schema version. By default, Orbit's schema
+version will start at `1`. This value should be bumped to a a higher number with
+each significant change that requires a schema migration. Migrations themselves
+must be handled in each individual source.
+
+### Ember-CLI Compatibility
+
+In a classic ember-cli app, we are not able to use `import.meta.glob` out of the box yet.
+Until ember-cli is updated to support this, you will need to install [ember-classic-import-meta-glob](https://github.com/NullVoxPopuli/ember-classic-import-meta-glob) to get it to work.
+
+### Registering services
+
+In your `app/app.ts` you will need to register all the services as well.
+It should be something like this:
+
+```ts
+import emberOrbitRegistry from "ember-orbit/registry.ts";
+
+// ...
+
+modules = {
+  // if the app is using ember-strict-application-resolver
+  ...emberOrbitRegistry(),
+  // or if using ember-resolver
+  ...emberOrbitRegistry("name-of-app"),
+};
+```
+
 ## Usage
 
 EO creates the following directories by default:
@@ -86,7 +174,7 @@ EO creates the following directories by default:
 
 - `app/data-strategies` - Factories for creating Orbit coordination strategies.
 
-Note that "factories" are simply objects with a `create` method that serves to
+Note that "factories" are simply objects with a `create` method that serve to
 instantiate an object. The factory interface conforms with the expectations of
 Ember's DI system.
 
@@ -103,9 +191,6 @@ EO installs the following services by default:
 - `dataKeyMap` - An `@orbit/data` `KeyMap` that manages a mapping between keys
   and local IDs for scenarios in which a server does not accept client-generated
   IDs.
-
-All the directories and services configured by EO can be customized for your
-app, as described in the "Customizing EO" section below.
 
 ### Defining models
 
@@ -131,7 +216,7 @@ export default class Planet extends Model {}
 You can then extend your model to include keys, attributes, and relationships:
 
 ```js
-import { Model, attr, hasOne, hasMany, key } from "ember-orbit";
+import { attr, hasMany, hasOne, key, Model } from "ember-orbit";
 
 export default class Planet extends Model {
   @key() remoteId;
@@ -144,7 +229,7 @@ export default class Planet extends Model {
 You can create polymorphic relationships by passing in an array of types:
 
 ```js
-import { Model, attr, hasOne, hasMany } from "ember-orbit";
+import { attr, hasMany, hasOne, Model } from "ember-orbit";
 
 export default class PlanetarySystem extends Model {
   @attr("string") name;
@@ -434,8 +519,8 @@ ember g data-source backup --from=@orbit/indexeddb
 This will generate a source factory in `app/data-sources/backup.js`:
 
 ```javascript
-import SourceClass from "@orbit/indexeddb";
 import { applyStandardSourceInjections } from "ember-orbit";
+import SourceClass from "@orbit/indexeddb";
 
 export default {
   create(injections = {}) {
@@ -451,8 +536,7 @@ are injected by default for every EO application. We're also adding
 a `name` to uniquely identify the source within the coordinator. You could
 optionally specify a `namespace` to be used to name the IndexedDB database.
 
-Every source that's defined in `app/data-sources` will be discovered
-automatically by EO and added to the `dataCoordinator` service.
+Every source that's defined in `app/data-sources` needs to be registered via `setupOrbit` which will automatically add it to the `dataCoordinator` service.
 
 Next let's define some strategies to synchronize data between sources.
 
@@ -552,15 +636,40 @@ In our case, we want to restore our store from the backup source before we
 enable the coordinator. Let's do this in our application route's `beforeModel`
 hook (in `app/routes/application.js`):
 
-```js
+```ts
+import { getOwner } from "@ember/owner";
 import Route from "@ember/routing/route";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
+import { setupOrbit, type Store } from "ember-orbit";
+import type Coordinator from "@orbit/coordinator";
+
+const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
+  eager: true,
+});
+const dataSources = import.meta.glob("../data-sources/*.{js,ts}", {
+  eager: true,
+});
+const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
+  eager: true,
+});
 
 export default class ApplicationRoute extends Route {
-  @service dataCoordinator;
-  @service store;
+  @service declare dataCoordinator: Coordinator;
+  @service declare store: Store;
 
   async beforeModel() {
+    const application = getOwner(this);
+
+    setupOrbit(
+      application,
+      {
+        ...dataModels,
+        ...dataSources,
+        ...dataStrategies,
+      },
+      { schemaVersion: 2 },
+    );
+
     // Populate the store from backup prior to activating the coordinator
     const backup = this.dataCoordinator.getSource("backup");
     const records = await backup.query((q) => q.findRecords());
@@ -589,62 +698,8 @@ ember g data-bucket main
 ```
 
 By default this will create a new bucket factory based on `@orbit/indexeddb-bucket`.
-It will also create an initializer that injects this bucket into all your
+This bucket will be registered as the `'main'` bucket and injected into all your
 sources and key maps.
-
-### Customizing EO
-
-The types, collections, and services used by EO can all be customized for
-your application via settings under the `orbit` key in `config/environment`:
-
-```js
-module.exports = function (environment) {
-  let ENV = {
-    // ... other settings here
-
-    // Default Orbit settings (any of which can be overridden)
-    orbit: {
-      schemaVersion: undefined,
-      types: {
-        bucket: "data-bucket",
-        model: "data-model",
-        source: "data-source",
-        strategy: "data-strategy",
-      },
-      collections: {
-        buckets: "data-buckets",
-        models: "data-models",
-        sources: "data-sources",
-        strategies: "data-strategies",
-      },
-      services: {
-        store: "store",
-        bucket: "data-bucket",
-        coordinator: "data-coordinator",
-        schema: "data-schema",
-        keyMap: "data-key-map",
-        normalizer: "data-normalizer",
-        validator: "data-validator",
-      },
-      skipStoreService: false,
-      skipBucketService: false,
-      skipCoordinatorService: false,
-      skipSchemaService: false,
-      skipKeyMapService: false,
-      skipNormalizerService: false,
-      skipValidatorService: false,
-    },
-  };
-
-  return ENV;
-};
-```
-
-Note that `schemaVersion` should be set if you're using any Orbit sources, such
-as `IndexedDBSource`, that track schema version. By default, Orbit's schema
-version will start at `1`. This value should be bumped to a a higher number with
-each significant change that requires a schema migration. Migrations themselves
-must be handled in each individual source.
 
 ### Conditionally include strategies and sources
 
@@ -659,8 +714,8 @@ non-production builds:
 ```js
 // app/data-strategies/event-logging.js
 
-import { EventLoggingStrategy } from "@orbit/coordinator";
 import config from "example/config/environment";
+import { EventLoggingStrategy } from "@orbit/coordinator";
 
 const factory = {
   create() {
@@ -681,9 +736,7 @@ service that is injected into all sources.
 Validators are useful to ensure that your data matches its type expectations and
 that operations and query expressions are well formed. Of course, they also add
 some extra code and processing, which you may want to eliminate (or perhaps only
-for production environments). You can disable validators across all sources by
-setting Orbit's `skipValidatorService` environment flag to `false` in
-`config/environment`, as described above.
+for production environments).
 
 If you want to use validators but extend them to include custom validators, you
 can override the standard validator service by generating your own
@@ -728,11 +781,11 @@ This custom validator service will be injected into all your orbit sources via
 
 - `git clone https://github.com/orbitjs/ember-orbit.git`
 - `cd ember-orbit`
-- `yarn install`
+- `pnpm install`
 
 ### Running Tests
 
-- `yarn test`
+- `pnpm test`
 
 ## Acknowledgments
 
@@ -746,4 +799,4 @@ possible, EO will also be able to contribute back to Ember Data.
 
 ## License
 
-Copyright 2014-2021 Cerebris Corporation. MIT License (see LICENSE for details).
+Copyright 2014-2025 Cerebris Corporation. MIT License (see LICENSE for details).

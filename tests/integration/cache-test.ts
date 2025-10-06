@@ -1,20 +1,19 @@
-import { Planet, Moon, Star } from 'dummy/tests/support/dummy-models';
-import { Cache, Store } from 'ember-orbit';
-import { createStore } from 'dummy/tests/support/store';
+import { waitForSource } from '#src/test-support/index.ts';
+import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import { setupTest } from 'ember-qunit';
-import { waitForSource } from 'ember-orbit/test-support';
+import { Cache, Store } from '#src/index.ts';
+import { Moon, Planet, Star } from '../support/dummy-models';
+import { createStore } from '../support/store';
 import { buildTransform } from '@orbit/data';
-import type ApplicationInstance from '@ember/application/instance';
 
 module('Integration - Cache', function (hooks) {
-  setupTest(hooks);
+  setupRenderingTest(hooks);
 
   let store: Store;
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, {
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,

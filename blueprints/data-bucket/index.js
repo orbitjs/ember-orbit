@@ -27,6 +27,7 @@ module.exports = {
     return {
       from,
       namespace,
+      // TODO: figure out what we need with buckets here
       bucketsCollection: collections.buckets || 'data-buckets',
       initializerName: `${options.entity.name}-bucket-initializer`,
       serviceName: `${options.entity.name}-bucket`,

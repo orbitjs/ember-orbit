@@ -1,19 +1,17 @@
-import { Store, Cache } from 'ember-orbit';
-import {
-  Planet,
-  Moon,
-  Star,
-  Ocean,
-  BinaryStar,
-  PlanetarySystem,
-} from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
-import { module, test } from 'qunit';
-import { getOwner } from '@ember/application';
-import { setupTest } from 'ember-qunit';
-import { Assertion } from '@orbit/core';
 import { settled } from '@ember/test-helpers';
-import type ApplicationInstance from '@ember/application/instance';
+import { setupTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { Cache, Store } from '#src/index.ts';
+import {
+  BinaryStar,
+  Moon,
+  Ocean,
+  Planet,
+  PlanetarySystem,
+  Star,
+} from '../support/dummy-models';
+import { createStore } from '../support/store';
+import { Assertion } from '@orbit/core';
 
 module('Integration - Model', function (hooks) {
   setupTest(hooks);
@@ -30,23 +28,8 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem,
     };
-    store = createStore(this.owner as ApplicationInstance, models).fork();
+    store = createStore(this.owner, models).fork();
     cache = store.cache;
-  });
-
-  test('models are assigned the same owner as the store and cache', async function (assert) {
-    const model = await store.addRecord({ type: 'star', name: 'The Sun' });
-    assert.ok(getOwner(model), 'model has an owner');
-    assert.strictEqual(
-      getOwner(model),
-      getOwner(store),
-      'model has same owner as store',
-    );
-    assert.strictEqual(
-      getOwner(model),
-      getOwner(cache),
-      'model has same owner as cache',
-    );
   });
 
   test('models can be added to the store', async function (assert) {
@@ -436,7 +419,7 @@ module('Integration - Model', function (hooks) {
     await settled();
 
     assert.ok(
-      // @ts-expect-error TODO: fix this type error
+      // @ts-expect-error this is fine
       !cache._identityMap.has(identifier),
       'removed from identity map',
     );

@@ -1,32 +1,44 @@
-import type ApplicationInstance from '@ember/application/instance';
+import type Owner from '@ember/owner';
+import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import { MemorySource } from '@orbit/memory';
 import type { Dict } from '@orbit/utils';
-import { Model, Store, type ModelSettings } from 'ember-orbit';
-import {
-  initialize as initializeConfig,
-  type OrbitConfig,
-} from 'ember-orbit/initializers/ember-orbit-config';
-import { initialize as initializeServices } from 'ember-orbit/initializers/ember-orbit-services';
+
+let dataSources = import.meta.glob('../test-app/data-sources/*.{js,ts}', {
+  eager: true,
+});
+const dataStrategies = import.meta.glob(
+  '../test-app/data-strategies/*.{js,ts}',
+  {
+    eager: true,
+  },
+);
 
 export function createStore(
-  owner: ApplicationInstance,
+  owner: Owner,
   models: Dict<new (settings: ModelSettings) => Model>,
+  sources?: Dict<MemorySource>,
 ) {
-  initializeConfig(owner);
-  initializeServices(owner);
-  const orbitConfig = owner.lookup('ember-orbit:config') as OrbitConfig;
+  const dataModels = Object.fromEntries(
+    Object.entries(models).map(([key, value]) => [
+      `../test-app/data-models/${key}`,
+      value,
+    ]),
+  );
 
-  if (models) {
-    const types: string[] = [];
-    Object.keys(models).forEach((type: string) => {
-      // @ts-expect-error TODO: fix this type error
-      owner.register(`${orbitConfig.types.model}:${type}`, models[type]);
-      types.push(type);
-    });
-
-    owner.register('ember-orbit:model-names', types, {
-      instantiate: false,
-    });
+  if (sources) {
+    dataSources = Object.fromEntries(
+      Object.entries(sources).map(([key, value]) => [
+        `../test-app/data-sources/${key}`,
+        value,
+      ]),
+    );
   }
 
-  return owner.lookup(`service:${orbitConfig.services.store}`) as Store;
+  setupOrbit(owner, {
+    ...dataModels,
+    ...dataSources,
+    ...dataStrategies,
+  });
+
+  return owner.lookup('service:store') as Store;
 }

@@ -1,12 +1,12 @@
-import { Store } from 'ember-orbit';
-import { MemorySource } from '@orbit/memory';
-import { module, test } from 'qunit';
+import { waitForSource } from '#src/test-support/index.ts';
 import { setupTest } from 'ember-qunit';
-import { Planet } from 'dummy/tests/support/dummy-models';
-import { createStore } from 'dummy/tests/support/store';
-import { waitForSource } from 'ember-orbit/test-support';
-import type ApplicationInstance from '@ember/application/instance';
+import { module, test } from 'qunit';
+import { orbitRegistry } from '#src/-private/utils/orbit-registry.ts';
+import { Store } from '#src/index.ts';
+import { Planet } from '../support/dummy-models';
+import { createStore } from '../support/store';
 import type { Transform } from '@orbit/data';
+import { MemorySource } from '@orbit/memory';
 import type { RecordOperation } from '@orbit/records';
 
 module('waitForSource helper', function (hooks) {
@@ -14,11 +14,9 @@ module('waitForSource helper', function (hooks) {
 
   setupTest(hooks);
 
-  hooks.beforeEach(function () {
-    store = createStore(this.owner as ApplicationInstance, { planet: Planet });
-  });
-
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
+    store = createStore(this.owner, { planet: Planet });
+
     const backup = new MemorySource({ schema: store.schema });
 
     store.on('update', async (transform: Transform<RecordOperation>) => {
@@ -34,9 +32,12 @@ module('waitForSource helper', function (hooks) {
   });
 
   test('it looks up data sources by name if a string is provided', async function (assert) {
+    store = createStore(this.owner, { planet: Planet });
+
     const backup = new MemorySource({ schema: store.schema });
 
-    this.owner.register('data-source:backup', backup, { instantiate: false });
+    // Register backup source with orbitRegistry for waitForSource to find it
+    orbitRegistry.registrations.sources['backup'] = backup;
 
     store.on('update', async (transform: Transform<RecordOperation>) => {
       await backup.update(transform);
