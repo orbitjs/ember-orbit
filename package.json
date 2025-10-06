@@ -14,6 +14,13 @@
   ],
   "license": "MIT",
   "author": "",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "declarations/*"
+      ]
+    }
+  },
   "files": [
     "addon-main.cjs",
     "declarations",
@@ -26,13 +33,13 @@
     "lint:fix": "concurrently \"pnpm:lint:*:fix\" --names \"fix:\" --prefixColors auto && pnpm run format",
     "lint:format": "prettier . --cache --check",
     "lint:hbs": "ember-template-lint . --no-error-on-unmatched-pattern",
-    "lint:js": "eslint . --cache",
     "lint:hbs:fix": "ember-template-lint . --fix --no-error-on-unmatched-pattern",
+    "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "lint:types": "ember-tsc",
+    "lint:types": "ember-tsc --noEmit",
+    "prepack": "rollup --config",
     "start": "vite dev",
-    "test": "vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0",
-    "prepack": "rollup --config"
+    "test": "vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0"
   },
   "dependencies": {
     "@embroider/addon-shim": "^1.8.9",
@@ -133,13 +140,6 @@
       "default": "./dist/*.js"
     },
     "./addon-main.js": "./addon-main.cjs"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "declarations/*"
-      ]
-    }
   },
   "packageManager": "pnpm@10.15.0",
   "release-plan": {

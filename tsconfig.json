@@ -9,10 +9,10 @@
   "compilerOptions": {
     "rootDir": ".",
     "types": [
-      "@glint/ember-tsc/types",
       "ember-source/types",
       "vite/client",
-      "@embroider/core/virtual"
+      "@embroider/core/virtual",
+      "@glint/ember-tsc/types"
     ]
   }
 }
