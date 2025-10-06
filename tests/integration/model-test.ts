@@ -28,7 +28,7 @@ module('Integration - Model', function (hooks) {
       binaryStar: BinaryStar,
       planetarySystem: PlanetarySystem,
     };
-    store = createStore(this.owner, models).fork();
+    store = createStore(models).fork();
     cache = store.cache;
   });
 

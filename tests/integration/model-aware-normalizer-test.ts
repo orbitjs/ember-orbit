@@ -21,7 +21,7 @@ module('Integration - ModelAwareNormalizer', function (hooks) {
   let normalizer: ModelAwareNormalizer;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore({
       planet: Planet,
       moon: Moon,
       star: Star,

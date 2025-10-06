@@ -1,11 +1,12 @@
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import { orbit } from '#src/index.ts';
 import { clone } from '@orbit/utils';
 
 export default class FilteredController extends Controller {
-  @service store;
-  @service dataSchema;
+  @orbit store;
+  @orbit dataSchema;
   @service undoManager;
 
   get modelArray() {

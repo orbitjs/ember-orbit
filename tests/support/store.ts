@@ -1,4 +1,5 @@
 import type Owner from '@ember/owner';
+import { orbitRegistry } from '#src/-private/utils/orbit-registry.ts';
 import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
 import { MemorySource } from '@orbit/memory';
 import type { Dict } from '@orbit/utils';
@@ -14,7 +15,6 @@ const dataStrategies = import.meta.glob(
 );
 
 export function createStore(
-  owner: Owner,
   models: Dict<new (settings: ModelSettings) => Model>,
   sources?: Dict<MemorySource>,
 ) {
@@ -40,5 +40,5 @@ export function createStore(
     ...dataStrategies,
   });
 
-  return owner.lookup('service:store') as Store;
+  return orbitRegistry.registrations.services.store as Store;
 }

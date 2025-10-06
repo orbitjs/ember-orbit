@@ -104,6 +104,8 @@ export function setupOrbit(
   // Register models first (needed for schema)
   injectModules(modules);
 
+  debugger;
+
   // Create schema service (needs models)
   orbitRegistry.registrations.services['data-schema'] = DataSchema.create({});
 

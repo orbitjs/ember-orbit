@@ -85,7 +85,7 @@ Since v0.18+, all models, sources, and strategies need to be manually registered
 ### Vite Setup
 
 In a new vite based app, we can use `import.meta.glob` to grab all the things we need
-to register and pass them to `setupOrbit. You may want to set this up in your application route's `beforeModel` hook.
+to register and pass them to `setupOrbit. You will want to set this up in `app/app.ts`.
 
 ```ts
 import Route from "@ember/routing/route";

@@ -13,7 +13,7 @@ module('Integration - Cache', function (hooks) {
   let cache: Cache;
 
   hooks.beforeEach(function () {
-    store = createStore(this.owner, {
+    store = createStore({
       planet: Planet,
       moon: Moon,
       star: Star,

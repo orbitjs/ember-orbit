@@ -4,6 +4,7 @@ import type {
   OrbitServiceRegistry,
 } from '../types/service-registry.ts';
 import { orbitRegistry } from '../utils/orbit-registry.ts';
+import { dasherize } from '@orbit/serializers';
 
 /**
  * Decorator that injects orbit services from the orbitRegistry with automatic type inference
@@ -28,16 +29,15 @@ export function orbit(): <
 ) => void;
 
 export function orbit<K extends OrbitServiceName>(name?: K) {
-  return function (target: any, propertyKey: string) {
-    const serviceName = name || propertyKey;
+  return function (target: any, propertyKey: string | symbol, descriptor) {
+    // If no name provided, convert camelCase property name to kebab-case
+    const serviceName = (name ||
+      dasherize(String(propertyKey))) as OrbitServiceName;
 
-    // Create a getter that lazily resolves the service
-    Object.defineProperty(target, propertyKey, {
+    // Return a property descriptor for the class field
+    Object.assign(descriptor, {
       get() {
-        const services = orbitRegistry.registrations.services as Record<
-          string,
-          any
-        >;
+        const services = orbitRegistry.registrations.services;
         const service = services[serviceName];
 
         assert(
