@@ -71,34 +71,34 @@ export default {
       files: compatFiles,
     },
     {
-      name: `ember-lts-6.4`,
+      name: 'ember-lts-6.4',
       npm: {
         devDependencies: {
-          'ember-source': `npm:ember-source@~6.4.0`,
+          'ember-source': 'npm:ember-source@~6.4.0',
         },
       },
     },
     {
-      name: `ember-latest`,
+      name: 'ember-latest',
       npm: {
         devDependencies: {
-          'ember-source': `npm:ember-source@latest`,
+          'ember-source': 'npm:ember-source@latest',
         },
       },
     },
     {
-      name: `ember-beta`,
+      name: 'ember-beta',
       npm: {
         devDependencies: {
-          'ember-source': `npm:ember-source@beta`,
+          'ember-source': 'npm:ember-source@beta',
         },
       },
     },
     {
-      name: `ember-alpha`,
+      name: 'ember-alpha',
       npm: {
         devDependencies: {
-          'ember-source': `npm:ember-source@alpha`,
+          'ember-source': 'npm:ember-source@alpha',
         },
       },
     },
