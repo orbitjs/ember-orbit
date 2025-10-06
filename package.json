@@ -132,5 +132,10 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "release-plan": {
+    "semverIncrementAs": {
+      "major": "minor"
+    }
   }
 }
