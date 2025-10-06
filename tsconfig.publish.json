@@ -5,7 +5,7 @@
  */
 {
   "extends": "@ember/library-tsconfig",
-  "include": ["./src/**/*", "./unpublished-development-types/**/*"],
+  "include": ["./src/**/*"],
   "glint": {
     "environment": ["ember-loose", "ember-template-imports"]
   },

@@ -3,7 +3,7 @@
 ## Installation
 
 - `git clone <repository-url>`
-- `cd `
+- `cd ember-orbit`
 - `pnpm install`
 
 ## Linting
