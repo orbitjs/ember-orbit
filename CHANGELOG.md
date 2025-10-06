@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2025-10-06)
+
+* ember-orbit 0.18.0 (major)
+
+#### :boom: Breaking Change
+* `ember-orbit`
+  * [#421](https://github.com/orbitjs/ember-orbit/pull/421) Convert to v2 addon, require Ember 4.12+ ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### :house: Internal
+* `ember-orbit`
+  * [#430](https://github.com/orbitjs/ember-orbit/pull/430) Run latest blueprints ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+  * [#428](https://github.com/orbitjs/ember-orbit/pull/428) Setup release-plan to do minor for major ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
 ## Release (2025-09-23)
 
 * ember-orbit 0.17.6 (patch)
