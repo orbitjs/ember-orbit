@@ -142,6 +142,24 @@ must be handled in each individual source.
 In a classic ember-cli app, we are not able to use `import.meta.glob` out of the box yet.
 Until ember-cli is updated to support this, you will need to install [ember-classic-import-meta-glob](https://github.com/NullVoxPopuli/ember-classic-import-meta-glob) to get it to work.
 
+### Registering services
+
+In your `app/app.ts` you will need to register all the services as well.
+It should be something like this:
+
+```ts
+import emberOrbitRegistry from "ember-orbit/registry.ts";
+
+// ...
+
+modules = {
+  // if the app is using ember-strict-application-resolver
+  ...emberOrbitRegistry(),
+  // or if using ember-resolver
+  ...emberOrbitRegistry("name-of-app"),
+};
+```
+
 ## Usage
 
 EO creates the following directories by default:
