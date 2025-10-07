@@ -12,6 +12,13 @@ import type {
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 
+type ServicesMap = {
+  keyMap: RecordKeyMap;
+  normalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
+  schema: RecordSchema;
+  validatorFor: ValidatorForFn<StandardValidator | StandardRecordValidator>;
+};
+
 class OrbitRegistry {
   registrations: {
     buckets: Record<'main', Bucket>;
@@ -24,12 +31,7 @@ class OrbitRegistry {
     sources: {},
     strategies: {},
   };
-  services: {
-    keyMap: RecordKeyMap;
-    normalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
-    schema: RecordSchema;
-    validatorFor: ValidatorForFn<StandardValidator | StandardRecordValidator>;
-  } = {};
+  services: ServicesMap = {} as ServicesMap;
   schemaVersion?: number;
 }
 
