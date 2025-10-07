@@ -14,4 +14,5 @@ export { default as Store, type StoreSettings } from './-private/store.ts';
 export { default as LiveQuery } from './-private/live-query.ts';
 // Provide `belongsTo` as an alias to `hasOne`
 export { default as belongsTo } from './-private/fields/has-one.ts';
+export { orbitRegistry } from './-private/utils/orbit-registry.ts';
 export { setupOrbit } from './-private/system/ember-orbit-setup.ts';

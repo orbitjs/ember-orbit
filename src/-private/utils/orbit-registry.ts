@@ -1,11 +1,18 @@
-import type Owner from '@ember/owner';
 import type ModelFactory from '../model-factory.ts';
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import type { Source } from '@orbit/data';
+import type {
+  RecordIdentity,
+  RecordKeyMap,
+  RecordNormalizer,
+  RecordSchema,
+  StandardRecordValidator,
+  UninitializedRecord,
+} from '@orbit/records';
+import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 
 class OrbitRegistry {
-  application: Owner | null = null;
   registrations: {
     buckets: Record<'main', Bucket>;
     models: Record<string, ModelFactory>;
@@ -17,6 +24,12 @@ class OrbitRegistry {
     sources: {},
     strategies: {},
   };
+  services: {
+    keyMap: RecordKeyMap;
+    normalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
+    schema: RecordSchema;
+    validatorFor: ValidatorForFn<StandardValidator | StandardRecordValidator>;
+  } = {};
   schemaVersion?: number;
 }
 

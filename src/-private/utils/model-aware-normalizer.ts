@@ -1,14 +1,9 @@
-import type Owner from '@ember/owner';
-import Service, { service } from '@ember/service';
+import { Model } from '../../index.ts';
 import {
   type RecordFieldsOrModel,
   type RecordIdentityOrModel,
-} from '../-private/utils/model-aware-types.ts';
-import {
-  normalizeModelFields,
-  type ModelFields,
-} from '../-private/utils/model-fields.ts';
-import { Model } from '../index.ts';
+} from './model-aware-types.ts';
+import { normalizeModelFields, type ModelFields } from './model-fields.ts';
 import {
   RecordKeyMap,
   RecordSchema,
@@ -33,23 +28,14 @@ export function isStandardRecord(
   );
 }
 
-export default class ModelAwareNormalizer
-  extends Service
+export class ModelAwareNormalizer
   implements
     RecordNormalizer<string, RecordIdentityOrModel, RecordFieldsOrModel>
 {
-  @service declare dataKeyMap: RecordKeyMap;
-  @service declare dataSchema: RecordSchema;
-
   protected _normalizer: StandardRecordNormalizer;
 
-  constructor(owner: Owner) {
-    super(owner);
-
-    this._normalizer = new StandardRecordNormalizer({
-      keyMap: this.dataKeyMap,
-      schema: this.dataSchema,
-    });
+  constructor(settings: ModelRecordNormalizerSettings) {
+    this._normalizer = new StandardRecordNormalizer(settings);
   }
 
   get keyMap(): RecordKeyMap | undefined {
