@@ -1,3 +1,7 @@
-import KeyMapFactory from '../factories/key-map-factory.ts';
+import { RecordKeyMap } from '@orbit/records';
 
-export default KeyMapFactory;
+export default {
+  create(): RecordKeyMap {
+    return new RecordKeyMap();
+  },
+};

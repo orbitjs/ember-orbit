@@ -1,6 +1,4 @@
 export { default as CoordinatorFactory } from './-private/factories/coordinator-factory.ts';
-export { default as KeyMapFactory } from './-private/factories/key-map-factory.ts';
-export { default as SchemaFactory } from './-private/factories/schema-factory.ts';
 export { default as MemorySourceFactory } from './-private/factories/memory-source-factory.ts';
 export { default as StoreFactory } from './-private/factories/memory-source-factory.ts';
 export { default as attr } from './-private/fields/attr.ts';
