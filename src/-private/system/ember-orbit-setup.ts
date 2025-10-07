@@ -44,7 +44,6 @@ function injectDataModels(modules: Record<string, unknown>) {
     let [, name] = key.split(folder);
     name = getName(name as string);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     registry[name] =
       (module as FactoryForFolderType['/data-models/']).default ??
       (module as ModelFactory);
@@ -59,7 +58,6 @@ function injectDataSources(modules: Record<string, unknown>) {
     let [, name] = key.split(folder);
     name = getName(name as string);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     registry[name] = (module as FactoryForFolderType['/data-sources/']).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ?.create?.({} as any);
   }
@@ -73,7 +71,6 @@ function injectDataStrategies(modules: Record<string, unknown>) {
     let [, name] = key.split(folder);
     name = getName(name as string);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     registry[name] = (
       module as FactoryForFolderType['/data-strategies/']
     ).default?.create?.();
