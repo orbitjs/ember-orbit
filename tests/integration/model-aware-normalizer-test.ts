@@ -1,10 +1,10 @@
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import { Store } from '#src/index.ts';
 import {
   isStandardRecord,
-  default as ModelAwareNormalizer,
-} from '#src/services/data-normalizer.ts';
+  ModelAwareNormalizer,
+} from '#src/-private/utils/model-aware-normalizer.ts';
+import { Store } from '#src/index.ts';
 import {
   BinaryStar,
   Moon,

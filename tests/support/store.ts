@@ -34,7 +34,7 @@ export function createStore(
     );
   }
 
-  setupOrbit(owner, {
+  setupOrbit({
     ...dataModels,
     ...dataSources,
     ...dataStrategies,
