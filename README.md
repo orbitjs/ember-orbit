@@ -186,7 +186,7 @@ class MyComponent {
 
   @orbit declare store;
 }
-```  
+```
 
 ### Defining models
 
