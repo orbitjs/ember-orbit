@@ -1,15 +1,13 @@
 import { orbitRegistry } from '../utils/orbit-registry.ts';
 import { Coordinator, type CoordinatorOptions } from '@orbit/coordinator';
 
-type CoordinatorInjections = {
+export type CoordinatorInjections = {
   sourceNames?: string[];
   strategyNames?: string[];
 } & CoordinatorOptions;
 
 export default {
-  create(): Coordinator {
-    const injections: CoordinatorInjections = {};
-
+  create(injections: CoordinatorInjections = {}): Coordinator {
     const sourceNames = Object.keys(orbitRegistry.registrations.sources);
     injections.sources = sourceNames
       .map((name) => {
