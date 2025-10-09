@@ -2,6 +2,17 @@
 
 ## Release (2025-10-09)
 
+* ember-orbit 0.19.3 (patch)
+
+#### :bug: Bug Fix
+* `ember-orbit`
+  * [#441](https://github.com/orbitjs/ember-orbit/pull/441) Set owner on strategies ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+## Release (2025-10-09)
+
 * ember-orbit 0.19.2 (patch)
 
 #### :bug: Bug Fix
