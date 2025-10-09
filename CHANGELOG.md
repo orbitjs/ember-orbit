@@ -2,6 +2,17 @@
 
 ## Release (2025-10-09)
 
+* ember-orbit 0.19.1 (patch)
+
+#### :bug: Bug Fix
+* `ember-orbit`
+  * [#437](https://github.com/orbitjs/ember-orbit/pull/437) Ensure owner is set wherever applicable ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+## Release (2025-10-09)
+
 * ember-orbit 0.19.0 (major)
 
 #### :boom: Breaking Change
