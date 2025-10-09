@@ -89,8 +89,7 @@ to register and pass them to `setupOrbit. You may want to set this up in your ap
 
 ```ts
 import Route from "@ember/routing/route";
-import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit";
+import { orbit, setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -104,8 +103,8 @@ const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
-  @service declare store: Store;
+  @orbit declare dataCoordinator: Coordinator;
+  @orbit declare store: Store;
 
   async beforeModel() {
     setupOrbit(
@@ -137,24 +136,6 @@ must be handled in each individual source.
 
 In a classic ember-cli app, we are not able to use `import.meta.glob` out of the box yet.
 Until ember-cli is updated to support this, you will need to install [ember-classic-import-meta-glob](https://github.com/NullVoxPopuli/ember-classic-import-meta-glob) to get it to work.
-
-### Registering services
-
-In your `app/app.ts` you will need to register all the services as well.
-It should be something like this:
-
-```ts
-import emberOrbitRegistry from "ember-orbit/registry.ts";
-
-// ...
-
-modules = {
-  // if the app is using ember-strict-application-resolver
-  ...emberOrbitRegistry(),
-  // or if using ember-resolver
-  ...emberOrbitRegistry("name-of-app"),
-};
-```
 
 ## Usage
 
@@ -635,7 +616,7 @@ hook (in `app/routes/application.js`):
 ```ts
 import Route from "@ember/routing/route";
 import { service } from "@ember/service";
-import { setupOrbit, type Store } from "ember-orbit";
+import { orbit, setupOrbit, type Store } from "ember-orbit";
 import type Coordinator from "@orbit/coordinator";
 
 const dataModels = import.meta.glob("../data-models/*.{js,ts}", {
@@ -649,8 +630,8 @@ const dataStrategies = import.meta.glob("../data-strategies/*.{js,ts}", {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
-  @service declare store: Store;
+  @orbit declare dataCoordinator: Coordinator;
+  @orbit declare store: Store;
 
   async beforeModel() {
     setupOrbit(

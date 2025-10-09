@@ -1,5 +1,6 @@
 import type ModelFactory from '../model-factory.ts';
-import type { Strategy } from '@orbit/coordinator';
+import type Store from '../store.ts';
+import type { Coordinator, Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import type { Source } from '@orbit/data';
 import type {
@@ -12,10 +13,12 @@ import type {
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 
-type ServicesMap = {
+export type ServicesMap = {
+  dataCoordinator: Coordinator;
   keyMap: RecordKeyMap;
   normalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
   schema: RecordSchema;
+  store: Store;
   validatorFor: ValidatorForFn<StandardValidator | StandardRecordValidator>;
 };
 

@@ -1,7 +1,5 @@
 import Route from '@ember/routing/route';
-import { service } from '@ember/service';
-import { setupOrbit } from '#src/index.ts';
-import type Coordinator from '@orbit/coordinator';
+import { orbit, setupOrbit } from '#src/index.ts';
 
 const dataModels = import.meta.glob('../data-models/*.{js,ts}', {
   eager: true,
@@ -14,7 +12,7 @@ const dataStrategies = import.meta.glob('../data-strategies/*.{js,ts}', {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
+@orbit declare dataCoordinator;
 
   async beforeModel() {
     setupOrbit({

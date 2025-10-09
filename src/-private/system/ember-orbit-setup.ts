@@ -1,10 +1,13 @@
 import DataSourceStore from '../../data-sources/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
+import DataCoordinator from '../services/data-coordinator.ts';
 import DataKeyMap from '../services/data-key-map.ts';
 import DataNormalizer from '../services/data-normalizer.ts';
 import DataSchema from '../services/data-schema.ts';
 import DataValidator from '../services/data-validator.ts';
+import StoreService from '../services/store.ts';
+import type { StoreSettings } from '../store.ts';
 import { getName } from '../utils/get-name.ts';
 import { orbitRegistry } from '../utils/orbit-registry.ts';
 import type { Strategy } from '@orbit/coordinator';
@@ -114,6 +117,8 @@ function injectServices() {
   orbitRegistry.services.validatorFor = DataValidator.create({
     validators: {},
   });
+  orbitRegistry.services.dataCoordinator = DataCoordinator.create();
+  orbitRegistry.services.store = StoreService.create({} as StoreSettings);
 }
 
 export function setupOrbit(
