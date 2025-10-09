@@ -7,7 +7,7 @@ function getRegisteredModels(): string[] {
   return Object.keys(orbitRegistry.registrations.models).map(camelize);
 }
 
-type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
+export type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
