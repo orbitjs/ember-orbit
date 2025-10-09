@@ -1,10 +1,9 @@
 import Route from '@ember/routing/route';
-import { service } from '@ember/service';
 import type { ModelAwareTransformBuilder } from '#src/-private/utils/model-aware-types.ts';
-import type { Store } from '#src/index.ts';
+import { orbit, type Store } from '#src/index.ts';
 
 export default class FilteredRoute extends Route {
-  @service declare store: Store;
+  @orbit declare store: Store;
 
   async beforeModel() {
     await this.store.update((t: ModelAwareTransformBuilder) => {

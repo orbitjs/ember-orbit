@@ -1,7 +1,7 @@
 import type { AnyFn } from '@ember/-internals/utility-types';
-import Service, { service } from '@ember/service';
+import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import type { Store } from '#src/index.ts';
+import { orbit, type Store } from '#src/index.ts';
 
 type Command = Record<'undo' | 'redo', AnyFn>;
 
@@ -21,7 +21,7 @@ function removeFromTo(array: Array<unknown>, from: number, to?: number) {
 }
 
 export default class UndoManager extends Service {
-  @service declare store: Store;
+  @orbit declare store: Store;
 
   commands: Array<Command> = [];
   index = -1;

@@ -1,6 +1,7 @@
+import { getOwner } from '@ember/owner';
+import type Owner from '@ember/owner';
 import Route from '@ember/routing/route';
-import { service } from '@ember/service';
-import { setupOrbit } from '#src/index.ts';
+import { orbit, setupOrbit } from '#src/index.ts';
 import type Coordinator from '@orbit/coordinator';
 
 const dataModels = import.meta.glob('../data-models/*.{js,ts}', {
@@ -14,10 +15,12 @@ const dataStrategies = import.meta.glob('../data-strategies/*.{js,ts}', {
 });
 
 export default class ApplicationRoute extends Route {
-  @service declare dataCoordinator: Coordinator;
+  @orbit declare dataCoordinator: Coordinator;
 
   async beforeModel() {
-    setupOrbit({
+    const owner = getOwner(this) as Owner;
+
+    setupOrbit(owner, {
       ...dataModels,
       ...dataSources,
       ...dataStrategies,

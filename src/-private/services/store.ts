@@ -2,7 +2,7 @@ import Store, { type StoreSettings } from '../store.ts';
 import type {
   ModelAwareQueryBuilder,
   ModelAwareTransformBuilder,
-} from '../utils/model-aware-types';
+} from '../utils/model-aware-types.ts';
 import { orbitRegistry } from '../utils/orbit-registry.ts';
 import type { RequestOptions } from '@orbit/data';
 import type MemorySource from '@orbit/memory';

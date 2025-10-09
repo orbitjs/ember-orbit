@@ -4,7 +4,6 @@ import * as QUnit from 'qunit';
 import { setup } from 'qunit-dom';
 import EmberRouter from '@ember/routing/router';
 import EmberApp from 'ember-strict-application-resolver';
-import emberOrbitRegistry from '#src/registry.ts';
 
 class Router extends EmberRouter {
   location = 'none';
@@ -18,7 +17,6 @@ Router.map(function () {
 class TestApp extends EmberApp {
   modules = {
     './router': { default: Router },
-    ...emberOrbitRegistry(),
     ...import.meta.glob('./**/*.{js,ts,gjs,gts}', { eager: true }),
   };
 }

@@ -5,8 +5,8 @@ export function applyStandardSourceInjections(
   injections: RecordSourceSettings,
 ): void {
   injections.bucket = orbitRegistry.registrations.buckets['main'];
-  injections.keyMap = orbitRegistry.services.keyMap;
-  injections.normalizer = orbitRegistry.services.normalizer;
-  injections.schema = orbitRegistry.services.schema;
-  injections.validatorFor = orbitRegistry.services.validatorFor;
+  injections.keyMap = orbitRegistry.services.dataKeyMap;
+  injections.normalizer = orbitRegistry.services.dataNormalizer;
+  injections.schema = orbitRegistry.services.dataSchema;
+  injections.validatorFor = orbitRegistry.services.dataValidator;
 }

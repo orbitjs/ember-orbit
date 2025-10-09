@@ -1,5 +1,10 @@
 import type Owner from '@ember/owner';
-import { Model, setupOrbit, Store, type ModelSettings } from '#src/index.ts';
+import {
+  Model,
+  orbitRegistry,
+  setupOrbit,
+  type ModelSettings,
+} from '#src/index.ts';
 import { MemorySource } from '@orbit/memory';
 import type { Dict } from '@orbit/utils';
 
@@ -34,11 +39,11 @@ export function createStore(
     );
   }
 
-  setupOrbit({
+  setupOrbit(owner, {
     ...dataModels,
     ...dataSources,
     ...dataStrategies,
   });
 
-  return owner.lookup('service:store') as Store;
+  return orbitRegistry.services.store;
 }
