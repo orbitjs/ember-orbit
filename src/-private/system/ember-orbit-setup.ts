@@ -22,7 +22,7 @@ interface FactoryForFolderType {
   '/data-buckets/': { default: { create(injections: object): Bucket } };
   '/data-models/': { default: ModelFactory };
   '/data-sources/': { default: typeof MemorySourceFactory };
-  '/data-strategies/': { default: { create(): Strategy } };
+  '/data-strategies/': { default: { create(injections: object): Strategy } };
 }
 
 function registerDataBuckets(owner: Owner, modules: Record<string, unknown>) {
@@ -79,7 +79,10 @@ function registerDataSources(owner: Owner, modules: Record<string, unknown>) {
   }
 }
 
-function registerDataStrategies(modules: Record<string, unknown>) {
+function registerDataStrategies(
+  owner: Owner,
+  modules: Record<string, unknown>,
+) {
   const folder = '/data-strategies/';
   const registry = orbitRegistry.registrations.strategies;
 
@@ -87,9 +90,13 @@ function registerDataStrategies(modules: Record<string, unknown>) {
     let [, name] = key.split(folder);
     name = getName(name as string);
 
+    const strategySettings = {};
+
+    setOwner(strategySettings, owner);
+
     registry[name] = (
       module as FactoryForFolderType['/data-strategies/']
-    ).default?.create?.();
+    ).default?.create?.(strategySettings);
   }
 }
 
@@ -146,11 +153,13 @@ function registerModules(owner: Owner, modules: Record<string, unknown>) {
   registerInjectableServices(owner);
   // Then register the sources themselves
   registerDataSources(owner, sourceModules);
-  registerDataStrategies(strategyModules);
+  registerDataStrategies(owner, strategyModules);
+
+  const storeSourceSettings = {} as MemorySourceSettings;
+  setOwner(storeSourceSettings, owner);
   // Register the store source after registering all modules
-  orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
-    {} as MemorySourceSettings,
-  );
+  orbitRegistry.registrations.sources['store'] =
+    DataSourceStore.create(storeSourceSettings);
   const storeSettings = {} as StoreSettings;
   setOwner(storeSettings, owner);
   orbitRegistry.services.store = StoreService.create(storeSettings);
