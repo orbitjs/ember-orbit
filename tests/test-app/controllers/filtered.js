@@ -5,7 +5,7 @@ import { orbit } from '#src/index.ts';
 import { clone } from '@orbit/utils';
 
 export default class FilteredController extends Controller {
-  @orbit('schema') dataSchema;
+  @orbit dataSchema;
   @orbit store;
   @service undoManager;
 

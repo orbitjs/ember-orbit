@@ -125,7 +125,6 @@ function registerModules(owner: Owner, modules: Record<string, unknown>) {
   // Then register the sources themselves
   registerDataSources(sourceModules);
   registerDataStrategies(strategyModules);
-  orbitRegistry.services.dataCoordinator = DataCoordinator.create();
   // Register the store source after registering all modules
   orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
     {} as MemorySourceSettings,
@@ -133,6 +132,8 @@ function registerModules(owner: Owner, modules: Record<string, unknown>) {
   const storeSettings = {} as StoreSettings;
   setOwner(storeSettings, owner);
   orbitRegistry.services.store = StoreService.create(storeSettings);
+  // IMPORTANT: Do not move this. The coordinator always needs to be registed last.
+  orbitRegistry.services.dataCoordinator = DataCoordinator.create();
 }
 
 export function setupOrbit(
