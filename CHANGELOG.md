@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2025-10-09)
+
+* ember-orbit 0.19.0 (major)
+
+#### :boom: Breaking Change
+* `ember-orbit`
+  * [#436](https://github.com/orbitjs/ember-orbit/pull/436) Require @orbit decorator to inject orbit services ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+  * [#434](https://github.com/orbitjs/ember-orbit/pull/434) Register services on orbitRegistry ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### :rocket: Enhancement
+* `ember-orbit`
+  * [#432](https://github.com/orbitjs/ember-orbit/pull/432) Convert ModelAwareNormalizer to Service ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
 ## Release (2025-10-06)
 
 * ember-orbit 0.18.0 (major)
