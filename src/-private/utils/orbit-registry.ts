@@ -13,13 +13,13 @@ import type {
 } from '@orbit/records';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 
-export type ServicesMap = {
+type ServicesMap = {
   dataCoordinator: Coordinator;
-  keyMap: RecordKeyMap;
-  normalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
-  schema: RecordSchema;
+  dataKeyMap: RecordKeyMap;
+  dataNormalizer: RecordNormalizer<string, RecordIdentity, UninitializedRecord>;
+  dataSchema: RecordSchema;
+  dataValidator: ValidatorForFn<StandardValidator | StandardRecordValidator>;
   store: Store;
-  validatorFor: ValidatorForFn<StandardValidator | StandardRecordValidator>;
 };
 
 class OrbitRegistry {

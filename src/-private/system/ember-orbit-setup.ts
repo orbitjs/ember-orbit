@@ -108,13 +108,13 @@ function injectModules(modules: Record<string, unknown>) {
 function injectServices() {
   const keyMap = DataKeyMap.create();
   const schema = DataSchema.create();
-  orbitRegistry.services.keyMap = keyMap;
-  orbitRegistry.services.schema = schema;
-  orbitRegistry.services.normalizer = DataNormalizer.create({
+  orbitRegistry.services.dataKeyMap = keyMap;
+  orbitRegistry.services.dataSchema = schema;
+  orbitRegistry.services.dataNormalizer = DataNormalizer.create({
     keyMap,
     schema,
   });
-  orbitRegistry.services.validatorFor = DataValidator.create({
+  orbitRegistry.services.dataValidator = DataValidator.create({
     validators: {},
   });
   orbitRegistry.services.dataCoordinator = DataCoordinator.create();
