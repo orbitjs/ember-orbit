@@ -2,8 +2,8 @@
   "solution": {
     "ember-orbit": {
       "impact": "patch",
-      "oldVersion": "0.19.1",
-      "newVersion": "0.19.2",
+      "oldVersion": "0.19.2",
+      "newVersion": "0.19.3",
       "tagName": "latest",
       "constraints": [
         {
@@ -14,5 +14,5 @@
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2025-10-09)\n\n* ember-orbit 0.19.2 (patch)\n\n#### :bug: Bug Fix\n* `ember-orbit`\n  * [#439](https://github.com/orbitjs/ember-orbit/pull/439) Set missed owner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
+  "description": "## Release (2025-10-09)\n\n* ember-orbit 0.19.3 (patch)\n\n#### :bug: Bug Fix\n* `ember-orbit`\n  * [#441](https://github.com/orbitjs/ember-orbit/pull/441) Set owner on strategies ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
 }
