@@ -126,6 +126,10 @@ function registerModules(owner: Owner, modules: Record<string, unknown>) {
   registerDataSources(sourceModules);
   registerDataStrategies(strategyModules);
   orbitRegistry.services.dataCoordinator = DataCoordinator.create();
+  // Register the store source after registering all modules
+  orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
+    {} as MemorySourceSettings,
+  );
   const storeSettings = {} as StoreSettings;
   setOwner(storeSettings, owner);
   orbitRegistry.services.store = StoreService.create(storeSettings);
@@ -138,8 +142,4 @@ export function setupOrbit(
 ) {
   orbitRegistry.schemaVersion = config?.schemaVersion;
   registerModules(owner, modules);
-  // Register the store source after processing all modules
-  orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
-    {} as MemorySourceSettings,
-  );
 }
