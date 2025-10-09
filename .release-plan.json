@@ -2,8 +2,8 @@
   "solution": {
     "ember-orbit": {
       "impact": "major",
-      "oldVersion": "0.17.6",
-      "newVersion": "0.18.0",
+      "oldVersion": "0.18.0",
+      "newVersion": "0.19.0",
       "tagName": "latest",
       "constraints": [
         {
@@ -11,12 +11,12 @@
           "reason": "Appears in changelog section :boom: Breaking Change"
         },
         {
-          "impact": "patch",
-          "reason": "Appears in changelog section :house: Internal"
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2025-10-06)\n\n* ember-orbit 0.18.0 (major)\n\n#### :boom: Breaking Change\n* `ember-orbit`\n  * [#421](https://github.com/orbitjs/ember-orbit/pull/421) Convert to v2 addon, require Ember 4.12+ ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### :house: Internal\n* `ember-orbit`\n  * [#430](https://github.com/orbitjs/ember-orbit/pull/430) Run latest blueprints ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n  * [#428](https://github.com/orbitjs/ember-orbit/pull/428) Setup release-plan to do minor for major ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
+  "description": "## Release (2025-10-09)\n\n* ember-orbit 0.19.0 (major)\n\n#### :boom: Breaking Change\n* `ember-orbit`\n  * [#436](https://github.com/orbitjs/ember-orbit/pull/436) Require @orbit decorator to inject orbit services ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n  * [#434](https://github.com/orbitjs/ember-orbit/pull/434) Register services on orbitRegistry ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### :rocket: Enhancement\n* `ember-orbit`\n  * [#432](https://github.com/orbitjs/ember-orbit/pull/432) Convert ModelAwareNormalizer to Service ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n\n#### Committers: 1\n- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))\n"
 }
