@@ -1,3 +1,5 @@
+import type Owner from '@ember/owner';
+import { setOwner } from '@ember/owner';
 import DataSourceStore from '../../data-sources/store.ts';
 import type MemorySourceFactory from '../factories/memory-source-factory.ts';
 import type ModelFactory from '../model-factory.ts';
@@ -21,7 +23,7 @@ interface FactoryForFolderType {
   '/data-strategies/': { default: { create(): Strategy } };
 }
 
-function injectDataBuckets(modules: Record<string, unknown>) {
+function registerDataBuckets(modules: Record<string, unknown>) {
   const registry = orbitRegistry.registrations.buckets;
   const matches = Object.entries(modules);
 
@@ -39,7 +41,7 @@ function injectDataBuckets(modules: Record<string, unknown>) {
   }
 }
 
-function injectDataModels(modules: Record<string, unknown>) {
+function registerDataModels(modules: Record<string, unknown>) {
   const folder = '/data-models/';
   const registry = orbitRegistry.registrations.models;
 
@@ -53,7 +55,7 @@ function injectDataModels(modules: Record<string, unknown>) {
   }
 }
 
-function injectDataSources(modules: Record<string, unknown>) {
+function registerDataSources(modules: Record<string, unknown>) {
   const folder = '/data-sources/';
   const registry = orbitRegistry.registrations.sources;
 
@@ -66,7 +68,7 @@ function injectDataSources(modules: Record<string, unknown>) {
   }
 }
 
-function injectDataStrategies(modules: Record<string, unknown>) {
+function registerDataStrategies(modules: Record<string, unknown>) {
   const folder = '/data-strategies/';
   const registry = orbitRegistry.registrations.strategies;
 
@@ -80,7 +82,25 @@ function injectDataStrategies(modules: Record<string, unknown>) {
   }
 }
 
-function injectModules(modules: Record<string, unknown>) {
+/**
+ * Registers the "injectable" services needed to inject into
+ * the `injections` of all the other things.
+ */
+function registerInjectableServices() {
+  const keyMap = DataKeyMap.create();
+  const schema = DataSchema.create();
+  orbitRegistry.services.dataKeyMap = keyMap;
+  orbitRegistry.services.dataSchema = schema;
+  orbitRegistry.services.dataNormalizer = DataNormalizer.create({
+    keyMap,
+    schema,
+  });
+  orbitRegistry.services.dataValidator = DataValidator.create({
+    validators: {},
+  });
+}
+
+function registerModules(owner: Owner, modules: Record<string, unknown>) {
   const bucketModules: Record<string, unknown> = {};
   const modelModules: Record<string, unknown> = {};
   const sourceModules: Record<string, unknown> = {};
@@ -97,36 +117,27 @@ function injectModules(modules: Record<string, unknown>) {
       strategyModules[key] = module;
     }
   }
-
-  injectDataBuckets(bucketModules);
-  injectDataModels(modelModules);
-  injectServices();
-  injectDataSources(sourceModules);
-  injectDataStrategies(strategyModules);
-}
-
-function injectServices() {
-  const keyMap = DataKeyMap.create();
-  const schema = DataSchema.create();
-  orbitRegistry.services.dataKeyMap = keyMap;
-  orbitRegistry.services.dataSchema = schema;
-  orbitRegistry.services.dataNormalizer = DataNormalizer.create({
-    keyMap,
-    schema,
-  });
-  orbitRegistry.services.dataValidator = DataValidator.create({
-    validators: {},
-  });
+  // Create buckets and models first because they do not need anything injected.
+  registerDataBuckets(bucketModules);
+  registerDataModels(modelModules);
+  // Register the services we need to inject into all the other things.
+  registerInjectableServices();
+  // Then register the sources themselves
+  registerDataSources(sourceModules);
+  registerDataStrategies(strategyModules);
   orbitRegistry.services.dataCoordinator = DataCoordinator.create();
-  orbitRegistry.services.store = StoreService.create({} as StoreSettings);
+  const storeSettings = {} as StoreSettings;
+  setOwner(storeSettings, owner);
+  orbitRegistry.services.store = StoreService.create(storeSettings);
 }
 
 export function setupOrbit(
+  owner: Owner,
   modules: Record<string, unknown>,
   config?: { schemaVersion?: number },
 ) {
   orbitRegistry.schemaVersion = config?.schemaVersion;
-  injectModules(modules);
+  registerModules(owner, modules);
   // Register the store source after processing all modules
   orbitRegistry.registrations.sources['store'] = DataSourceStore.create(
     {} as MemorySourceSettings,

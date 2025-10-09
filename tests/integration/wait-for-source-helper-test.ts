@@ -15,7 +15,7 @@ module('waitForSource helper', function (hooks) {
   setupTest(hooks);
 
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
-    store = createStore({ planet: Planet });
+    store = createStore(this.owner, { planet: Planet });
 
     const backup = new MemorySource({ schema: store.schema });
 
@@ -32,7 +32,7 @@ module('waitForSource helper', function (hooks) {
   });
 
   test('it looks up data sources by name if a string is provided', async function (assert) {
-    store = createStore({ planet: Planet });
+    store = createStore(this.owner, { planet: Planet });
 
     const backup = new MemorySource({ schema: store.schema });
 

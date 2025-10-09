@@ -1,4 +1,3 @@
-import { assert } from '@ember/debug';
 import { orbitRegistry } from '../utils/orbit-registry.ts';
 import { dasherize } from '@orbit/serializers';
 
@@ -11,52 +10,42 @@ import { dasherize } from '@orbit/serializers';
  * - @orbit('keyMap') declare myKeyMap;
  */
 export function orbit(
-  nameOrTarget?: string | any,
+  nameOrTarget: string | any,
   propertyKey?: string | symbol,
   descriptor?: PropertyDescriptor,
 ): any {
   // Direct decorator usage: @orbit
-  if (propertyKey !== undefined) {
-    const target = nameOrTarget;
+  if (propertyKey !== undefined && descriptor !== undefined) {
     const propName = String(propertyKey);
-    let serviceName: string;
+    const serviceName = propName; // Always use exact property name for now
 
-    if (propName in orbitRegistry.services) {
-      serviceName = propName;
-    } else {
-      serviceName = dasherize(propName);
-    }
-
-    const newDescriptor: PropertyDescriptor = {
+    Object.assign(descriptor, {
       get() {
         const services = orbitRegistry.services;
         const service = services[serviceName as keyof typeof services];
 
-        assert(
-          `No orbit service named '${serviceName}' was found. Available services: ${Object.keys(services).join(', ')}`,
-          service !== undefined,
-        );
+        if (service === undefined) {
+          console.log('Service lookup failed for:', serviceName);
+          console.log('Available services:', Object.keys(services));
+          throw new Error(
+            `No orbit service named '${serviceName}' was found. Available services: ${Object.keys(services).join(', ')}`,
+          );
+        }
 
         return service;
       },
       configurable: true,
       enumerable: true,
-    };
-
-    if (descriptor) {
-      Object.assign(descriptor, newDescriptor);
-    } else {
-      Object.defineProperty(target, propertyKey, newDescriptor);
-    }
+    });
     return;
   }
 
   // Factory decorator usage: @orbit() or @orbit('name')
   const name = nameOrTarget as string | undefined;
   return function (
-    target: any,
+    _target: any,
     propertyKey: string | symbol,
-    descriptor?: PropertyDescriptor,
+    descriptor: PropertyDescriptor,
   ): void {
     let serviceName: string;
 
@@ -71,26 +60,21 @@ export function orbit(
       }
     }
 
-    const newDescriptor: PropertyDescriptor = {
+    Object.assign(descriptor, {
       get() {
         const services = orbitRegistry.services;
         const service = services[serviceName as keyof typeof services];
 
-        assert(
-          `No orbit service named '${serviceName}' was found. Available services: ${Object.keys(services).join(', ')}`,
-          service !== undefined,
-        );
+        if (service === undefined) {
+          throw new Error(
+            `No orbit service named '${serviceName}' was found. Available services: ${Object.keys(services).join(', ')}`,
+          );
+        }
 
         return service;
       },
       configurable: true,
       enumerable: true,
-    };
-
-    if (descriptor) {
-      Object.assign(descriptor, newDescriptor);
-    } else {
-      Object.defineProperty(target, propertyKey, newDescriptor);
-    }
+    });
   };
 }

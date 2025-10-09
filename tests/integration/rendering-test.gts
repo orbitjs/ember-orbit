@@ -31,7 +31,7 @@ module('Rendering', function (hooks) {
 
   hooks.beforeEach(function () {
     const models = { planet: Planet, moon: Moon };
-    store = createStore(models).fork();
+    store = createStore(this.owner, models).fork();
     cache = store.cache;
   });
 

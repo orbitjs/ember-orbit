@@ -17,7 +17,7 @@ module('Integration - normalizeModelFields', function (hooks) {
   let store: Store;
 
   hooks.beforeEach(function () {
-    store = createStore({
+    store = createStore(this.owner, {
       planet: Planet,
       moon: Moon,
       star: Star,
