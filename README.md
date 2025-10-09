@@ -174,6 +174,20 @@ EO installs the following services by default:
   and local IDs for scenarios in which a server does not accept client-generated
   IDs.
 
+### Orbit Decorator Usage
+
+The `@orbit` decorator allows you to inject orbit services that are registered in `orbitRegistry.services` instead of using Ember's `@service` decorator. This decouples your services from Ember's owner system.
+
+```ts
+import { orbit } from "ember-orbit";
+
+class MyComponent {
+  @orbit declare dataCoordinator;
+
+  @orbit declare store;
+}
+```  
+
 ### Defining models
 
 Models are used to access the underlying data in an EO `Store`.
