@@ -73,8 +73,9 @@ function registerDataSources(owner: Owner, modules: Record<string, unknown>) {
 
     setOwner(sourceSettings, owner);
 
-    registry[name] = (module as FactoryForFolderType['/data-sources/']).default // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      ?.create?.({} as MemorySourceSettings);
+    registry[name] = (
+      module as FactoryForFolderType['/data-sources/']
+    ).default?.create?.({} as MemorySourceSettings);
   }
 }
 
