@@ -75,7 +75,7 @@ function registerDataSources(owner: Owner, modules: Record<string, unknown>) {
 
     registry[name] = (
       module as FactoryForFolderType['/data-sources/']
-    ).default?.create?.({} as MemorySourceSettings);
+    ).default?.create?.(sourceSettings);
   }
 }
 
