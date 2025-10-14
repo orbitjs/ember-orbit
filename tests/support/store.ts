@@ -1,10 +1,5 @@
 import type Owner from '@ember/owner';
-import {
-  getOrbitRegistry,
-  Model,
-  setupOrbit,
-  type ModelSettings,
-} from '#src/index.ts';
+import { Model, setupOrbit, type ModelSettings } from '#src/index.ts';
 import { MemorySource } from '@orbit/memory';
 import type { Dict } from '@orbit/utils';
 
