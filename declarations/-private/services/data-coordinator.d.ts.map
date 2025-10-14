@@ -1,0 +1,1 @@
+{"version":3,"file":"data-coordinator.d.ts","sourceRoot":"","sources":["../../../src/-private/services/data-coordinator.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,WAAW,EAAE,KAAK,kBAAkB,EAAE,MAAM,oBAAoB,CAAC;AAE1E,MAAM,MAAM,qBAAqB,GAAG;IAClC,WAAW,CAAC,EAAE,MAAM,EAAE,CAAC;IACvB,aAAa,CAAC,EAAE,MAAM,EAAE,CAAC;CAC1B,GAAG,kBAAkB,CAAC;;wBAGF,qBAAqB,GAAQ,WAAW;;AAD7D,wBAoBE"}

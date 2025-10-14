@@ -1,0 +1,1 @@
+{"version":3,"file":"model-factory.d.ts","sourceRoot":"","sources":["../../src/-private/model-factory.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,KAAK,MAAM,YAAY,CAAC;AACpC,OAAO,KAAK,KAAK,MAAM,YAAY,CAAC;AAIpC,OAAO,EAAuB,KAAK,cAAc,EAAE,MAAM,gBAAgB,CAAC;AAS1E,MAAM,CAAC,OAAO,OAAO,YAAY;;gBAInB,KAAK,EAAE,KAAK;IAOxB,MAAM,CAAC,QAAQ,EAAE,cAAc,GAAG,KAAK;IASvC,OAAO,CAAC,eAAe;CAkBxB"}

@@ -1,0 +1,143 @@
+{
+  "name": "ember-orbit",
+  "version": "0.20.0",
+  "description": "Ember.js data layer built with Orbit.js",
+  "keywords": [
+    "ember-addon",
+    "orbit.js",
+    "data",
+    "synchronization"
+  ],
+  "repository": "https://github.com/orbitjs/ember-orbit",
+  "contributors": [
+    "Dan Gebhardt (http://www.cerebris.com)"
+  ],
+  "license": "MIT",
+  "author": "",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "declarations/*"
+      ]
+    }
+  },
+  "files": [
+    "addon-main.cjs",
+    "declarations",
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup --config",
+    "format": "prettier . --cache --write",
+    "lint": "concurrently \"pnpm:lint:*(!fix)\" --names \"lint:\" --prefixColors auto",
+    "lint:fix": "concurrently \"pnpm:lint:*:fix\" --names \"fix:\" --prefixColors auto && pnpm run format",
+    "lint:format": "prettier . --cache --check",
+    "lint:hbs": "ember-template-lint . --no-error-on-unmatched-pattern",
+    "lint:hbs:fix": "ember-template-lint . --fix --no-error-on-unmatched-pattern",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "lint:types": "ember-tsc --noEmit",
+    "start": "vite dev",
+    "test": "vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0"
+  },
+  "dependencies": {
+    "@embroider/addon-shim": "^1.8.9",
+    "@orbit/coordinator": "^0.17.0",
+    "@orbit/core": "^0.17.0",
+    "@orbit/data": "^0.17.0",
+    "@orbit/identity-map": "^0.17.0",
+    "@orbit/memory": "^0.17.2",
+    "@orbit/record-cache": "^0.17.2",
+    "@orbit/records": "^0.17.0",
+    "@orbit/serializers": "^0.17.0",
+    "@orbit/utils": "^0.17.0",
+    "@orbit/validators": "^0.17.0",
+    "decorator-transforms": "^2.2.2",
+    "ember-primitives": "^0.40.0",
+    "ember-strict-application-resolver": "^0.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/eslint-parser": "^7.25.1",
+    "@babel/plugin-transform-typescript": "^7.25.2",
+    "@babel/runtime": "^7.25.6",
+    "@ember/app-tsconfig": "^1.0.0",
+    "@ember/library-tsconfig": "^1.0.0",
+    "@ember/test-helpers": "^5.2.1",
+    "@ember/test-waiters": "^4.1.1",
+    "@embroider/addon-dev": "^8.1.0",
+    "@embroider/compat": "^4.1.0",
+    "@embroider/core": "^4.1.0",
+    "@embroider/macros": "^1.18.0",
+    "@embroider/vite": "^1.1.5",
+    "@eslint/js": "^9.17.0",
+    "@glimmer/component": "^2.0.0",
+    "@glint/ember-tsc": "^1.0.3",
+    "@glint/template": "^1.6.1",
+    "@glint/tsserver-plugin": "^2.0.3",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/qunit": "^2.19.12",
+    "babel-plugin-ember-template-compilation": "^2.2.5",
+    "concurrently": "^9.0.1",
+    "ember-qunit": "^9.0.2",
+    "ember-route-template": "^1.0.3",
+    "ember-source": "^6.3.0",
+    "ember-template-lint": "^7.9.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-ember": "^12.3.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.15.1",
+    "globals": "^16.1.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-ember-template-tag": "^2.0.4",
+    "qunit": "^2.24.1",
+    "qunit-dom": "^3.4.0",
+    "release-plan": "^0.17.0",
+    "rimraf": "^5.0.10",
+    "rollup": "^4.22.5",
+    "stylelint": "^16.22.0",
+    "stylelint-config-standard": "^36.0.1",
+    "testem": "^3.15.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0",
+    "vite": "^6.2.4"
+  },
+  "peerDependencies": {
+    "ember-source": ">= 4.0.0"
+  },
+  "engines": {
+    "node": ">= 20.11"
+  },
+  "ember": {
+    "edition": "octane"
+  },
+  "ember-addon": {
+    "version": 2,
+    "type": "addon",
+    "main": "addon-main.cjs",
+    "app-js": {}
+  },
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "exports": {
+    ".": {
+      "types": "./declarations/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*.css": "./dist/*.css",
+    "./*": {
+      "types": "./declarations/*.d.ts",
+      "default": "./dist/*.js"
+    },
+    "./addon-main.js": "./addon-main.cjs"
+  },
+  "packageManager": "pnpm@10.15.0",
+  "release-plan": {
+    "semverIncrementAs": {
+      "major": "minor"
+    }
+  }
+}
