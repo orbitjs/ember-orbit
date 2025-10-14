@@ -1,7 +1,7 @@
 import type Owner from '@ember/owner';
 import {
+  getOrbitRegistry,
   Model,
-  orbitRegistry,
   setupOrbit,
   type ModelSettings,
 } from '#src/index.ts';
@@ -39,7 +39,7 @@ export function createStore(
     );
   }
 
-  setupOrbit(owner, {
+  const orbitRegistry = setupOrbit(owner, {
     ...dataModels,
     ...dataSources,
     ...dataStrategies,

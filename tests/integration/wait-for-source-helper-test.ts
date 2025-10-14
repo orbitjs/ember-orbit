@@ -1,7 +1,10 @@
 import { waitForSource } from '#src/test-support/index.ts';
 import { setupTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-import { orbitRegistry } from '#src/-private/utils/orbit-registry.ts';
+import {
+  getOrbitRegistry,
+  OrbitRegistry,
+} from '#src/-private/utils/orbit-registry.ts';
 import { Store } from '#src/index.ts';
 import { Planet } from '../support/dummy-models';
 import { createStore } from '../support/store';
@@ -10,11 +13,13 @@ import { MemorySource } from '@orbit/memory';
 import type { RecordOperation } from '@orbit/records';
 
 module('waitForSource helper', function (hooks) {
+  let orbitRegistry: OrbitRegistry;
   let store: Store;
 
   setupTest(hooks);
 
   test('it resolves once all the pending requests to the given source have synced', async function (assert) {
+    orbitRegistry = getOrbitRegistry(this.owner);
     store = createStore(this.owner, { planet: Planet });
 
     const backup = new MemorySource({ schema: store.schema });
@@ -25,7 +30,7 @@ module('waitForSource helper', function (hooks) {
 
     await store.addRecord({ type: 'planet', name: 'Earth' });
 
-    await waitForSource(backup);
+    await waitForSource(backup, this.owner);
 
     assert.ok(backup.requestQueue.empty);
     assert.ok(backup.syncQueue.empty);
@@ -45,7 +50,7 @@ module('waitForSource helper', function (hooks) {
 
     await store.addRecord({ type: 'planet', name: 'Earth' });
 
-    await waitForSource('backup');
+    await waitForSource('backup', this.owner);
 
     assert.ok(backup.requestQueue.empty);
     assert.ok(backup.syncQueue.empty);
