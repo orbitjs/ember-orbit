@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2025-10-14)
+
+* ember-orbit 0.20.0 (major)
+
+#### :boom: Breaking Change
+* `ember-orbit`
+  * [#443](https://github.com/orbitjs/ember-orbit/pull/443) Switch from `orbitRegistry` import to `getOrbitRegistry` ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
+#### Committers: 1
+- Robbie Wagner ([@RobbieTheWagner](https://github.com/RobbieTheWagner))
+
 ## Release (2025-10-09)
 
 * ember-orbit 0.19.3 (patch)
