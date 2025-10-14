@@ -7,7 +7,7 @@ export { default as hasOne } from './-private/fields/has-one.ts';
 export { default as key } from './-private/fields/key.ts';
 
 export { applyStandardSourceInjections } from './-private/utils/standard-injections.ts';
-export { orbitRegistry } from './-private/utils/orbit-registry.ts';
+export { getOrbitRegistry } from './-private/utils/orbit-registry.ts';
 export { orbit } from './-private/decorators/orbit.ts';
 
 export { default as Cache } from './-private/cache.ts';

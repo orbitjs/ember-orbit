@@ -54,6 +54,7 @@
     "@orbit/utils": "^0.17.0",
     "@orbit/validators": "^0.17.0",
     "decorator-transforms": "^2.2.2",
+    "ember-primitives": "^0.40.0",
     "ember-strict-application-resolver": "^0.1.0"
   },
   "devDependencies": {

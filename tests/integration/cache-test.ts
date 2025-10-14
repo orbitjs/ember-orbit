@@ -583,7 +583,7 @@ module('Integration - Cache', function (hooks) {
       name: 'Callisto',
     });
     callisto.planet = jupiter;
-    await waitForSource(store);
+    await waitForSource(store, this.owner);
     assert.strictEqual(cache.peekRelatedRecord(callisto, 'planet'), jupiter);
   });
 

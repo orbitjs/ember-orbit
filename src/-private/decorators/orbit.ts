@@ -1,8 +1,12 @@
-import { orbitRegistry } from '../utils/orbit-registry.ts';
+import { getOwner } from '@ember/owner';
+import type Owner from '@ember/owner';
+import { getOrbitRegistry } from '../utils/orbit-registry.ts';
 
 function getDescriptor(serviceName: string) {
   return {
     get() {
+      const owner = getOwner(this) as Owner;
+      const orbitRegistry = getOrbitRegistry(owner);
       const services = orbitRegistry.services;
       const service = services[serviceName as keyof typeof services];
 

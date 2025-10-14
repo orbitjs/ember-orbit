@@ -1,7 +1,9 @@
+import { getOwner, setOwner } from '@ember/owner';
+import type Owner from '@ember/owner';
 import type Cache from './cache.ts';
 import type Model from './model.ts';
 import type { ModelSettings } from './model.ts';
-import { orbitRegistry } from './utils/orbit-registry.ts';
+import { getOrbitRegistry } from './utils/orbit-registry.ts';
 import Orbit from '@orbit/core';
 import { cloneRecordIdentity, type RecordIdentity } from '@orbit/records';
 import type { Dict } from '@orbit/utils';
@@ -17,6 +19,8 @@ export default class ModelFactory {
   #modelFactoryMap: Dict<Factory>;
 
   constructor(cache: Cache) {
+    const owner = getOwner(cache) as Owner;
+    setOwner(this, owner);
     this.#cache = cache;
     this.#modelFactoryMap = {};
   }
@@ -34,7 +38,8 @@ export default class ModelFactory {
     let modelFactory = this.#modelFactoryMap[type];
 
     if (!modelFactory) {
-      modelFactory = orbitRegistry.registrations.models[
+      const owner = getOwner(this) as Owner;
+      modelFactory = getOrbitRegistry(owner).registrations.models[
         type as keyof object
       ] as unknown as Factory;
       assert(

@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { orbitRegistry } from '../utils/orbit-registry.ts';
+import { getOwner } from '@ember/-internals/owner';
+import type Owner from '@ember/owner';
+import { getOrbitRegistry } from '../utils/orbit-registry.ts';
 import { RecordSchema, type RecordSchemaSettings } from '@orbit/records';
-import { camelize } from '@orbit/serializers';
-
-function getRegisteredModels(): string[] {
-  return Object.keys(orbitRegistry.registrations.models).map(camelize);
-}
 
 export type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
 export default {
   create(injections: SchemaInjections = {}): RecordSchema {
+    const owner = getOwner(injections) as Owner;
+    const orbitRegistry = getOrbitRegistry(owner);
+
     if (injections.models === undefined) {
       let modelNames: Array<string>;
       if (injections.modelNames) {
         modelNames = injections.modelNames;
         delete injections.modelNames;
       } else {
-        modelNames = getRegisteredModels();
+        modelNames = orbitRegistry.getRegisteredModels();
       }
 
       injections.models = {};

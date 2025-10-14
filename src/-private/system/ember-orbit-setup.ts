@@ -13,7 +13,10 @@ import DataValidator from '../services/data-validator.ts';
 import StoreService from '../services/store.ts';
 import type { StoreSettings } from '../store.ts';
 import { getName } from '../utils/get-name.ts';
-import { orbitRegistry } from '../utils/orbit-registry.ts';
+import {
+  getOrbitRegistry,
+  type OrbitRegistry,
+} from '../utils/orbit-registry.ts';
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import { type MemorySourceSettings } from '@orbit/memory';
@@ -25,7 +28,11 @@ interface FactoryForFolderType {
   '/data-strategies/': { default: { create(injections: object): Strategy } };
 }
 
-function registerDataBuckets(owner: Owner, modules: Record<string, unknown>) {
+function registerDataBuckets(
+  orbitRegistry: OrbitRegistry,
+  owner: Owner,
+  modules: Record<string, unknown>,
+) {
   const registry = orbitRegistry.registrations.buckets;
   const matches = Object.entries(modules);
 
@@ -47,7 +54,10 @@ function registerDataBuckets(owner: Owner, modules: Record<string, unknown>) {
   }
 }
 
-function registerDataModels(modules: Record<string, unknown>) {
+function registerDataModels(
+  orbitRegistry: OrbitRegistry,
+  modules: Record<string, unknown>,
+) {
   const folder = '/data-models/';
   const registry = orbitRegistry.registrations.models;
 
@@ -61,7 +71,11 @@ function registerDataModels(modules: Record<string, unknown>) {
   }
 }
 
-function registerDataSources(owner: Owner, modules: Record<string, unknown>) {
+function registerDataSources(
+  orbitRegistry: OrbitRegistry,
+  owner: Owner,
+  modules: Record<string, unknown>,
+) {
   const folder = '/data-sources/';
   const registry = orbitRegistry.registrations.sources;
 
@@ -80,6 +94,7 @@ function registerDataSources(owner: Owner, modules: Record<string, unknown>) {
 }
 
 function registerDataStrategies(
+  orbitRegistry: OrbitRegistry,
   owner: Owner,
   modules: Record<string, unknown>,
 ) {
@@ -104,7 +119,10 @@ function registerDataStrategies(
  * Registers the "injectable" services needed to inject into
  * the `injections` of all the other things.
  */
-function registerInjectableServices(owner: Owner) {
+function registerInjectableServices(
+  orbitRegistry: OrbitRegistry,
+  owner: Owner,
+) {
   const keyMap = DataKeyMap.create();
   orbitRegistry.services.dataKeyMap = keyMap;
 
@@ -129,7 +147,11 @@ function registerInjectableServices(owner: Owner) {
     DataValidator.create(validatorSettings);
 }
 
-function registerModules(owner: Owner, modules: Record<string, unknown>) {
+function registerModules(
+  orbitRegistry: OrbitRegistry,
+  owner: Owner,
+  modules: Record<string, unknown>,
+) {
   const bucketModules: Record<string, unknown> = {};
   const modelModules: Record<string, unknown> = {};
   const sourceModules: Record<string, unknown> = {};
@@ -147,13 +169,13 @@ function registerModules(owner: Owner, modules: Record<string, unknown>) {
     }
   }
   // Create buckets and models first because they do not need anything injected.
-  registerDataBuckets(owner, bucketModules);
-  registerDataModels(modelModules);
+  registerDataBuckets(orbitRegistry, owner, bucketModules);
+  registerDataModels(orbitRegistry, modelModules);
   // Register the services we need to inject into all the other things.
-  registerInjectableServices(owner);
+  registerInjectableServices(orbitRegistry, owner);
   // Then register the sources themselves
-  registerDataSources(owner, sourceModules);
-  registerDataStrategies(owner, strategyModules);
+  registerDataSources(orbitRegistry, owner, sourceModules);
+  registerDataStrategies(orbitRegistry, owner, strategyModules);
 
   const storeSourceSettings = {} as MemorySourceSettings;
   setOwner(storeSourceSettings, owner);
@@ -176,6 +198,8 @@ export function setupOrbit(
   modules: Record<string, unknown>,
   config?: { schemaVersion?: number },
 ) {
+  const orbitRegistry = getOrbitRegistry(owner);
   orbitRegistry.schemaVersion = config?.schemaVersion;
-  registerModules(owner, modules);
+  registerModules(orbitRegistry, owner, modules);
+  return orbitRegistry;
 }
