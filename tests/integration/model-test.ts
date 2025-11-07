@@ -352,6 +352,22 @@ module('Integration - Model', function (hooks) {
     assert.strictEqual(record.name, 'Jupiter2');
   });
 
+  test('update cached attribute after rebase', async function (assert) {
+    const recordBase = cache.addRecord<Planet>({
+      type: 'planet',
+      name: 'Jupiter'
+    });
+    const fork = cache.fork();
+    const record = <Planet>fork.findRecord(recordBase.type, recordBase.id);
+
+    assert.strictEqual(record.name, 'Jupiter');
+    
+    recordBase?.$replaceAttribute('name', 'Jupiter2');
+    fork.rebase();
+
+    assert.strictEqual(record.name, 'Jupiter2');
+  });
+
   test('update via store: replaceAttribute operation invalidates attribute on model', async function (assert) {
     const record = await store.addRecord<Planet>({
       type: 'planet',
