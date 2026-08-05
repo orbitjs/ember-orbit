@@ -14,7 +14,6 @@ import type {
   StandardRecordValidator,
   UninitializedRecord,
 } from '@orbit/records';
-import { camelize } from '@orbit/serializers';
 import type { StandardValidator, ValidatorForFn } from '@orbit/validators';
 
 export type ServicesMap = {
@@ -41,7 +40,7 @@ export class OrbitRegistry {
   services: ServicesMap = {} as ServicesMap;
   schemaVersion?: number;
   getRegisteredModels(): string[] {
-    return Object.keys(this.registrations.models).map(camelize);
+    return Object.keys(this.registrations.models);
   }
 }
 
