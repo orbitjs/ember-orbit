@@ -20,6 +20,7 @@ import {
 import type { Strategy } from '@orbit/coordinator';
 import type { Bucket } from '@orbit/core';
 import { type MemorySourceSettings } from '@orbit/memory';
+import { camelize } from '@orbit/serializers';
 
 interface FactoryForFolderType {
   '/data-buckets/': { default: { create(injections: object): Bucket } };
@@ -63,7 +64,10 @@ function registerDataModels(
 
   for (const [key, module] of Object.entries(modules)) {
     let [, name] = key.split(folder);
-    name = getName(name as string);
+    // Model file names are kebab-case on disk but record types are camelCase,
+    // so normalize here: every other consumer of `registrations.models`
+    // (the schema service, Cache#modelFactoryFor) looks models up by type.
+    name = camelize(getName(name as string));
 
     registry[name] =
       (module as FactoryForFolderType['/data-models/']).default ??
